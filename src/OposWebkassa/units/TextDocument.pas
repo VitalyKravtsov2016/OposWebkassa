@@ -32,6 +32,7 @@ type
     constructor Create;
     destructor Destroy; override;
 
+    procedure Save;
     procedure Clear;
     procedure AddText(const Text: string);
     procedure Add(const Line: string); overload;
@@ -137,6 +138,11 @@ end;
 procedure TTextDocument.Clear;
 begin
   FItems.Clear;
+end;
+
+procedure TTextDocument.Save;
+begin
+  { !!! }
 end;
 
 { TTextItems }

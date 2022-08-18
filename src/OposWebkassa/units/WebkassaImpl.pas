@@ -63,6 +63,7 @@ type
     FVatValues: array [MinVatID..MaxVatID] of Integer;
     FRecLineChars: Integer;
     FMaxRecLineChars: Integer;
+    procedure PrintDocumentSafe(Document: TTextDocument);
   public
     procedure Initialize;
     procedure CheckEnabled;
@@ -1617,7 +1618,7 @@ begin
     Document.AddLines('ВОЗВРАТОВ ПОКУПОК', CurrencyToStr(Command.Data.EndNonNullable.ReturnBuy));
     Document.AddLines('СФормировано ОФД: ', Command.Data.Ofd.Name);
     Document.AddText(FParams.Trailer);
-    PrintDocument(Document);
+    PrintDocumentSafe(Document);
   finally
     Document.Free;
     Command.Free;
@@ -2097,7 +2098,7 @@ begin
     Document.Add('Оператор: ' + FCashierFullName);
     Document.AddText(FParams.Trailer);
     // Print
-    PrintDocument(Document);
+    PrintDocumentSafe(Document);
   finally
     Command.Free;
     Document.Free;
@@ -2130,7 +2131,7 @@ begin
     Document.Add('Оператор: ' + FCashierFullName);
     Document.AddText(FParams.Trailer);
     // print
-    PrintDocument(Document);
+    PrintDocumentSafe(Document);
   finally
     Document.Free;
     Command.Free;
@@ -2319,10 +2320,23 @@ begin
     Document.AddText(FParams.Trailer);
 
     Printer.RecLineChars := FMaxRecLineChars;
-    PrintDocument(Document);
+    PrintDocumentSafe(Document);
     Printer.RecLineChars := FRecLineChars;
   finally
     Command.Free;
+  end;
+end;
+
+procedure TWebkassaImpl.PrintDocumentSafe(Document: TTextDocument);
+begin
+  try
+    PrintDocument(Document);
+  except
+    on E: Exception do
+    begin
+      Document.Save;
+      Logger.Error('Failed to print document, ' + E.Message);
+    end;
   end;
 end;
 
