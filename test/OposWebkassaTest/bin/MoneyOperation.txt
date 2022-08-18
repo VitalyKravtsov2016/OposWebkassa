@@ -1,0 +1,19 @@
+{
+	"Data": {
+		"OfflineMode": false,
+		"CashboxOfflineMode": false,
+		"DateTime": "03.08.2022 23:25:42",
+		"Sum": 3669346.06,
+		"Cashbox": {
+			"UniqueNumber": "SWK00032685",
+			"RegistrationNumber": "211030200207",
+			"IdentityNumber": "270",
+			"Address": ".",
+			"Ofd": {
+				"Name": "АО \"КазТранском\"",
+				"Host": "dev.kofd.kz/consumer",
+				"Code": 3
+			}
+		}
+	}
+}

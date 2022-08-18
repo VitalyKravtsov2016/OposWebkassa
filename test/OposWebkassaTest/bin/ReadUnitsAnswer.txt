@@ -1,0 +1,16 @@
+{
+	"Data": [
+		{
+			"Code": 796,
+			"NameRu": "шт",
+			"NameKz": "дана",
+			"NameEn": "pcs"
+		},
+		{
+			"Code": 166,
+			"NameRu": "кг",
+			"NameKz": "кг",
+			"NameEn": "kg"
+		}
+	]
+}

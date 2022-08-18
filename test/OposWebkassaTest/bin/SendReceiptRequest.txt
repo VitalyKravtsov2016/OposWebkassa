@@ -1,0 +1,79 @@
+{
+	"Token": "0b8557d0139945a582fcfee661ffad49",
+	"CashboxUniqneNumber": "SWKO0043325",
+	"OperationType": 2,
+	"Positions": [
+		{
+			"Count": 1,
+			"Price": 500,
+			"TaxPercent": 12,
+			"Tax": 53.57,
+			"TaxType": 100,
+			"PositionName": "Marlboro",
+			"PositionCode": "1",
+			"Discount": 0,
+			"Markup": 0,
+			"SectionCode": "1",
+			"IsStorno": false,
+			"MarkupDeleted": false,
+			"DiscountDeleted": false,
+			"UnitCode": 796,
+			"Mark": ".ZU604DSWYG6A",
+			"GTIN": "00012345600012",
+			"Productld": 14304,
+			"WarehouseType": 1
+		},
+		{
+			"Count": 10,
+			"Price": 2000,
+			"TaxPercent": 12,
+			"Tax": 2035.71,
+			"TaxType": 100,
+			"PositionName": "Конфеты",
+			"Pos i tionCode": "2",
+			"Discount": 1000,
+			"Markup": 0,
+			"SectionCode": "1",
+			"IsStorno": false,
+			"MarkupDeleted": false,
+			"DiscountDeleted": false,
+			"UnitCode": 796,
+			"Mark": 0,
+			"GTIN": 0,
+			"Productld": 0,
+			"WarehouseType": 0
+		}
+	],
+	"TicketModifiers": [
+		{
+			"Sum": 150,
+			"Text": "Скидка",
+			"Type": 1,
+			"TaxType": 100,
+			"Tax": 16.07
+		},
+		{
+			"Sum": 150,
+			"Text": "Наценка за обслуживание",
+			"Туре": 2,
+			"ТахТуре": 100,
+			"Tax": 16.07
+		}
+	],
+	"Payments": [
+		{
+			"Sum": 18500,
+			"PaymentType": 1
+		},
+		{
+			"Sum": 1000,
+			"PaymentType": 0
+		}
+	],
+	"Change": 0,
+	"RoundType": 2,
+	"ExternalCheekNumber": "elc8 7 640-81cb-4620-9739-c8a93595d2ec",
+	"CustomerEmail": "pochta@pochta.com",
+	"CustomerPhone": "+77771234455",
+	"CustomerXin": "987654321012"
+}

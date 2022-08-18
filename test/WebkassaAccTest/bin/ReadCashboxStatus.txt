@@ -1,0 +1,209 @@
+{
+	"Data": {
+		"Name": "КОФД 2",
+		"RegistrationNumber": "211030200207",
+		"Organization": "ТОО SOFT IT KAZAKHSTAN",
+		"Xin": "131240010479",
+		"CurrentState": {
+			"ContinuousDocumentNumber": 1238,
+			"LastOperationDate": "17.08.2022 00:00:00",
+			"ShiftNumber": 158,
+			"ShiftOpenedAt": "17.08.2022 16:42:18",
+			"XReport": {
+				"Sections": [
+					{
+						"Code": 0,
+						"Name": "Ломбард",
+						"Operations": {
+							"Sell": {
+								"Amount": 1860.0,
+								"Count": 3
+							}
+						}
+					}
+				],
+				"Taxes": [],
+				"MoneyPlacementOperations": {
+					"Deposit": {
+						"TotalCount": 65,
+						"Count": 0,
+						"Amount": 0.0
+					},
+					"WithDrawal": {
+						"TotalCount": 44,
+						"Count": 0,
+						"Amount": 0.0
+					}
+				},
+				"Revenue": 1860.0,
+				"Type": 1,
+				"Modificators": [],
+				"TaxPayerName": "ТОО SOFT IT KAZAKHSTAN",
+				"TaxPayerIN": "131240010479",
+				"TaxPayerVAT": true,
+				"TaxPayerVATSeria": "00000",
+				"TaxPayerVATNumber": "0000000",
+				"ReportNumber": 3,
+				"CashboxSN": "SWK00032685",
+				"CashboxIN": 270,
+				"CashboxRN": "211030200207",
+				"StartOn": "17.08.2022 16:42:18",
+				"ReportOn": "17.08.2022 21:24:28",
+				"CashierCode": 1,
+				"ShiftNumber": 158,
+				"DocumentCount": 3,
+				"PutMoneySum": 0.0,
+				"TakeMoneySum": 0.0,
+				"ControlSum": 721365520,
+				"OfflineMode": false,
+				"CashboxOfflineMode": false,
+				"SumInCashbox": 3674846.06,
+				"Sell": {
+					"PaymentsByTypesApiModel": [
+						{
+							"Sum": 1860.0,
+							"Type": 0
+						}
+					],
+					"Discount": 0.0,
+					"Markup": 0.0,
+					"Taken": 1860.0,
+					"Change": 0.0,
+					"Count": 3,
+					"TotalCount": 812,
+					"VAT": 0.0
+				},
+				"Buy": {
+					"PaymentsByTypesApiModel": [],
+					"Discount": 0.0,
+					"Markup": 0.0,
+					"Taken": 0.0,
+					"Change": 0.0,
+					"Count": 0,
+					"TotalCount": 0,
+					"VAT": 0.0
+				},
+				"ReturnSell": {
+					"PaymentsByTypesApiModel": [],
+					"Discount": 0.0,
+					"Markup": 0.0,
+					"Taken": 0.0,
+					"Change": 0.0,
+					"Count": 0,
+					"TotalCount": 59,
+					"VAT": 0.0
+				},
+				"ReturnBuy": {
+					"PaymentsByTypesApiModel": [],
+					"Discount": 0.0,
+					"Markup": 0.0,
+					"Taken": 0.0,
+					"Change": 0.0,
+					"Count": 0,
+					"TotalCount": 0,
+					"VAT": 0.0
+				},
+				"EndNonNullable": {
+					"Sell": 11967044.06,
+					"Buy": 0.0,
+					"ReturnSell": 364180.47,
+					"ReturnBuy": 0.0
+				},
+				"StartNonNullable": {
+					"Sell": 11965184.06,
+					"Buy": 0.0,
+					"ReturnSell": 364180.47,
+					"ReturnBuy": 0.0
+				},
+				"Ofd": {
+					"Name": "АО \"КазТранском\"",
+					"Host": "dev.kofd.kz/consumer",
+					"Code": 3
+				}
+			}
+		},
+		"IdentityNumber": 270,
+		"AutowithdrawalOnCloseShift": false,
+		"OfdAdTexts": "Оператор фискальных данных: АО \"КазТранском\"\r\nДля проверки чека зайдите на сайт: dev.kofd.kz/consumer",
+		"VatNumber": "0000000",
+		"VatSeria": "00000",
+		"OfflineAllowed": true,
+		"PrintDostykQR": false,
+		"PrintTicketQR": true,
+		"PrintWithoutVatTicketView": false,
+		"Address": "тест",
+		"OfdName": "АО \"КазТранском\"",
+		"OfdHost": "dev.kofd.kz/consumer",
+		"OfdCode": 3,
+		"OfdProtocolVersion": 124,
+		"QrGenerationMode": 2,
+		"AllowedValValues": "AAw=",
+		"Sections": [
+			{
+				"Code": "1",
+				"IsVAT": false
+			},
+			{
+				"Code": "2",
+				"IsVAT": false
+			},
+			{
+				"Code": "3",
+				"IsVAT": false
+			},
+			{
+				"Code": "4",
+				"IsVAT": false
+			},
+			{
+				"Code": "5",
+				"IsVAT": false
+			},
+			{
+				"Code": "6",
+				"IsVAT": false
+			},
+			{
+				"Code": "7",
+				"IsVAT": false
+			},
+			{
+				"Code": "8",
+				"IsVAT": false
+			},
+			{
+				"Code": "9",
+				"IsVAT": false
+			},
+			{
+				"Code": "10",
+				"IsVAT": false
+			},
+			{
+				"Code": "11",
+				"IsVAT": false
+			},
+			{
+				"Code": "12",
+				"IsVAT": false
+			},
+			{
+				"Code": "13",
+				"IsVAT": false
+			},
+			{
+				"Code": "14",
+				"IsVAT": false
+			},
+			{
+				"Code": "15",
+				"IsVAT": false
+			},
+			{
+				"Code": "16",
+				"IsVAT": false
+			}
+		],
+		"OfflineSupportMode": 1
+	}
+}

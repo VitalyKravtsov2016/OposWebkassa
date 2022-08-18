@@ -1,0 +1,72 @@
+program OposConfig;
+
+uses
+  Forms,
+  SysUtils,
+  gnugettext,
+  Oposhi in '..\Opos\Oposhi.pas',
+  OposUtils in '..\Opos\OposUtils.pas',
+  Opos in '..\Opos\Opos.pas',
+  OposEvents in '..\Opos\OposEvents.pas',
+  OPOSException in '..\Opos\OposException.pas',
+  OposFptr in '..\Opos\OposFptr.pas',
+  OposFptrhi in '..\Opos\OposFptrhi.pas',
+  OposFptrUtils in '..\Opos\OposFptrUtils.pas',
+  OposDevice in '..\Opos\OposDevice.pas',
+  fmuMain in 'Fmu\fmuMain.pas' {fmMain},
+  fmuDevice in 'Fmu\fmuDevice.pas' {fmDevice},
+  fmuPages in 'Fmu\fmuPages.pas' {fmPages},
+  untUtil in 'Units\untUtil.pas',
+  DriverError in '..\Shared\DriverError.pas',
+  VersionInfo in '..\Shared\VersionInfo.pas',
+  DebugUtils in '..\Shared\DebugUtils.pas',
+  OposWebkassaLib_TLB in '..\OposWebkassa\OposWebkassaLib_TLB.pas',
+  OposFiscalPrinter_1_12_Lib_TLB in '..\Opos\OposFiscalPrinter_1_12_Lib_TLB.pas',
+  BaseForm in '..\Shared\BaseForm.pas',
+  untPages in 'Units\untPages.pas',
+  FptrTypes in 'Units\FptrTypes.pas',
+  FileUtils in '..\Shared\FileUtils.pas',
+  LogFile in '..\Shared\LogFile.pas',
+  FiscalPrinterDevice in 'Units\FiscalPrinterDevice.pas',
+  WException in '..\Shared\WException.pas',
+  fmuFptrLog in 'Fmu\fmuFptrLog.pas' {fmFptrLog},
+  PrinterParameters in '..\Shared\PrinterParameters.pas',
+  DriverContext in '..\Shared\DriverContext.pas',
+  fmuPrinter in 'Fmu\fmuPrinter.pas' {fmPrinter},
+  PrinterParametersX in '..\Shared\PrinterParametersX.pas',
+  PrinterParametersIni in '..\Shared\PrinterParametersIni.pas',
+  TntIniFiles in '..\Shared\TntIniFiles.pas',
+  SmIniFile in '..\Shared\SmIniFile.pas',
+  StringUtils in '..\Shared\StringUtils.pas',
+  RegExpr in '..\Shared\RegExpr.pas',
+  fmuFptrHeader in 'Fmu\fmuFptrHeader.pas' {fmFptrHeader},
+  fmuFptrTrailer in 'Fmu\fmuFptrTrailer.pas' {fmFptrTrailer},
+  WebkassaClient in '..\OposWebkassa\units\WebkassaClient.pas',
+  JsonUtils in '..\Shared\JsonUtils.pas',
+  fmuFptrConnection in 'Fmu\fmuFptrConnection.pas' {fmFptrConnection},
+  OposPOSPrinter_CCO_TLB in '..\Opos\OposPOSPrinter_CCO_TLB.pas',
+  OposPtr in '..\Opos\OposPtr.pas',
+  OposPtrUtils in '..\Opos\OposPtrUtils.pas',
+  OposPtrhi in '..\Opos\OposPtrhi.pas',
+  OposEventsRCS in '..\Opos\OposEventsRCS.pas',
+  OposSemaphore in '..\Opos\OposSemaphore.pas',
+  RecPrinter in '..\OposWebkassa\units\RecPrinter.pas',
+  PrinterParametersReg in '..\Shared\PrinterParametersReg.pas',
+  fmuFptrPayType in 'Fmu\fmuFptrPayType.pas' {fmFptrPayType},
+  fmuFptrVatCode in 'Fmu\fmuFptrVatCode.pas' {fmFptrVatCode},
+  VatCode in '..\Shared\VatCode.pas',
+  uLkJSON in '..\Shared\uLkJSON.pas';
+
+{$R *.RES}
+{$R WindowsXP.RES}
+
+begin
+  Application.Initialize;
+  Application.CreateForm(TfmMain, fmMain);
+  Application.CreateForm(TfmPrinter, fmPrinter);
+  Application.CreateForm(TfmFptrConnection, fmFptrConnection);
+  Application.Run;
+end.
+
+
+

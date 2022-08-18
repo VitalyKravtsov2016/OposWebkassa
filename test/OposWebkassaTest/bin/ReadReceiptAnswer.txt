@@ -1,0 +1,55 @@
+{
+	"Data": {
+		"CashboxUniqueNumber": "SWK00030586",
+		"CashboxRegistrationNuiriber": "170420180002",
+		"CashboxIdentityNumber": 1941,
+		"Address": "ул. Пушкина 17, оф.521",
+		"Number": "4 4 511382 9",
+		"OrderNumber": 2,
+		"RegistratedOn": "11.04.2019 17:42:37",
+		"EmployeeName": "Тестирование",
+		"EmployeeCode": 31,
+		"ShiftNumber": 16,
+		"DocumentNumber": 39,
+		" OperationType": 2,
+		"OperationTypeText": "Продажа",
+		"Payments": [
+			{
+				"Sum": 5894,
+				"PaymentTypeName": "Наличные"
+			}
+		],
+		"Total": 5894,
+		"Change": 0,
+		"Taken": 5894,
+		"Discount": 0,
+		"MarkupPercent": 0,
+		"Markup": 0,
+		"TaxPercent": 12,
+		"Tax": 631.5,
+		"VATPayer": true,
+		"Positions": [
+			{
+				"PositionName": "Позиция",
+				"PositionCode": "1",
+				"Count": 1,
+				"Price": 5894,
+				"DiscountPercent": 0,
+				"DiscountTenge": 0,
+				"MarkupPercent": 0,
+				"Markup": 0,
+				"TaxPercent": 0,
+				"Tax": 631.5,
+				"IsNds": true,
+				"IsStorno": false,
+				"MarkupDeleted": false,
+				"DiscountDeleted": false,
+				"Sum": 5894,
+				"UnitCode": 796,
+				"Mark": "U1DN3ACFU7FJ"
+			}
+		],
+		"IsOffline": false,
+		"TicketUrl": "https://kkm.webkassa.kz/Ticket?chb=SWK00030586&extnum=5de5eb21-77ba-497 9- 996c-e38b7 9a991d5"
+	}
+}

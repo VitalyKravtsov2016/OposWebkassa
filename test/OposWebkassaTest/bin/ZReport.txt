@@ -1,0 +1,91 @@
+{
+	"Data": {
+		"TaxPayerName": "ТОО SOFT IT KAZAKHSTAN",
+		"TaxPayerIN": "131240010479",
+		"TaxPayerVAT": true,
+		"TaxPayerVATSeria": "00000",
+		"TaxPayerVATNumber": "0000000",
+		"ReportNumber": 11,
+		"CashboxSN": "SWK00032685",
+		"CashboxIN": 270,
+		"CashboxRN": "211030200207",
+		"StartOn": "03.08.2022 14:03:13",
+		"ReportOn": "03.08.2022 23:34:44",
+		"CloseOn": "03.08.2022 23:34:44",
+		"CashierCode": 1,
+		"ShiftNumber": 148,
+		"DocumentCount": 11,
+		"PutMoneySum": 30691.34,
+		"TakeMoneySum": 12345.67,
+		"ControlSum": 1208012062,
+		"OfflineMode": false,
+		"CashboxOfflineMode": false,
+		"SumInCashbox": 3669346.06,
+		"Sell": {
+			"PaymentsByTypesApiModel": [
+				{
+					"Sum": 30000.0,
+					"Type": 0
+				},
+				{
+					"Sum": 8220.0,
+					"Type": 1
+				}
+			],
+			"Discount": 0.0,
+			"Markup": 0.0,
+			"Taken": 38220.0,
+			"Change": 0.0,
+			"Count": 9,
+			"TotalCount": 795,
+			"VAT": 3214.28
+		},
+		"Buy": {
+			"PaymentsByTypesApiModel": [],
+			"Discount": 0.0,
+			"Markup": 0.0,
+			"Taken": 0.0,
+			"Change": 0.0,
+			"Count": 0,
+			"TotalCount": 0,
+			"VAT": 0.0
+		},
+		"ReturnSell": {
+			"PaymentsByTypesApiModel": [],
+			"Discount": 0.0,
+			"Markup": 0.0,
+			"Taken": 0.0,
+			"Change": 0.0,
+			"Count": 0,
+			"TotalCount": 56,
+			"VAT": 0.0
+		},
+		"ReturnBuy": {
+			"PaymentsByTypesApiModel": [],
+			"Discount": 0.0,
+			"Markup": 0.0,
+			"Taken": 0.0,
+			"Change": 0.0,
+			"Count": 0,
+			"TotalCount": 0,
+			"VAT": 0.0
+		},
+		"EndNonNullable": {
+			"Sell": 11941489.62,
+			"Buy": 0.0,
+			"ReturnSell": 361690.47,
+			"ReturnBuy": 0.0
+		},
+		"StartNonNullable": {
+			"Sell": 11903269.62,
+			"Buy": 0.0,
+			"ReturnSell": 361690.47,
+			"ReturnBuy": 0.0
+		},
+		"Ofd": {
+			"Name": "АО \"КазТранском\"",
+			"Host": "dev.kofd.kz/consumer",
+			"Code": 3
+		}
+	}
+}

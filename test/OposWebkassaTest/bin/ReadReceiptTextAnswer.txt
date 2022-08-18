@@ -1,0 +1,18 @@
+{
+	"Data": {
+		"Lines": [
+			{
+				"Order": 1,
+				"Type": 0,
+				"Value": "          ДУБЛИКАТ           ",
+				"Style": 1
+			},
+			{
+				"Order": 1,
+				"Type": 0,
+				"Value": "          ОРГАНИЗАЦИЯ 1       ",
+				"Style": 0
+			}
+		]
+	}
+}

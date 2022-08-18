@@ -1,0 +1,88 @@
+{
+	"Data": [
+		{
+			"Code": 796,
+			"NameRu": "шт",
+			"NameEn": "PC",
+			"NameKz": "дана"
+		},
+		{
+			"Code": 166,
+			"NameRu": "кг",
+			"NameEn": "kg",
+			"NameKz": "кг"
+		},
+		{
+			"Code": 112,
+			"NameRu": "литр",
+			"NameEn": "liter",
+			"NameKz": "литр"
+		},
+		{
+			"Code": 6,
+			"NameRu": "м",
+			"NameEn": "m",
+			"NameKz": "м"
+		},
+		{
+			"Code": 55,
+			"NameRu": "м2",
+			"NameEn": "m2",
+			"NameKz": "м2"
+		},
+		{
+			"Code": 113,
+			"NameRu": "м3",
+			"NameEn": "m3",
+			"NameKz": "м3"
+		},
+		{
+			"Code": 18,
+			"NameRu": "м.пог.",
+			"NameEn": "m.lin",
+			"NameKz": "м.пог."
+		},
+		{
+			"Code": 168,
+			"NameRu": "тонн.",
+			"NameEn": "tons.",
+			"NameKz": "тонн."
+		},
+		{
+			"Code": 778,
+			"NameRu": "упак.",
+			"NameEn": "pack",
+			"NameKz": "орама"
+		},
+		{
+			"Code": 5114,
+			"NameRu": "одн.усл.",
+			"NameEn": "one",
+			"NameKz": "бір қызмет"
+		},
+		{
+			"Code": 356,
+			"NameRu": "час",
+			"NameEn": "hour",
+			"NameKz": "сағат"
+		},
+		{
+			"Code": 792,
+			"NameRu": "чел.",
+			"NameEn": "people",
+			"NameKz": "адам"
+		},
+		{
+			"Code": 5111,
+			"NameRu": "одн.пач",
+			"NameEn": "one pack",
+			"NameKz": "бір бума"
+		},
+		{
+			"Code": 111,
+			"NameRu": "Миллилитр ( куб.см.)",
+			"NameEn": "Миллилитр ( куб.см.)",
+			"NameKz": "Миллилитр ( куб.см.)"
+		}
+	]
+}

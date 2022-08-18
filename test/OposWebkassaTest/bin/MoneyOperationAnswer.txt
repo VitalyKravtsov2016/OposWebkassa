@@ -1,0 +1,1 @@
+{"Data":{"OfflineMode":true,"CashboxOfflineMode":true,"DateTime":"15.02.2018 17:18:29","Sum":56350,"Cashbox":{"UniqueNumber":"SWK00013404","RegistrationNumber":"000134040000","IdentityNumber":"561","Address":"ул. Пушкина 17, оф.521","Ofd":{"Name":"АО Казахтелеком","Host":"consumer.oofd.kz","Code":1}}}}

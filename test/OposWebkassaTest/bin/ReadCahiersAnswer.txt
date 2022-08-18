@@ -1,0 +1,26 @@
+{
+	"Data": [
+		{
+			"FullName": "Пупкин В.С.",
+			"Email": "pochta@pochta.com",
+			"Cashboxes": [
+				"SWK00000019",
+				"SWK00000020"
+			]
+		},
+		{
+			"FullName": "Сумкин Ф. Б.",
+			"Email": "pochtal212@pochta.com",
+			"Cashboxes": [
+				"SWK00000019"
+			]
+		},
+		{
+			"FullName": "Сидоров M.H.",
+			"Email": "pochtaOO@pochta.com",
+			"Cashboxes": [
+				"SWK00000020"
+			]
+		}
+	]
+}

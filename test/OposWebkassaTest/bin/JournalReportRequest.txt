@@ -1,0 +1,1 @@
+{"Token":"0b8557d0139945a582fcfee661ffad49","CashboxUniqueNumber":"SWK00000019","ShiftNumber":3}

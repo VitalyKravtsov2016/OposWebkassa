@@ -1,0 +1,36 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = OposConfig.exe OposTest.exe OposWebkassa.dll OposWebkassaTest.exe \
+  OposWebkassaTestLib.dll WebkassaAccTest.exe
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+OposWebkassa.dll: OposWebkassa\OposWebkassa.dpr
+  $(DCC)
+
+OposWebkassaTest.exe: ..\test\OposWebkassaTest\OposWebkassaTest.dpr
+  $(DCC)
+
+OposWebkassaTestLib.dll: ..\test\OposWebkassaTest\OposWebkassaTestLib.dpr
+  $(DCC)
+
+OposConfig.exe: OposConfig\OposConfig.dpr
+  $(DCC)
+
+OposTest.exe: OposTest\OposTest.dpr
+  $(DCC)
+
+WebkassaAccTest.exe: ..\test\WebkassaAccTest\WebkassaAccTest.dpr
+  $(DCC)
+
+

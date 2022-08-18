@@ -1,0 +1,164 @@
+{
+	"Data": [
+		{
+			"FullName": "Ardak Akhmetov",
+			"Email": "ardak.akhmetov@softit.kz",
+			"Cashboxes": []
+		},
+		{
+			"FullName": "Кассир 1",
+			"Email": "webkassa@softit.kz",
+			"Cashboxes": []
+		},
+		{
+			"FullName": "Тестовая Пользователь Четвертый",
+			"Email": "online-kassa@softit.kz",
+			"Cashboxes": []
+		},
+		{
+			"FullName": "webkassa3@softit.kz",
+			"Email": "webkassa3@softit.kz",
+			"Cashboxes": []
+		},
+		{
+			"FullName": "partner@softit.kz",
+			"Email": "partner@softit.kz",
+			"Cashboxes": []
+		},
+		{
+			"FullName": "Ахметзянов Рустам",
+			"Email": "projects@rusoft.kz",
+			"Cashboxes": []
+		},
+		{
+			"FullName": "Кассир 5",
+			"Email": "webkassa10@softit.kz",
+			"Cashboxes": []
+		},
+		{
+			"FullName": "webkassa4@softit.kz",
+			"Email": "webkassa4@softit.kz",
+			"Cashboxes": []
+		},
+		{
+			"FullName": "webkassa1@softit.kz ПОНИ 1",
+			"Email": "webkassa1@softit.kz",
+			"Cashboxes": []
+		},
+		{
+			"FullName": "webkassa2@softit.kz ПОНИ 2",
+			"Email": "webkassa2@softit.kz",
+			"Cashboxes": []
+		},
+		{
+			"FullName": "Тест ",
+			"Email": "a.a@softit.kz",
+			"Cashboxes": []
+		},
+		{
+			"FullName": "SWK00032419 новая касса",
+			"Email": "SWK00032419@mail.ru",
+			"Cashboxes": []
+		},
+		{
+			"FullName": "1c@softit.kz",
+			"Email": "1c@softit.kz",
+			"Cashboxes": []
+		},
+		{
+			"FullName": "Станислав Махусеев",
+			"Email": "smakhuseev@wsoft.kz",
+			"Cashboxes": []
+		},
+		{
+			"FullName": "swk00032534@mail.ru",
+			"Email": "swk00032534@mail.ru",
+			"Cashboxes": []
+		},
+		{
+			"FullName": "KASPI",
+			"Email": "Kaspi@softit.kz",
+			"Cashboxes": []
+		},
+		{
+			"FullName": "Розалия Нуртдинова",
+			"Email": "hotline@ristart.kz",
+			"Cashboxes": []
+		},
+		{
+			"FullName": "Тест курьерской службы Айдос ",
+			"Email": "doskaz_87@mail.ru",
+			"Cashboxes": []
+		},
+		{
+			"FullName": "Тестовый тест",
+			"Email": "sm@wsoft.kz",
+			"Cashboxes": []
+		},
+		{
+			"FullName": "Тест ELF",
+			"Email": "soft-oil-service@yandex.ru",
+			"Cashboxes": []
+		},
+		{
+			"FullName": "Technology Solution",
+			"Email": "01almaty@mail.ru",
+			"Cashboxes": []
+		},
+		{
+			"FullName": "cанат",
+			"Email": "megalogist02@mail.ru",
+			"Cashboxes": []
+		},
+		{
+			"FullName": "Пупкин Иван",
+			"Email": "root@lmn.kz",
+			"Cashboxes": []
+		},
+		{
+			"FullName": "Нурсултан Талгатбеков",
+			"Email": "talgatbekov.nursultan@gmail.com",
+			"Cashboxes": []
+		},
+		{
+			"FullName": "SWK00032452@mail.ru Тест Тойота Сити",
+			"Email": "SWK00032452@mail.ru",
+			"Cashboxes": []
+		},
+		{
+			"FullName": "КассирLL",
+			"Email": "KassaTest@lmn.kz",
+			"Cashboxes": []
+		},
+		{
+			"FullName": "Максим Янитский",
+			"Email": "m.yanitsky@lukasoft.ru",
+			"Cashboxes": []
+		},
+		{
+			"FullName": "Василий Сердюк",
+			"Email": "ithd03@toimart.kz",
+			"Cashboxes": []
+		},
+		{
+			"FullName": "Test decoKz",
+			"Email": "dekokz@mail.ru",
+			"Cashboxes": []
+		},
+		{
+			"FullName": "Софт Ойл",
+			"Email": "soft-oil-web1@yandex.ru",
+			"Cashboxes": []
+		},
+		{
+			"FullName": "Софт Ойл",
+			"Email": "soft-oil-web2@yandex.ru",
+			"Cashboxes": []
+		},
+		{
+			"FullName": "Maria Fettsova",
+			"Email": "maria.fettsova@paybox.money",
+			"Cashboxes": []
+		}
+	]
+}

@@ -1,0 +1,30 @@
+{
+	"Data": {
+		"CheckNumber": "923956785162",
+		"DateTime": "04.08.2022 17:09:35",
+		"OfflineMode": false,
+		"CashboxOfflineMode": false,
+		"Cashbox": {
+			"UniqueNumber": "SWK00032685",
+			"RegistrationNumber": "211030200207",
+			"IdentityNumber": "270",
+			"Address": ".",
+			"Ofd": {
+				"Name": "АО \"КазТранском\"",
+				"Host": "dev.kofd.kz/consumer",
+				"Code": 3
+			}
+		},
+		"CheckOrderNumber": 1,
+		"ShiftNumber": 149,
+		"EmployeeName": "webkassa4@softit.kz",
+		"TicketUrl": "http://dev.kofd.kz/consumer?i=923956785162&f=211030200207&s=15240.64&t=20220804T170935",
+		"TicketPrintUrl": "https://devkkm.webkassa.kz/Ticket?chb=SWK00032685&extnum=8234682763482746"
+	},
+	"Errors": [
+		{
+			"Code": 14,
+			"Text": "Чек с внешним номером 8234682763482746 уже присутствует в системе"
+		}
+	]
+}

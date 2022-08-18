@@ -1,0 +1,61 @@
+{
+	"Data": {
+		"CashboxUniqueNumber": "SWK00032685",
+		"CashboxRegistrationNumber": "211030200207",
+		"CashboxIdentityNumber": 270,
+		"Address": ".",
+		"Number": "923860753030",
+		"OrderNumber": 3,
+		"RegistratedOn": "03.08.2022 14:29:12",
+		"EmployeeName": "Розалия Нуртдинова",
+		"EmployeeCode": 18,
+		"ShiftNumber": 148,
+		"DocumentNumber": 1158,
+		"OperationType": 2,
+		"OperationTypeText": "Продажа",
+		"Payments": [
+			{
+				"Sum": 2055.0,
+				"PaymentTypeName": "Банковская карта"
+			}
+		],
+		"Total": 2055.0,
+		"Change": 0.0,
+		"Taken": 2055.0,
+		"Discount": 0.0,
+		"MarkupPercent": 0.0,
+		"Markup": 0.0,
+		"TaxPercent": 0,
+		"Tax": 0.0,
+		"VATPayer": false,
+		"Positions": [
+			{
+				"PositionName": "Рецепт № 1 320 (шт)",
+				"PositionCode": "",
+				"Count": 1.0,
+				"Price": 2055.0,
+				"DiscountPercent": 0.0,
+				"DiscountTenge": 0.0,
+				"MarkupPercent": 0.0,
+				"Markup": 0.0,
+				"TaxPercent": 0,
+				"Tax": 0.0,
+				"IsNds": false,
+				"IsStorno": false,
+				"MarkupDeleted": false,
+				"DiscountDeleted": false,
+				"Sum": 2055.0,
+				"UnitCode": 796
+			}
+		],
+		"IsOffline": false,
+		"TicketUrl": "http://dev.kofd.kz/consumer?i=923860753030&f=211030200207&s=2055.00&t=20220803T142912",
+		"TicketPrintUrl": "https://devkkm.webkassa.kz/Ticket?chb=SWK00032685&extnum=8f3e76b0-97ed-4467-9c46-1b042e2f933f",
+		"Ofd": {
+			"Name": "АО \"КазТранском\"",
+			"Host": "dev.kofd.kz/consumer",
+			"Code": 3
+		},
+		"ExternalCheckNumber": "8f3e76b0-97ed-4467-9c46-1b042e2f933f"
+	}
+}

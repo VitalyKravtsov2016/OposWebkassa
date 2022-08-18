@@ -1,0 +1,132 @@
+{
+	"Data": [
+		{
+			"OperationTypeText": "Продажа",
+			"Sum": 2055.0,
+			"Date": "03.08.2022 14:03:13",
+			"EmployeeCode": 18,
+			"Number": "923859194089",
+			"IsOffline": false
+		},
+		{
+			"OperationTypeText": "Продажа",
+			"Sum": 2055.0,
+			"Date": "03.08.2022 14:11:29",
+			"EmployeeCode": 18,
+			"Number": "923859690145",
+			"IsOffline": false
+		},
+		{
+			"OperationTypeText": "Продажа",
+			"Sum": 2055.0,
+			"Date": "03.08.2022 14:29:12",
+			"EmployeeCode": 18,
+			"Number": "923860753030",
+			"IsOffline": false
+		},
+		{
+			"OperationTypeText": "Продажа",
+			"Sum": 2055.0,
+			"Date": "03.08.2022 14:32:46",
+			"EmployeeCode": 18,
+			"Number": "923860966961",
+			"IsOffline": false
+		},
+		{
+			"OperationTypeText": "Продажа",
+			"Sum": 3400.0,
+			"Date": "03.08.2022 19:00:45",
+			"EmployeeCode": 9,
+			"Number": "923876738350",
+			"IsOffline": false
+		},
+		{
+			"OperationTypeText": "Продажа",
+			"Sum": 6800.0,
+			"Date": "03.08.2022 19:02:53",
+			"EmployeeCode": 9,
+			"Number": "923876866367",
+			"IsOffline": false
+		},
+		{
+			"OperationTypeText": "Продажа",
+			"Sum": 8500.0,
+			"Date": "03.08.2022 19:03:44",
+			"EmployeeCode": 9,
+			"Number": "923876916622",
+			"IsOffline": false
+		},
+		{
+			"OperationTypeText": "Продажа",
+			"Sum": 10200.0,
+			"Date": "03.08.2022 19:50:25",
+			"EmployeeCode": 9,
+			"Number": "923879718420",
+			"IsOffline": false
+		},
+		{
+			"OperationTypeText": "Продажа",
+			"Sum": 1100.0,
+			"Date": "03.08.2022 19:50:49",
+			"EmployeeCode": 9,
+			"Number": "923879742197",
+			"IsOffline": false
+		},
+		{
+			"OperationTypeText": "Внесение денег в кассу",
+			"Sum": 1500.0,
+			"Date": "03.08.2022 23:10:31",
+			"EmployeeCode": 1,
+			"IsOffline": false,
+			"ExternalOperationId": "123456789"
+		},
+		{
+			"OperationTypeText": "Внесение денег в кассу",
+			"Sum": 1500.0,
+			"Date": "03.08.2022 23:14:27",
+			"EmployeeCode": 1,
+			"IsOffline": false,
+			"ExternalOperationId": ""
+		},
+		{
+			"OperationTypeText": "Внесение денег в кассу",
+			"Sum": 1500.0,
+			"Date": "03.08.2022 23:14:30",
+			"EmployeeCode": 1,
+			"IsOffline": false,
+			"ExternalOperationId": ""
+		},
+		{
+			"OperationTypeText": "Внесение денег в кассу",
+			"Sum": 1500.0,
+			"Date": "03.08.2022 23:19:15",
+			"EmployeeCode": 1,
+			"IsOffline": false,
+			"ExternalOperationId": ""
+		},
+		{
+			"OperationTypeText": "Внесение денег в кассу",
+			"Sum": 12345.67,
+			"Date": "03.08.2022 23:22:04",
+			"EmployeeCode": 1,
+			"IsOffline": false,
+			"ExternalOperationId": ""
+		},
+		{
+			"OperationTypeText": "Внесение денег в кассу",
+			"Sum": 12345.67,
+			"Date": "03.08.2022 23:25:41",
+			"EmployeeCode": 1,
+			"IsOffline": false,
+			"ExternalOperationId": ""
+		},
+		{
+			"OperationTypeText": "Изъятие денег из кассы",
+			"Sum": 12345.67,
+			"Date": "03.08.2022 23:25:42",
+			"EmployeeCode": 1,
+			"IsOffline": false,
+			"ExternalOperationId": ""
+		}
+	]
+}

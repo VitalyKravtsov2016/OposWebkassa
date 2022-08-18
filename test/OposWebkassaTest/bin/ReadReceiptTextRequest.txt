@@ -1,0 +1,7 @@
+{
+	"cashboxUniqueNumber": "SWK00000001",
+	"externalCheckNumber": "53592270-5a89-4af7-ada7-a71be203e798",
+	"isDuplicate": true,
+	"paperKind": 0,
+	"token": "a71300b07342468edc4e7dd7aallfa40"
+}

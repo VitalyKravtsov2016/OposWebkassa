@@ -1,0 +1,33 @@
+{
+	"Token": "3d45da78321249229ff03367367cf1d0",
+	"CashboxUniqueNumber": "SWK00032685",
+	"OperationType": 2,
+	"Positions": [
+		{
+			"Count": 1000,
+			"Price": 123.45,
+			"TaxPercent": 0,
+			"Tax": 0,
+			"TaxType": 0,
+			"PositionName": "Item 1",
+			"PositionCode": "",
+			"Discount": 0,
+			"Markup": 0,
+			"SectionCode": 0,
+			"IsStorno": false,
+			"MarkupDeleted": false,
+			"DiscountDeleted": false,
+			"UnitCode": 166,
+			"Mark": "",
+			"GTIN": "",
+			"Productld": 0,
+			"WarehouseType": 0
+		}
+	],
+	"Change": 0,
+	"RoundType": 1,
+	"ExternalCheckNumber": "{44848EE1-87AE-426A-9692-546A0814133F}",
+	"CustomerEmail": "",
+	"CustomerPhone": "",
+	"CustomerXin": ""
+}
