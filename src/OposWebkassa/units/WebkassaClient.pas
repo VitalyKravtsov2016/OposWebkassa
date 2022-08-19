@@ -5,6 +5,8 @@ interface
 uses
   // VCL
   Classes, SysUtils,
+  // Tnt
+  TntClasses,
   // Json
   uLkJSON,
   // Indy
@@ -1011,6 +1013,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
+    function GetText: WideString;
   published
     property Lines: TCollection read FLines  write SetLines;
   end;
@@ -2610,6 +2613,23 @@ destructor TReceiptTextAnswer.Destroy;
 begin
   FLines.Free;
   inherited Destroy;
+end;
+
+function TReceiptTextAnswer.GetText: WideString;
+var
+  i: Integer;
+  Strings: TTntStrings;
+begin
+  Strings := TTntStringList.Create;
+  try
+    for i := 0 to Lines.Count-1 do
+    begin
+      Strings.Add((Lines.Items[i] as TReceiptTextItem).Value);
+    end;
+    Result := Strings.Text;
+  finally
+    Strings.Free;
+  end;
 end;
 
 procedure TReceiptTextAnswer.SetLines(const Value: TCollection);

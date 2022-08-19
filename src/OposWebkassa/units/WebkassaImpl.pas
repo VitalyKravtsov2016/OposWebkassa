@@ -8,9 +8,9 @@ uses
   // Tnt
   TntSysUtils,
   // Opos
-  Opos, OposPtr, Oposhi, OposFptr, OposFptrHi, OposEvents, OposEventsRCS,
-  OposException, OposFptrUtils, OposServiceDevice19, OposUtils, OposEsc,
-  OposPOSPrinter_CCO_TLB,
+  Opos, OposPtr, OposPtrUtils, Oposhi, OposFptr, OposFptrHi, OposEvents,
+  OposEventsRCS, OposException, OposFptrUtils, OposServiceDevice19,
+  OposUtils, OposEsc, OposPOSPrinter_CCO_TLB,
   // Json
   uLkJSON,
   // gnugettext
@@ -1894,31 +1894,38 @@ end;
 
 procedure TWebkassaImpl.PrinterStatusUpdateEvent(ASender: TObject; Data: Integer);
 begin
+  Logger.Debug(Format('PtrStatusUpdateEvent: %d, %s', [
+    Data, PtrStatusUpdateEventText(Data)]));
+
   if IsValidFptrStatusUpdateEvent(Data) then
   begin
-
+    OposDevice.StatusUpdateEvent(Data);
   end;
 end;
 
 procedure TWebkassaImpl.PrinterErrorEvent(ASender: TObject; ResultCode: Integer;
   ResultCodeExtended: Integer; ErrorLocus: Integer; var pErrorResponse: Integer);
 begin
-  {  !!! }
+  Logger.Debug(Format('PtrErrorEvent: %d, %d, %d', [
+    ResultCode, ResultCodeExtended, ErrorLocus]));
 end;
 
 procedure TWebkassaImpl.PrinterDirectIOEvent(ASender: TObject; EventNumber: Integer;
   var pData: Integer; var pString: WideString);
 begin
-  {  !!! }
+  Logger.Debug(Format('PtrDirectIOEvent: %d, %d, %s', [
+    EventNumber, pData, pString]));
 end;
 
 procedure TWebkassaImpl.PrinterOutputCompleteEvent(ASender: TObject; OutputID: Integer);
 begin
-  {  !!! }
+  Logger.Debug(Format('PtrOutputCompleteEvent: %d', [OutputID]));
 end;
 
 function TWebkassaImpl.DoOpen(const DeviceClass, DeviceName: WideString;
   const pDispatch: IDispatch): Integer;
+var
+  POSPrinter: TOPOSPOSPrinter;
 begin
   try
     Initialize;
@@ -1942,14 +1949,15 @@ begin
     FClient.CashboxNumber := FParams.CashboxNumber;
 
     if FPrinter = nil then
-      FPrinter := TOPOSPOSPrinter.Create(nil).ControlInterface;
+    begin
+      PosPrinter := TOPOSPOSPrinter.Create(nil);
+      PosPrinter.OnStatusUpdateEvent := PrinterStatusUpdateEvent;
+      PosPrinter.OnErrorEvent := PrinterErrorEvent;
+      PosPrinter.OnDirectIOEvent := PrinterDirectIOEvent;
+      PosPrinter.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
+      FPrinter := PosPrinter.ControlInterface;
+    end;
     CheckPtr(Printer.Open(FParams.PrinterName));
-    (*
-    Printer.OnStatusUpdateEvent := PrinterStatusUpdateEvent;
-    Printer.OnErrorEvent := PrinterErrorEvent;
-    Printer.OnDirectIOEvent := PrinterDirectIOEvent;
-    Printer.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
-    *)
 
     Logger.Debug(Logger.Separator);
     Logger.Debug('LOG START');

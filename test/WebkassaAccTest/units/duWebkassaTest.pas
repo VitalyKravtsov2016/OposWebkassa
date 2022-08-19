@@ -319,13 +319,16 @@ begin
 
     Command.Request.Token := FClient.Token;
     Command.Request.CashboxUniqueNumber := FClient.CashboxNumber;
-    Command.Request.externalCheckNumber := '8f3e76b0-97ed-4467-9c46-1b042e2f933f';
+    //Command.Request.externalCheckNumber := '8f3e76b0-97ed-4467-9c46-1b042e2f933f';
+    Command.Request.externalCheckNumber := FExternalCheckNumber;
     Command.Request.isDuplicate := False;
     Command.Request.paperKind := 0;
 
     FClient.ReadReceiptText(Command);
     WriteFileData(GetModulePath + 'ReadReceiptText.txt', FClient.AnswerJson);
     Check(Command.Data.Lines.Count > 0);
+
+
 
     Item := Command.Data.Lines.Items[0] as TReceiptTextItem;
     CheckEquals(1, Item.Order, 'Item.Order');

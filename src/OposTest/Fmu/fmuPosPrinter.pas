@@ -151,7 +151,7 @@ begin
   end else edtTime.Clear;
 
   edtResult.Text := GetResultCodeText(PosPrinter.ResultCode);
-  edtExtendedResult.Text := GetResultCodeExtendedText(PosPrinter.ResultCodeExtended);
+  edtExtendedResult.Text := PtrResultCodeExtendedText(PosPrinter.ResultCodeExtended);
 end;
 
 procedure TfmPosPrinter.ShowPage(Page: TPage);

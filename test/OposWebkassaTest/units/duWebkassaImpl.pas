@@ -5,11 +5,12 @@ interface
 
 uses
   // VCL
-  Windows, SysUtils, Classes,
+  Windows, SysUtils, Classes, SyncObjs,
   // DUnit
   TestFramework,
   // Opos
   Opos, OposFptr, Oposhi, OposFptrhi, OposFptrUtils, OposUtils,
+  OposEvents, OposPtr, RCSEvents,
   // Tnt
   TntClasses, TntSysUtils,
   // This
@@ -21,17 +22,40 @@ const
 type
   { TWebkassaImplTest }
 
-  TWebkassaImplTest = class(TTestCase)
+  TWebkassaImplTest = class(TTestCase, IOposEvents)
   private
+    FEvents: TOposEvents;
     FDriver: TWebkassaImpl;
     FPrinter: TMockPosPrinter;
-
+    FWaitEvent: TEvent;
+    procedure WaitForEventsCount(Count: Integer);
+  protected
+    procedure CheckNoEvent;
+    procedure WaitForEvent;
     procedure ClaimDevice;
     procedure EnableDevice;
     procedure OpenService;
     procedure FptrCheck(Code: Integer);
 
+    property Events: TOposEvents read FEvents;
     property Driver: TWebkassaImpl read FDriver;
+    procedure AddEvent(Event: TOposEvent);
+  private
+    // IOposEvents
+    procedure DataEvent(Status: Integer);
+    procedure StatusUpdateEvent(Data: Integer);
+    procedure OutputCompleteEvent(OutputID: Integer);
+
+    procedure DirectIOEvent(
+      EventNumber: Integer;
+      var pData: Integer;
+      var pString: WideString);
+
+    procedure ErrorEvent(
+      ResultCode: Integer;
+      ResultCodeExtended: Integer;
+      ErrorLocus: Integer;
+      var pErrorResponse: Integer);
   protected
     procedure SetUp; override;
     procedure TearDown; override;
@@ -47,15 +71,21 @@ type
     procedure TestFiscalReceipt;
     procedure TestCoverError;
     procedure TestRecEmpty;
+    procedure TestStatusUpateEvent;
   end;
 
 implementation
+
+const
+  EventWaitTimeout  = 50;
 
 { TWebkassaImplTest }
 
 procedure TWebkassaImplTest.SetUp;
 begin
   inherited SetUp;
+  FWaitEvent := TEvent.Create(nil, False, False, '');
+  FEvents := TOposEvents.Create;
   FPrinter := TMockPosPrinter.Create(nil);
   FDriver := TWebkassaImpl.Create(nil);
   FDriver.Client.TestMode := True;
@@ -88,7 +118,61 @@ begin
     FDriver.Close;
 
   FDriver.Free;
+  FEvents.Free;
+  FWaitEvent.Free;
   inherited TearDown;
+end;
+
+procedure TWebkassaImplTest.WaitForEvent;
+begin
+  if FWaitEvent.WaitFor(EventWaitTimeout) <> wrSignaled then
+    raise Exception.Create('Wait failed');
+end;
+
+procedure TWebkassaImplTest.WaitForEventsCount(Count: Integer);
+begin
+  repeat
+    WaitForEvent;
+  until Events.Count >= Count;
+end;
+
+procedure TWebkassaImplTest.CheckNoEvent;
+begin
+  if FWaitEvent.WaitFor(EventWaitTimeout) <> wrTimeOut then
+    raise Exception.Create('Event fired');
+end;
+
+procedure TWebkassaImplTest.AddEvent(Event: TOposEvent);
+begin
+  FEvents.Add(Event);
+  FWaitEvent.SetEvent;
+end;
+
+procedure TWebkassaImplTest.DataEvent(Status: Integer);
+begin
+  AddEvent(TDataEvent.Create(Status, EVENT_TYPE_INPUT, FDriver.Logger));
+end;
+
+procedure TWebkassaImplTest.DirectIOEvent(EventNumber: Integer;
+  var pData: Integer; var pString: WideString);
+begin
+  AddEvent(TDirectIOEvent.Create(EventNumber, pData, pString, FDriver.Logger));
+end;
+
+procedure TWebkassaImplTest.ErrorEvent(ResultCode, ResultCodeExtended,
+  ErrorLocus: Integer; var pErrorResponse: Integer);
+begin
+  AddEvent(TErrorEvent.Create(ResultCode, ResultCodeExtended, ErrorLocus, FDriver.Logger));
+end;
+
+procedure TWebkassaImplTest.OutputCompleteEvent(OutputID: Integer);
+begin
+  AddEvent(TOutputCompleteEvent.Create(OutputID, FDriver.Logger));
+end;
+
+procedure TWebkassaImplTest.StatusUpdateEvent(Data: Integer);
+begin
+  AddEvent(TStatusUpdateEvent.Create(Data, FDriver.Logger));
 end;
 
 procedure TWebkassaImplTest.FptrCheck(Code: Integer);
@@ -117,7 +201,7 @@ end;
 
 procedure TWebkassaImplTest.OpenService;
 begin
-  FptrCheck(Driver.OpenService(OPOS_CLASSKEY_FPTR, 'DeviceName', nil));
+  FptrCheck(Driver.OpenService(OPOS_CLASSKEY_FPTR, 'DeviceName', TRCSEvents.Create(Self)));
 end;
 
 procedure TWebkassaImplTest.ClaimDevice;
@@ -287,6 +371,62 @@ begin
   CheckEquals(OPOS_E_EXTENDED, ResultCode, 'ResultCode');
   CheckEquals(OPOS_EFPTR_REC_EMPTY, ResultCodeExtended, 'ResultCodeExtended');
   CheckEquals('Receipt station is empty', ErrorString, 'ErrorString');
+end;
+
+procedure TWebkassaImplTest.TestStatusUpateEvent;
+begin
+  OpenClaimEnable;
+  FDriver.SetPropertyNumber(PIDX_FreezeEvents, 0);
+  // Invalid events for Fptr
+  FDriver.PrinterStatusUpdateEvent(Self, PTR_SUE_JRN_CARTRIDGE_EMPTY);
+  FDriver.PrinterStatusUpdateEvent(Self, PTR_SUE_JRN_CARTRIDGE_NEAREMPTY);
+  FDriver.PrinterStatusUpdateEvent(Self, PTR_SUE_JRN_HEAD_CLEANING);
+  FDriver.PrinterStatusUpdateEvent(Self, PTR_SUE_JRN_CARTRIDGE_OK);
+  FDriver.PrinterStatusUpdateEvent(Self, PTR_SUE_REC_CARTRIDGE_EMPTY);
+  FDriver.PrinterStatusUpdateEvent(Self, PTR_SUE_REC_CARTRIDGE_NEAREMPTY);
+  FDriver.PrinterStatusUpdateEvent(Self, PTR_SUE_REC_HEAD_CLEANING);
+  FDriver.PrinterStatusUpdateEvent(Self, PTR_SUE_REC_CARTRIDGE_OK);
+  FDriver.PrinterStatusUpdateEvent(Self, PTR_SUE_SLP_CARTRIDGE_EMPTY);
+  FDriver.PrinterStatusUpdateEvent(Self, PTR_SUE_SLP_CARTRIDGE_NEAREMPTY);
+  FDriver.PrinterStatusUpdateEvent(Self, PTR_SUE_SLP_HEAD_CLEANING);
+  FDriver.PrinterStatusUpdateEvent(Self, PTR_SUE_SLP_CARTRIDGE_OK);
+  // Valid events for Fptr
+  FDriver.PrinterStatusUpdateEvent(Self, PTR_SUE_COVER_OPEN);
+  FDriver.PrinterStatusUpdateEvent(Self, PTR_SUE_COVER_OK);
+  FDriver.PrinterStatusUpdateEvent(Self, PTR_SUE_JRN_COVER_OPEN);
+  FDriver.PrinterStatusUpdateEvent(Self, PTR_SUE_JRN_COVER_OK);
+  FDriver.PrinterStatusUpdateEvent(Self, PTR_SUE_REC_COVER_OPEN);
+  FDriver.PrinterStatusUpdateEvent(Self, PTR_SUE_REC_COVER_OK);
+  FDriver.PrinterStatusUpdateEvent(Self, PTR_SUE_SLP_COVER_OPEN);
+  FDriver.PrinterStatusUpdateEvent(Self, PTR_SUE_SLP_COVER_OK);
+  FDriver.PrinterStatusUpdateEvent(Self, PTR_SUE_JRN_EMPTY);
+  FDriver.PrinterStatusUpdateEvent(Self, PTR_SUE_JRN_NEAREMPTY);
+  FDriver.PrinterStatusUpdateEvent(Self, PTR_SUE_JRN_PAPEROK);
+  FDriver.PrinterStatusUpdateEvent(Self, PTR_SUE_REC_EMPTY);
+  FDriver.PrinterStatusUpdateEvent(Self, PTR_SUE_REC_NEAREMPTY);
+  FDriver.PrinterStatusUpdateEvent(Self, PTR_SUE_REC_PAPEROK);
+  FDriver.PrinterStatusUpdateEvent(Self, PTR_SUE_SLP_EMPTY);
+  FDriver.PrinterStatusUpdateEvent(Self, PTR_SUE_SLP_NEAREMPTY);
+  FDriver.PrinterStatusUpdateEvent(Self, PTR_SUE_SLP_PAPEROK);
+  WaitForEventsCount(17);
+  CheckEquals(17, Events.Count, 'Events.Count');
+  CheckEquals(FPTR_SUE_COVER_OPEN, (Events[0] as TStatusUpdateEvent).Data);
+  CheckEquals(FPTR_SUE_COVER_OK, (Events[1] as TStatusUpdateEvent).Data);
+  CheckEquals(FPTR_SUE_JRN_COVER_OPEN, (Events[2] as TStatusUpdateEvent).Data);
+  CheckEquals(FPTR_SUE_JRN_COVER_OK, (Events[3] as TStatusUpdateEvent).Data);
+  CheckEquals(FPTR_SUE_REC_COVER_OPEN, (Events[4] as TStatusUpdateEvent).Data);
+  CheckEquals(FPTR_SUE_REC_COVER_OK, (Events[5] as TStatusUpdateEvent).Data);
+  CheckEquals(FPTR_SUE_SLP_COVER_OPEN, (Events[6] as TStatusUpdateEvent).Data);
+  CheckEquals(FPTR_SUE_SLP_COVER_OK, (Events[7] as TStatusUpdateEvent).Data);
+  CheckEquals(FPTR_SUE_JRN_EMPTY, (Events[8] as TStatusUpdateEvent).Data);
+  CheckEquals(FPTR_SUE_JRN_NEAREMPTY, (Events[9] as TStatusUpdateEvent).Data);
+  CheckEquals(FPTR_SUE_JRN_PAPEROK, (Events[10] as TStatusUpdateEvent).Data);
+  CheckEquals(FPTR_SUE_REC_EMPTY, (Events[11] as TStatusUpdateEvent).Data);
+  CheckEquals(FPTR_SUE_REC_NEAREMPTY, (Events[12] as TStatusUpdateEvent).Data);
+  CheckEquals(FPTR_SUE_REC_PAPEROK, (Events[13] as TStatusUpdateEvent).Data);
+  CheckEquals(FPTR_SUE_SLP_EMPTY, (Events[14] as TStatusUpdateEvent).Data);
+  CheckEquals(FPTR_SUE_SLP_NEAREMPTY, (Events[15] as TStatusUpdateEvent).Data);
+  CheckEquals(FPTR_SUE_SLP_PAPEROK, (Events[16] as TStatusUpdateEvent).Data);
 end;
 
 initialization

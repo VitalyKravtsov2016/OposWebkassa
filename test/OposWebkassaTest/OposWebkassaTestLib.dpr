@@ -52,7 +52,9 @@ uses
   PrinterParametersReg in '..\..\src\Shared\PrinterParametersReg.pas',
   PrinterLines in '..\..\src\OposWebkassa\units\PrinterLines.pas',
   uLkJSON in '..\..\src\Shared\uLkJSON.pas',
-  VatCode in '..\..\src\Shared\VatCode.pas';
+  VatCode in '..\..\src\Shared\VatCode.pas',
+  OposPtrUtils in '..\..\src\Opos\OposPtrUtils.pas',
+  OposPtrhi in '..\..\src\Opos\OposPtrhi.pas';
 
 {$R *.RES}
 

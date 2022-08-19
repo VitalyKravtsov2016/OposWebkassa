@@ -45,7 +45,7 @@ begin
   begin
     if Printer.ResultCode = OPOS_E_EXTENDED then
       Text := Tnt_WideFormat('%d, %d, %s [%s]', [Printer.ResultCode, Printer.ResultCodeExtended,
-      GetResultCodeExtendedText(Printer.ResultCodeExtended), Printer.ErrorString])
+      PtrResultCodeExtendedText(Printer.ResultCodeExtended), Printer.ErrorString])
     else
       Text := Tnt_WideFormat('%d, %s [%s]', [Printer.ResultCode,
         GetResultCodeText(Printer.ResultCode), Printer.ErrorString]);

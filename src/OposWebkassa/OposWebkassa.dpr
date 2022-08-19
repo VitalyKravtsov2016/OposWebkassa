@@ -50,7 +50,9 @@ uses
   PrinterLines in 'units\PrinterLines.pas',
   ComServ in '..\Common\ComServ.pas',
   uLkJSON in '..\Shared\uLkJSON.pas',
-  VatCode in '..\Shared\VatCode.pas';
+  VatCode in '..\Shared\VatCode.pas',
+  OposPtrUtils in '..\Opos\OposPtrUtils.pas',
+  OposPtrhi in '..\Opos\OposPtrhi.pas';
 
 exports
   DllGetClassObject,

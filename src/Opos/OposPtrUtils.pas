@@ -8,12 +8,13 @@ uses
   // Opos
   OposUtils, OposPtr, OposPtrhi;
 
-function GetPtrPropertyName(const ID: Integer): WideString;
-function GetResultCodeExtendedText(Value: Integer): WideString;
+function PtrPropertyName(const ID: Integer): WideString;
+function PtrResultCodeExtendedText(Value: Integer): WideString;
+function PtrStatusUpdateEventText(Value: Integer): WideString;
 
 implementation
 
-function GetPtrPropertyName(const ID: Integer): WideString;
+function PtrPropertyName(const ID: Integer): WideString;
 begin
   case ID of
     // POS printer
@@ -145,7 +146,7 @@ begin
   end;
 end;
 
-function GetResultCodeExtendedText(Value: Integer): WideString;
+function PtrResultCodeExtendedText(Value: Integer): WideString;
 begin
   case Value of
     OPOS_EPTR_COVER_OPEN            : Result := 'OPOS_EPTR_COVER_OPEN';
@@ -166,6 +167,44 @@ begin
     OPOS_EPTR_SLP_HEAD_CLEANING     : Result := 'OPOS_EPTR_SLP_HEAD_CLEANING';
   else
     Result := IntToStr(Value);
+  end;
+end;
+
+function PtrStatusUpdateEventText(Value: Integer): WideString;
+begin
+  case Value of
+    PTR_SUE_COVER_OPEN: Result := 'PTR_SUE_COVER_OPEN';
+    PTR_SUE_COVER_OK: Result := 'PTR_SUE_COVER_OK';
+    PTR_SUE_JRN_COVER_OPEN: Result := 'PTR_SUE_JRN_COVER_OPEN';
+    PTR_SUE_JRN_COVER_OK: Result := 'PTR_SUE_JRN_COVER_OK';
+    PTR_SUE_REC_COVER_OPEN: Result := 'PTR_SUE_REC_COVER_OPEN';
+    PTR_SUE_REC_COVER_OK: Result := 'PTR_SUE_REC_COVER_OK';
+    PTR_SUE_SLP_COVER_OPEN: Result := 'PTR_SUE_SLP_COVER_OPEN';
+    PTR_SUE_SLP_COVER_OK: Result := 'PTR_SUE_SLP_COVER_OK';
+    PTR_SUE_JRN_EMPTY: Result := 'PTR_SUE_JRN_EMPTY';
+    PTR_SUE_JRN_NEAREMPTY: Result := 'PTR_SUE_JRN_NEAREMPTY';
+    PTR_SUE_JRN_PAPEROK: Result := 'PTR_SUE_JRN_PAPEROK';
+    PTR_SUE_REC_EMPTY: Result := 'PTR_SUE_REC_EMPTY';
+    PTR_SUE_REC_NEAREMPTY: Result := 'PTR_SUE_REC_NEAREMPTY';
+    PTR_SUE_REC_PAPEROK: Result := 'PTR_SUE_REC_PAPEROK';
+    PTR_SUE_SLP_EMPTY: Result := 'PTR_SUE_SLP_EMPTY';
+    PTR_SUE_SLP_NEAREMPTY: Result := 'PTR_SUE_SLP_NEAREMPTY';
+    PTR_SUE_SLP_PAPEROK: Result := 'PTR_SUE_SLP_PAPEROK';
+    PTR_SUE_JRN_CARTRIDGE_EMPTY: Result := 'PTR_SUE_JRN_CARTRIDGE_EMPTY';
+    PTR_SUE_JRN_CARTRIDGE_NEAREMPTY: Result := 'PTR_SUE_JRN_CARTRIDGE_NEAREMPTY';
+    PTR_SUE_JRN_HEAD_CLEANING: Result := 'PTR_SUE_JRN_HEAD_CLEANING';
+    PTR_SUE_JRN_CARTRIDGE_OK: Result := 'PTR_SUE_JRN_CARTRIDGE_OK';
+    PTR_SUE_REC_CARTRIDGE_EMPTY: Result := 'PTR_SUE_REC_CARTRIDGE_EMPTY';
+    PTR_SUE_REC_CARTRIDGE_NEAREMPTY: Result := 'PTR_SUE_REC_CARTRIDGE_NEAREMPTY';
+    PTR_SUE_REC_HEAD_CLEANING: Result := 'PTR_SUE_REC_HEAD_CLEANING';
+    PTR_SUE_REC_CARTRIDGE_OK: Result := 'PTR_SUE_REC_CARTRIDGE_OK';
+    PTR_SUE_SLP_CARTRIDGE_EMPTY: Result := 'PTR_SUE_SLP_CARTRIDGE_EMPTY';
+    PTR_SUE_SLP_CARTRIDGE_NEAREMPTY: Result := 'PTR_SUE_SLP_CARTRIDGE_NEAREMPTY';
+    PTR_SUE_SLP_HEAD_CLEANING: Result := 'PTR_SUE_SLP_HEAD_CLEANING';
+    PTR_SUE_SLP_CARTRIDGE_OK: Result := 'PTR_SUE_SLP_CARTRIDGE_OK';
+    PTR_SUE_IDLE: Result := 'PTR_SUE_IDLE';
+  else
+    Result := GetCommonStatusUpdateEventText(Value);
   end;
 end;
 

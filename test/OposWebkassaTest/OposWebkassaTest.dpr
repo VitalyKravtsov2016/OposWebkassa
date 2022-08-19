@@ -5,7 +5,7 @@ uses
   TestFramework,
   GUITestRunner,
   LogFile in '..\..\src\Shared\LogFile.pas',
-  Opos in '..\..\src\Opos\OPOS.pas',
+  Opos in '..\..\src\Opos\Opos.pas',
   OposUtils in '..\..\src\Opos\OposUtils.pas',
   OposEvents in '..\..\src\Opos\OposEvents.pas',
   OposFptr in '..\..\src\Opos\OposFptr.pas',
@@ -56,7 +56,11 @@ uses
   VatCode in '..\..\src\Shared\VatCode.pas',
   duPrinterParameters in 'units\duPrinterParameters.pas',
   duWebkassaImpl in 'units\duWebkassaImpl.pas',
-  MockPosPrinter in 'units\MockPosPrinter.pas';
+  MockPosPrinter in 'units\MockPosPrinter.pas',
+  OposPtrUtils in '..\..\src\Opos\OposPtrUtils.pas',
+  OposPtrhi in '..\..\src\Opos\OposPtrhi.pas',
+  RCSEvents in 'units\RCSEvents.pas',
+  RCSEvents_TLB in 'units\RCSEvents_TLB.pas';
 
 {$R *.RES}
 
