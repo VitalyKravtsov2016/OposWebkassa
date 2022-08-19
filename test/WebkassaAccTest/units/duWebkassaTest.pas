@@ -113,6 +113,7 @@ end;
 
 procedure TWebkassaTest.TestAuthenticateError;
 var
+  Item: TErrorItem;
   Command: TAuthCommand;
 begin
   Command := TAuthCommand.Create;
@@ -121,8 +122,11 @@ begin
     Command.Request.Password := '123';
     Command.Data.Token := '';
     CheckEquals(False, FClient.Authenticate(Command), 'FClient.Authenticate');
-    CheckEquals(1, FClient.LastErrorCode);
-    CheckEquals('Неверный логин и/или пароль', FClient.LastErrorText);
+    CheckEquals(1, FClient.ErrorResult.Errors.Count);
+    CheckEquals(1, FClient.ErrorResult.Errors.Count);
+    Item := FClient.ErrorResult.Errors[0];
+    CheckEquals(1, Item.Code);
+    CheckEquals('Неверный логин и/или пароль', Item.Text);
   finally
     Command.Free;
   end;
@@ -298,7 +302,6 @@ begin
 
     FClient.ReadReceipt(Command);
     WriteFileData(GetModulePath + 'ReadReceipt.txt', FClient.AnswerJson);
-    FExternalCheckNumber := Command.Data.TicketUrl;
     FExternalCheckNumber := Command.Data.ExternalCheckNumber;
   finally
     Command.Free;
@@ -419,9 +422,9 @@ begin
     Item.TaxPercent := 10;
     Item.Tax := 1385.60;
     Item.TaxType := TaxTypeVAT;
-    Item.PositionName := 'Position 1';
+    Item.PositionName := 'Позиция чека 1';
     Item.PositionCode := '1';
-    Item.DisplayName := 'Position 1';
+    Item.DisplayName := 'Товар номер 1';
     Item.UnitCode := 796;
     Item.Discount := 12;
     Item.Markup := 13;
@@ -433,9 +436,9 @@ begin
     Item.TaxPercent := 20;
     Item.Tax := 26.01;
     Item.TaxType := TaxTypeVAT;
-    Item.PositionName := 'Position 2';
+    Item.PositionName := 'Позиция чека 2';
     Item.PositionCode := '1';
-    Item.DisplayName := 'Position 2';
+    Item.DisplayName := 'Товар номер 2';
     Item.UnitCode := 796;
     Item.Discount := 12;
     Item.Markup := 13;
@@ -443,6 +446,7 @@ begin
 
     Command.Request.RoundType := 0;
     Command.Request.ExternalCheckNumber := CreateGUIDStr;
+    FExternalCheckNumber := Command.Request.ExternalCheckNumber;
     Payment := Command.Request.Payments.Add as TPayment;
     Payment.Sum := 900;
     Payment.PaymentType := PaymentTypeCash;

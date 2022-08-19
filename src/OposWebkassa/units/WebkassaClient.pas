@@ -86,19 +86,30 @@ type
   TSendReceiptCommandRequest = class;
   TCashboxParameters = class;
   TUnitItems = class;
+  TErrorItem = class;
+  TErrorItems = class;
 
   { TErrorResult }
 
   TErrorResult = class(TPersistent)
   private
-    FErrors: TCollection;
-    procedure SetErrors(const Value: TCollection);
+    FErrors: TErrorItems;
+    procedure SetErrors(const Value: TErrorItems);
   public
     constructor Create;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
   published
-    property Errors: TCollection read FErrors write SetErrors;
+    property Errors: TErrorItems read FErrors write SetErrors;
+  end;
+
+  { TErrorItems }
+
+  TErrorItems = class(TCollection)
+  published
+    function GetItem(Index: Integer): TErrorItem;
+  public
+    property Items[Index: Integer]: TErrorItem read GetItem; default;
   end;
 
   { TErrorItem }
@@ -1159,8 +1170,6 @@ type
     FToken: WideString;
     FTestMode: Boolean;
     FRaiseErrors: Boolean;
-    FLastErrorCode: Integer;
-    FLastErrorText: WideString;
     FErrorResult: TErrorResult;
     FTestErrorResult: TErrorResult;
 
@@ -1206,8 +1215,7 @@ type
 
     property Connected: Boolean read FConnected;
     property Token: WideString read FToken write FToken;
-    property LastErrorCode: Integer read FLastErrorCode;
-    property LastErrorText: WideString read FLastErrorText;
+    property ErrorResult: TErrorResult read FErrorResult;
     property TestMode: Boolean read FTestMode write FTestMode;
     property Address: WideString read FAddress write FAddress;
     property RaiseErrors: Boolean read FRaiseErrors write FRaiseErrors;
@@ -1408,19 +1416,34 @@ begin
   if FConnected then
   begin
     FToken := '';
+    FTransport.Free;
+    FTransport := nil;
     FConnected := False;
-    FTransport.Disconnect;
   end;
 end;
 
 procedure TWebkassaClient.RaiseLastError;
 var
+  i: Integer;
+  Item: TErrorItem;
   Text: WideString;
 begin
   if RaiseErrors then
   begin
-    Text := Format('%d, %s', [FLastErrorCode, FLastErrorText]);
-    RaiseError(FLastErrorCode, Text);
+    if FErrorResult.Errors.Count = 1 then
+    begin
+      Item := FErrorResult.Errors[0];
+      RaiseError(Item.Code, Item.Text);
+    end else
+    begin
+      Text := '';
+      for i := 0 to FErrorResult.Errors.Count-1 do
+      begin
+        Item := FErrorResult.Errors[i];
+        Text := Text + Format('%d, %s', [Item.Code, Item.Text]) + #13#10;
+      end;
+      RaiseError(-1, Text);
+    end;
   end;
 end;
 
@@ -1499,12 +1522,15 @@ begin
   FLogger.Debug('Request JSON: ' + UTF8Decode(Request));
 
   FCommandJson := Request;
-  FLastErrorCode := 0;
-  FLastErrorText := '';
 
   if FTestMode then
   begin
     Result := FAnswerJson;
+    if FTestErrorResult <> nil then
+    begin
+      FErrorResult.Assign(FTestErrorResult);
+      FTestErrorResult := nil;
+    end;
     Exit;
   end;
 
@@ -2744,7 +2770,7 @@ end;
 constructor TErrorResult.Create;
 begin
   inherited Create;
-  FErrors := TCollection.Create(TErrorItem);
+  FErrors := TErrorItems.Create(TErrorItem);
 end;
 
 destructor TErrorResult.Destroy;
@@ -2753,7 +2779,7 @@ begin
   inherited Destroy;
 end;
 
-procedure TErrorResult.SetErrors(const Value: TCollection);
+procedure TErrorResult.SetErrors(const Value: TErrorItems);
 begin
   FErrors.Assign(Value);
 end;
@@ -2904,6 +2930,13 @@ begin
   begin
     inherited Assign(Source);
   end;
+end;
+
+{ TErrorItems }
+
+function TErrorItems.GetItem(Index: Integer): TErrorItem;
+begin
+  Result := inherited Items[Index] as TErrorItem;
 end;
 
 initialization

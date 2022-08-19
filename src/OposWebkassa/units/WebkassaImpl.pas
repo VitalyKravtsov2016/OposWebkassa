@@ -56,7 +56,7 @@ type
     FClient: TWebkassaClient;
     FDocument: TTextDocument;
     FReceipt: TCustomReceipt;
-    FPrinter: TOPOSPOSPrinter;
+    FPrinter: IOPOSPOSPrinter;
     FParams: TPrinterParameters;
     FOposDevice: TOposServiceDevice19;
     FPrinterState: TFiscalPrinterState;
@@ -64,6 +64,7 @@ type
     FRecLineChars: Integer;
     FMaxRecLineChars: Integer;
     procedure PrintDocumentSafe(Document: TTextDocument);
+    procedure CheckCanPrint;
   public
     procedure Initialize;
     procedure CheckEnabled;
@@ -82,7 +83,7 @@ type
     procedure CheckCapSetVatTable;
     procedure CheckPtr(AResultCode: Integer);
     function CreateReceipt(FiscalReceiptType: Integer): TCustomReceipt;
-    function GetPrinter: TOPOSPOSPrinter;
+    function GetPrinter: IOPOSPOSPrinter;
     function GetUnitCode(const UnitName: string): Integer;
     procedure PrinterErrorEvent(ASender: TObject; ResultCode,
       ResultCodeExtended, ErrorLocus: Integer;
@@ -100,13 +101,11 @@ type
 
     property Receipt: TCustomReceipt read FReceipt;
     property Document: TTextDocument read FDocument;
-    property Printer: TOPOSPOSPrinter read GetPrinter;
+    property Printer: IOPOSPOSPrinter read GetPrinter write FPrinter;
     property PrinterState: Integer read GetPrinterState write SetPrinterState;
   private
     FPostLine: WideString;
     FPreLine: WideString;
-    FLastErrorCode: Integer;
-    FLastErrorText: WideString;
 
     FDeviceEnabled: Boolean;
     FAmountDecimalPlaces: Integer;
@@ -386,9 +385,9 @@ end;
 
 destructor TWebkassaImpl.Destroy;
 begin
+  Close;
   FClient.Free;
   FParams.Free;
-  FPrinter.Free;
   FUnits.Free;
   FDocument.Free;
   FOposDevice.Free;
@@ -396,6 +395,7 @@ begin
   FHeader.Free;
   FTrailer.Free;
   FReceipt.Free;
+  FPrinter := nil;
   inherited Destroy;
 end;
 
@@ -404,7 +404,7 @@ begin
   Result := Value / 1000;
 end;
 
-function TWebkassaImpl.GetPrinter: TOPOSPOSPrinter;
+function TWebkassaImpl.GetPrinter: IOPOSPOSPrinter;
 begin
   if FPrinter = nil then
     raise Exception.Create('Not opened');
@@ -1512,6 +1512,8 @@ var
   Count: Integer;
   Amount: Currency;
 begin
+  CheckCanPrint;
+
   Json := TlkJSON.Create;
   Document := TTextDocument.Create;
   Command := TZXReportCommand.Create;
@@ -1939,12 +1941,15 @@ begin
     FClient.Address := FParams.WebkassaAddress;
     FClient.CashboxNumber := FParams.CashboxNumber;
 
-    FPrinter := TOPOSPOSPrinter.Create(nil);
+    if FPrinter = nil then
+      FPrinter := TOPOSPOSPrinter.Create(nil).ControlInterface;
     CheckPtr(Printer.Open(FParams.PrinterName));
+    (*
     Printer.OnStatusUpdateEvent := PrinterStatusUpdateEvent;
     Printer.OnErrorEvent := PrinterErrorEvent;
     Printer.OnDirectIOEvent := PrinterDirectIOEvent;
     Printer.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
+    *)
 
     Logger.Debug(Logger.Separator);
     Logger.Debug('LOG START');
@@ -2046,6 +2051,7 @@ begin
     begin
       FParams.CheckPrameters;
       FClient.Connect;
+      UpdateUnits;
     end else
     begin
       FClient.Disconnect;
@@ -2060,16 +2066,15 @@ end;
 
 function TWebkassaImpl.HandleDriverError(E: EDriverError): TOPOSError;
 begin
-  if E.ErrorCode = 11 then
-  begin
-    FLastErrorCode := OPOS_EFPTR_DAY_END_REQUIRED
-  end else
-  begin
-    FLastErrorCode := E.ErrorCode;
-  end;
-  FLastErrorText := GetExceptionMessage(E);
   Result.ResultCode := OPOS_E_EXTENDED;
   Result.ErrorString := GetExceptionMessage(E);
+  if E.ErrorCode = 11 then
+  begin
+    Result.ResultCodeExtended := OPOS_EFPTR_DAY_END_REQUIRED;
+  end else
+  begin
+    Result.ResultCodeExtended := 300 + E.ErrorCode;
+  end;
 end;
 
 procedure TWebkassaImpl.Print(Receipt: TCashInReceipt);
@@ -2327,8 +2332,18 @@ begin
   end;
 end;
 
+procedure TWebkassaImpl.CheckCanPrint;
+begin
+  if Printer.CapRecEmptySensor and Printer.RecEmpty then
+    raiseOposFptrRecEmpty;
+
+  if Printer.CapCoverSensor and Printer.CoverOpen then
+    raiseOposFptrCoverOpened;
+end;
+
 procedure TWebkassaImpl.PrintDocumentSafe(Document: TTextDocument);
 begin
+  CheckCanPrint;
   try
     PrintDocument(Document);
   except
@@ -2353,14 +2368,10 @@ const
   ESC = #$1B;
   CRLF = #13#10;
 begin
+  CheckCanPrint;
   CapRecDwideDhigh := Printer.CapRecDwideDhigh;
   CapRecBold := Printer.CapRecBold;
   RecLineChars := Printer.RecLineChars;
-  if Printer.CapRecEmptySensor then
-  begin
-    if Printer.RecEmpty then
-      raise Exception.Create('Нет бумаги');
-  end;
   if Printer.CapTransaction then
   begin
     CheckPtr(Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_TRANSACTION));

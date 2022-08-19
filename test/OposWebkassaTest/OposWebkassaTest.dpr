@@ -54,7 +54,9 @@ uses
   PrinterLines in '..\..\src\OposWebkassa\units\PrinterLines.pas',
   uLkJSON in '..\..\src\Shared\uLkJSON.pas',
   VatCode in '..\..\src\Shared\VatCode.pas',
-  duPrinterParameters in 'units\duPrinterParameters.pas';
+  duPrinterParameters in 'units\duPrinterParameters.pas',
+  duWebkassaImpl in 'units\duWebkassaImpl.pas',
+  MockPosPrinter in 'units\MockPosPrinter.pas';
 
 {$R *.RES}
 
