@@ -47,8 +47,6 @@ const
   DefPrinterName = '';
   DefPrinterType = 0;
 
-
-
   /////////////////////////////////////////////////////////////////////////////
   // Header and trailer parameters
 

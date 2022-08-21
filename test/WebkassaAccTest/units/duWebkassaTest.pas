@@ -18,7 +18,6 @@ type
   private
     FLogger: ILogFile;
     FClient: TWebkassaClient;
-    FExternalCheckNumber: WideString;
   protected
     procedure SetUp; override;
     procedure TearDown; override;
@@ -36,20 +35,23 @@ type
     procedure TestReadCahiers;
     procedure TestReadUnits;
     procedure TestJournalReport;
-    procedure TestReadReceipt;
-    procedure TestReadReceiptText;
-    procedure TestSendReceipt;
     procedure TestRegistration;
     procedure TestReadCashboxState;
     procedure TestXReport;
     procedure TestXReportExtended;
     procedure TestZReportExtended;
+    procedure TestSendReceipt;
+    procedure TestReadReceipt;
+    procedure TestReadReceiptText;
   end;
 
 implementation
 
 const
   CRLF = #13#10;
+
+var
+  FReceipt: TSendReceiptCommand;
 
 { TWebkassaTest }
 
@@ -66,12 +68,14 @@ begin
   FClient.Login := 'webkassa4@softit.kz';
   FClient.Password := 'Kassa123';
   FClient.CashboxNumber := 'SWK00032685';
+  //FClient.CashboxNumber := 'SWK00033059';
   FClient.RaiseErrors := True;
 end;
 
 procedure TWebkassaTest.TearDown;
 begin
   FClient.Free;
+  FLogger.CloseFile;
 end;
 
 procedure TWebkassaTest.TestConnect;
@@ -287,8 +291,69 @@ begin
   end;
 end;
 
+procedure TWebkassaTest.TestSendReceipt;
+var
+  Payment: TPayment;
+  Item: TTicketItem;
+begin
+  FClient.Connect;
+
+  FReceipt.Request.Token := FClient.Token;
+  FReceipt.Request.CashboxUniqueNumber := FClient.CashboxNumber;
+  FReceipt.Request.ExternalCheckNumber := CreateGUIDStr;
+  FReceipt.Request.OperationType := OperationTypeSell;
+  // Item 1
+  Item := FReceipt.Request.Positions.Add as TTicketItem;
+  Item.Count := 123.456;
+  Item.Price := 123.45;
+  Item.TaxPercent := 12;
+  Item.Tax := 1633.03;
+  Item.TaxType := TaxTypeVAT;
+  Item.PositionName := 'Позиция чека 1';
+  Item.PositionCode := '1';
+  Item.DisplayName := 'Товар номер 1';
+  Item.UnitCode := 796;
+  Item.Discount := 12;
+  Item.Markup := 13;
+  Item.WarehouseType := 0;
+  // Item 2
+  Item := FReceipt.Request.Positions.Add as TTicketItem;
+  Item.Count := 12.456;
+  Item.Price := 12.45;
+  Item.TaxPercent := 12;
+  Item.Tax := 16.72;
+  Item.TaxType := TaxTypeVAT;
+  Item.PositionName := 'Позиция чека 2';
+  Item.PositionCode := '1';
+  Item.DisplayName := 'Товар номер 2';
+  Item.UnitCode := 796;
+  Item.Discount := 12;
+  Item.Markup := 13;
+  Item.WarehouseType := 0;
+
+  FReceipt.Request.Change := 0;
+  FReceipt.Request.RoundType := 0;
+  Payment := FReceipt.Request.Payments.Add as TPayment;
+  Payment.Sum := 800;
+  Payment.PaymentType := PaymentTypeCash;
+
+  Payment := FReceipt.Request.Payments.Add as TPayment;
+  Payment.Sum := 14597.72;
+  Payment.PaymentType := PaymentTypeCard;
+
+  FClient.SendReceipt(FReceipt);
+  WriteFileData(GetModulePath + 'SendReceipt.txt', FClient.AnswerJson);
+(*
+  CheckEquals(149, FReceipt.Data.ShiftNumber, 'FReceipt.Data.ShiftNumber');
+  CheckEquals('SWK00032685', FReceipt.Data.Cashbox.UniqueNumber, 'FReceipt.Data.Cashbox.UniqueNumber');
+  CheckEquals('https://devkkm.webkassa.kz/Ticket?chb=SWK00032685&extnum=8234682763482746', FReceipt.Data.TicketPrintUrl, 'FReceipt.Data.TicketPrintUrl');
+*)
+end;
+
 procedure TWebkassaTest.TestReadReceipt;
 var
+  SrcItem: TTicketItem;
+  DstItem: TPositionItem;
   Command: TReceiptCommand;
 begin
   Command := TReceiptCommand.Create;
@@ -297,16 +362,28 @@ begin
 
     Command.Request.Token := FClient.Token;
     Command.Request.CashboxUniqueNumber := FClient.CashboxNumber;
-    Command.Request.Number := '923860753030';
-    Command.Request.ShiftNumber := 148;
+    Command.Request.Number := FReceipt.Data.CheckNumber;
+    Command.Request.ShiftNumber := FReceipt.Data.ShiftNumber;
 
     FClient.ReadReceipt(Command);
     WriteFileData(GetModulePath + 'ReadReceipt.txt', FClient.AnswerJson);
-    FExternalCheckNumber := Command.Data.ExternalCheckNumber;
+
+    CheckEquals(FReceipt.Request.CashboxUniqueNumber,
+      Command.Data.CashboxUniqueNumber, 'CashboxUniqueNumber');
+
+    CheckEquals(FReceipt.Request.Positions.Count, Command.Data.Positions.Count, 'Positions.Count');
+
+    SrcItem := FReceipt.Request.Positions[0];
+    DstItem := Command.Data.Positions[0];
+    CheckEquals(SrcItem.Count, DstItem.Count, 'Count');
+    CheckEquals(SrcItem.Price, DstItem.Price, 'Price');
+    CheckEquals(SrcItem.PositionName, DstItem.PositionName, 'PositionName');
   finally
     Command.Free;
   end;
 end;
+
+//Command.Request.externalCheckNumber := '8f3e76b0-97ed-4467-9c46-1b042e2f933f';
 
 procedure TWebkassaTest.TestReadReceiptText;
 var
@@ -319,8 +396,7 @@ begin
 
     Command.Request.Token := FClient.Token;
     Command.Request.CashboxUniqueNumber := FClient.CashboxNumber;
-    //Command.Request.externalCheckNumber := '8f3e76b0-97ed-4467-9c46-1b042e2f933f';
-    Command.Request.externalCheckNumber := FExternalCheckNumber;
+    Command.Request.externalCheckNumber := FReceipt.Request.ExternalCheckNumber;
     Command.Request.isDuplicate := False;
     Command.Request.paperKind := 0;
 
@@ -399,80 +475,6 @@ begin
 
     FClient.MoneyOperation(Command);
     WriteFileData(GetModulePath + 'CashOut.txt', FClient.AnswerJson);
-  finally
-    Command.Free;
-  end;
-end;
-
-procedure TWebkassaTest.TestSendReceipt;
-var
-  Payment: TPayment;
-  Item: TTicketItem;
-  Command: TSendReceiptCommand;
-begin
-  Command := TSendReceiptCommand.Create;
-  try
-    FClient.Connect;
-
-    Command.Request.CashboxUniqueNumber := FClient.CashboxNumber;
-    Command.Request.Token := FClient.Token;
-    Command.Request.OperationType := OperationTypeSell;
-    Command.Request.Change := 100;
-    // Item 1
-    Item := Command.Request.Positions.Add as TTicketItem;
-    Item.Count := 123.456;
-    Item.Price := 123.45;
-    Item.TaxPercent := 10;
-    Item.Tax := 1385.60;
-    Item.TaxType := TaxTypeVAT;
-    Item.PositionName := 'Позиция чека 1';
-    Item.PositionCode := '1';
-    Item.DisplayName := 'Товар номер 1';
-    Item.UnitCode := 796;
-    Item.Discount := 12;
-    Item.Markup := 13;
-    Item.WarehouseType := 0;
-    // Item 2
-    Item := Command.Request.Positions.Add as TTicketItem;
-    Item.Count := 12.456;
-    Item.Price := 12.45;
-    Item.TaxPercent := 20;
-    Item.Tax := 26.01;
-    Item.TaxType := TaxTypeVAT;
-    Item.PositionName := 'Позиция чека 2';
-    Item.PositionCode := '1';
-    Item.DisplayName := 'Товар номер 2';
-    Item.UnitCode := 796;
-    Item.Discount := 12;
-    Item.Markup := 13;
-    Item.WarehouseType := 0;
-
-    Command.Request.RoundType := 0;
-    Command.Request.ExternalCheckNumber := CreateGUIDStr;
-    FExternalCheckNumber := Command.Request.ExternalCheckNumber;
-    Payment := Command.Request.Payments.Add as TPayment;
-    Payment.Sum := 900;
-    Payment.PaymentType := PaymentTypeCash;
-
-    Payment := Command.Request.Payments.Add as TPayment;
-    Payment.Sum := 14397.72;
-    Payment.PaymentType := PaymentTypeCard;
-
-    Payment := Command.Request.Payments.Add as TPayment;
-    Payment.Sum := 100;
-    Payment.PaymentType := PaymentTypeCredit;
-
-    Payment := Command.Request.Payments.Add as TPayment;
-    Payment.Sum := 100;
-    Payment.PaymentType := PaymentTypeTare;
-
-    FClient.SendReceipt(Command);
-    WriteFileData(GetModulePath + 'SendReceipt.txt', FClient.AnswerJson);
-(*
-    CheckEquals(149, Command.Data.ShiftNumber, 'Command.Data.ShiftNumber');
-    CheckEquals('SWK00032685', Command.Data.Cashbox.UniqueNumber, 'Command.Data.Cashbox.UniqueNumber');
-    CheckEquals('https://devkkm.webkassa.kz/Ticket?chb=SWK00032685&extnum=8234682763482746', Command.Data.TicketPrintUrl, 'Command.Data.TicketPrintUrl');
-*)
   finally
     Command.Free;
   end;
@@ -558,7 +560,12 @@ begin
   end;
 end;
 
+
 initialization
+  FReceipt := TSendReceiptCommand.Create;
   RegisterTest('', TWebkassaTest.Suite);
+
+finalization
+  FReceipt.Free;
 
 end.

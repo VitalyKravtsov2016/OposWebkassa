@@ -485,6 +485,7 @@ begin
       begin
         CloseFile;
       end;
+      FlushFileBuffers(FHandle); // !!!
     end;
   finally
     Unlock;

@@ -90,6 +90,12 @@ type
   TUnitItems = class;
   TErrorItem = class;
   TErrorItems = class;
+  TTicketItems = class;
+  TTicketItem = class;
+  TTicketModifiers = class;
+  TTicketModifier = class;
+  TPayments = class;
+  TPayment = class;
 
   { TErrorResult }
 
@@ -225,18 +231,18 @@ type
     FToken: WideString;
     FCashboxUniqueNumber: WideString;
     FOperationType: Integer;
-    FPositions: TCollection;
-    FTicketModifiers: TCollection;
-    FPayments: TCollection;
+    FPositions: TTicketItems;
+    FTicketModifiers: TTicketModifiers;
+    FPayments: TPayments;
     FChange: Currency;
     FRoundType: Integer;
     FCustomerPhone: WideString;
     FCustomerXin: WideString;
     FExternalCheckNumber: WideString;
     FCustomerEmail: WideString;
-    procedure SetPayments(const Value: TCollection);
-    procedure SetPositions(const Value: TCollection);
-    procedure SetTicketModifiers(const Value: TCollection);
+    procedure SetPayments(const Value: TPayments);
+    procedure SetPositions(const Value: TTicketItems);
+    procedure SetTicketModifiers(const Value: TTicketModifiers);
   public
     constructor Create;
     destructor Destroy; override;
@@ -248,9 +254,9 @@ type
     property Token: WideString read FToken write FToken;
     property CashboxUniqueNumber: WideString read FCashboxUniqueNumber write FCashboxUniqueNumber;
     property OperationType: Integer read FOperationType write FOperationType;
-    property Positions: TCollection read FPositions write SetPositions;
-    property TicketModifiers: TCollection read FTicketModifiers write SetTicketModifiers;
-    property Payments: TCollection read FPayments write SetPayments;
+    property Positions: TTicketItems read FPositions write SetPositions;
+    property TicketModifiers: TTicketModifiers read FTicketModifiers write SetTicketModifiers;
+    property Payments: TPayments read FPayments write SetPayments;
     property Change: Currency read FChange write FChange;
     property RoundType: Integer read FRoundType write FRoundType;
     property ExternalCheckNumber: WideString read FExternalCheckNumber write FExternalCheckNumber;
@@ -298,6 +304,16 @@ type
     property PaymentType: Integer read FPaymentType write FPaymentType;
   end;
 
+  { TPayments }
+
+  TPayments = class(TCollection)
+  private
+    function GetItem(Index: Integer): TPayment;
+  public
+    constructor Create;
+    property Items[Index: Integer]: TPayment read GetItem; default;
+  end;
+
   { TTicketModifier }
 
   TTicketModifier = class(TCollectionItem)
@@ -313,6 +329,16 @@ type
 	  property _Type: Integer read FType write FType;
 	  property TaxType: Integer read FTaxType write FTaxType;
 	  property Tax:	Currency read FTax write FTax;
+  end;
+
+  { TTicketModifiers }
+
+  TTicketModifiers = class(TCollection)
+  private
+    function GetItem(Index: Integer): TTicketModifier;
+  public
+    constructor Create;
+    property Items[Index: Integer]: TTicketModifier read GetItem; default;
   end;
 
   { TTicketItem }
@@ -356,6 +382,16 @@ type
     property GTIN: WideString read FGTIN write FGTIN;
     property Productld: Integer read FProductld write FProductld;
     property WarehouseType: Integer read FWarehouseType write FWarehouseType;
+  end;
+
+  { TTicketItems }
+
+  TTicketItems = class(TCollection)
+  private
+    function GetItem(Index: Integer): TTicketItem;
+  public
+    constructor Create;
+    property Items[Index: Integer]: TTicketItem read GetItem; default;
   end;
 
   { TSendReceiptCommandResponse }
@@ -857,6 +893,16 @@ type
     property PaymentTypeName: WideString read FPaymentTypeName write FPaymentTypeName;
   end;
 
+  { TPaymentItems }
+
+  TPaymentItems = class(TCollection)
+  private
+    function GetItem(Index: Integer): TPaymentItem;
+  public
+    constructor Create;
+    property Items[Index: Integer]: TPaymentItem read GetItem; default;
+  end;
+
   { TPositionItem }
 
   TPositionItem = class(TCollectionItem)
@@ -898,6 +944,16 @@ type
     property Mark: WideString read FMark write FMark;
   end;
 
+  { TPositionItems }
+
+  TPositionItems = class(TCollection)
+  private
+    function GetItem(Index: Integer): TPositionItem;
+  public
+    constructor Create;
+    property Items[Index: Integer]: TPositionItem read GetItem; default;
+  end;
+
   { TReceiptResponse }
 
 
@@ -916,7 +972,7 @@ type
     FDocumentNumber: Int64;
     FOperationType: Integer;
     FOperationTypeText: WideString;
-    FPayments:	TCollection;
+    FPayments: TPaymentItems;
     FTotal: Double;
     FChange: Double;
     FTaken: Double;
@@ -926,15 +982,15 @@ type
     FTaxPercent: Double;
     FTax: Double;
     FVATPayer: Boolean;
-    FPositions: TCollection;
+    FPositions: TPositionItems;
     FIsOffline: Boolean;
     FTicketUrl: WideString;
     FOfd: TOfdInformation;
     FTicketPrintUrl: WideString;
     FExternalCheckNumber: WideString;
 
-    procedure SetPayments(const Value: TCollection);
-    procedure SetPositions(const Value: TCollection);
+    procedure SetPayments(const Value: TPaymentItems);
+    procedure SetPositions(const Value: TPositionItems);
     procedure SetOfd(const Value: TOfdInformation);
   public
     constructor Create;
@@ -953,8 +1009,7 @@ type
     property DocumentNumber: Int64 read FDocumentNumber write FDocumentNumber;
     property OperationType: Integer read FOperationType write FOperationType;
     property OperationTypeText: WideString read FOperationTypeText write FOperationTypeText;
-    property Payments:	TCollection read FPayments write SetPayments;
-
+    property Payments:	TPaymentItems read FPayments write SetPayments;
     property Total: Double read FTotal write FTotal;
     property Change: Double read FChange write FChange;
     property Taken: Double read FTaken write FTaken;
@@ -964,7 +1019,7 @@ type
     property TaxPercent: Double read FTaxPercent write FTaxPercent;
     property Tax: Double read FTax write FTax;
     property VATPayer: Boolean read FVATPayer write FVATPayer;
-    property Positions: TCollection read FPositions write SetPositions;
+    property Positions: TPositionItems read FPositions write SetPositions;
     property IsOffline: Boolean read FIsOffline write FIsOffline;
     property TicketUrl: WideString read FTicketUrl write FTicketUrl;
     property TicketPrintUrl: WideString read FTicketPrintUrl write FTicketPrintUrl;
@@ -1522,7 +1577,7 @@ var
   DstStream: TStream;
 begin
   FLogger.Debug('Post: ' + URL);
-  FLogger.Debug('Request JSON: ' + UTF8Decode(Request));
+  FLogger.Debug('=> ' + UTF8Decode(Request));
 
   FCommandJson := Request;
 
@@ -1553,7 +1608,7 @@ begin
     end;
     Result := Answer;
     FAnswerJson := Result;
-    FLogger.Debug('Answer JSON: ' + UTF8Decode(Answer));
+    FLogger.Debug('<= ' + UTF8Decode(Answer));
 
     if FTestErrorResult <> nil then
     begin
@@ -2552,9 +2607,9 @@ end;
 constructor TReceiptResponse.Create;
 begin
   inherited Create;
-  FPayments :=	TCollection.Create(TPaymentItem);
-  FPositions := TCollection.Create(TPositionItem);
   FOfd := TOfdInformation.Create;
+  FPayments :=	TPaymentItems.Create;
+  FPositions := TPositionItems.Create;
 end;
 
 destructor TReceiptResponse.Destroy;
@@ -2570,12 +2625,12 @@ begin
   FOfd.Assign(Value);
 end;
 
-procedure TReceiptResponse.SetPayments(const Value: TCollection);
+procedure TReceiptResponse.SetPayments(const Value: TPaymentItems);
 begin
   FPayments.Assign(Value);
 end;
 
-procedure TReceiptResponse.SetPositions(const Value: TCollection);
+procedure TReceiptResponse.SetPositions(const Value: TPositionItems);
 begin
   FPositions.Assign(Value);
 end;
@@ -2831,9 +2886,9 @@ end;
 constructor TSendReceiptCommandRequest.Create;
 begin
   inherited Create;
-  FPositions := TCollection.Create(TTicketItem);
-  FTicketModifiers := TCollection.Create(TTicketModifier);
-  FPayments := TCollection.Create(TPayment);
+  FPositions := TTicketItems.Create;
+  FTicketModifiers := TTicketModifiers.Create;
+  FPayments := TPayments.Create;
 end;
 
 destructor TSendReceiptCommandRequest.Destroy;
@@ -2844,19 +2899,18 @@ begin
   inherited Destroy;
 end;
 
-procedure TSendReceiptCommandRequest.SetPayments(const Value: TCollection);
+procedure TSendReceiptCommandRequest.SetPayments(const Value: TPayments);
 begin
   FPayments.Assign(Value);
 end;
 
-procedure TSendReceiptCommandRequest.SetPositions(
-  const Value: TCollection);
+procedure TSendReceiptCommandRequest.SetPositions(const Value: TTicketItems);
 begin
   FPositions.Assign(Value);
 end;
 
 procedure TSendReceiptCommandRequest.SetTicketModifiers(
-  const Value: TCollection);
+  const Value: TTicketModifiers);
 begin
   FTicketModifiers.Assign(Value);
 end;
@@ -2957,6 +3011,66 @@ end;
 function TErrorItems.GetItem(Index: Integer): TErrorItem;
 begin
   Result := inherited Items[Index] as TErrorItem;
+end;
+
+{ TTicketItems }
+
+constructor TTicketItems.Create;
+begin
+  inherited Create(TTicketItem);
+end;
+
+function TTicketItems.GetItem(Index: Integer): TTicketItem;
+begin
+  Result := inherited Items[Index] as TTicketItem;
+end;
+
+{ TPayments }
+
+constructor TPayments.Create;
+begin
+  inherited Create(TPayment);
+end;
+
+function TPayments.GetItem(Index: Integer): TPayment;
+begin
+  Result := inherited Items[Index] as TPayment;
+end;
+
+{ TTicketModifiers }
+
+constructor TTicketModifiers.Create;
+begin
+  inherited Create(TTicketModifier);
+end;
+
+function TTicketModifiers.GetItem(Index: Integer): TTicketModifier;
+begin
+  Result := inherited Items[Index] as TTicketModifier;
+end;
+
+{ TPaymentItems }
+
+constructor TPaymentItems.Create;
+begin
+  inherited Create(TPaymentItem);
+end;
+
+function TPaymentItems.GetItem(Index: Integer): TPaymentItem;
+begin
+  Result := inherited Items[Index] as TPaymentItem;
+end;
+
+{ TPositionItems }
+
+constructor TPositionItems.Create;
+begin
+  inherited Create(TPositionItem);
+end;
+
+function TPositionItems.GetItem(Index: Integer): TPositionItem;
+begin
+  Result := inherited Items[Index] as TPositionItem;
 end;
 
 initialization
