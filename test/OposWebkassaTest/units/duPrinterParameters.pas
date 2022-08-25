@@ -68,6 +68,7 @@ begin
   FParams.PaymentType2 := 0;
   FParams.PaymentType3 := 0;
   FParams.PaymentType4 := 0;
+  FParams.RoundType := 1;
 end;
 
 procedure TPrinterParametersTest.CheckNonDefaultParams;
@@ -94,6 +95,7 @@ begin
   CheckEquals(0, FParams.PaymentType2, 'PaymentType2');
   CheckEquals(0, FParams.PaymentType3, 'PaymentType3');
   CheckEquals(0, FParams.PaymentType4, 'PaymentType4');
+  CheckEquals(1, FParams.RoundType, 'RoundType');
 end;
 
 
@@ -120,6 +122,7 @@ begin
   CheckEquals(1, FParams.PaymentType2, 'PaymentType2');
   CheckEquals(2, FParams.PaymentType3, 'PaymentType3');
   CheckEquals(3, FParams.PaymentType4, 'PaymentType4');
+  CheckEquals(DefRoundType, FParams.RoundType, 'RoundType');
 end;
 
 procedure TPrinterParametersTest.CheckSetDefaults;

@@ -13,7 +13,7 @@ uses
   // Tnt
   TntClasses, TntSysUtils,
   // This
-  LogFile, WebkassaImpl;
+  LogFile, WebkassaImpl, WebkassaClient, MockPosPrinter;
 
 const
   CRLF = #13#10;
@@ -41,6 +41,7 @@ type
     procedure TestXReport;
     procedure TestNonFiscal;
     procedure TestFiscalReceipt;
+    procedure TestFiscalReceipt2;
   end;
 
 implementation
@@ -73,9 +74,15 @@ end;
 
 
 procedure TWebkassaImplTest.SetUp;
+var
+  Printer: TMockPOSPrinter;
 begin
   inherited SetUp;
+
+  Printer := TMockPOSPrinter.Create(nil);
   FDriver := TWebkassaImpl.Create(nil);
+  FDriver.Printer := Printer;
+  
   FDriver.Params.LogFileEnabled := True;
   FDriver.Params.LogMaxCount := 10;
   FDriver.Params.LogFilePath := 'Logs';
@@ -222,6 +229,26 @@ begin
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   FptrCheck(Driver.EndFiscalReceipt(False));
   CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+end;
+
+procedure TWebkassaImplTest.TestFiscalReceipt2;
+begin
+  FDriver.Params.RoundType := RoundTypeItems;
+
+  OpenClaimEnable;
+  CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
+  CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
+  CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
+
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+  FptrCheck(Driver.PrintRecItem('ТРК 1:АИ-98', 578, 3302, 4, 175, ''));
+  FptrCheck(Driver.PrintRecItem('Киви в корзинке Астана', 620, 1000, 4, 620, 'шт'));
+  FptrCheck(Driver.PrintRecItem('Ананас штучно Астана', 1250, 1000, 4, 1250, 'шт'));
+  FptrCheck(Driver.PrintRecItem('Арбуз штучно Астана', 650, 1000, 4, 650, 'шт'));
+  FptrCheck(Driver.PrintRecTotal(3098, 2521, '1'));
+  FptrCheck(Driver.PrintRecTotal(3098, 577, '0'));
+  FptrCheck(Driver.EndFiscalReceipt(False));
 end;
 
 initialization

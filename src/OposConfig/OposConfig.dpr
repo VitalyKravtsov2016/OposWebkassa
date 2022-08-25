@@ -52,10 +52,11 @@ uses
   OposSemaphore in '..\Opos\OposSemaphore.pas',
   RecPrinter in '..\OposWebkassa\units\RecPrinter.pas',
   PrinterParametersReg in '..\Shared\PrinterParametersReg.pas',
-  fmuFptrPayType in 'Fmu\fmuFptrPayType.pas' {fmFptrPayType},
+  fmuFptrMiscParams in 'Fmu\fmuFptrMiscParams.pas' {fmFptrMiscParams},
   fmuFptrVatCode in 'Fmu\fmuFptrVatCode.pas' {fmFptrVatCode},
   VatCode in '..\Shared\VatCode.pas',
-  uLkJSON in '..\Shared\uLkJSON.pas';
+  uLkJSON in '..\Shared\uLkJSON.pas',
+  fmuFptrPayType in 'Fmu\fmuFptrPayType.pas' {fmFptrPayType};
 
 {$R *.RES}
 {$R WindowsXP.RES}

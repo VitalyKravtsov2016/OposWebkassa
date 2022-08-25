@@ -34,8 +34,10 @@ type
 
     procedure Save;
     procedure Clear;
-    procedure AddText(const Text: string);
+    procedure AddText(const Text: string); overload;
+    procedure AddText(Index: Integer; const Text: string); overload;
     procedure Add(const Line: string); overload;
+    procedure Add(Index: Integer; const Line: string); overload;
     procedure AddLines(const Line1, Line2: string); overload;
     procedure AddLines(const Line1, Line2: string; Style: Integer); overload;
     procedure Add(const Line: string; Style: Integer); overload;
@@ -96,6 +98,15 @@ begin
   Item.FStyle := Style;
 end;
 
+procedure TTextDocument.Add(Index: Integer; const Line: string);
+var
+  Item: TTextItem;
+begin
+  Item := FItems.Insert(Index) as TTextItem;
+  Item.FText := Line + CRLF;
+  Item.FStyle := STYLE_NORMAL;
+end;
+
 procedure TTextDocument.AddLines(const Line1, Line2: string; Style: Integer);
 var
   Text: string;
@@ -129,6 +140,23 @@ begin
     for i := 0 to Lines.Count-1 do
     begin
       Add(Lines[i]);
+    end;
+  finally
+    Lines.Free;
+  end;
+end;
+
+procedure TTextDocument.AddText(Index: Integer; const Text: string);
+var
+  i: Integer;
+  Lines: TStrings;
+begin
+  Lines := TStringList.Create;
+  try
+    Lines.Text := Text;
+    for i := 0 to Lines.Count-1 do
+    begin
+      Add(Index + i, Lines[i]);
     end;
   finally
     Lines.Free;

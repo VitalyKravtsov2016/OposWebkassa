@@ -204,6 +204,9 @@ begin
       if Reg.ValueExists('PaymentType4') then
         Parameters.PaymentType4 := Reg.ReadInteger('PaymentType4');
 
+      if Reg.ValueExists('RoundType') then
+        Parameters.RoundType := Reg.ReadInteger('RoundType');
+
       Reg.CloseKey;
     end;
     // VatCodes
@@ -270,6 +273,8 @@ begin
     Reg.WriteInteger('PaymentType3', FParameters.PaymentType3);
     Reg.WriteInteger('PaymentType4', FParameters.PaymentType4);
     Reg.WriteBool('VatCodeEnabled', FParameters.VatCodeEnabled);
+    Reg.WriteInteger('RoundType', FParameters.RoundType);
+
     Reg.CloseKey;
     // VatCodes
     Reg.DeleteKey(KeyName + '\' + REG_KEY_VATCODES);

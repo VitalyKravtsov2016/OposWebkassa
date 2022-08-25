@@ -46,6 +46,7 @@ const
   DefCashboxNumber = 'SWK00032685';
   DefPrinterName = '';
   DefPrinterType = 0;
+  DefRoundType = 2; // Округление позиций
 
   /////////////////////////////////////////////////////////////////////////////
   // Header and trailer parameters
@@ -80,6 +81,7 @@ type
     FPaymentType2: Integer;
     FPaymentType3: Integer;
     FPaymentType4: Integer;
+    FRoundType: Integer;
 
     procedure LogText(const Caption, Text: WideString);
     procedure SetNumHeaderLines(const Value: Integer);
@@ -112,6 +114,7 @@ type
     property PaymentType2: Integer read FPaymentType2 write FPaymentType2;
     property PaymentType3: Integer read FPaymentType3 write FPaymentType3;
     property PaymentType4: Integer read FPaymentType4 write FPaymentType4;
+    property RoundType: Integer read FRoundType write FRoundType;
   end;
 
 implementation
@@ -155,6 +158,7 @@ begin
   PaymentType4 := 3;
   PrinterName := DefPrinterName;
   PrinterType := DefPrinterType;
+  RoundType := DefRoundType;
 
   // VatCodes
   VatCodes.Clear;
@@ -214,6 +218,7 @@ begin
   Logger.Debug('PaymentType3: ' + IntToStr(PaymentType3));
   Logger.Debug('PaymentType4: ' + IntToStr(PaymentType4));
   Logger.Debug('VatCodeEnabled: ' + BoolToStr(VatCodeEnabled));
+  Logger.Debug('RoundType: ' + IntToStr(RoundType));
   // VatCodes
   for i := 0 to VatCodes.Count-1 do
   begin

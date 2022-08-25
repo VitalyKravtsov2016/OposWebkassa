@@ -57,7 +57,9 @@ uses
   uLkJSON in '..\..\src\Shared\uLkJSON.pas',
   VatCode in '..\..\src\Shared\VatCode.pas',
   OposPtrUtils in '..\..\src\Opos\OposPtrUtils.pas',
-  OposPtrhi in '..\..\src\Opos\OposPtrhi.pas';
+  OposPtrhi in '..\..\src\Opos\OposPtrhi.pas',
+  duWebkassaImpl in 'units\duWebkassaImpl.pas',
+  MockPosPrinter in '..\OposWebkassaTest\units\MockPosPrinter.pas';
 
 {$R *.RES}
 

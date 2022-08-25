@@ -641,8 +641,6 @@ begin
 
     Document.Clear;
     Document.LineChars := Printer.RecLineChars;
-    Document.AddText(Params.Header);
-
     Result := ClearResult;
   except
     on E: Exception do
@@ -803,7 +801,6 @@ begin
     CheckEnabled;
     CheckState(FPTR_PS_NONFISCAL);
 
-    Document.AddText(Params.Trailer);
     PrintDocument(Document);
     SetPrinterState(FPTR_PS_MONITOR);
     Result := ClearResult;
@@ -1534,7 +1531,6 @@ begin
       (Command.Data.EndNonNullable.ReturnBuy - Command.Data.StartNonNullable.ReturnBuy);
 
     Document.LineChars := Printer.RecLineChars;
-    Document.AddText(FParams.Header);
     Separator := StringOfChar('-', Document.LineChars);
     Document.AddLines('ÈÍÍ/ÁÈÍ', Command.Data.CashboxRN);
     Document.AddLines('ÇÍÌ', Command.Data.CashboxSN);
@@ -1619,7 +1615,6 @@ begin
     Document.AddLines('ÂÎÇÂÐÀÒÎÂ ÏÐÎÄÀÆ', CurrencyToStr(Command.Data.EndNonNullable.ReturnSell));
     Document.AddLines('ÂÎÇÂÐÀÒÎÂ ÏÎÊÓÏÎÊ', CurrencyToStr(Command.Data.EndNonNullable.ReturnBuy));
     Document.AddLines('ÑÔîðìèðîâàíî ÎÔÄ: ', Command.Data.Ofd.Name);
-    Document.AddText(FParams.Trailer);
     PrintDocumentSafe(Document);
   finally
     Document.Free;
@@ -2101,7 +2096,6 @@ begin
     FClient.Execute(Command);
     // Create Document
     Document.LineChars := Printer.RecLineChars;
-    Document.AddText(FParams.Header);
     Document.Add('ÁÈÍ ' + Command.Data.Cashbox.RegistrationNumber);
     Document.Add(Format('ÇÍÌ %s ÈÍÊ ÎÔÄ %s', [Command.Data.Cashbox.UniqueNumber,
       Command.Data.Cashbox.IdentityNumber]));
@@ -2109,7 +2103,6 @@ begin
     Document.AddCurrency('ÂÍÅÑÅÍÈÅ ÄÅÍÅÃ Â ÊÀÑÑÓ', Receipt.GetTotal);
     Document.AddCurrency('ÍÀËÈ×ÍÛÕ Â ÊÀÑÑÅ', Command.Data.Sum);
     Document.Add('Îïåðàòîð: ' + FCashierFullName);
-    Document.AddText(FParams.Trailer);
     // Print
     PrintDocumentSafe(Document);
   finally
@@ -2134,7 +2127,6 @@ begin
     FClient.Execute(Command);
     //
     Document.LineChars := Printer.RecLineChars;
-    Document.AddText(FParams.Header);
     Document.Add('ÁÈÍ ' + Command.Data.Cashbox.RegistrationNumber);
     Document.Add(Format('ÇÍÌ %s ÈÍÊ ÎÔÄ %s', [Command.Data.Cashbox.UniqueNumber,
       Command.Data.Cashbox.IdentityNumber]));
@@ -2142,7 +2134,6 @@ begin
     Document.AddCurrency('ÈÇÚßÒÈÅ ÄÅÍÅÃ ÈÇ ÊÀÑÑÛ', Receipt.GetTotal);
     Document.AddCurrency('ÍÀËÈ×ÍÛÕ Â ÊÀÑÑÅ', Command.Data.Sum);
     Document.Add('Îïåðàòîð: ' + FCashierFullName);
-    Document.AddText(FParams.Trailer);
     // print
     PrintDocumentSafe(Document);
   finally
@@ -2217,7 +2208,7 @@ begin
     Command.Request.CashboxUniqueNumber := FClient.CashboxNumber;
     Command.Request.OperationType := OperationType;
     Command.Request.Change := Receipt.Change;
-    Command.Request.RoundType := RoundTypeNo;
+    Command.Request.RoundType := FParams.RoundType;
     Command.Request.ExternalCheckNumber := CreateGUIDStr;
     Command.Request.CustomerEmail := '';
     Command.Request.CustomerPhone := '';
@@ -2307,7 +2298,6 @@ begin
     Command.Request.paperKind := GetPaperKind(Printer.RecLineWidth);
     FClient.ReadReceiptText(Command);
 
-    Document.AddText(FParams.Header);
     for i := 0 to Command.Data.Lines.Count-1 do
     begin
       Item := Command.Data.Lines.Items[i] as TReceiptTextItem;
@@ -2330,8 +2320,6 @@ begin
         Document.Add(Item.Value, STYLE_QR_CODE);
       end;
     end;
-    Document.AddText(FParams.Trailer);
-
     Printer.RecLineChars := FMaxRecLineChars;
     PrintDocumentSafe(Document);
     Printer.RecLineChars := FRecLineChars;
@@ -2376,6 +2364,10 @@ const
   ESC = #$1B;
   CRLF = #13#10;
 begin
+  // Add header and trailer
+  Document.AddText(0, Params.Header);
+  Document.AddText(Params.Trailer);
+
   CheckCanPrint;
   CapRecDwideDhigh := Printer.CapRecDwideDhigh;
   CapRecBold := Printer.CapRecBold;
@@ -2413,7 +2405,7 @@ begin
   end;
   if Printer.CapRecPapercut then
   begin
-    Count := Printer.RecLinesToPaperCut - FParams.NumHeaderLines;
+    Count := Printer.RecLinesToPaperCut - FParams.NumHeaderLines + 1;
     if Count > 0 then
     begin
       for i := 1 to Count do
