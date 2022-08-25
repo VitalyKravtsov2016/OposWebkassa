@@ -383,11 +383,8 @@ begin
   end;
 end;
 
-//Command.Request.externalCheckNumber := '8f3e76b0-97ed-4467-9c46-1b042e2f933f';
-
 procedure TWebkassaTest.TestReadReceiptText;
 var
-  Item: TReceiptTextItem;
   Command: TReceiptTextCommand;
 begin
   Command := TReceiptTextCommand.Create;
@@ -403,20 +400,6 @@ begin
     FClient.ReadReceiptText(Command);
     WriteFileData(GetModulePath + 'ReadReceiptText.txt', FClient.AnswerJson);
     Check(Command.Data.Lines.Count > 0);
-
-
-
-    Item := Command.Data.Lines.Items[0] as TReceiptTextItem;
-    CheckEquals(1, Item.Order, 'Item.Order');
-    CheckEquals(0, Item._Type, 'Item._Type');
-    CheckEquals('             рнн SOFT IT KAZAKHSTAN             ', Item.Value, 'Item.Value');
-    CheckEquals(0, Item.Style, 'Item.Style');
-
-    Item := Command.Data.Lines.Items[27] as TReceiptTextItem;
-    CheckEquals(28, Item.Order, 'Item.Order');
-    CheckEquals(2, Item._Type, 'Item._Type');
-    CheckEquals('http://dev.kofd.kz/consumer?i=923860753030&f=211030200207&s=2055.00&t=20220803T142912', Item.Value, 'Item.Value');
-    CheckEquals(0, Item.Style, 'Item.Style');
   finally
     Command.Free;
   end;

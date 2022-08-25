@@ -137,9 +137,9 @@ type
 
   TWebkassaCommand = class(TPersistent)
   public
-    function Encode: string; virtual; abstract;
-    function GetAddress: string; virtual; abstract;
-    procedure Decode(const JsonText: string); virtual; abstract;
+    function Encode: WideString; virtual; abstract;
+    function GetAddress: WideString; virtual; abstract;
+    procedure Decode(const JsonText: WideString); virtual; abstract;
   end;
 
   { TAuthRequest }
@@ -173,9 +173,9 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    function Encode: string; override;
-    function GetAddress: string; override;
-    procedure Decode(const JsonText: string); override;
+    function Encode: WideString; override;
+    function GetAddress: WideString; override;
+    procedure Decode(const JsonText: WideString); override;
 
     property Request: TAuthRequest read FRequest;
   published
@@ -481,9 +481,9 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    function Encode: string; override;
-    function GetAddress: string; override;
-    procedure Decode(const JsonText: string); override;
+    function Encode: WideString; override;
+    function GetAddress: WideString; override;
+    procedure Decode(const JsonText: WideString); override;
 
     property Request: TMoneyOperationRequest read FRequest;
   published
@@ -1283,11 +1283,11 @@ type
     property TestErrorResult: TErrorResult read FTestErrorResult write FTestErrorResult;
   end;
 
-function GetPaymentName(PaymentType: Integer): string;
+function GetPaymentName(PaymentType: Integer): WideString;
 
 implementation
 
-function GetPaymentName(PaymentType: Integer): string;
+function GetPaymentName(PaymentType: Integer): WideString;
 begin
   case PaymentType of
     PaymentTypeCash: Result := 'Наличные';
@@ -1595,7 +1595,7 @@ begin
   Stream := TMemoryStream.Create;
   DstStream := TMemoryStream.Create;
   try
-    S := UTF8Encode(Request);
+    S := Request;
     Stream.WriteBuffer(S[1], Length(S));
 
     Transport.Post(URL, Stream, DstStream);
@@ -2338,17 +2338,17 @@ begin
   inherited Destroy;
 end;
 
-procedure TMoneyOperationCommand.Decode(const JsonText: string);
+procedure TMoneyOperationCommand.Decode(const JsonText: WideString);
 begin
   JsonToObject(JsonText, Self);
 end;
 
-function TMoneyOperationCommand.Encode: string;
+function TMoneyOperationCommand.Encode: WideString;
 begin
   Result := ObjectToJson(Request);
 end;
 
-function TMoneyOperationCommand.GetAddress: string;
+function TMoneyOperationCommand.GetAddress: WideString;
 begin
   Result := 'api/MoneyOperation';
 end;
@@ -2750,17 +2750,17 @@ begin
   inherited Destroy;
 end;
 
-function TAuthCommand.Encode: string;
+function TAuthCommand.Encode: WideString;
 begin
   Result := ObjectToJson(Request);
 end;
 
-procedure TAuthCommand.Decode(const JsonText: string);
+procedure TAuthCommand.Decode(const JsonText: WideString);
 begin
   JsonToObject(JsonText, Self);
 end;
 
-function TAuthCommand.GetAddress: string;
+function TAuthCommand.GetAddress: WideString;
 begin
   Result := 'api/Authorize';
 end;
