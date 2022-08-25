@@ -20,9 +20,10 @@ type
     btnDelete: TTntButton;
     btnAdd: TTntButton;
     seVatCode: TSpinEdit;
-    edtVatRate: TMaskEdit;
     edtVatName: TEdit;
     TntLabel1: TTntLabel;
+    chbVatCodeEnabled: TCheckBox;
+    edtVATRate: TEdit;
     procedure btnAddClick(Sender: TObject);
     procedure btnDeleteClick(Sender: TObject);
     procedure PageChange(Sender: TObject);
@@ -71,10 +72,12 @@ end;
 procedure TfmFptrVatCode.UpdatePage;
 begin
   UpdateItems;
+  chbVatCodeEnabled.Checked := Parameters.VatCodeEnabled;
 end;
 
 procedure TfmFptrVatCode.UpdateObject;
 begin
+  Parameters.VatCodeEnabled := chbVatCodeEnabled.Checked;
 end;
 
 procedure TfmFptrVatCode.btnAddClick(Sender: TObject);
@@ -87,7 +90,7 @@ begin
   Item := lvVatCodes.Items.Add;
   Item.Caption := IntToStr(seVatCode.Value);
   Item.SubItems.Add(edtVatRate.Text);
-  Item.SubItems.Add(edtVatRate.Name);
+  Item.SubItems.Add(edtVatName.Text);
 
   Item.Focused := True;
   Item.Selected := True;

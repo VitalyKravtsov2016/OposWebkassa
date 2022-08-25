@@ -22,6 +22,7 @@ type
   published
     procedure TestPrintRecItem;
     procedure TestPrintRecVoid;
+    procedure TestEncoding;
   end;
 
 implementation
@@ -67,6 +68,14 @@ begin
   FReceipt.PrintRecVoid('');
   CheckEquals(True, FReceipt.IsVoided, 'FReceipt.IsVoided');
 end;
+
+procedure TSalesReceiptTest.TestEncoding;
+const
+  Text: WideString = 'Позиция чека 1';
+begin
+  CheckEquals(Text, UTF8Decode(UTF8Encode(Text)), 'Text');
+end;
+
 
 initialization
   RegisterTest('', TSalesReceiptTest.Suite);

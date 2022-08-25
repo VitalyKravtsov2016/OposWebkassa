@@ -65,6 +65,7 @@ type
     FMaxRecLineChars: Integer;
     procedure PrintDocumentSafe(Document: TTextDocument);
     procedure CheckCanPrint;
+    function GetVatCode(Code: Integer): TVatCode;
   public
     procedure Initialize;
     procedure CheckEnabled;
@@ -2187,11 +2188,21 @@ begin
   end;
 end;
 
+function TWebkassaImpl.GetVatCode(Code: Integer): TVatCode;
+begin
+  Result := nil;
+  if Params.VatCodeEnabled then
+  begin
+    Result := Params.VatCodes.ItemByCode(Code);
+  end;
+end;
+
 procedure TWebkassaImpl.Print(Receipt: TSalesReceipt);
 var
   i: Integer;
   Payment: TPayment;
   Discount: TAdjustment;
+  VatCode: TVatCode;
   Item: TReceiptItem;
   OperationType: Integer;
   Position: TTicketItem;
@@ -2218,8 +2229,8 @@ begin
     for i := 0 to Receipt.Items.Count-1 do
     begin
       Item := Receipt.Items[i];
+      VatCode := GetVatCode(Item.VatInfo);
       Position := Command.Request.Positions.Add as TTicketItem;
-
       Position.Count := Item.Quantity;
       Position.Price := Item.Price;
       Position.PositionName := Item.Description;
@@ -2236,10 +2247,17 @@ begin
       Position.GTIN := '';
       Position.Productld := 0;
       Position.WarehouseType := 0;
-      Position.TaxPercent := 0;
-      Position.Tax := 0;
-      Position.TaxType := 0;
-      //Position.TaxType := GetVatInfo(Item.VatInfo); !!!
+      if VatCode = nil then
+      begin
+        Position.Tax := 0;
+        Position.TaxPercent := 0;
+        Position.TaxType := TaxTypeNoTax;
+      end else
+      begin
+        Position.Tax := VatCode.GetTax(Item.Total);
+        Position.TaxType := TaxTypeVAT;
+        Position.TaxPercent := VatCode.Rate;
+      end;
     end;
     // Discounts
     for i := 0 to Receipt.Adjustments.Count-1 do
@@ -2446,24 +2464,5 @@ begin
 
   Result := Station;
 end;
-
-(*
-function TWebkassaImpl.GetVatInfo(Code: Integer): Integer;
-var
-  VatCode: TVatCode;
-begin
-  Result := VatCode;
-  if Params.VatCodeEnabled then
-  begin
-    VatCode := Params.VatCodes.ItemByCode(AppVatCode);
-    if VatCode <> nil then
-    begin
-      Result := VatCode.FptrVatCode;
-    end;
-  end;
-end;
-
-
-*)
 
 end.

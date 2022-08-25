@@ -13,7 +13,7 @@ object fmPrinter: TfmPrinter
   OldCreateOrder = False
   DesignSize = (
     455
-    240)
+    239)
   PixelsPerInch = 96
   TextHeight = 13
   object lblDeviceName: TTntLabel
@@ -68,7 +68,7 @@ object fmPrinter: TfmPrinter
     Width = 121
     Height = 25
     Anchors = [akRight, akBottom]
-    Caption = #1055#1088#1086#1074#1088#1082#1072' '#1089#1074#1103#1079#1080
+    Caption = #1055#1088#1086#1074#1077#1088#1082#1072' '#1089#1074#1103#1079#1080
     TabOrder = 2
     OnClick = btnTestConnectionClick
   end

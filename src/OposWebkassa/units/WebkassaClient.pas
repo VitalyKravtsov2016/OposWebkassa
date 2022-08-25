@@ -347,7 +347,7 @@ type
   private
     FCount: Double;
     FPrice: Currency;
-    FTaxPercent: Integer;
+    FTaxPercent: Double;
     FTax: Currency;
     FTaxType: Integer;
     FPositionName: WideString;
@@ -366,7 +366,7 @@ type
   published
     property Count: Double read FCount write FCount;
     property Price: Currency read FPrice write FPrice;
-    property TaxPercent: Integer read FTaxPercent write FTaxPercent;
+    property TaxPercent: Double read FTaxPercent write FTaxPercent;
     property Tax: Currency read FTax write FTax;
     property TaxType: Integer read FTaxType write FTaxType;
     property PositionName: WideString read FPositionName write FPositionName;
@@ -1188,7 +1188,7 @@ type
   private
     FCount: Integer;
     FPrice: Currency;
-    FTaxPercent: Integer;
+    FTaxPercent: Double;
     FTaxType: Integer;
     FPositionName: WideString;
     FPositionCode: WideString;
@@ -1199,7 +1199,7 @@ type
   published
     property Count: Integer read FCount write FCount;
     property Price: Currency read FPrice write FPrice;
-    property TaxPercent: Integer read FTaxPercent write FTaxPercent;
+    property TaxPercent: Double read FTaxPercent write FTaxPercent;
     property TaxType: Integer read FTaxType write FTaxType;
     property PositionName: WideString read FPositionName write FPositionName;
     property PositionCode: WideString read FPositionCode write FPositionCode;

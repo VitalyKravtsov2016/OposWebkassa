@@ -4,8 +4,8 @@ object fmFptrVatCode: TfmFptrVatCode
   AutoScroll = False
   BorderIcons = [biSystemMenu]
   Caption = #1053#1072#1083#1086#1075#1086#1074#1099#1077' '#1089#1090#1072#1074#1082#1080
-  ClientHeight = 334
-  ClientWidth = 403
+  ClientHeight = 250
+  ClientWidth = 387
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,8 +15,8 @@ object fmFptrVatCode: TfmFptrVatCode
   OldCreateOrder = False
   Position = poScreenCenter
   DesignSize = (
-    403
-    334)
+    387
+    250)
   PixelsPerInch = 96
   TextHeight = 13
   object lblVatCode: TTntLabel
@@ -29,9 +29,9 @@ object fmFptrVatCode: TfmFptrVatCode
   object lblVatRate: TTntLabel
     Left = 8
     Top = 48
-    Width = 77
+    Width = 91
     Height = 13
-    Caption = #1057#1090#1072#1074#1082#1072' '#1085#1072#1083#1086#1075#1072':'
+    Caption = #1057#1090#1072#1074#1082#1072' '#1085#1072#1083#1086#1075#1072', %:'
   end
   object TntLabel1: TTntLabel
     Left = 8
@@ -42,9 +42,9 @@ object fmFptrVatCode: TfmFptrVatCode
   end
   object lvVatCodes: TListView
     Left = 8
-    Top = 128
-    Width = 388
-    Height = 199
+    Top = 136
+    Width = 372
+    Height = 107
     Anchors = [akLeft, akTop, akRight, akBottom]
     Columns = <
       item
@@ -64,11 +64,11 @@ object fmFptrVatCode: TfmFptrVatCode
     HideSelection = False
     ReadOnly = True
     RowSelect = True
-    TabOrder = 5
+    TabOrder = 6
     ViewStyle = vsReport
   end
   object btnDelete: TTntButton
-    Left = 288
+    Left = 272
     Top = 48
     Width = 105
     Height = 25
@@ -79,7 +79,7 @@ object fmFptrVatCode: TfmFptrVatCode
     OnClick = btnDeleteClick
   end
   object btnAdd: TTntButton
-    Left = 288
+    Left = 272
     Top = 16
     Width = 105
     Height = 25
@@ -91,28 +91,34 @@ object fmFptrVatCode: TfmFptrVatCode
   object seVatCode: TSpinEdit
     Left = 104
     Top = 16
-    Width = 121
+    Width = 145
     Height = 22
     MaxValue = 0
     MinValue = 0
     TabOrder = 0
     Value = 1
   end
-  object edtVatRate: TMaskEdit
-    Left = 104
-    Top = 48
-    Width = 120
-    Height = 21
-    EditMask = '99.99;1;_'
-    MaxLength = 5
-    TabOrder = 1
-    Text = '  .  '
-  end
   object edtVatName: TEdit
     Left = 104
     Top = 80
-    Width = 289
+    Width = 145
     Height = 21
+    Anchors = [akLeft, akTop, akRight]
     TabOrder = 2
+  end
+  object chbVatCodeEnabled: TCheckBox
+    Left = 8
+    Top = 112
+    Width = 241
+    Height = 17
+    Caption = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1085#1072#1083#1086#1075#1086#1074#1099#1077' '#1089#1090#1072#1074#1082#1080
+    TabOrder = 5
+  end
+  object edtVATRate: TEdit
+    Left = 104
+    Top = 48
+    Width = 145
+    Height = 21
+    TabOrder = 1
   end
 end

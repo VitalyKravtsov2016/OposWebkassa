@@ -43,6 +43,7 @@ type
     procedure TestFiscalReceipt;
     procedure TestFiscalReceipt2;
     procedure TestFiscalReceipt3;
+    procedure TestFiscalReceiptWithVAT;
   end;
 
 implementation
@@ -254,6 +255,27 @@ end;
 
 procedure TWebkassaImplTest.TestFiscalReceipt3;
 begin
+  FDriver.Params.RoundType := RoundTypeItems;
+
+  OpenClaimEnable;
+  CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
+  CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
+  CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
+
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+  FptrCheck(Driver.PrintRecItem('Киви в корзинке Астана', 620, 1000, 4, 620, 'шт'));
+  FptrCheck(Driver.PrintRecItem('Americano 180мл', 400, 1000, 4, 400, 'шт'));
+  FptrCheck(Driver.PrintRecItemAdjustment(1, '98', 40, 4));
+  FptrCheck(Driver.PrintRecTotal(980, 980, '0'));
+  FptrCheck(Driver.EndFiscalReceipt(False));
+end;
+
+procedure TWebkassaImplTest.TestFiscalReceiptWithVAT;
+begin
+  FDriver.Params.VatCodes.Clear;
+  FDriver.Params.VatCodes.Add(4, 12, 'Tax1');
+  FDriver.Params.VatCodeEnabled := True;
   FDriver.Params.RoundType := RoundTypeItems;
 
   OpenClaimEnable;

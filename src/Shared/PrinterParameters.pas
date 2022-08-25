@@ -38,7 +38,7 @@ const
     'Trailer line 3'#13#10 +
     'Trailer line 4';
 
-  DefVatCodeEnabled = False;
+  DefVatCodeEnabled = True;
   DefLogin = 'webkassa4@softit.kz';
   DefPassword = 'Kassa123';
   DefConnectTimeout = 10;

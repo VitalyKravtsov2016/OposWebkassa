@@ -4,7 +4,7 @@ interface
 
 Uses
   // VCL
-  Classes, SysUtils, WException, gnugettext;
+  Classes, SysUtils, WException, gnugettext, Math;
 
 type
   TVatCode = class;
@@ -42,6 +42,8 @@ type
     constructor Create(AOwner: TVatCodes; ACode: Integer; ARate: Double;
       const AName: string);
     destructor Destroy; override;
+
+    function GetTax(Amount: Currency): Currency;
 
     property Rate: Double read FRate write FRate;
     property Code: Integer read FCode write FCode;
@@ -133,7 +135,14 @@ begin
   begin
     if FOwner <> nil then FOwner.RemoveItem(Self);
     if AOwner <> nil then AOwner.InsertItem(Self);
-  end;  
+  end;
 end;
+
+function TVatCode.GetTax(Amount: Currency): Currency;
+begin
+  Result := Amount * (Rate/100) / (1 + Rate/100);
+  Result := Round(Result * 100) / 100;
+end;
+
 
 end.
