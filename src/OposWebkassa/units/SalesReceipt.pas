@@ -24,7 +24,7 @@ type
     FIsRefund: Boolean;
     FPayments: TPayments;
     FItems: TReceiptItems;
-    FDiscounts: TDiscounts;
+    FAdjustments: TAdjustments;
   protected
     procedure SetRefundReceipt;
     procedure CheckPrice(Value: Currency);
@@ -109,7 +109,7 @@ type
     property IsRefund: Boolean read FIsRefund;
     property Footer: TTntStrings read FFooter;
     property Payments: TPayments read FPayments;
-    property Discounts: TDiscounts read FDiscounts;
+    property Adjustments: TAdjustments read FAdjustments;
   end;
 
 implementation
@@ -124,15 +124,15 @@ begin
   inherited Create;
   FIsRefund := AIsRefund;
   FItems := TReceiptItems.Create;
-  FDiscounts := TDiscounts.Create;
+  FAdjustments := TAdjustments.Create;
   FFooter := TTntStringLIst.Create;
 end;
 
 destructor TSalesReceipt.Destroy;
 begin
   FItems.Free;
-  FDiscounts.Free;
   FFooter.Free;
+  FAdjustments.Free;
   inherited Destroy;
 end;
 
@@ -307,13 +307,13 @@ procedure TSalesReceipt.PrintRecItemAdjustment(
   Amount: Currency;
   VatInfo: Integer);
 var
-  Discount: TDiscount;
+  Discount: TAdjustment;
 begin
   CheckNotVoided;
   case AdjustmentType of
     FPTR_AT_AMOUNT_DISCOUNT:
     begin
-      Discount := GetLastItem.Discounts.Add;
+      Discount := GetLastItem.Adjustments.Add;
       Discount.Amount := Amount;
       Discount.Total := Amount;
       Discount.VatInfo := VatInfo;
@@ -323,7 +323,7 @@ begin
 
     FPTR_AT_AMOUNT_SURCHARGE:
     begin
-      Discount := GetLastItem.Discounts.Add;
+      Discount := GetLastItem.Adjustments.Add;
       Discount.Amount := Amount;
       Discount.Total := -Amount;
       Discount.VatInfo := VatInfo;
@@ -332,7 +332,7 @@ begin
     end;
     FPTR_AT_PERCENTAGE_DISCOUNT:
     begin
-      Discount := GetLastItem.Discounts.Add;
+      Discount := GetLastItem.Adjustments.Add;
       Discount.Amount := Amount;
       Discount.Total := GetLastItem.GetTotal * Amount/100;
       Discount.VatInfo := VatInfo;
@@ -342,7 +342,7 @@ begin
 
     FPTR_AT_PERCENTAGE_SURCHARGE:
     begin
-      Discount := GetLastItem.Discounts.Add;
+      Discount := GetLastItem.Adjustments.Add;
       Discount.Amount := Amount;
       Discount.Total := -GetLastItem.GetTotal * Amount/100;
       Discount.VatInfo := VatInfo;
@@ -449,9 +449,9 @@ end;
 
 procedure TSalesReceipt.SubtotalDiscount(Amount: Currency; const Description: WideString);
 var
-  Discount: TDiscount;
+  Discount: TAdjustment;
 begin
-  Discount := FDiscounts.Add;
+  Discount := FAdjustments.Add;
   Discount.Total := Amount;
   Discount.Amount := Amount;
   Discount.VatInfo := 0;
@@ -461,7 +461,7 @@ end;
 
 function TSalesReceipt.GetTotal: Currency;
 begin
-  Result := FItems.GetTotal - FDiscounts.GetTotal;
+  Result := FItems.GetTotal - FAdjustments.GetTotal;
 end;
 
 function TSalesReceipt.GetPayment: Currency;
@@ -487,6 +487,11 @@ begin
 
   Index := StrToIntDef(Description, 0);
   FPayments[Index] := FPayments[Index] + Payment;
+
+  if GetPayment >= GetTotal then
+  begin
+    FChange := GetPayment - GetTotal;
+  end;
 end;
 
 procedure TSalesReceipt.PrintRecMessage(const Message: WideString);

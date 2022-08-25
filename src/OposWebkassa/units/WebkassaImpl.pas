@@ -2191,7 +2191,7 @@ procedure TWebkassaImpl.Print(Receipt: TSalesReceipt);
 var
   i: Integer;
   Payment: TPayment;
-  Discount: TDiscount;
+  Discount: TAdjustment;
   Item: TReceiptItem;
   OperationType: Integer;
   Position: TTicketItem;
@@ -2225,8 +2225,8 @@ begin
       Position.PositionName := Item.Description;
       Position.DisplayName := Item.Description;
       Position.PositionCode := '';
-      Position.Discount := 0;
-      Position.Markup := 0;
+      Position.Discount := Item.Adjustments.GetDiscounts;
+      Position.Markup := Item.Adjustments.GetCharges;
       Position.IsStorno := False;
       Position.MarkupDeleted := False;
       Position.DiscountDeleted := False;
@@ -2242,9 +2242,9 @@ begin
       //Position.TaxType := GetVatInfo(Item.VatInfo); !!!
     end;
     // Discounts
-    for i := 0 to Receipt.Discounts.Count-1 do
+    for i := 0 to Receipt.Adjustments.Count-1 do
     begin
-      Discount := Receipt.Discounts[i];
+      Discount := Receipt.Adjustments[i];
       Modifier := Command.Request.TicketModifiers.Add as TTicketModifier;
 
       Modifier.Sum := Abs(Discount.Total);

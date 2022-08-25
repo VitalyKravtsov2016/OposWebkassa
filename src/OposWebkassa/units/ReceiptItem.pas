@@ -9,8 +9,8 @@ Uses
   MathUtils;
 
 type
-  TDiscount = class;
-  TDiscounts = class;
+  TAdjustment = class;
+  TAdjustments = class;
   TReceiptItem = class;
 
   { TReceiptItems }
@@ -46,7 +46,7 @@ type
     FUnitPrice: Currency;
     FUnitName: WideString;
     FDescription: WideString;
-    FDiscounts: TDiscounts;
+    FAdjustments: TAdjustments;
     FMarkCode: string;
     FOwner: TReceiptItems;
 
@@ -60,7 +60,7 @@ type
 
     property Total: Currency read GetTotal;
     property MarkCode: string read FMarkCode;
-    property Discounts: TDiscounts read FDiscounts;
+    property Adjustments: TAdjustments read FAdjustments;
     property Price: Currency read FPrice write FPrice;
     property VatInfo: Integer read FVatInfo write FVatInfo;
     property Quantity: Double read FQuantity write FQuantity;
@@ -69,44 +69,46 @@ type
     property Description: WideString read FDescription write FDescription;
   end;
 
-  { TDiscounts }
+  { TAdjustments }
 
-  TDiscounts = class
+  TAdjustments = class
   private
     FList: TList;
     function GetCount: Integer;
-    function GetItem(Index: Integer): TDiscount;
+    function GetItem(Index: Integer): TAdjustment;
   public
     constructor Create;
     destructor Destroy; override;
 
-    function Add: TDiscount;
+    function Add: TAdjustment;
     function GetTotal: Currency;
+    function GetCharges: Currency;
+    function GetDiscounts: Currency;
     procedure Clear;
-    procedure InsertItem(AItem: TDiscount);
-    procedure RemoveItem(AItem: TDiscount);
-    procedure Assign(Items: TDiscounts);
-    procedure Insert(Index: Integer; AItem: TDiscount);
+    procedure InsertItem(AItem: TAdjustment);
+    procedure RemoveItem(AItem: TAdjustment);
+    procedure Assign(Items: TAdjustments);
+    procedure Insert(Index: Integer; AItem: TAdjustment);
 
     property Count: Integer read GetCount;
-    property Items[Index: Integer]: TDiscount read GetItem; default;
+    property Items[Index: Integer]: TAdjustment read GetItem; default;
   end;
 
-  { TDiscount }
+  { TAdjustment }
 
-  TDiscount = class
+  TAdjustment = class
   private
-    FOwner: TDiscounts;
+    FOwner: TAdjustments;
     FTotal: Currency;
     FAmount: Currency;
     FVatInfo: Integer;
     FAdjustmentType: Integer;
     FDescription: WideString;
-    procedure SetOwner(AOwner: TDiscounts);
+    procedure SetOwner(AOwner: TAdjustments);
   public
-    constructor Create(AOwner: TDiscounts);
+    constructor Create(AOwner: TAdjustments);
     destructor Destroy; override;
-    procedure Assign(Item: TDiscount);
+    procedure Assign(Item: TAdjustment);
 
     property Total: Currency read FTotal write FTotal;
     property Amount: Currency read FAmount write FAmount;
@@ -199,12 +201,12 @@ constructor TReceiptItem.Create(AOwner: TReceiptItems);
 begin
   inherited Create;
   SetOwner(AOwner);
-  FDiscounts := TDiscounts.Create;
+  FAdjustments := TAdjustments.Create;
 end;
 
 destructor TReceiptItem.Destroy;
 begin
-  FDiscounts.Free;
+  FAdjustments.Free;
   SetOwner(nil);
   inherited Destroy;
 end;
@@ -220,7 +222,7 @@ end;
 
 function TReceiptItem.GetTotal: Currency;
 begin
-  Result := FPrice - FDiscounts.GetTotal;
+  Result := FPrice - FAdjustments.GetTotal;
 end;
 
 procedure TReceiptItem.Assign(Item: TReceiptItem);
@@ -237,59 +239,59 @@ begin
     FUnitPrice := Src.UnitPrice;
     FUnitName := Src.UnitName;
     FDescription := Src.Description;
-    FDiscounts.Assign(Src.Discounts);
+    FAdjustments.Assign(Src.Adjustments);
   end;
 end;
 
-{ TDiscounts }
+{ TAdjustments }
 
-constructor TDiscounts.Create;
+constructor TAdjustments.Create;
 begin
   inherited Create;
   FList := TList.Create;
 end;
 
-destructor TDiscounts.Destroy;
+destructor TAdjustments.Destroy;
 begin
   Clear;
   FList.Free;
   inherited Destroy;
 end;
 
-procedure TDiscounts.Clear;
+procedure TAdjustments.Clear;
 begin
   while Count > 0 do Items[0].Free;
 end;
 
-function TDiscounts.GetCount: Integer;
+function TAdjustments.GetCount: Integer;
 begin
   Result := FList.Count;
 end;
 
-function TDiscounts.GetItem(Index: Integer): TDiscount;
+function TAdjustments.GetItem(Index: Integer): TAdjustment;
 begin
   Result := FList[Index];
 end;
 
-procedure TDiscounts.Insert(Index: Integer; AItem: TDiscount);
+procedure TAdjustments.Insert(Index: Integer; AItem: TAdjustment);
 begin
   FList.Insert(Index, AItem);
   AItem.FOwner := Self;
 end;
 
-procedure TDiscounts.InsertItem(AItem: TDiscount);
+procedure TAdjustments.InsertItem(AItem: TAdjustment);
 begin
   FList.Add(AItem);
   AItem.FOwner := Self;
 end;
 
-procedure TDiscounts.RemoveItem(AItem: TDiscount);
+procedure TAdjustments.RemoveItem(AItem: TAdjustment);
 begin
   AItem.FOwner := nil;
   FList.Remove(AItem);
 end;
 
-function TDiscounts.GetTotal: Currency;
+function TAdjustments.GetTotal: Currency;
 var
   i: Integer;
 begin
@@ -298,40 +300,69 @@ begin
     Result := Result + Items[i].Total;
 end;
 
-procedure TDiscounts.Assign(Items: TDiscounts);
+function TAdjustments.GetCharges: Currency;
 var
   i: Integer;
-  Item: TDiscount;
+  Amount: Currency;
+begin
+  Result := 0;
+  for i := 0 to Count-1 do
+  begin
+    Amount := Items[i].Total;
+    if Amount < 0 then
+      Result := Result + Amount;
+  end;
+  Result := Abs(Result);
+end;
+
+function TAdjustments.GetDiscounts: Currency;
+var
+  i: Integer;
+  Amount: Currency;
+begin
+  Result := 0;
+  for i := 0 to Count-1 do
+  begin
+    Amount := Items[i].Total;
+    if Amount > 0 then
+      Result := Result + Amount;
+  end;
+end;
+
+procedure TAdjustments.Assign(Items: TAdjustments);
+var
+  i: Integer;
+  Item: TAdjustment;
 begin
   Clear;
   for i := 0 to Items.Count-1 do
   begin
-    Item := Items[i].ClassType.Create as TDiscount;
+    Item := Items[i].ClassType.Create as TAdjustment;
     InsertItem(Item);
     Item.Assign(Items[i]);
   end;
 end;
 
-function TDiscounts.Add: TDiscount;
+function TAdjustments.Add: TAdjustment;
 begin
-  Result := TDiscount.Create(Self);
+  Result := TAdjustment.Create(Self);
 end;
 
-{ TDiscount }
+{ TAdjustment }
 
-constructor TDiscount.Create(AOwner: TDiscounts);
+constructor TAdjustment.Create(AOwner: TAdjustments);
 begin
   inherited Create;
   SetOwner(AOwner);
 end;
 
-destructor TDiscount.Destroy;
+destructor TAdjustment.Destroy;
 begin
   SetOwner(nil);
   inherited Destroy;
 end;
 
-procedure TDiscount.SetOwner(AOwner: TDiscounts);
+procedure TAdjustment.SetOwner(AOwner: TAdjustments);
 begin
   if AOwner <> FOwner then
   begin
@@ -340,13 +371,13 @@ begin
   end;
 end;
 
-procedure TDiscount.Assign(Item: TDiscount);
+procedure TAdjustment.Assign(Item: TAdjustment);
 var
-  Src: TDiscount;
+  Src: TAdjustment;
 begin
-  if Item is TDiscount then
+  if Item is TAdjustment then
   begin
-    Src := Item as TDiscount;
+    Src := Item as TAdjustment;
 
     FAmount := Src.Amount;
     FVatInfo := Src.VatInfo;
