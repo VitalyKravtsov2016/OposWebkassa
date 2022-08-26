@@ -53,8 +53,8 @@ uses
   RecPrinter in '..\OposWebkassa\units\RecPrinter.pas',
   PrinterParametersReg in '..\Shared\PrinterParametersReg.pas',
   fmuFptrMiscParams in 'Fmu\fmuFptrMiscParams.pas' {fmFptrMiscParams},
-  fmuFptrVatCode in 'Fmu\fmuFptrVatCode.pas' {fmFptrVatCode},
-  VatCode in '..\Shared\VatCode.pas',
+  fmuFptrVatRate in 'Fmu\fmuFptrVatRate.pas' {fmFptrVatRate},
+  VatRate in '..\Shared\VatRate.pas',
   uLkJSON in '..\Shared\uLkJSON.pas',
   fmuFptrPayType in 'Fmu\fmuFptrPayType.pas' {fmFptrPayType};
 

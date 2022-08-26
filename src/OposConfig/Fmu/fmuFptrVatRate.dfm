@@ -1,4 +1,4 @@
-object fmFptrVatCode: TfmFptrVatCode
+object fmFptrVatRate: TfmFptrVatRate
   Left = 663
   Top = 186
   AutoScroll = False
@@ -114,7 +114,7 @@ object fmFptrVatCode: TfmFptrVatCode
     Caption = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1085#1072#1083#1086#1075#1086#1074#1099#1077' '#1089#1090#1072#1074#1082#1080
     TabOrder = 5
   end
-  object edtVATRate: TEdit
+  object edtVatRate: TEdit
     Left = 104
     Top = 48
     Width = 145

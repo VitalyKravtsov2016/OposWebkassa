@@ -30,6 +30,7 @@ type
     procedure FptrCheck(Code: Integer);
 
     property Driver: TWebkassaImpl read FDriver;
+    procedure CheckTotal(Amount: Currency);
   protected
     procedure SetUp; override;
     procedure TearDown; override;
@@ -44,6 +45,7 @@ type
     procedure TestFiscalReceipt2;
     procedure TestFiscalReceipt3;
     procedure TestFiscalReceiptWithVAT;
+    procedure TestFiscalReceiptWithAdjustments;
   end;
 
 implementation
@@ -273,9 +275,9 @@ end;
 
 procedure TWebkassaImplTest.TestFiscalReceiptWithVAT;
 begin
-  FDriver.Params.VatCodes.Clear;
-  FDriver.Params.VatCodes.Add(4, 12, 'Tax1');
-  FDriver.Params.VatCodeEnabled := True;
+  FDriver.Params.VatRates.Clear;
+  FDriver.Params.VatRates.Add(4, 12, 'Tax1');
+  FDriver.Params.VatRateEnabled := True;
   FDriver.Params.RoundType := RoundTypeItems;
 
   OpenClaimEnable;
@@ -287,10 +289,73 @@ begin
   FptrCheck(Driver.BeginFiscalReceipt(True));
   FptrCheck(Driver.PrintRecItem('Киви в корзинке Астана', 620, 1000, 4, 620, 'шт'));
   FptrCheck(Driver.PrintRecItem('Americano 180мл', 400, 1000, 4, 400, 'шт'));
-  FptrCheck(Driver.PrintRecItemAdjustment(1, '98', 40, 4));
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_DISCOUNT, '98', 40, 4));
   FptrCheck(Driver.PrintRecTotal(980, 980, '0'));
   FptrCheck(Driver.EndFiscalReceipt(False));
 end;
+
+procedure TWebkassaImplTest.CheckTotal(Amount: Currency);
+var
+  IData: Integer;
+  Data: WideString;
+  Total: Currency;
+begin
+  CheckEquals(0, Driver.GetData(FPTR_GD_CURRENT_TOTAL, IData, Data));
+  Total := StrToCurr(Data);
+  CheckEquals(Amount, Total, 'Total');
+end;
+
+procedure TWebkassaImplTest.TestFiscalReceiptWithAdjustments;
+begin
+  FDriver.Params.VatRates.Clear;
+  FDriver.Params.VatRates.Add(4, 12, 'Tax1');
+  FDriver.Params.VatRateEnabled := True;
+  FDriver.Params.RoundType := RoundTypeItems;
+
+  OpenClaimEnable;
+  Driver.SetPropertyNumber(PIDXFptr_CheckTotal, 1);
+  CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
+  CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
+  CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
+
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+  CheckTotal(0);
+  FptrCheck(Driver.PrintRecItem('Киви в корзинке Астана', 620, 1000, 4, 620, 'шт'));
+  CheckTotal(620);
+  FptrCheck(Driver.PrintRecItem('Americano 180мл', 400, 1000, 4, 400, 'шт'));
+  CheckTotal(1020);
+  // Item adjustments
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка 40', 40, 4));
+  CheckTotal(980);
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_SURCHARGE, 'Надбавка 12', 12, 4));
+  CheckTotal(992);
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_PERCENTAGE_DISCOUNT, 'Скидка 10%', 10, 4));
+  CheckTotal(955);
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_PERCENTAGE_SURCHARGE, 'Надбавка 5%', 5, 4));
+  CheckTotal(972);
+  // Total adjustments
+  FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка 10', 10));
+  CheckTotal(962);
+  FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_AMOUNT_SURCHARGE, 'Надбавка 5', 5));
+  CheckTotal(967);
+  FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_PERCENTAGE_DISCOUNT, 'Скидка 10%', 10));
+  CheckTotal(870);
+  FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_PERCENTAGE_SURCHARGE, 'Надбавка 5%', 5));
+  CheckTotal(914);
+
+  FptrCheck(Driver.PrintRecTotal(914, 1000, '0'));
+  FptrCheck(Driver.EndFiscalReceipt(False));
+end;
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Проверить чек возврата
+// Проверить чек возврата со скидками
+// Проверить запросы getData
+//
+///////////////////////////////////////////////////////////////////////////////
+
 
 initialization
   RegisterTest('', TWebkassaImplTest.Suite);

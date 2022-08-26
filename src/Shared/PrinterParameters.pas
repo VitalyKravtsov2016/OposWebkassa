@@ -10,7 +10,7 @@ uses
   // Opos
   Opos, Oposhi, OposException,
   // This
-  WException, LogFile, FileUtils, VatCode;
+  WException, LogFile, FileUtils, VatRate;
 
 const
   FiscalPrinterProgID = 'OposWebkassa.FiscalPrinter';
@@ -38,7 +38,7 @@ const
     'Trailer line 3'#13#10 +
     'Trailer line 4';
 
-  DefVatCodeEnabled = True;
+  DefVatRateEnabled = True;
   DefLogin = 'webkassa4@softit.kz';
   DefPassword = 'Kassa123';
   DefConnectTimeout = 10;
@@ -47,6 +47,7 @@ const
   DefPrinterName = '';
   DefPrinterType = 0;
   DefRoundType = 2; // Îêðóãëåíèå ïîçèöèé
+  DefVATNumber = '';
 
   /////////////////////////////////////////////////////////////////////////////
   // Header and trailer parameters
@@ -76,12 +77,13 @@ type
     FCashboxNumber: WideString;
     FPrinterName: WideString;
     FPrinterType: Integer;
-    FVatCodes: TVatCodes;
-    FVatCodeEnabled: Boolean;
+    FVatRates: TVatRates;
+    FVatRateEnabled: Boolean;
     FPaymentType2: Integer;
     FPaymentType3: Integer;
     FPaymentType4: Integer;
     FRoundType: Integer;
+    FVATNumber: WideString;
 
     procedure LogText(const Caption, Text: WideString);
     procedure SetNumHeaderLines(const Value: Integer);
@@ -109,12 +111,13 @@ type
     property PrinterName: WideString read FPrinterName write FPrinterName;
     property PrinterType: Integer read FPrinterType write FPrinterType;
     property CashboxNumber: WideString read FCashboxNumber write FCashboxNumber;
-    property VatCodes: TVatCodes read FVatCodes;
-    property VatCodeEnabled: Boolean read FVatCodeEnabled write FVatCodeEnabled;
+    property VatRates: TVatRates read FVatRates;
+    property VatRateEnabled: Boolean read FVatRateEnabled write FVatRateEnabled;
     property PaymentType2: Integer read FPaymentType2 write FPaymentType2;
     property PaymentType3: Integer read FPaymentType3 write FPaymentType3;
     property PaymentType4: Integer read FPaymentType4 write FPaymentType4;
     property RoundType: Integer read FRoundType write FRoundType;
+    property VATNumber: WideString read FVATNumber write FVATNumber;
   end;
 
 implementation
@@ -125,13 +128,13 @@ constructor TPrinterParameters.Create(ALogger: ILogFile);
 begin
   inherited Create;
   FLogger := ALogger;
-  FVatCodes := TVatCodes.Create;
+  FVatRates := TVatRates.Create;
   SetDefaults;
 end;
 
 destructor TPrinterParameters.Destroy;
 begin
-  FVatCodes.Free;
+  FVatRates.Free;
   inherited Destroy;
 end;
 
@@ -152,22 +155,18 @@ begin
   FLogFileEnabled := DefLogFileEnabled;
   FNumHeaderLines := DefNumHeaderLines;
   FNumTrailerLines := DefNumTrailerLines;
-  VatCodeEnabled := DefVatCodeEnabled;
+  VatRateEnabled := DefVatRateEnabled;
   PaymentType2 := 1;
   PaymentType3 := 2;
   PaymentType4 := 3;
   PrinterName := DefPrinterName;
   PrinterType := DefPrinterType;
   RoundType := DefRoundType;
+  VATNumber := DefVATNumber;
 
-  // VatCodes
-  VatCodes.Clear;
-  VatCodes.Add(1, 20, 'ÍÄÑ 20%');     // ÍÄÑ 20%
-  VatCodes.Add(2, 10, 'ÍÄÑ 10%');     // ÍÄÑ 10%
-  VatCodes.Add(3, 0, 'ÍÄÑ 0%');       // ÍÄÑ 0%
-  VatCodes.Add(4, 0, 'ÁÅÇ ÍÄÑ');      // ÁÅÇ ÍÄÑ
-  VatCodes.Add(5, 20, 'ÍÄÑ 20/120');  // ÍÄÑ 20/120
-  VatCodes.Add(6, 10, 'ÍÄÑ 10/110');  // ÍÄÑ 10/110
+  // VatRates
+  VatRates.Clear;
+  VatRates.Add(1, 12, 'ÍÄÑ 12%'); // ÍÄÑ 12%
 end;
 
 procedure TPrinterParameters.LogText(const Caption, Text: WideString);
@@ -196,7 +195,7 @@ end;
 procedure TPrinterParameters.WriteLogParameters;
 var
   i: Integer;
-  VatCode: TVatCode;
+  VatRate: TVatRate;
 begin
   Logger.Debug('TPrinterParameters.WriteLogParameters');
   Logger.Debug(Logger.Separator);
@@ -217,14 +216,15 @@ begin
   Logger.Debug('PaymentType2: ' + IntToStr(PaymentType2));
   Logger.Debug('PaymentType3: ' + IntToStr(PaymentType3));
   Logger.Debug('PaymentType4: ' + IntToStr(PaymentType4));
-  Logger.Debug('VatCodeEnabled: ' + BoolToStr(VatCodeEnabled));
+  Logger.Debug('VatRateEnabled: ' + BoolToStr(VatRateEnabled));
   Logger.Debug('RoundType: ' + IntToStr(RoundType));
-  // VatCodes
-  for i := 0 to VatCodes.Count-1 do
+  Logger.Debug('VATNumber: ' + VATNumber);
+  // VatRates
+  for i := 0 to VatRates.Count-1 do
   begin
-    VatCode := VatCodes[i];
+    VatRate := VatRates[i];
     Logger.Debug(Format('VAT: code=%d, rate=%.2f, name="%s"', [
-      VatCode.Code, VatCode.Rate, VatCode.Name]));
+      VatRate.Code, VatRate.Rate, VatRate.Name]));
   end;
   Logger.Debug(Logger.Separator);
 end;

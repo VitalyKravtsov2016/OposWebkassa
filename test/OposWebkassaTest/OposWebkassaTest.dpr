@@ -53,7 +53,7 @@ uses
   PrinterParametersReg in '..\..\src\Shared\PrinterParametersReg.pas',
   PrinterLines in '..\..\src\OposWebkassa\units\PrinterLines.pas',
   uLkJSON in '..\..\src\Shared\uLkJSON.pas',
-  VatCode in '..\..\src\Shared\VatCode.pas',
+  VatRate in '..\..\src\Shared\VatRate.pas',
   duPrinterParameters in 'units\duPrinterParameters.pas',
   duWebkassaImpl in 'units\duWebkassaImpl.pas',
   MockPosPrinter in 'units\MockPosPrinter.pas',

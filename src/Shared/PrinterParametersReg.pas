@@ -9,7 +9,7 @@ uses
   TntClasses, TntStdCtrls, TntRegistry, TntSysUtils,
   // This
   PrinterParameters, LogFile, Oposhi, WException, gnugettext,
-  DriverError, VatCode;
+  DriverError, VatRate;
 
 type
   { TPrinterParametersReg }
@@ -49,7 +49,7 @@ procedure SaveUsrParametersReg(Item: TPrinterParameters;
 implementation
 
 const
-  REG_KEY_VATCODES  = 'VatCodes';
+  REG_KEY_VatRateS  = 'VatRates';
   REG_KEY_PAYTYPES  = 'PaymentTypes';
   REGSTR_KEY_IBT = 'SOFTWARE\POSITIVE\POSITIVE32\Terminal';
 
@@ -192,8 +192,8 @@ begin
       if Reg.ValueExists('PrinterType') then
         Parameters.PrinterType := Reg.ReadInteger('PrinterType');
 
-      if Reg.ValueExists('VatCodeEnabled') then
-        Parameters.VatCodeEnabled := Reg.ReadBool('VatCodeEnabled');
+      if Reg.ValueExists('VatRateEnabled') then
+        Parameters.VatRateEnabled := Reg.ReadBool('VatRateEnabled');
 
       if Reg.ValueExists('PaymentType2') then
         Parameters.PaymentType2 := Reg.ReadInteger('PaymentType2');
@@ -207,12 +207,15 @@ begin
       if Reg.ValueExists('RoundType') then
         Parameters.RoundType := Reg.ReadInteger('RoundType');
 
+      if Reg.ValueExists('VATNumber') then
+        Parameters.VATNumber := Reg.ReadString('VATNumber');
+
       Reg.CloseKey;
     end;
-    // VatCodes
-    if Reg.OpenKey(KeyName + '\' + REG_KEY_VATCODES, False) then
+    // VatRates
+    if Reg.OpenKey(KeyName + '\' + REG_KEY_VatRateS, False) then
     begin
-      Parameters.VatCodes.Clear;
+      Parameters.VatRates.Clear;
       Names := TTntStringList.Create;
       try
         Reg.GetKeyNames(Names);
@@ -220,14 +223,14 @@ begin
 
         for i := 0 to Names.Count-1 do
         begin
-          if Reg.OpenKey(KeyName + '\' + REG_KEY_VATCODES, False) then
+          if Reg.OpenKey(KeyName + '\' + REG_KEY_VatRateS, False) then
           begin
             if Reg.OpenKey(Names[i], False) then
             begin
               VatCode := Reg.ReadInteger('Code');
               VatRate := Reg.ReadFloat('Rate');
               VatName := Reg.ReadString('Name');
-              Parameters.VatCodes.Add(VatCode, VatRate, VatName);
+              Parameters.VatRates.Add(VatCode, VatRate, VatName);
               Reg.CloseKey;
             end;
           end;
@@ -244,7 +247,7 @@ end;
 procedure TPrinterParametersReg.SaveSysParameters(const DeviceName: WideString);
 var
   i: Integer;
-  Item: TVatCode;
+  Item: TVatRate;
   Reg: TTntRegistry;
   KeyName: WideString;
 begin
@@ -272,17 +275,18 @@ begin
     Reg.WriteInteger('PaymentType2', FParameters.PaymentType2);
     Reg.WriteInteger('PaymentType3', FParameters.PaymentType3);
     Reg.WriteInteger('PaymentType4', FParameters.PaymentType4);
-    Reg.WriteBool('VatCodeEnabled', FParameters.VatCodeEnabled);
+    Reg.WriteBool('VatRateEnabled', FParameters.VatRateEnabled);
     Reg.WriteInteger('RoundType', FParameters.RoundType);
+    Reg.WriteString('VATNumber', FParameters.VATNumber);
 
     Reg.CloseKey;
-    // VatCodes
-    Reg.DeleteKey(KeyName + '\' + REG_KEY_VATCODES);
-    for i := 0 to Parameters.VatCodes.Count-1 do
+    // VatRates
+    Reg.DeleteKey(KeyName + '\' + REG_KEY_VatRateS);
+    for i := 0 to Parameters.VatRates.Count-1 do
     begin
-      if Reg.OpenKey(KeyName + '\' + REG_KEY_VATCODES, True) then
+      if Reg.OpenKey(KeyName + '\' + REG_KEY_VatRateS, True) then
       begin
-        Item := Parameters.VatCodes[i];
+        Item := Parameters.VatRates[i];
         if Reg.OpenKey(IntToStr(i), True) then
         begin
           Reg.WriteInteger('Code', Item.Code);

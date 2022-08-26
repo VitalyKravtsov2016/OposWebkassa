@@ -1,4 +1,4 @@
-unit fmuFptrVatCode;
+unit fmuFptrVatRate;
 
 interface
 
@@ -13,7 +13,7 @@ uses
 type
   { TfmFptrVatCode }
 
-  TfmFptrVatCode = class(TFptrPage)
+  TfmFptrVatRate = class(TFptrPage)
     lblVatCode: TTntLabel;
     lblVatRate: TTntLabel;
     lvVatCodes: TListView;
@@ -23,7 +23,7 @@ type
     edtVatName: TEdit;
     TntLabel1: TTntLabel;
     chbVatCodeEnabled: TCheckBox;
-    edtVATRate: TEdit;
+    edtVatRate: TEdit;
     procedure btnAddClick(Sender: TObject);
     procedure btnDeleteClick(Sender: TObject);
     procedure PageChange(Sender: TObject);
@@ -40,7 +40,7 @@ implementation
 
 { TfmFptrVatCode }
 
-procedure TfmFptrVatCode.UpdateItems;
+procedure TfmFptrVatRate.UpdateItems;
 var
   i: Integer;
   Item: TListItem;
@@ -50,41 +50,41 @@ begin
     Items.BeginUpdate;
     try
       Items.Clear;
-		  for i := 0 to Parameters.VatCodes.Count-1 do
+		  for i := 0 to Parameters.VatRates.Count-1 do
       begin
         Item := Items.Add;
-        Item.Caption := IntToStr(Parameters.VatCodes[i].Code);
-        Item.SubItems.Add(Format('%.2f', [Parameters.VatCodes[i].Rate]));
-        Item.SubItems.Add(Parameters.VatCodes[i].Name);
+        Item.Caption := IntToStr(Parameters.VatRates[i].Code);
+        Item.SubItems.Add(Format('%.2f', [Parameters.VatRates[i].Rate]));
+        Item.SubItems.Add(Parameters.VatRates[i].Name);
         if i = 0 then
         begin
           Item.Focused := True;
           Item.Selected := True;
         end;
       end;
-      btnDelete.Enabled := Parameters.VatCodes.Count > 0;
+      btnDelete.Enabled := Parameters.VatRates.Count > 0;
     finally
       Items.EndUpdate;
     end;
   end;
 end;
 
-procedure TfmFptrVatCode.UpdatePage;
+procedure TfmFptrVatRate.UpdatePage;
 begin
   UpdateItems;
-  chbVatCodeEnabled.Checked := Parameters.VatCodeEnabled;
+  chbVatCodeEnabled.Checked := Parameters.VatRateEnabled;
 end;
 
-procedure TfmFptrVatCode.UpdateObject;
+procedure TfmFptrVatRate.UpdateObject;
 begin
-  Parameters.VatCodeEnabled := chbVatCodeEnabled.Checked;
+  Parameters.VatRateEnabled := chbVatCodeEnabled.Checked;
 end;
 
-procedure TfmFptrVatCode.btnAddClick(Sender: TObject);
+procedure TfmFptrVatRate.btnAddClick(Sender: TObject);
 var
   Item: TListItem;
 begin
-  Parameters.VatCodes.Add(seVatCode.Value, StrToFloat(edtVatRate.Text),
+  Parameters.VatRates.Add(seVatCode.Value, StrToFloat(edtVatRate.Text),
     edtVatName.Text);
 
   Item := lvVatCodes.Items.Add;
@@ -98,7 +98,7 @@ begin
   Modified;
 end;
 
-procedure TfmFptrVatCode.btnDeleteClick(Sender: TObject);
+procedure TfmFptrVatRate.btnDeleteClick(Sender: TObject);
 var
   Index: Integer;
   Item: TListItem;
@@ -107,7 +107,7 @@ begin
   if Item <> nil then
   begin
     Index := Item.Index;
-  	Parameters.VatCodes[Index].Free;
+  	Parameters.VatRates[Index].Free;
     Item.Delete;
     if Index >= lvVatCodes.Items.Count then
       Index := lvVatCodes.Items.Count-1;
@@ -122,7 +122,7 @@ begin
   end;
 end;
 
-procedure TfmFptrVatCode.PageChange(Sender: TObject);
+procedure TfmFptrVatRate.PageChange(Sender: TObject);
 begin
   Modified;
 end;

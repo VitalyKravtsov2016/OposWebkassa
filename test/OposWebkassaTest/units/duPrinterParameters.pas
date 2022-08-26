@@ -61,14 +61,15 @@ begin
   FParams.CashboxNumber := '2de9h9347r';
   FParams.PrinterName := '2138e09uhi432uy';
   FParams.PrinterType := 0;
-  FParams.VatCodes.Clear;
-  FParams.VatCodes.Add(123, 34.45, '2j3erkuy237');
-  FParams.VatCodes.Add(546, 34.67, '2j3erkuy237');
-  FParams.VatCodeEnabled := False;
+  FParams.VatRates.Clear;
+  FParams.VatRates.Add(123, 34.45, '2j3erkuy237');
+  FParams.VatRates.Add(546, 34.67, '2j3erkuy237');
+  FParams.VatRateEnabled := False;
   FParams.PaymentType2 := 0;
   FParams.PaymentType3 := 0;
   FParams.PaymentType4 := 0;
   FParams.RoundType := 1;
+  FParams.VATNumber := '1234';
 end;
 
 procedure TPrinterParametersTest.CheckNonDefaultParams;
@@ -87,15 +88,16 @@ begin
   CheckEquals('2de9h9347r', FParams.CashboxNumber, 'CashboxNumber');
   CheckEquals('2138e09uhi432uy', FParams.PrinterName, 'PrinterName');
   CheckEquals(0, FParams.PrinterType, 'PrinterType');
-  CheckEquals(2, FParams.VatCodes.Count, 'VatCodes.Count');
-  CheckEquals(123, FParams.VatCodes[0].Code, 'VatCodes[0].Code');
-  CheckEquals(34.45, FParams.VatCodes[0].Rate, 0.001, 'VatCodes[0].Rate');
-  CheckEquals('2j3erkuy237', FParams.VatCodes[0].Name, 'VatCodes[0].Name');
-  CheckEquals(False, FParams.VatCodeEnabled, 'VatCodeEnabled');
+  CheckEquals(2, FParams.VatRates.Count, 'VatRates.Count');
+  CheckEquals(123, FParams.VatRates[0].Code, 'VatRates[0].Code');
+  CheckEquals(34.45, FParams.VatRates[0].Rate, 0.001, 'VatRates[0].Rate');
+  CheckEquals('2j3erkuy237', FParams.VatRates[0].Name, 'VatRates[0].Name');
+  CheckEquals(False, FParams.VatRateEnabled, 'VatRateEnabled');
   CheckEquals(0, FParams.PaymentType2, 'PaymentType2');
   CheckEquals(0, FParams.PaymentType3, 'PaymentType3');
   CheckEquals(0, FParams.PaymentType4, 'PaymentType4');
   CheckEquals(1, FParams.RoundType, 'RoundType');
+  CheckEquals('1234', FParams.VATNumber, 'VATNumber');
 end;
 
 
@@ -114,15 +116,16 @@ begin
   CheckEquals(DefCashboxNumber, FParams.CashboxNumber, 'CashboxNumber');
   CheckEquals(DefPrinterName, FParams.PrinterName, 'PrinterName');
   CheckEquals(DefPrinterType, FParams.PrinterType, 'PrinterType');
-  CheckEquals(6, FParams.VatCodes.Count, 'VatCodes.Count');
-  CheckEquals(1, FParams.VatCodes[0].Code, 'VatCodes[0].Code');
-  CheckEquals(20, FParams.VatCodes[0].Rate, 0.001, 'VatCodes[0].Rate');
-  CheckEquals('ÍÄÑ 20%', FParams.VatCodes[0].Name, 'VatCodes[0].Name');
-  CheckEquals(False, FParams.VatCodeEnabled, 'VatCodeEnabled');
+  CheckEquals(1, FParams.VatRates.Count, 'VatRates.Count');
+  CheckEquals(1, FParams.VatRates[0].Code, 'VatRates[0].Code');
+  CheckEquals(12, FParams.VatRates[0].Rate, 0.001, 'VatRates[0].Rate');
+  CheckEquals('ÍÄÑ 12%', FParams.VatRates[0].Name, 'VatRates[0].Name');
+  CheckEquals(True, FParams.VatRateEnabled, 'VatRateEnabled');
   CheckEquals(1, FParams.PaymentType2, 'PaymentType2');
   CheckEquals(2, FParams.PaymentType3, 'PaymentType3');
   CheckEquals(3, FParams.PaymentType4, 'PaymentType4');
   CheckEquals(DefRoundType, FParams.RoundType, 'RoundType');
+  CheckEquals(DefVATNumber, FParams.VATNumber, 'VATNumber');
 end;
 
 procedure TPrinterParametersTest.CheckSetDefaults;

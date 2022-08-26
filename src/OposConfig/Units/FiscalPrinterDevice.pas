@@ -52,7 +52,7 @@ implementation
 
 uses
   fmuFptrConnection, fmuPrinter, fmuFptrLog, fmuFptrHeader, fmuFptrTrailer,
-  fmuFptrVatCode, fmuFptrPayType, fmuFptrMiscParams;
+  fmuFptrVatRate, fmuFptrPayType, fmuFptrMiscParams;
 
 { TFiscalPrinterDevice }
 
@@ -103,7 +103,7 @@ begin
     AddPage(fm, TfmFptrHeader);
     AddPage(fm, TfmFptrTrailer);
     AddPage(fm, TfmFptrPayType);
-    AddPage(fm, TfmFptrVatCode);
+    AddPage(fm, TfmFptrVatRate);
     AddPage(fm, TfmFptrMiscParams);
 
     fm.Init;

@@ -1,4 +1,4 @@
-unit VatCode;
+unit VatRate;
 
 interface
 
@@ -7,39 +7,39 @@ Uses
   Classes, SysUtils, WException, gnugettext, Math;
 
 type
-  TVatCode = class;
+  TVatRate = class;
 
-  { TVatCodes }
+  { TVatRates }
 
-  TVatCodes = class
+  TVatRates = class
   private
     FList: TList;
     function GetCount: Integer;
-    function GetItem(Index: Integer): TVatCode;
-    procedure InsertItem(AItem: TVatCode);
-    procedure RemoveItem(AItem: TVatCode);
+    function GetItem(Index: Integer): TVatRate;
+    procedure InsertItem(AItem: TVatRate);
+    procedure RemoveItem(AItem: TVatRate);
   public
     constructor Create;
     destructor Destroy; override;
     procedure Clear;
-    function Add(ACode: Integer; ARate: Double; const AName: string): TVatCode;
-    function ItemByCode(Code: Integer): TVatCode;
+    function Add(ACode: Integer; ARate: Double; const AName: string): TVatRate;
+    function ItemByCode(Code: Integer): TVatRate;
 
     property Count: Integer read GetCount;
-    property Items[Index: Integer]: TVatCode read GetItem; default;
+    property Items[Index: Integer]: TVatRate read GetItem; default;
   end;
 
-  { TVatCode }
+  { TVatRate }
 
-  TVatCode = class
+  TVatRate = class
   private
-    FOwner: TVatCodes;
+    FOwner: TVatRates;
     FCode: Integer;
     FRate: Double;
     FName: WideString;
-    procedure SetOwner(AOwner: TVatCodes);
+    procedure SetOwner(AOwner: TVatRates);
   public
-    constructor Create(AOwner: TVatCodes; ACode: Integer; ARate: Double;
+    constructor Create(AOwner: TVatRates; ACode: Integer; ARate: Double;
       const AName: string);
     destructor Destroy; override;
 
@@ -52,54 +52,54 @@ type
 
 implementation
 
-{ TVatCodes }
+{ TVatRates }
 
-constructor TVatCodes.Create;
+constructor TVatRates.Create;
 begin
   inherited Create;
   FList := TList.Create;
 end;
 
-destructor TVatCodes.Destroy;
+destructor TVatRates.Destroy;
 begin
   Clear;
   FList.Free;
   inherited Destroy;
 end;
 
-procedure TVatCodes.Clear;
+procedure TVatRates.Clear;
 begin
   while Count > 0 do Items[0].Free;
 end;
 
-function TVatCodes.GetCount: Integer;
+function TVatRates.GetCount: Integer;
 begin
   Result := FList.Count;
 end;
 
-function TVatCodes.GetItem(Index: Integer): TVatCode;
+function TVatRates.GetItem(Index: Integer): TVatRate;
 begin
   Result := FList[Index];
 end;
 
-procedure TVatCodes.InsertItem(AItem: TVatCode);
+procedure TVatRates.InsertItem(AItem: TVatRate);
 begin
   FList.Add(AItem);
   AItem.FOwner := Self;
 end;
 
-procedure TVatCodes.RemoveItem(AItem: TVatCode);
+procedure TVatRates.RemoveItem(AItem: TVatRate);
 begin
   AItem.FOwner := nil;
   FList.Remove(AItem);
 end;
 
-function TVatCodes.Add(ACode: Integer; ARate: Double; const AName: string): TVatCode;
+function TVatRates.Add(ACode: Integer; ARate: Double; const AName: string): TVatRate;
 begin
-  Result := TVatCode.Create(Self, ACode, ARate, AName);
+  Result := TVatRate.Create(Self, ACode, ARate, AName);
 end;
 
-function TVatCodes.ItemByCode(Code: Integer): TVatCode;
+function TVatRates.ItemByCode(Code: Integer): TVatRate;
 var
   i: Integer;
 begin
@@ -111,9 +111,9 @@ begin
   Result := nil;
 end;
 
-{ TVatCode }
+{ TVatRate }
 
-constructor TVatCode.Create(AOwner: TVatCodes; ACode: Integer; ARate: Double;
+constructor TVatRate.Create(AOwner: TVatRates; ACode: Integer; ARate: Double;
   const AName: string);
 begin
   inherited Create;
@@ -123,13 +123,13 @@ begin
   FName := AName;
 end;
 
-destructor TVatCode.Destroy;
+destructor TVatRate.Destroy;
 begin
   SetOwner(nil);
   inherited Destroy;
 end;
 
-procedure TVatCode.SetOwner(AOwner: TVatCodes);
+procedure TVatRate.SetOwner(AOwner: TVatRates);
 begin
   if AOwner <> FOwner then
   begin
@@ -138,7 +138,7 @@ begin
   end;
 end;
 
-function TVatCode.GetTax(Amount: Currency): Currency;
+function TVatRate.GetTax(Amount: Currency): Currency;
 begin
   Result := Amount * (Rate/100) / (1 + Rate/100);
   Result := Round(Result * 100) / 100;

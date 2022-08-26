@@ -4,9 +4,9 @@ interface
 
 uses
   // VCL
-  Windows, SysUtils, Forms, Controls, Classes, Messages,
+  Windows, SysUtils, Forms, Controls, Classes, Messages, Math, 
   // Opos
-  OposFptrUtils, OposException, OposFptr,
+  Opos, OposFptrUtils, OposException, OposFptr,
   // Tnt
   TntClasses,
   // This
@@ -25,6 +25,8 @@ type
     FPayments: TPayments;
     FItems: TReceiptItems;
     FAdjustments: TAdjustments;
+    FAmountDecimalPlaces: Integer;
+    function RoundAmount(Amount: Currency): Currency;
   protected
     procedure SetRefundReceipt;
     procedure CheckPrice(Value: Currency);
@@ -37,7 +39,7 @@ type
     procedure SubtotalDiscount(Amount: Currency;
       const Description: WideString);
   public
-    constructor Create(AIsRefund: Boolean);
+    constructor Create(AIsRefund: Boolean; AAmountDecimalPlaces: Integer);
     destructor Destroy; override;
 
     function GetTotal: Currency; override;
@@ -52,6 +54,9 @@ type
     procedure PrintRecItemAdjustment(AdjustmentType: Integer;
       const Description: WideString; Amount: Currency;
       VatInfo: Integer); override;
+
+    procedure PrintRecItemAdjustmentVoid(AdjustmentType: Integer;
+      const Description: WideString; Amount: Currency; VatInfo: Integer); override;
 
     procedure PrintRecPackageAdjustment(AdjustmentType: Integer;
       const Description, VatAdjustment: WideString); override;
@@ -110,6 +115,7 @@ type
     property Footer: TTntStrings read FFooter;
     property Payments: TPayments read FPayments;
     property Adjustments: TAdjustments read FAdjustments;
+    property AmountDecimalPlaces: Integer read FAmountDecimalPlaces;
   end;
 
 implementation
@@ -117,12 +123,37 @@ implementation
 uses
   WebkassaImpl;
 
+procedure CheckPercents(Amount: Currency);
+begin
+  if not((Amount >= 0)and(Amount <= 100)) then
+    raiseExtendedError(OPOS_EFPTR_BAD_ITEM_AMOUNT, _('Invalid percentage'));
+end;
+
+function GetVoidAdjustmentType(AdjustmentType: Integer): Integer;
+begin
+  Result := AdjustmentType;
+  case AdjustmentType of
+    FPTR_AT_AMOUNT_DISCOUNT: Result := FPTR_AT_AMOUNT_SURCHARGE;
+    FPTR_AT_AMOUNT_SURCHARGE: Result := FPTR_AT_AMOUNT_DISCOUNT;
+    FPTR_AT_PERCENTAGE_DISCOUNT: Result := FPTR_AT_PERCENTAGE_SURCHARGE;
+    FPTR_AT_PERCENTAGE_SURCHARGE: Result := FPTR_AT_PERCENTAGE_DISCOUNT;
+  else
+    InvalidParameterValue('AdjustmentType', IntToStr(AdjustmentType));
+  end;
+end;
+
 { TSalesReceipt }
 
-constructor TSalesReceipt.Create(AIsRefund: Boolean);
+constructor TSalesReceipt.Create(AIsRefund: Boolean; AAmountDecimalPlaces: Integer);
 begin
   inherited Create;
   FIsRefund := AIsRefund;
+
+  if not(AAmountDecimalPlaces in [0..4]) then
+    raise Exception.Create('Invalid AmountDecimalPlaces');
+
+  FAmountDecimalPlaces := AAmountDecimalPlaces;
+
   FItems := TReceiptItems.Create;
   FAdjustments := TAdjustments.Create;
   FFooter := TTntStringLIst.Create;
@@ -314,8 +345,8 @@ begin
     FPTR_AT_AMOUNT_DISCOUNT:
     begin
       Discount := GetLastItem.Adjustments.Add;
-      Discount.Amount := Amount;
-      Discount.Total := Amount;
+      Discount.Amount := RoundAmount(Amount);
+      Discount.Total := RoundAmount(Amount);
       Discount.VatInfo := VatInfo;
       Discount.Description := Description;
       Discount.AdjustmentType := AdjustmentType;
@@ -324,17 +355,18 @@ begin
     FPTR_AT_AMOUNT_SURCHARGE:
     begin
       Discount := GetLastItem.Adjustments.Add;
-      Discount.Amount := Amount;
-      Discount.Total := -Amount;
+      Discount.Amount := RoundAmount(Amount);
+      Discount.Total := -RoundAmount(Amount);
       Discount.VatInfo := VatInfo;
       Discount.Description := Description;
       Discount.AdjustmentType := AdjustmentType;
     end;
     FPTR_AT_PERCENTAGE_DISCOUNT:
     begin
+      CheckPercents(Amount);
       Discount := GetLastItem.Adjustments.Add;
       Discount.Amount := Amount;
-      Discount.Total := GetLastItem.GetTotal * Amount/100;
+      Discount.Total := RoundAmount(GetLastItem.GetTotal * Amount/100);
       Discount.VatInfo := VatInfo;
       Discount.Description := Description;
       Discount.AdjustmentType := AdjustmentType;
@@ -342,9 +374,10 @@ begin
 
     FPTR_AT_PERCENTAGE_SURCHARGE:
     begin
+      CheckPercents(Amount);
       Discount := GetLastItem.Adjustments.Add;
       Discount.Amount := Amount;
-      Discount.Total := -GetLastItem.GetTotal * Amount/100;
+      Discount.Total := -RoundAmount(GetLastItem.GetTotal * Amount/100);
       Discount.VatInfo := VatInfo;
       Discount.Description := Description;
       Discount.AdjustmentType := AdjustmentType;
@@ -353,6 +386,15 @@ begin
     InvalidParameterValue('AdjustmentType', IntToStr(AdjustmentType));
   end;
 end;
+
+procedure TSalesReceipt.PrintRecItemAdjustmentVoid(AdjustmentType: Integer;
+  const Description: WideString; Amount: Currency;
+  VatInfo: Integer);
+begin
+  AdjustmentType := GetVoidAdjustmentType(AdjustmentType);
+  PrintRecItemAdjustment(AdjustmentType, Description, Amount, VatInfo);
+end;
+
 
 procedure TSalesReceipt.PrintRecPackageAdjustment(
   AdjustmentType: Integer;
@@ -433,12 +475,14 @@ begin
 
     FPTR_AT_PERCENTAGE_DISCOUNT:
     begin
+      CheckPercents(Amount);
       Amount := GetTotal * Amount/100;
       SubtotalDiscount(Amount, Description);
     end;
 
     FPTR_AT_PERCENTAGE_SURCHARGE:
     begin
+      CheckPercents(Amount);
       Amount := GetTotal * Amount/100;
       SubtotalDiscount(-Amount, Description);
     end;
@@ -447,13 +491,21 @@ begin
   end;
 end;
 
+function TSalesReceipt.RoundAmount(Amount: Currency): Currency;
+var
+  K: Integer;
+begin
+  K := Round(Power(10, AmountDecimalPlaces));
+  Result := Round(Amount * K) / K;
+end;
+
 procedure TSalesReceipt.SubtotalDiscount(Amount: Currency; const Description: WideString);
 var
   Discount: TAdjustment;
 begin
   Discount := FAdjustments.Add;
-  Discount.Total := Amount;
-  Discount.Amount := Amount;
+  Discount.Total := RoundAmount(Amount);
+  Discount.Amount := Discount.Total;
   Discount.VatInfo := 0;
   Discount.AdjustmentType := 0;
   Discount.Description := Description;
@@ -473,6 +525,7 @@ procedure TSalesReceipt.PrintRecSubtotalAdjustVoid(
   AdjustmentType: Integer; Amount: Currency);
 begin
   CheckNotVoided;
+  AdjustmentType := GetVoidAdjustmentType(AdjustmentType);
   RecSubtotalAdjustment('', AdjustmentType, Amount);
 end;
 

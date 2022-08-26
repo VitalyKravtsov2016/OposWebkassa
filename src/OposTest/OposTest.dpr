@@ -83,7 +83,7 @@ uses
   OposPtr in '..\Opos\OposPtr.pas',
   OposPtrhi in '..\Opos\OposPtrhi.pas',
   PrinterParametersReg in '..\Shared\PrinterParametersReg.pas',
-  VatCode in '..\Shared\VatCode.pas';
+  VatRate in '..\Shared\VatRate.pas';
 
 {$R *.RES}
 {$R WindowsXP.RES}

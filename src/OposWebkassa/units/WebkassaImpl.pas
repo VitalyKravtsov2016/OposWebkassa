@@ -4,7 +4,7 @@ interface
 
 uses
   // VCL
-  Classes, SysUtils, Windows, DateUtils, ActiveX, ComObj,
+  Classes, SysUtils, Windows, DateUtils, ActiveX, ComObj, Math,
   // Tnt
   TntSysUtils,
   // Opos
@@ -20,7 +20,7 @@ uses
   WebkassaClient, FiscalPrinterState, CustomReceipt, NonFiscalDoc, ServiceVersion,
   PrinterParameters, PrinterParametersX, CashInReceipt, CashOutReceipt,
   SalesReceipt, TextDocument, ReceiptItem, StringUtils, PrinterLines,
-  DebugUtils, VatCode;
+  DebugUtils, VatRate;
 
 const
   FPTR_DEVICE_DESCRIPTION = 'WebKassa OPOS driver';
@@ -65,7 +65,8 @@ type
     FMaxRecLineChars: Integer;
     procedure PrintDocumentSafe(Document: TTextDocument);
     procedure CheckCanPrint;
-    function GetVatCode(Code: Integer): TVatCode;
+    function GetVatRate(Code: Integer): TVatRate;
+    function AmountToStr(Value: Currency): AnsiString;
   public
     procedure Initialize;
     procedure CheckEnabled;
@@ -169,8 +170,6 @@ type
     FErrorOutID: Integer;
     FErrorState: Integer;
     FErrorStation: Integer;
-
-    FNumVatRates: Integer;
     FQuantityDecimalPlaces: Integer;
     FQuantityLength: Integer;
     FSlipSelection: Integer;
@@ -400,6 +399,17 @@ begin
   inherited Destroy;
 end;
 
+function TWebkassaImpl.AmountToStr(Value: Currency): AnsiString;
+begin
+  if FAmountDecimalPlaces = 0 then
+  begin
+    Result := IntToStr(Round(Value));
+  end else
+  begin
+    Result := Format('%.*f', [FAmountDecimalPlaces, Value]);
+  end;
+end;
+
 function TWebkassaImpl.GetQuantity(Value: Integer): Double;
 begin
   Result := Value / 1000;
@@ -422,10 +432,10 @@ begin
     FPTR_RT_GENERIC,
     FPTR_RT_SERVICE,
     FPTR_RT_SIMPLE_INVOICE:
-      Result := TSalesReceipt.Create(False);
+      Result := TSalesReceipt.Create(False, FAmountDecimalPlaces);
 
     FPTR_RT_REFUND:
-      Result := TSalesReceipt.Create(True);
+      Result := TSalesReceipt.Create(True, FAmountDecimalPlaces);
   else
     Result := nil;
     InvalidPropertyValue('FiscalReceiptType', IntToStr(FiscalReceiptType));
@@ -530,10 +540,9 @@ begin
   FErrorOutID := 0;
   FErrorState := FPTR_PS_MONITOR;
   FErrorStation := FPTR_S_RECEIPT;
-
-  FNumVatRates := 4;
   SetPrinterState(FPTR_PS_MONITOR);
   FQuantityDecimalPlaces := 3;
+  FAmountDecimalPlaces := 0;
   FQuantityLength := 10;
   FSlipSelection := FPTR_SS_FULL_LENGTH;
   FActualCurrency := FPTR_AC_RUR;
@@ -942,7 +951,7 @@ begin
       PIDXFptr_MessageLength          : Result := Printer.RecLineChars;
       PIDXFptr_NumHeaderLines         : Result := FParams.NumHeaderLines;
       PIDXFptr_NumTrailerLines        : Result := FParams.NumTrailerLines;
-      PIDXFptr_NumVatRates            : Result := FNumVatRates;
+      PIDXFptr_NumVatRates            : Result := FParams.VatRates.Count;
       PIDXFptr_PrinterState           : Result := FPrinterState.State;
       PIDXFptr_QuantityDecimalPlaces  : Result := FQuantityDecimalPlaces;
       PIDXFptr_QuantityLength         : Result := FQuantityLength;
@@ -1393,9 +1402,9 @@ begin
 
     if FCheckTotal and (FReceipt.GetTotal <> Total) then
     begin
-      FReceipt.Free;
-      FReceipt := TCustomReceipt.Create;
-      raiseExtendedError(OPOS_EFPTR_BAD_ITEM_AMOUNT, _('App total <> receipt total'));
+      raiseExtendedError(OPOS_EFPTR_BAD_ITEM_AMOUNT,
+        Format('App total %s, but receipt total %s', [
+        AmountToStr(Total), AmountToStr(FReceipt.GetTotal)]));
     end;
 
     PaymentType := StrToIntDef(Description, 0);
@@ -1554,7 +1563,7 @@ begin
         Document.AddLines('—≈ ÷»ﬂ', IntToStr(Count + 1));
         Count := Node.Child[i].Field['Operations'].Field['Sell'].Field['Count'].Value;
         Amount := Node.Child[i].Field['Operations'].Field['Sell'].Field['Amount'].Value;
-        Document.AddLines(Format('%.4d œ–Œƒ¿∆', [Count]), CurrToStr(Amount));
+        Document.AddLines(Format('%.4d œ–Œƒ¿∆', [Count]), AmountToStr(Amount));
       end;
     end;
     Document.Add(Separator);
@@ -1668,6 +1677,8 @@ begin
   try
     CheckEnabled;
     SetPrinterState(FPTR_PS_MONITOR);
+    FReceipt.Free;
+    FReceipt := TCustomReceipt.Create;
     Result := ClearResult;
   except
     on E: Exception do
@@ -2188,12 +2199,12 @@ begin
   end;
 end;
 
-function TWebkassaImpl.GetVatCode(Code: Integer): TVatCode;
+function TWebkassaImpl.GetVatRate(Code: Integer): TVatRate;
 begin
   Result := nil;
-  if Params.VatCodeEnabled then
+  if Params.VatRateEnabled then
   begin
-    Result := Params.VatCodes.ItemByCode(Code);
+    Result := Params.VatRates.ItemByCode(Code);
   end;
 end;
 
@@ -2202,7 +2213,7 @@ var
   i: Integer;
   Payment: TPayment;
   Discount: TAdjustment;
-  VatCode: TVatCode;
+  VatRate: TVatRate;
   Item: TReceiptItem;
   OperationType: Integer;
   Position: TTicketItem;
@@ -2229,7 +2240,7 @@ begin
     for i := 0 to Receipt.Items.Count-1 do
     begin
       Item := Receipt.Items[i];
-      VatCode := GetVatCode(Item.VatInfo);
+      VatRate := GetVatRate(Item.VatInfo);
       Position := Command.Request.Positions.Add as TTicketItem;
       Position.Count := Item.Quantity;
       Position.Price := Item.Price;
@@ -2247,16 +2258,16 @@ begin
       Position.GTIN := '';
       Position.Productld := 0;
       Position.WarehouseType := 0;
-      if VatCode = nil then
+      if VatRate = nil then
       begin
         Position.Tax := 0;
         Position.TaxPercent := 0;
         Position.TaxType := TaxTypeNoTax;
       end else
       begin
-        Position.Tax := VatCode.GetTax(Item.Total);
+        Position.Tax := Abs(VatRate.GetTax(Item.Total));
         Position.TaxType := TaxTypeVAT;
-        Position.TaxPercent := VatCode.Rate;
+        Position.TaxPercent := VatRate.Rate;
       end;
     end;
     // Discounts
@@ -2273,7 +2284,6 @@ begin
       Modifier.TaxType := TaxTypeNoTax;
       Modifier.Tax := 0;
     end;
-
     // Payments
     for i := 0 to 3 do
     begin
