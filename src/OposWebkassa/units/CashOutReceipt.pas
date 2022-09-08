@@ -61,6 +61,8 @@ begin
   CheckNotVoided;
   CheckAmount(Total);
   CheckAmount(Payment);
+
+  FAfterTotal := True;
   FPayment := FPayment + Payment;
 end;
 

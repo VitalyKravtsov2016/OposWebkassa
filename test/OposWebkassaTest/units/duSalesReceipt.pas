@@ -27,6 +27,7 @@ type
     procedure TestPrintRecVoid;
     procedure TestItemAdjustment;
     procedure TestSubtotalAdjustment;
+    procedure TestReceiptWithChange;
   end;
 
 implementation
@@ -36,7 +37,7 @@ implementation
 procedure TSalesReceiptTest.SetUp;
 begin
   inherited SetUp;
-  FReceipt := TSalesReceipt.Create(False, 2);
+  FReceipt := TSalesReceipt.CreateReceipt(False, 2);
 end;
 
 procedure TSalesReceiptTest.TearDown;
@@ -155,6 +156,16 @@ begin
   CheckEquals(121.95, FReceipt.GetTotal, 'FReceipt.Total');
 
   FReceipt.PrintRecTotal(121.95, 130, 'Наличными');
+  FReceipt.EndFiscalReceipt;
+end;
+
+procedure TSalesReceiptTest.TestReceiptWithChange;
+begin
+  FReceipt.BeginFiscalReceipt(False);
+  FReceipt.PrintRecItem('Item 1', 578, 3302, 4, 175, '');
+  CheckEquals(578, FReceipt.GetTotal, 'FReceipt.Total');
+  FReceipt.PrintRecTotal(578, 578, '1');
+  CheckEquals(0, FReceipt.Change, 'Receipt.Change');
   FReceipt.EndFiscalReceipt;
 end;
 

@@ -54,7 +54,8 @@ uses
   uLkJSON in '..\..\src\Shared\uLkJSON.pas',
   VatRate in '..\..\src\Shared\VatRate.pas',
   OposPtrUtils in '..\..\src\Opos\OposPtrUtils.pas',
-  OposPtrhi in '..\..\src\Opos\OposPtrhi.pas';
+  OposPtrhi in '..\..\src\Opos\OposPtrhi.pas',
+  POSPrinterLog in '..\..\src\Opos\POSPrinterLog.pas';
 
 {$R *.RES}
 

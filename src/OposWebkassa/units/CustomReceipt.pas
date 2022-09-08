@@ -5,6 +5,8 @@ interface
 uses
   // Opos
   Opos, OposFptr, OposException,
+  // Tnt
+  TntClasses,
   // This
   gnugettext;
 
@@ -14,12 +16,18 @@ type
   TCustomReceipt = class
   protected
     FIsVoided: Boolean;
+    FLines: TTntStrings;
+    FTrailer: TTntStrings;
+    FAfterTotal: Boolean;
   public
     procedure CheckNotVoided;
     function GetTotal: Currency; virtual;
     function GetPayment: Currency; virtual;
     property IsVoided: Boolean read FIsVoided;
   public
+    constructor Create; virtual;
+    destructor Destroy; override;
+
     procedure BeginFiscalReceipt(PrintHeader: Boolean); virtual;
 
     procedure EndFiscalReceipt; virtual;
@@ -100,6 +108,10 @@ type
     procedure PrintNormal(const Text: WideString; Station: Integer); virtual;
 
     procedure Print(AVisitor: TObject); virtual;
+
+    property Lines: TTntStrings read FLines;
+    property Trailer: TTntStrings read FTrailer;
+    property AfterTotal: Boolean read FAfterTotal;
   end;
 
 function CurrencyToInt64(Value: Currency): Int64;
@@ -117,6 +129,20 @@ begin
 end;
 
 { TCustomReceipt }
+
+constructor TCustomReceipt.Create;
+begin
+  inherited Create;
+  FLines := TTntStringList.Create;
+  FTrailer := TTntStringList.Create;
+end;
+
+destructor TCustomReceipt.Destroy;
+begin
+  FLines.Free;
+  FTrailer.Free;
+  inherited Destroy;
+end;
 
 procedure TCustomReceipt.BeginFiscalReceipt(PrintHeader: Boolean);
 begin
@@ -266,7 +292,13 @@ end;
 
 procedure TCustomReceipt.PrintRecMessage(const Message: WideString);
 begin
-  RaiseIllegalError;
+  if FAfterTotal then
+  begin
+    FTrailer.Add(Message);
+  end else
+  begin
+    FLines.Add(Message);
+  end;
 end;
 
 procedure TCustomReceipt.Print(AVisitor: TObject);
@@ -289,6 +321,5 @@ begin
   if FIsVoided then
     raiseExtendedError(OPOS_EFPTR_WRONG_STATE);
 end;
-
 
 end.

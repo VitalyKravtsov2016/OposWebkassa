@@ -86,7 +86,7 @@ begin
   Printer := TMockPOSPrinter.Create(nil);
   FDriver := TWebkassaImpl.Create(nil);
   FDriver.Printer := Printer;
-  
+
   FDriver.Params.LogFileEnabled := True;
   FDriver.Params.LogMaxCount := 10;
   FDriver.Params.LogFilePath := 'Logs';
@@ -98,6 +98,7 @@ begin
   FDriver.Params.PrinterName := 'ThermalU';
   FDriver.Params.NumHeaderLines := 4;
   FDriver.Params.NumTrailerLines := 3;
+  FDriver.Params.RoundType := RoundTypeNo;
   FDriver.Params.Header :=
     ' ' + CRLF +
     '   Восточно-Казастанская область, город' + CRLF +

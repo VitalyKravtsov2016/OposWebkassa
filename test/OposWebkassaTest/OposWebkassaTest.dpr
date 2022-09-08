@@ -60,7 +60,8 @@ uses
   OposPtrUtils in '..\..\src\Opos\OposPtrUtils.pas',
   OposPtrhi in '..\..\src\Opos\OposPtrhi.pas',
   RCSEvents in 'units\RCSEvents.pas',
-  RCSEvents_TLB in 'units\RCSEvents_TLB.pas';
+  RCSEvents_TLB in 'units\RCSEvents_TLB.pas',
+  POSPrinterLog in '..\..\src\Opos\POSPrinterLog.pas';
 
 {$R *.RES}
 

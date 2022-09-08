@@ -1,0 +1,5866 @@
+
+// IDrvFR
+
+function  ToleMain.AddLD: Integer;
+begin
+  MethodLog('AddLD.Begin');
+  Result := Driver.AddLD;
+  MethodLog('AddLD.End');
+end;
+
+function  ToleMain.Beep: Integer;
+begin
+  MethodLog('Beep.Begin');
+  Result := Driver.Beep;
+  MethodLog('Beep.End');
+end;
+
+function  ToleMain.Buy: Integer;
+begin
+  MethodLog('Buy.Begin');
+  Result := Driver.Buy;
+  MethodLog('Buy.End');
+end;
+
+function  ToleMain.BuyEx: Integer;
+begin
+  MethodLog('BuyEx.Begin');
+  Result := Driver.BuyEx;
+  MethodLog('BuyEx.End');
+end;
+
+function  ToleMain.CancelCheck: Integer;
+begin
+  MethodLog('CancelCheck.Begin');
+  Result := Driver.CancelCheck;
+  MethodLog('CancelCheck.End');
+end;
+
+function  ToleMain.CashIncome: Integer;
+begin
+  MethodLog('CashIncome.Begin');
+  Result := Driver.CashIncome;
+  MethodLog('CashIncome.End');
+end;
+
+function  ToleMain.CashOutcome: Integer;
+begin
+  MethodLog('CashOutcome.Begin');
+  Result := Driver.CashOutcome;
+  MethodLog('CashOutcome.End');
+end;
+
+function  ToleMain.Charge: Integer;
+begin
+  MethodLog('Charge.Begin');
+  Result := Driver.Charge;
+  MethodLog('Charge.End');
+end;
+
+function  ToleMain.CheckSubTotal: Integer;
+begin
+  MethodLog('CheckSubTotal.Begin');
+  Result := Driver.CheckSubTotal;
+  MethodLog('CheckSubTotal.End');
+end;
+
+function  ToleMain.CloseCheck: Integer;
+begin
+  MethodLog('CloseCheck.Begin');
+  Result := Driver.CloseCheck;
+  MethodLog('CloseCheck.End');
+end;
+
+function  ToleMain.ConfirmDate: Integer;
+begin
+  MethodLog('ConfirmDate.Begin');
+  Result := Driver.ConfirmDate;
+  MethodLog('ConfirmDate.End');
+end;
+
+function  ToleMain.Connect: Integer;
+begin
+  MethodLog('Connect.Begin');
+  Result := Driver.Connect;
+  MethodLog('Connect.End');
+end;
+
+function  ToleMain.ContinuePrint: Integer;
+begin
+  MethodLog('ContinuePrint.Begin');
+  Result := Driver.ContinuePrint;
+  MethodLog('ContinuePrint.End');
+end;
+
+function  ToleMain.Correction: Integer;
+begin
+  MethodLog('Correction.Begin');
+  Result := Driver.Correction;
+  MethodLog('Correction.End');
+end;
+
+function  ToleMain.CutCheck: Integer;
+begin
+  MethodLog('CutCheck.Begin');
+  Result := Driver.CutCheck;
+  MethodLog('CutCheck.End');
+end;
+
+function  ToleMain.DampRequest: Integer;
+begin
+  MethodLog('DampRequest.Begin');
+  Result := Driver.DampRequest;
+  MethodLog('DampRequest.End');
+end;
+
+function  ToleMain.DeleteLD: Integer;
+begin
+  MethodLog('DeleteLD.Begin');
+  Result := Driver.DeleteLD;
+  MethodLog('DeleteLD.End');
+end;
+
+function  ToleMain.Disconnect: Integer;
+begin
+  MethodLog('Disconnect.Begin');
+  Result := Driver.Disconnect;
+  MethodLog('Disconnect.End');
+end;
+
+function  ToleMain.Discount: Integer;
+begin
+  MethodLog('Discount.Begin');
+  Result := Driver.Discount;
+  MethodLog('Discount.End');
+end;
+
+function  ToleMain.DozeOilCheck: Integer;
+begin
+  MethodLog('DozeOilCheck.Begin');
+  Result := Driver.DozeOilCheck;
+  MethodLog('DozeOilCheck.End');
+end;
+
+function  ToleMain.Draw: Integer;
+begin
+  MethodLog('Draw.Begin');
+  Result := Driver.Draw;
+  MethodLog('Draw.End');
+end;
+
+function  ToleMain.EKLZDepartmentReportInDatesRange: Integer;
+begin
+  MethodLog('EKLZDepartmentReportInDatesRange.Begin');
+  Result := Driver.EKLZDepartmentReportInDatesRange;
+  MethodLog('EKLZDepartmentReportInDatesRange.End');
+end;
+
+function  ToleMain.EKLZDepartmentReportInSessionsRange: Integer;
+begin
+  MethodLog('EKLZDepartmentReportInSessionsRange.Begin');
+  Result := Driver.EKLZDepartmentReportInSessionsRange;
+  MethodLog('EKLZDepartmentReportInSessionsRange.End');
+end;
+
+function  ToleMain.EKLZJournalOnSessionNumber: Integer;
+begin
+  MethodLog('EKLZJournalOnSessionNumber.Begin');
+  Result := Driver.EKLZJournalOnSessionNumber;
+  MethodLog('EKLZJournalOnSessionNumber.End');
+end;
+
+function  ToleMain.EKLZSessionReportInDatesRange: Integer;
+begin
+  MethodLog('EKLZSessionReportInDatesRange.Begin');
+  Result := Driver.EKLZSessionReportInDatesRange;
+  MethodLog('EKLZSessionReportInDatesRange.End');
+end;
+
+function  ToleMain.EKLZSessionReportInSessionsRange: Integer;
+begin
+  MethodLog('EKLZSessionReportInSessionsRange.Begin');
+  Result := Driver.EKLZSessionReportInSessionsRange;
+  MethodLog('EKLZSessionReportInSessionsRange.End');
+end;
+
+function  ToleMain.ExchangeBytes: Integer;
+begin
+  MethodLog('ExchangeBytes.Begin');
+  Result := Driver.ExchangeBytes;
+  MethodLog('ExchangeBytes.End');
+end;
+
+function  ToleMain.FeedDocument: Integer;
+begin
+  MethodLog('FeedDocument.Begin');
+  Result := Driver.FeedDocument;
+  MethodLog('FeedDocument.End');
+end;
+
+function  ToleMain.Fiscalization: Integer;
+begin
+  MethodLog('Fiscalization.Begin');
+  Result := Driver.Fiscalization;
+  MethodLog('Fiscalization.End');
+end;
+
+function  ToleMain.FiscalReportForDatesRange: Integer;
+begin
+  MethodLog('FiscalReportForDatesRange.Begin');
+  Result := Driver.FiscalReportForDatesRange;
+  MethodLog('FiscalReportForDatesRange.End');
+end;
+
+function  ToleMain.FiscalReportForSessionRange: Integer;
+begin
+  MethodLog('FiscalReportForSessionRange.Begin');
+  Result := Driver.FiscalReportForSessionRange;
+  MethodLog('FiscalReportForSessionRange.End');
+end;
+
+function  ToleMain.GetActiveLD: Integer;
+begin
+  MethodLog('GetActiveLD.Begin');
+  Result := Driver.GetActiveLD;
+  MethodLog('GetActiveLD.End');
+end;
+
+function  ToleMain.EnumLD: Integer;
+begin
+  MethodLog('EnumLD.Begin');
+  Result := Driver.EnumLD;
+  MethodLog('EnumLD.End');
+end;
+
+function  ToleMain.GetCashReg: Integer;
+begin
+  MethodLog('GetCashReg.Begin');
+  Result := Driver.GetCashReg;
+  MethodLog('GetCashReg.End');
+end;
+
+function  ToleMain.GetCountLD: Integer;
+begin
+  MethodLog('GetCountLD.Begin');
+  Result := Driver.GetCountLD;
+  MethodLog('GetCountLD.End');
+end;
+
+function  ToleMain.GetData: Integer;
+begin
+  MethodLog('GetData.Begin');
+  Result := Driver.GetData;
+  MethodLog('GetData.End');
+end;
+
+function  ToleMain.GetDeviceMetrics: Integer;
+begin
+  MethodLog('GetDeviceMetrics.Begin');
+  Result := Driver.GetDeviceMetrics;
+  MethodLog('GetDeviceMetrics.End');
+end;
+
+function  ToleMain.GetECRStatus: Integer;
+begin
+  MethodLog('GetECRStatus.Begin');
+  Result := Driver.GetECRStatus;
+  MethodLog('GetECRStatus.End');
+end;
+
+function  ToleMain.GetShortECRStatus: Integer;
+begin
+  MethodLog('GetShortECRStatus.Begin');
+  Result := Driver.GetShortECRStatus;
+  MethodLog('GetShortECRStatus.End');
+end;
+
+function  ToleMain.GetExchangeParam: Integer;
+begin
+  MethodLog('GetExchangeParam.Begin');
+  Result := Driver.GetExchangeParam;
+  MethodLog('GetExchangeParam.End');
+end;
+
+function  ToleMain.GetFieldStruct: Integer;
+begin
+  MethodLog('GetFieldStruct.Begin');
+  Result := Driver.GetFieldStruct;
+  MethodLog('GetFieldStruct.End');
+end;
+
+function  ToleMain.GetFiscalizationParameters: Integer;
+begin
+  MethodLog('GetFiscalizationParameters.Begin');
+  Result := Driver.GetFiscalizationParameters;
+  MethodLog('GetFiscalizationParameters.End');
+end;
+
+function  ToleMain.GetFMRecordsSum: Integer;
+begin
+  MethodLog('GetFMRecordsSum.Begin');
+  Result := Driver.GetFMRecordsSum;
+  MethodLog('GetFMRecordsSum.End');
+end;
+
+function  ToleMain.GetLastFMRecordDate: Integer;
+begin
+  MethodLog('GetLastFMRecordDate.Begin');
+  Result := Driver.GetLastFMRecordDate;
+  MethodLog('GetLastFMRecordDate.End');
+end;
+
+function  ToleMain.GetLiterSumCounter: Integer;
+begin
+  MethodLog('GetLiterSumCounter.Begin');
+  Result := Driver.GetLiterSumCounter;
+  MethodLog('GetLiterSumCounter.End');
+end;
+
+function  ToleMain.GetOperationReg: Integer;
+begin
+  MethodLog('GetOperationReg.Begin');
+  Result := Driver.GetOperationReg;
+  MethodLog('GetOperationReg.End');
+end;
+
+function  ToleMain.GetParamLD: Integer;
+begin
+  MethodLog('GetParamLD.Begin');
+  Result := Driver.GetParamLD;
+  MethodLog('GetParamLD.End');
+end;
+
+function  ToleMain.GetRangeDatesAndSessions: Integer;
+begin
+  MethodLog('GetRangeDatesAndSessions.Begin');
+  Result := Driver.GetRangeDatesAndSessions;
+  MethodLog('GetRangeDatesAndSessions.End');
+end;
+
+function  ToleMain.GetRKStatus: Integer;
+begin
+  MethodLog('GetRKStatus.Begin');
+  Result := Driver.GetRKStatus;
+  MethodLog('GetRKStatus.End');
+end;
+
+function  ToleMain.GetTableStruct: Integer;
+begin
+  MethodLog('GetTableStruct.Begin');
+  Result := Driver.GetTableStruct;
+  MethodLog('GetTableStruct.End');
+end;
+
+function  ToleMain.InitFM: Integer;
+begin
+  MethodLog('InitFM.Begin');
+  Result := Driver.InitFM;
+  MethodLog('InitFM.End');
+end;
+
+function  ToleMain.InitTable: Integer;
+begin
+  MethodLog('InitTable.Begin');
+  Result := Driver.InitTable;
+  MethodLog('InitTable.End');
+end;
+
+function  ToleMain.InterruptDataStream: Integer;
+begin
+  MethodLog('InterruptDataStream.Begin');
+  Result := Driver.InterruptDataStream;
+  MethodLog('InterruptDataStream.End');
+end;
+
+function  ToleMain.InterruptFullReport: Integer;
+begin
+  MethodLog('InterruptFullReport.Begin');
+  Result := Driver.InterruptFullReport;
+  MethodLog('InterruptFullReport.End');
+end;
+
+function  ToleMain.InterruptTest: Integer;
+begin
+  MethodLog('InterruptTest.Begin');
+  Result := Driver.InterruptTest;
+  MethodLog('InterruptTest.End');
+end;
+
+function  ToleMain.LaunchRK: Integer;
+begin
+  MethodLog('LaunchRK.Begin');
+  Result := Driver.LaunchRK;
+  MethodLog('LaunchRK.End');
+end;
+
+function  ToleMain.LoadLineData: Integer;
+begin
+  MethodLog('LoadLineData.Begin');
+  Result := Driver.LoadLineData;
+  MethodLog('LoadLineData.End');
+end;
+
+function  ToleMain.OilSale: Integer;
+begin
+  MethodLog('OilSale.Begin');
+  Result := Driver.OilSale;
+  MethodLog('OilSale.End');
+end;
+
+function  ToleMain.OpenCheck: Integer;
+begin
+  MethodLog('OpenCheck.Begin');
+  Result := Driver.OpenCheck;
+  MethodLog('OpenCheck.End');
+end;
+
+function  ToleMain.OpenDrawer: Integer;
+begin
+  MethodLog('OpenDrawer.Begin');
+  Result := Driver.OpenDrawer;
+  MethodLog('OpenDrawer.End');
+end;
+
+function  ToleMain.PrintBarCode: Integer;
+begin
+  MethodLog('PrintBarCode.Begin');
+  Result := Driver.PrintBarCode;
+  MethodLog('PrintBarCode.End');
+end;
+
+function  ToleMain.PrintDepartmentReport: Integer;
+begin
+  MethodLog('PrintDepartmentReport.Begin');
+  Result := Driver.PrintDepartmentReport;
+  MethodLog('PrintDepartmentReport.End');
+end;
+
+function  ToleMain.PrintDocumentTitle: Integer;
+begin
+  MethodLog('PrintDocumentTitle.Begin');
+  Result := Driver.PrintDocumentTitle;
+  MethodLog('PrintDocumentTitle.End');
+end;
+
+function  ToleMain.PrintOperationReg: Integer;
+begin
+  MethodLog('PrintOperationReg.Begin');
+  Result := Driver.PrintOperationReg;
+  MethodLog('PrintOperationReg.End');
+end;
+
+function  ToleMain.PrintReportWithCleaning: Integer;
+begin
+  MethodLog('PrintReportWithCleaning.Begin');
+  Result := Driver.PrintReportWithCleaning;
+  MethodLog('PrintReportWithCleaning.End');
+end;
+
+function  ToleMain.PrintReportWithoutCleaning: Integer;
+begin
+  MethodLog('PrintReportWithoutCleaning.Begin');
+  Result := Driver.PrintReportWithoutCleaning;
+  MethodLog('PrintReportWithoutCleaning.End');
+end;
+
+function  ToleMain.PrintString: Integer;
+begin
+  MethodLog('PrintString.Begin');
+  Result := Driver.PrintString;
+  MethodLog('PrintString.End');
+end;
+
+function  ToleMain.PrintWideString: Integer;
+begin
+  MethodLog('PrintWideString.Begin');
+  Result := Driver.PrintWideString;
+  MethodLog('PrintWideString.End');
+end;
+
+function  ToleMain.ReadEKLZDocumentOnKPK: Integer;
+begin
+  MethodLog('ReadEKLZDocumentOnKPK.Begin');
+  Result := Driver.ReadEKLZDocumentOnKPK;
+  MethodLog('ReadEKLZDocumentOnKPK.End');
+end;
+
+function  ToleMain.ReadEKLZSessionTotal: Integer;
+begin
+  MethodLog('ReadEKLZSessionTotal.Begin');
+  Result := Driver.ReadEKLZSessionTotal;
+  MethodLog('ReadEKLZSessionTotal.End');
+end;
+
+function  ToleMain.ReadLicense: Integer;
+begin
+  MethodLog('ReadLicense.Begin');
+  Result := Driver.ReadLicense;
+  MethodLog('ReadLicense.End');
+end;
+
+function  ToleMain.ReadTable: Integer;
+begin
+  MethodLog('ReadTable.Begin');
+  Result := Driver.ReadTable;
+  MethodLog('ReadTable.End');
+end;
+
+function  ToleMain.RepeatDocument: Integer;
+begin
+  MethodLog('RepeatDocument.Begin');
+  Result := Driver.RepeatDocument;
+  MethodLog('RepeatDocument.End');
+end;
+
+function  ToleMain.ResetAllTRK: Integer;
+begin
+  MethodLog('ResetAllTRK.Begin');
+  Result := Driver.ResetAllTRK;
+  MethodLog('ResetAllTRK.End');
+end;
+
+function  ToleMain.ResetRK: Integer;
+begin
+  MethodLog('ResetRK.Begin');
+  Result := Driver.ResetRK;
+  MethodLog('ResetRK.End');
+end;
+
+function  ToleMain.ResetSettings: Integer;
+begin
+  MethodLog('ResetSettings.Begin');
+  Result := Driver.ResetSettings;
+  MethodLog('ResetSettings.End');
+end;
+
+function  ToleMain.ResetSummary: Integer;
+begin
+  MethodLog('ResetSummary.Begin');
+  Result := Driver.ResetSummary;
+  MethodLog('ResetSummary.End');
+end;
+
+function  ToleMain.ReturnBuy: Integer;
+begin
+  MethodLog('ReturnBuy.Begin');
+  Result := Driver.ReturnBuy;
+  MethodLog('ReturnBuy.End');
+end;
+
+function  ToleMain.ReturnBuyEx: Integer;
+begin
+  MethodLog('ReturnBuyEx.Begin');
+  Result := Driver.ReturnBuyEx;
+  MethodLog('ReturnBuyEx.End');
+end;
+
+function  ToleMain.ReturnSale: Integer;
+begin
+  MethodLog('ReturnSale.Begin');
+  Result := Driver.ReturnSale;
+  MethodLog('ReturnSale.End');
+end;
+
+function  ToleMain.ReturnSaleEx: Integer;
+begin
+  MethodLog('ReturnSaleEx.Begin');
+  Result := Driver.ReturnSaleEx;
+  MethodLog('ReturnSaleEx.End');
+end;
+
+function  ToleMain.Sale: Integer;
+begin
+  MethodLog('Sale.Begin');
+  Result := Driver.Sale;
+  MethodLog('Sale.End');
+end;
+
+function  ToleMain.SaleEx: Integer;
+begin
+  MethodLog('SaleEx.Begin');
+  Result := Driver.SaleEx;
+  MethodLog('SaleEx.End');
+end;
+
+function  ToleMain.SetActiveLD: Integer;
+begin
+  MethodLog('SetActiveLD.Begin');
+  Result := Driver.SetActiveLD;
+  MethodLog('SetActiveLD.End');
+end;
+
+function  ToleMain.SetDate: Integer;
+begin
+  MethodLog('SetDate.Begin');
+  Result := Driver.SetDate;
+  MethodLog('SetDate.End');
+end;
+
+function  ToleMain.SetDozeInMilliliters: Integer;
+begin
+  MethodLog('SetDozeInMilliliters.Begin');
+  Result := Driver.SetDozeInMilliliters;
+  MethodLog('SetDozeInMilliliters.End');
+end;
+
+function  ToleMain.SetDozeInMoney: Integer;
+begin
+  MethodLog('SetDozeInMoney.Begin');
+  Result := Driver.SetDozeInMoney;
+  MethodLog('SetDozeInMoney.End');
+end;
+
+function  ToleMain.SetExchangeParam: Integer;
+begin
+  MethodLog('SetExchangeParam.Begin');
+  Result := Driver.SetExchangeParam;
+  MethodLog('SetExchangeParam.End');
+end;
+
+function  ToleMain.SetParamLD: Integer;
+begin
+  MethodLog('SetParamLD.Begin');
+  Result := Driver.SetParamLD;
+  MethodLog('SetParamLD.End');
+end;
+
+function  ToleMain.SetPointPosition: Integer;
+begin
+  MethodLog('SetPointPosition.Begin');
+  Result := Driver.SetPointPosition;
+  MethodLog('SetPointPosition.End');
+end;
+
+function  ToleMain.SetRKParameters: Integer;
+begin
+  MethodLog('SetRKParameters.Begin');
+  Result := Driver.SetRKParameters;
+  MethodLog('SetRKParameters.End');
+end;
+
+function  ToleMain.SetSerialNumber: Integer;
+begin
+  MethodLog('SetSerialNumber.Begin');
+  Result := Driver.SetSerialNumber;
+  MethodLog('SetSerialNumber.End');
+end;
+
+function  ToleMain.SetTime: Integer;
+begin
+  MethodLog('SetTime.Begin');
+  Result := Driver.SetTime;
+  MethodLog('SetTime.End');
+end;
+
+function  ToleMain.ShowProperties: Integer;
+begin
+  MethodLog('ShowProperties.Begin');
+  Result := Driver.ShowProperties;
+  MethodLog('ShowProperties.End');
+end;
+
+function  ToleMain.StopEKLZDocumentPrinting: Integer;
+begin
+  MethodLog('StopEKLZDocumentPrinting.Begin');
+  Result := Driver.StopEKLZDocumentPrinting;
+  MethodLog('StopEKLZDocumentPrinting.End');
+end;
+
+function  ToleMain.StopRK: Integer;
+begin
+  MethodLog('StopRK.Begin');
+  Result := Driver.StopRK;
+  MethodLog('StopRK.End');
+end;
+
+function  ToleMain.Storno: Integer;
+begin
+  MethodLog('Storno.Begin');
+  Result := Driver.Storno;
+  MethodLog('Storno.End');
+end;
+
+function  ToleMain.StornoEx: Integer;
+begin
+  MethodLog('StornoEx.Begin');
+  Result := Driver.StornoEx;
+  MethodLog('StornoEx.End');
+end;
+
+function  ToleMain.StornoCharge: Integer;
+begin
+  MethodLog('StornoCharge.Begin');
+  Result := Driver.StornoCharge;
+  MethodLog('StornoCharge.End');
+end;
+
+function  ToleMain.StornoDiscount: Integer;
+begin
+  MethodLog('StornoDiscount.Begin');
+  Result := Driver.StornoDiscount;
+  MethodLog('StornoDiscount.End');
+end;
+
+function  ToleMain.SummOilCheck: Integer;
+begin
+  MethodLog('SummOilCheck.Begin');
+  Result := Driver.SummOilCheck;
+  MethodLog('SummOilCheck.End');
+end;
+
+function  ToleMain.SysAdminCancelCheck: Integer;
+begin
+  MethodLog('SysAdminCancelCheck.Begin');
+  Result := Driver.SysAdminCancelCheck;
+  MethodLog('SysAdminCancelCheck.End');
+end;
+
+function  ToleMain.Test: Integer;
+begin
+  MethodLog('Test.Begin');
+  Result := Driver.Test;
+  MethodLog('Test.End');
+end;
+
+function  ToleMain.WriteLicense: Integer;
+begin
+  MethodLog('WriteLicense.Begin');
+  Result := Driver.WriteLicense;
+  MethodLog('WriteLicense.End');
+end;
+
+function  ToleMain.WriteTable: Integer;
+begin
+  MethodLog('WriteTable.Begin');
+  Result := Driver.WriteTable;
+  MethodLog('WriteTable.End');
+end;
+
+function  ToleMain.Get_BarCode: WideString;
+begin
+  MethodLog('Get_BarCode.Begin');
+  Result := Driver.Get_BarCode;
+  MethodLog('Get_BarCode.End');
+end;
+
+procedure ToleMain.Set_BarCode(const Value: WideString);
+begin
+  MethodLog('Set_BarCode.Begin');
+  Driver.Set_BarCode(Value);
+  MethodLog('Set_BarCode.End');
+end;
+
+function  ToleMain.Get_BatteryCondition: WordBool;
+begin
+  MethodLog('Get_BatteryCondition.Begin');
+  Result := Driver.Get_BatteryCondition;
+  MethodLog('Get_BatteryCondition.End');
+end;
+
+function  ToleMain.Get_BatteryVoltage: Double;
+begin
+  MethodLog('Get_BatteryVoltage.Begin');
+  Result := Driver.Get_BatteryVoltage;
+  MethodLog('Get_BatteryVoltage.End');
+end;
+
+function  ToleMain.Get_BaudRate: Integer;
+begin
+  MethodLog('Get_BaudRate.Begin');
+  Result := Driver.Get_BaudRate;
+  MethodLog('Get_BaudRate.End');
+end;
+
+procedure ToleMain.Set_BaudRate(Value: Integer);
+begin
+  MethodLog('Set_BaudRate.Begin');
+  Driver.Set_BaudRate(Value);
+  MethodLog('Set_BaudRate.End');
+end;
+
+function  ToleMain.Get_Change: Currency;
+begin
+  MethodLog('Get_Change.Begin');
+  Result := Driver.Get_Change;
+  MethodLog('Get_Change.End');
+end;
+
+function  ToleMain.Get_CheckResult: Currency;
+begin
+  MethodLog('Get_CheckResult.Begin');
+  Result := Driver.Get_CheckResult;
+  MethodLog('Get_CheckResult.End');
+end;
+
+procedure ToleMain.Set_CheckResult(Value: Currency);
+begin
+  MethodLog('Set_CheckResult.Begin');
+  Driver.Set_CheckResult(Value);
+  MethodLog('Set_CheckResult.End');
+end;
+
+function  ToleMain.Get_CheckType: Integer;
+begin
+  MethodLog('Get_CheckType.Begin');
+  Result := Driver.Get_CheckType;
+  MethodLog('Get_CheckType.End');
+end;
+
+procedure ToleMain.Set_CheckType(Value: Integer);
+begin
+  MethodLog('Set_CheckType.Begin');
+  Driver.Set_CheckType(Value);
+  MethodLog('Set_CheckType.End');
+end;
+
+function  ToleMain.Get_ComNumber: Integer;
+begin
+  MethodLog('Get_ComNumber.Begin');
+  Result := Driver.Get_ComNumber;
+  MethodLog('Get_ComNumber.End');
+end;
+
+procedure ToleMain.Set_ComNumber(Value: Integer);
+begin
+  MethodLog('Set_ComNumber.Begin');
+  Driver.Set_ComNumber(Value);
+  MethodLog('Set_ComNumber.End');
+end;
+
+function  ToleMain.Get_ContentsOfCashRegister: Currency;
+begin
+  MethodLog('Get_ContentsOfCashRegister.Begin');
+  Result := Driver.Get_ContentsOfCashRegister;
+  MethodLog('Get_ContentsOfCashRegister.End');
+end;
+
+function  ToleMain.Get_ContentsOfOperationRegister: Integer;
+begin
+  MethodLog('Get_ContentsOfOperationRegister.Begin');
+  Result := Driver.Get_ContentsOfOperationRegister;
+  MethodLog('Get_ContentsOfOperationRegister.End');
+end;
+
+function  ToleMain.Get_CurrentDozeInMilliliters: Integer;
+begin
+  MethodLog('Get_CurrentDozeInMilliliters.Begin');
+  Result := Driver.Get_CurrentDozeInMilliliters;
+  MethodLog('Get_CurrentDozeInMilliliters.End');
+end;
+
+procedure ToleMain.Set_CurrentDozeInMilliliters(Value: Integer);
+begin
+  MethodLog('Set_CurrentDozeInMilliliters.Begin');
+  Driver.Set_CurrentDozeInMilliliters(Value);
+  MethodLog('Set_CurrentDozeInMilliliters.End');
+end;
+
+function  ToleMain.Get_CurrentDozeInMoney: Currency;
+begin
+  MethodLog('Get_CurrentDozeInMoney.Begin');
+  Result := Driver.Get_CurrentDozeInMoney;
+  MethodLog('Get_CurrentDozeInMoney.End');
+end;
+
+procedure ToleMain.Set_CurrentDozeInMoney(Value: Currency);
+begin
+  MethodLog('Set_CurrentDozeInMoney.Begin');
+  Driver.Set_CurrentDozeInMoney(Value);
+  MethodLog('Set_CurrentDozeInMoney.End');
+end;
+
+function  ToleMain.Get_CutType: WordBool;
+begin
+  MethodLog('Get_CutType.Begin');
+  Result := Driver.Get_CutType;
+  MethodLog('Get_CutType.End');
+end;
+
+procedure ToleMain.Set_CutType(Value: WordBool);
+begin
+  MethodLog('Set_CutType.Begin');
+  Driver.Set_CutType(Value);
+  MethodLog('Set_CutType.End');
+end;
+
+function  ToleMain.Get_DataBlock: WideString;
+begin
+  MethodLog('Get_DataBlock.Begin');
+  Result := Driver.Get_DataBlock;
+  MethodLog('Get_DataBlock.End');
+end;
+
+function  ToleMain.Get_DataBlockNumber: Integer;
+begin
+  MethodLog('Get_DataBlockNumber.Begin');
+  Result := Driver.Get_DataBlockNumber;
+  MethodLog('Get_DataBlockNumber.End');
+end;
+
+function  ToleMain.Get_Date: TDateTime;
+begin
+  MethodLog('Get_Date.Begin');
+  Result := Driver.Get_Date;
+  MethodLog('Get_Date.End');
+end;
+
+procedure ToleMain.Set_Date(Value: TDateTime);
+begin
+  MethodLog('Set_Date.Begin');
+  Driver.Set_Date(Value);
+  MethodLog('Set_Date.End');
+end;
+
+function  ToleMain.Get_Department: Integer;
+begin
+  MethodLog('Get_Department.Begin');
+  Result := Driver.Get_Department;
+  MethodLog('Get_Department.End');
+end;
+
+procedure ToleMain.Set_Department(Value: Integer);
+begin
+  MethodLog('Set_Department.Begin');
+  Driver.Set_Department(Value);
+  MethodLog('Set_Department.End');
+end;
+
+function  ToleMain.Get_DeviceCode: Integer;
+begin
+  MethodLog('Get_DeviceCode.Begin');
+  Result := Driver.Get_DeviceCode;
+  MethodLog('Get_DeviceCode.End');
+end;
+
+procedure ToleMain.Set_DeviceCode(Value: Integer);
+begin
+  MethodLog('Set_DeviceCode.Begin');
+  Driver.Set_DeviceCode(Value);
+  MethodLog('Set_DeviceCode.End');
+end;
+
+function  ToleMain.Get_DeviceCodeDescription: WideString;
+begin
+  MethodLog('Get_DeviceCodeDescription.Begin');
+  Result := Driver.Get_DeviceCodeDescription;
+  MethodLog('Get_DeviceCodeDescription.End');
+end;
+
+function  ToleMain.Get_DiscountOnCheck: Double;
+begin
+  MethodLog('Get_DiscountOnCheck.Begin');
+  Result := Driver.Get_DiscountOnCheck;
+  MethodLog('Get_DiscountOnCheck.End');
+end;
+
+procedure ToleMain.Set_DiscountOnCheck(Value: Double);
+begin
+  MethodLog('Set_DiscountOnCheck.Begin');
+  Driver.Set_DiscountOnCheck(Value);
+  MethodLog('Set_DiscountOnCheck.End');
+end;
+
+function  ToleMain.Get_DocumentName: WideString;
+begin
+  MethodLog('Get_DocumentName.Begin');
+  Result := Driver.Get_DocumentName;
+  MethodLog('Get_DocumentName.End');
+end;
+
+procedure ToleMain.Set_DocumentName(const Value: WideString);
+begin
+  MethodLog('Set_DocumentName.Begin');
+  Driver.Set_DocumentName(Value);
+  MethodLog('Set_DocumentName.End');
+end;
+
+function  ToleMain.Get_DocumentNumber: Integer;
+begin
+  MethodLog('Get_DocumentNumber.Begin');
+  Result := Driver.Get_DocumentNumber;
+  MethodLog('Get_DocumentNumber.End');
+end;
+
+procedure ToleMain.Set_DocumentNumber(Value: Integer);
+begin
+  MethodLog('Set_DocumentNumber.Begin');
+  Driver.Set_DocumentNumber(Value);
+  MethodLog('Set_DocumentNumber.End');
+end;
+
+function  ToleMain.Get_DozeInMilliliters: Integer;
+begin
+  MethodLog('Get_DozeInMilliliters.Begin');
+  Result := Driver.Get_DozeInMilliliters;
+  MethodLog('Get_DozeInMilliliters.End');
+end;
+
+procedure ToleMain.Set_DozeInMilliliters(Value: Integer);
+begin
+  MethodLog('Set_DozeInMilliliters.Begin');
+  Driver.Set_DozeInMilliliters(Value);
+  MethodLog('Set_DozeInMilliliters.End');
+end;
+
+function  ToleMain.Get_DozeInMoney: Currency;
+begin
+  MethodLog('Get_DozeInMoney.Begin');
+  Result := Driver.Get_DozeInMoney;
+  MethodLog('Get_DozeInMoney.End');
+end;
+
+procedure ToleMain.Set_DozeInMoney(Value: Currency);
+begin
+  MethodLog('Set_DozeInMoney.Begin');
+  Driver.Set_DozeInMoney(Value);
+  MethodLog('Set_DozeInMoney.End');
+end;
+
+function  ToleMain.Get_DrawerNumber: Integer;
+begin
+  MethodLog('Get_DrawerNumber.Begin');
+  Result := Driver.Get_DrawerNumber;
+  MethodLog('Get_DrawerNumber.End');
+end;
+
+procedure ToleMain.Set_DrawerNumber(Value: Integer);
+begin
+  MethodLog('Set_DrawerNumber.Begin');
+  Driver.Set_DrawerNumber(Value);
+  MethodLog('Set_DrawerNumber.End');
+end;
+
+function  ToleMain.Get_ECRAdvancedMode: Integer;
+begin
+  MethodLog('Get_ECRAdvancedMode.Begin');
+  Result := Driver.Get_ECRAdvancedMode;
+  MethodLog('Get_ECRAdvancedMode.End');
+end;
+
+function  ToleMain.Get_ECRAdvancedModeDescription: WideString;
+begin
+  MethodLog('Get_ECRAdvancedModeDescription.Begin');
+  Result := Driver.Get_ECRAdvancedModeDescription;
+  MethodLog('Get_ECRAdvancedModeDescription.End');
+end;
+
+function  ToleMain.Get_ECRBuild: Integer;
+begin
+  MethodLog('Get_ECRBuild.Begin');
+  Result := Driver.Get_ECRBuild;
+  MethodLog('Get_ECRBuild.End');
+end;
+
+function  ToleMain.Get_ECRFlags: Integer;
+begin
+  MethodLog('Get_ECRFlags.Begin');
+  Result := Driver.Get_ECRFlags;
+  MethodLog('Get_ECRFlags.End');
+end;
+
+function  ToleMain.Get_ECRInput: WideString;
+begin
+  MethodLog('Get_ECRInput.Begin');
+  Result := Driver.Get_ECRInput;
+  MethodLog('Get_ECRInput.End');
+end;
+
+function  ToleMain.Get_ECRMode: Integer;
+begin
+  MethodLog('Get_ECRMode.Begin');
+  Result := Driver.Get_ECRMode;
+  MethodLog('Get_ECRMode.End');
+end;
+
+function  ToleMain.Get_ECRMode8Status: Integer;
+begin
+  MethodLog('Get_ECRMode8Status.Begin');
+  Result := Driver.Get_ECRMode8Status;
+  MethodLog('Get_ECRMode8Status.End');
+end;
+
+function  ToleMain.Get_ECRModeDescription: WideString;
+begin
+  MethodLog('Get_ECRModeDescription.Begin');
+  Result := Driver.Get_ECRModeDescription;
+  MethodLog('Get_ECRModeDescription.End');
+end;
+
+function  ToleMain.Get_ECROutput: WideString;
+begin
+  MethodLog('Get_ECROutput.Begin');
+  Result := Driver.Get_ECROutput;
+  MethodLog('Get_ECROutput.End');
+end;
+
+function  ToleMain.Get_ECRSoftDate: TDateTime;
+begin
+  MethodLog('Get_ECRSoftDate.Begin');
+  Result := Driver.Get_ECRSoftDate;
+  MethodLog('Get_ECRSoftDate.End');
+end;
+
+function  ToleMain.Get_ECRSoftVersion: WideString;
+begin
+  MethodLog('Get_ECRSoftVersion.Begin');
+  Result := Driver.Get_ECRSoftVersion;
+  MethodLog('Get_ECRSoftVersion.End');
+end;
+
+function  ToleMain.Get_EKLZIsPresent: WordBool;
+begin
+  MethodLog('Get_EKLZIsPresent.Begin');
+  Result := Driver.Get_EKLZIsPresent;
+  MethodLog('Get_EKLZIsPresent.End');
+end;
+
+function  ToleMain.Get_EmergencyStopCode: Integer;
+begin
+  MethodLog('Get_EmergencyStopCode.Begin');
+  Result := Driver.Get_EmergencyStopCode;
+  MethodLog('Get_EmergencyStopCode.End');
+end;
+
+function  ToleMain.Get_EmergencyStopCodeDescription: WideString;
+begin
+  MethodLog('Get_EmergencyStopCodeDescription.Begin');
+  Result := Driver.Get_EmergencyStopCodeDescription;
+  MethodLog('Get_EmergencyStopCodeDescription.End');
+end;
+
+function  ToleMain.Get_FieldName: WideString;
+begin
+  MethodLog('Get_FieldName.Begin');
+  Result := Driver.Get_FieldName;
+  MethodLog('Get_FieldName.End');
+end;
+
+function  ToleMain.Get_FieldNumber: Integer;
+begin
+  MethodLog('Get_FieldNumber.Begin');
+  Result := Driver.Get_FieldNumber;
+  MethodLog('Get_FieldNumber.End');
+end;
+
+procedure ToleMain.Set_FieldNumber(Value: Integer);
+begin
+  MethodLog('Set_FieldNumber.Begin');
+  Driver.Set_FieldNumber(Value);
+  MethodLog('Set_FieldNumber.End');
+end;
+
+function  ToleMain.Get_FieldSize: Integer;
+begin
+  MethodLog('Get_FieldSize.Begin');
+  Result := Driver.Get_FieldSize;
+  MethodLog('Get_FieldSize.End');
+end;
+
+function  ToleMain.Get_FieldType: WordBool;
+begin
+  MethodLog('Get_FieldType.Begin');
+  Result := Driver.Get_FieldType;
+  MethodLog('Get_FieldType.End');
+end;
+
+function  ToleMain.Get_FirstLineNumber: Integer;
+begin
+  MethodLog('Get_FirstLineNumber.Begin');
+  Result := Driver.Get_FirstLineNumber;
+  MethodLog('Get_FirstLineNumber.End');
+end;
+
+procedure ToleMain.Set_FirstLineNumber(Value: Integer);
+begin
+  MethodLog('Set_FirstLineNumber.Begin');
+  Driver.Set_FirstLineNumber(Value);
+  MethodLog('Set_FirstLineNumber.End');
+end;
+
+function  ToleMain.Get_FirstSessionDate: TDateTime;
+begin
+  MethodLog('Get_FirstSessionDate.Begin');
+  Result := Driver.Get_FirstSessionDate;
+  MethodLog('Get_FirstSessionDate.End');
+end;
+
+procedure ToleMain.Set_FirstSessionDate(Value: TDateTime);
+begin
+  MethodLog('Set_FirstSessionDate.Begin');
+  Driver.Set_FirstSessionDate(Value);
+  MethodLog('Set_FirstSessionDate.End');
+end;
+
+function  ToleMain.Get_FirstSessionNumber: Integer;
+begin
+  MethodLog('Get_FirstSessionNumber.Begin');
+  Result := Driver.Get_FirstSessionNumber;
+  MethodLog('Get_FirstSessionNumber.End');
+end;
+
+procedure ToleMain.Set_FirstSessionNumber(Value: Integer);
+begin
+  MethodLog('Set_FirstSessionNumber.Begin');
+  Driver.Set_FirstSessionNumber(Value);
+  MethodLog('Set_FirstSessionNumber.End');
+end;
+
+function  ToleMain.Get_FM1IsPresent: WordBool;
+begin
+  MethodLog('Get_FM1IsPresent.Begin');
+  Result := Driver.Get_FM1IsPresent;
+  MethodLog('Get_FM1IsPresent.End');
+end;
+
+function  ToleMain.Get_FM2IsPresent: WordBool;
+begin
+  MethodLog('Get_FM2IsPresent.Begin');
+  Result := Driver.Get_FM2IsPresent;
+  MethodLog('Get_FM2IsPresent.End');
+end;
+
+function  ToleMain.Get_FMBuild: Integer;
+begin
+  MethodLog('Get_FMBuild.Begin');
+  Result := Driver.Get_FMBuild;
+  MethodLog('Get_FMBuild.End');
+end;
+
+function  ToleMain.Get_FMFlags: Integer;
+begin
+  MethodLog('Get_FMFlags.Begin');
+  Result := Driver.Get_FMFlags;
+  MethodLog('Get_FMFlags.End');
+end;
+
+function  ToleMain.Get_FMOverflow: WordBool;
+begin
+  MethodLog('Get_FMOverflow.Begin');
+  Result := Driver.Get_FMOverflow;
+  MethodLog('Get_FMOverflow.End');
+end;
+
+function  ToleMain.Get_FMSoftDate: TDateTime;
+begin
+  MethodLog('Get_FMSoftDate.Begin');
+  Result := Driver.Get_FMSoftDate;
+  MethodLog('Get_FMSoftDate.End');
+end;
+
+function  ToleMain.Get_FMSoftVersion: WideString;
+begin
+  MethodLog('Get_FMSoftVersion.Begin');
+  Result := Driver.Get_FMSoftVersion;
+  MethodLog('Get_FMSoftVersion.End');
+end;
+
+function  ToleMain.Get_FreeRecordInFM: Integer;
+begin
+  MethodLog('Get_FreeRecordInFM.Begin');
+  Result := Driver.Get_FreeRecordInFM;
+  MethodLog('Get_FreeRecordInFM.End');
+end;
+
+function  ToleMain.Get_FreeRegistration: Integer;
+begin
+  MethodLog('Get_FreeRegistration.Begin');
+  Result := Driver.Get_FreeRegistration;
+  MethodLog('Get_FreeRegistration.End');
+end;
+
+function  ToleMain.Get_INN: WideString;
+begin
+  MethodLog('Get_INN.Begin');
+  Result := Driver.Get_INN;
+  MethodLog('Get_INN.End');
+end;
+
+procedure ToleMain.Set_INN(const Value: WideString);
+begin
+  MethodLog('Set_INN.Begin');
+  Driver.Set_INN(Value);
+  MethodLog('Set_INN.End');
+end;
+
+function  ToleMain.Get_IsCheckClosed: WordBool;
+begin
+  MethodLog('Get_IsCheckClosed.Begin');
+  Result := Driver.Get_IsCheckClosed;
+  MethodLog('Get_IsCheckClosed.End');
+end;
+
+function  ToleMain.Get_IsCheckMadeOut: WordBool;
+begin
+  MethodLog('Get_IsCheckMadeOut.Begin');
+  Result := Driver.Get_IsCheckMadeOut;
+  MethodLog('Get_IsCheckMadeOut.End');
+end;
+
+function  ToleMain.Get_IsDrawerOpen: WordBool;
+begin
+  MethodLog('Get_IsDrawerOpen.Begin');
+  Result := Driver.Get_IsDrawerOpen;
+  MethodLog('Get_IsDrawerOpen.End');
+end;
+
+function  ToleMain.Get_JournalRibbonIsPresent: WordBool;
+begin
+  MethodLog('Get_JournalRibbonIsPresent.Begin');
+  Result := Driver.Get_JournalRibbonIsPresent;
+  MethodLog('Get_JournalRibbonIsPresent.End');
+end;
+
+function  ToleMain.Get_JournalRibbonLever: WordBool;
+begin
+  MethodLog('Get_JournalRibbonLever.Begin');
+  Result := Driver.Get_JournalRibbonLever;
+  MethodLog('Get_JournalRibbonLever.End');
+end;
+
+function  ToleMain.Get_JournalRibbonOpticalSensor: WordBool;
+begin
+  MethodLog('Get_JournalRibbonOpticalSensor.Begin');
+  Result := Driver.Get_JournalRibbonOpticalSensor;
+  MethodLog('Get_JournalRibbonOpticalSensor.End');
+end;
+
+function  ToleMain.Get_KPKNumber: Integer;
+begin
+  MethodLog('Get_KPKNumber.Begin');
+  Result := Driver.Get_KPKNumber;
+  MethodLog('Get_KPKNumber.End');
+end;
+
+procedure ToleMain.Set_KPKNumber(Value: Integer);
+begin
+  MethodLog('Set_KPKNumber.Begin');
+  Driver.Set_KPKNumber(Value);
+  MethodLog('Set_KPKNumber.End');
+end;
+
+function  ToleMain.Get_LastLineNumber: Integer;
+begin
+  MethodLog('Get_LastLineNumber.Begin');
+  Result := Driver.Get_LastLineNumber;
+  MethodLog('Get_LastLineNumber.End');
+end;
+
+procedure ToleMain.Set_LastLineNumber(Value: Integer);
+begin
+  MethodLog('Set_LastLineNumber.Begin');
+  Driver.Set_LastLineNumber(Value);
+  MethodLog('Set_LastLineNumber.End');
+end;
+
+function  ToleMain.Get_LastSessionDate: TDateTime;
+begin
+  MethodLog('Get_LastSessionDate.Begin');
+  Result := Driver.Get_LastSessionDate;
+  MethodLog('Get_LastSessionDate.End');
+end;
+
+procedure ToleMain.Set_LastSessionDate(Value: TDateTime);
+begin
+  MethodLog('Set_LastSessionDate.Begin');
+  Driver.Set_LastSessionDate(Value);
+  MethodLog('Set_LastSessionDate.End');
+end;
+
+function  ToleMain.Get_LastSessionNumber: Integer;
+begin
+  MethodLog('Get_LastSessionNumber.Begin');
+  Result := Driver.Get_LastSessionNumber;
+  MethodLog('Get_LastSessionNumber.End');
+end;
+
+procedure ToleMain.Set_LastSessionNumber(Value: Integer);
+begin
+  MethodLog('Set_LastSessionNumber.Begin');
+  Driver.Set_LastSessionNumber(Value);
+  MethodLog('Set_LastSessionNumber.End');
+end;
+
+function  ToleMain.Get_License: WideString;
+begin
+  MethodLog('Get_License.Begin');
+  Result := Driver.Get_License;
+  MethodLog('Get_License.End');
+end;
+
+procedure ToleMain.Set_License(const Value: WideString);
+begin
+  MethodLog('Set_License.Begin');
+  Driver.Set_License(Value);
+  MethodLog('Set_License.End');
+end;
+
+function  ToleMain.Get_LicenseIsPresent: WordBool;
+begin
+  MethodLog('Get_LicenseIsPresent.Begin');
+  Result := Driver.Get_LicenseIsPresent;
+  MethodLog('Get_LicenseIsPresent.End');
+end;
+
+function  ToleMain.Get_LidPositionSensor: WordBool;
+begin
+  MethodLog('Get_LidPositionSensor.Begin');
+  Result := Driver.Get_LidPositionSensor;
+  MethodLog('Get_LidPositionSensor.End');
+end;
+
+function  ToleMain.Get_LineData: WideString;
+begin
+  MethodLog('Get_LineData.Begin');
+  Result := Driver.Get_LineData;
+  MethodLog('Get_LineData.End');
+end;
+
+procedure ToleMain.Set_LineData(const Value: WideString);
+begin
+  MethodLog('Set_LineData.Begin');
+  Driver.Set_LineData(Value);
+  MethodLog('Set_LineData.End');
+end;
+
+function  ToleMain.Get_LineNumber: Integer;
+begin
+  MethodLog('Get_LineNumber.Begin');
+  Result := Driver.Get_LineNumber;
+  MethodLog('Get_LineNumber.End');
+end;
+
+procedure ToleMain.Set_LineNumber(Value: Integer);
+begin
+  MethodLog('Set_LineNumber.Begin');
+  Driver.Set_LineNumber(Value);
+  MethodLog('Set_LineNumber.End');
+end;
+
+function  ToleMain.Get_LogicalNumber: Integer;
+begin
+  MethodLog('Get_LogicalNumber.Begin');
+  Result := Driver.Get_LogicalNumber;
+  MethodLog('Get_LogicalNumber.End');
+end;
+
+function  ToleMain.Get_MAXValueOfField: Integer;
+begin
+  MethodLog('Get_MAXValueOfField.Begin');
+  Result := Driver.Get_MAXValueOfField;
+  MethodLog('Get_MAXValueOfField.End');
+end;
+
+function  ToleMain.Get_MINValueOfField: Integer;
+begin
+  MethodLog('Get_MINValueOfField.Begin');
+  Result := Driver.Get_MINValueOfField;
+  MethodLog('Get_MINValueOfField.End');
+end;
+
+function  ToleMain.Get_Motor: WordBool;
+begin
+  MethodLog('Get_Motor.Begin');
+  Result := Driver.Get_Motor;
+  MethodLog('Get_Motor.End');
+end;
+
+function  ToleMain.Get_NameCashReg: WideString;
+begin
+  MethodLog('Get_NameCashReg.Begin');
+  Result := Driver.Get_NameCashReg;
+  MethodLog('Get_NameCashReg.End');
+end;
+
+function  ToleMain.Get_NameOperationReg: WideString;
+begin
+  MethodLog('Get_NameOperationReg.Begin');
+  Result := Driver.Get_NameOperationReg;
+  MethodLog('Get_NameOperationReg.End');
+end;
+
+function  ToleMain.Get_NewPasswordTI: Integer;
+begin
+  MethodLog('Get_NewPasswordTI.Begin');
+  Result := Driver.Get_NewPasswordTI;
+  MethodLog('Get_NewPasswordTI.End');
+end;
+
+procedure ToleMain.Set_NewPasswordTI(Value: Integer);
+begin
+  MethodLog('Set_NewPasswordTI.Begin');
+  Driver.Set_NewPasswordTI(Value);
+  MethodLog('Set_NewPasswordTI.End');
+end;
+
+function  ToleMain.Get_OpenDocumentNumber: Integer;
+begin
+  MethodLog('Get_OpenDocumentNumber.Begin');
+  Result := Driver.Get_OpenDocumentNumber;
+  MethodLog('Get_OpenDocumentNumber.End');
+end;
+
+function  ToleMain.Get_OperatorNumber: Integer;
+begin
+  MethodLog('Get_OperatorNumber.Begin');
+  Result := Driver.Get_OperatorNumber;
+  MethodLog('Get_OperatorNumber.End');
+end;
+
+function  ToleMain.Get_Password: Integer;
+begin
+  MethodLog('Get_Password.Begin');
+  Result := Driver.Get_Password;
+  MethodLog('Get_Password.End');
+end;
+
+procedure ToleMain.Set_Password(Value: Integer);
+begin
+  MethodLog('Set_Password.Begin');
+  Driver.Set_Password(Value);
+  MethodLog('Set_Password.End');
+end;
+
+function  ToleMain.Get_Pistol: WordBool;
+begin
+  MethodLog('Get_Pistol.Begin');
+  Result := Driver.Get_Pistol;
+  MethodLog('Get_Pistol.End');
+end;
+
+function  ToleMain.Get_PointPosition: WordBool;
+begin
+  MethodLog('Get_PointPosition.Begin');
+  Result := Driver.Get_PointPosition;
+  MethodLog('Get_PointPosition.End');
+end;
+
+procedure ToleMain.Set_PointPosition(Value: WordBool);
+begin
+  MethodLog('Set_PointPosition.Begin');
+  Driver.Set_PointPosition(Value);
+  MethodLog('Set_PointPosition.End');
+end;
+
+function  ToleMain.Get_PortNumber: Integer;
+begin
+  MethodLog('Get_PortNumber.Begin');
+  Result := Driver.Get_PortNumber;
+  MethodLog('Get_PortNumber.End');
+end;
+
+procedure ToleMain.Set_PortNumber(Value: Integer);
+begin
+  MethodLog('Set_PortNumber.Begin');
+  Driver.Set_PortNumber(Value);
+  MethodLog('Set_PortNumber.End');
+end;
+
+function  ToleMain.Get_Price: Currency;
+begin
+  MethodLog('Get_Price.Begin');
+  Result := Driver.Get_Price;
+  MethodLog('Get_Price.End');
+end;
+
+procedure ToleMain.Set_Price(Value: Currency);
+begin
+  MethodLog('Set_Price.Begin');
+  Driver.Set_Price(Value);
+  MethodLog('Set_Price.End');
+end;
+
+function  ToleMain.Get_Quantity: Double;
+begin
+  MethodLog('Get_Quantity.Begin');
+  Result := Driver.Get_Quantity;
+  MethodLog('Get_Quantity.End');
+end;
+
+procedure ToleMain.Set_Quantity(Value: Double);
+begin
+  MethodLog('Set_Quantity.Begin');
+  Driver.Set_Quantity(Value);
+  MethodLog('Set_Quantity.End');
+end;
+
+function  ToleMain.Get_QuantityOfOperations: Integer;
+begin
+  MethodLog('Get_QuantityOfOperations.Begin');
+  Result := Driver.Get_QuantityOfOperations;
+  MethodLog('Get_QuantityOfOperations.End');
+end;
+
+function  ToleMain.Get_ReceiptRibbonIsPresent: WordBool;
+begin
+  MethodLog('Get_ReceiptRibbonIsPresent.Begin');
+  Result := Driver.Get_ReceiptRibbonIsPresent;
+  MethodLog('Get_ReceiptRibbonIsPresent.End');
+end;
+
+function  ToleMain.Get_ReceiptRibbonLever: WordBool;
+begin
+  MethodLog('Get_ReceiptRibbonLever.Begin');
+  Result := Driver.Get_ReceiptRibbonLever;
+  MethodLog('Get_ReceiptRibbonLever.End');
+end;
+
+function  ToleMain.Get_ReceiptRibbonOpticalSensor: WordBool;
+begin
+  MethodLog('Get_ReceiptRibbonOpticalSensor.Begin');
+  Result := Driver.Get_ReceiptRibbonOpticalSensor;
+  MethodLog('Get_ReceiptRibbonOpticalSensor.End');
+end;
+
+function  ToleMain.Get_RegisterNumber: Integer;
+begin
+  MethodLog('Get_RegisterNumber.Begin');
+  Result := Driver.Get_RegisterNumber;
+  MethodLog('Get_RegisterNumber.End');
+end;
+
+procedure ToleMain.Set_RegisterNumber(Value: Integer);
+begin
+  MethodLog('Set_RegisterNumber.Begin');
+  Driver.Set_RegisterNumber(Value);
+  MethodLog('Set_RegisterNumber.End');
+end;
+
+function  ToleMain.Get_RegistrationNumber: Integer;
+begin
+  MethodLog('Get_RegistrationNumber.Begin');
+  Result := Driver.Get_RegistrationNumber;
+  MethodLog('Get_RegistrationNumber.End');
+end;
+
+procedure ToleMain.Set_RegistrationNumber(Value: Integer);
+begin
+  MethodLog('Set_RegistrationNumber.Begin');
+  Driver.Set_RegistrationNumber(Value);
+  MethodLog('Set_RegistrationNumber.End');
+end;
+
+function  ToleMain.Get_ReportType: WordBool;
+begin
+  MethodLog('Get_ReportType.Begin');
+  Result := Driver.Get_ReportType;
+  MethodLog('Get_ReportType.End');
+end;
+
+procedure ToleMain.Set_ReportType(Value: WordBool);
+begin
+  MethodLog('Set_ReportType.Begin');
+  Driver.Set_ReportType(Value);
+  MethodLog('Set_ReportType.End');
+end;
+
+function  ToleMain.Get_ResultCode: Integer;
+begin
+  MethodLog('Get_ResultCode.Begin');
+  Result := Driver.Get_ResultCode;
+  MethodLog('Get_ResultCode.End');
+end;
+
+function  ToleMain.Get_ResultCodeDescription: WideString;
+begin
+  MethodLog('Get_ResultCodeDescription.Begin');
+  Result := Driver.Get_ResultCodeDescription;
+  MethodLog('Get_ResultCodeDescription.End');
+end;
+
+function  ToleMain.Get_RKNumber: Integer;
+begin
+  MethodLog('Get_RKNumber.Begin');
+  Result := Driver.Get_RKNumber;
+  MethodLog('Get_RKNumber.End');
+end;
+
+procedure ToleMain.Set_RKNumber(Value: Integer);
+begin
+  MethodLog('Set_RKNumber.Begin');
+  Driver.Set_RKNumber(Value);
+  MethodLog('Set_RKNumber.End');
+end;
+
+function  ToleMain.Get_RNM: WideString;
+begin
+  MethodLog('Get_RNM.Begin');
+  Result := Driver.Get_RNM;
+  MethodLog('Get_RNM.End');
+end;
+
+procedure ToleMain.Set_RNM(const Value: WideString);
+begin
+  MethodLog('Set_RNM.Begin');
+  Driver.Set_RNM(Value);
+  MethodLog('Set_RNM.End');
+end;
+
+function  ToleMain.Get_RoughValve: WordBool;
+begin
+  MethodLog('Get_RoughValve.Begin');
+  Result := Driver.Get_RoughValve;
+  MethodLog('Get_RoughValve.End');
+end;
+
+function  ToleMain.Get_RowNumber: Integer;
+begin
+  MethodLog('Get_RowNumber.Begin');
+  Result := Driver.Get_RowNumber;
+  MethodLog('Get_RowNumber.End');
+end;
+
+procedure ToleMain.Set_RowNumber(Value: Integer);
+begin
+  MethodLog('Set_RowNumber.Begin');
+  Driver.Set_RowNumber(Value);
+  MethodLog('Set_RowNumber.End');
+end;
+
+function  ToleMain.Get_RunningPeriod: Integer;
+begin
+  MethodLog('Get_RunningPeriod.Begin');
+  Result := Driver.Get_RunningPeriod;
+  MethodLog('Get_RunningPeriod.End');
+end;
+
+procedure ToleMain.Set_RunningPeriod(Value: Integer);
+begin
+  MethodLog('Set_RunningPeriod.Begin');
+  Driver.Set_RunningPeriod(Value);
+  MethodLog('Set_RunningPeriod.End');
+end;
+
+function  ToleMain.Get_SerialNumber: WideString;
+begin
+  MethodLog('Get_SerialNumber.Begin');
+  Result := Driver.Get_SerialNumber;
+  MethodLog('Get_SerialNumber.End');
+end;
+
+procedure ToleMain.Set_SerialNumber(const Value: WideString);
+begin
+  MethodLog('Set_SerialNumber.Begin');
+  Driver.Set_SerialNumber(Value);
+  MethodLog('Set_SerialNumber.End');
+end;
+
+function  ToleMain.Get_SessionNumber: Integer;
+begin
+  MethodLog('Get_SessionNumber.Begin');
+  Result := Driver.Get_SessionNumber;
+  MethodLog('Get_SessionNumber.End');
+end;
+
+procedure ToleMain.Set_SessionNumber(Value: Integer);
+begin
+  MethodLog('Set_SessionNumber.Begin');
+  Driver.Set_SessionNumber(Value);
+  MethodLog('Set_SessionNumber.End');
+end;
+
+function  ToleMain.Get_SlipDocumentIsMoving: WordBool;
+begin
+  MethodLog('Get_SlipDocumentIsMoving.Begin');
+  Result := Driver.Get_SlipDocumentIsMoving;
+  MethodLog('Get_SlipDocumentIsMoving.End');
+end;
+
+function  ToleMain.Get_SlipDocumentIsPresent: WordBool;
+begin
+  MethodLog('Get_SlipDocumentIsPresent.Begin');
+  Result := Driver.Get_SlipDocumentIsPresent;
+  MethodLog('Get_SlipDocumentIsPresent.End');
+end;
+
+function  ToleMain.Get_SlowingInMilliliters: Integer;
+begin
+  MethodLog('Get_SlowingInMilliliters.Begin');
+  Result := Driver.Get_SlowingInMilliliters;
+  MethodLog('Get_SlowingInMilliliters.End');
+end;
+
+procedure ToleMain.Set_SlowingInMilliliters(Value: Integer);
+begin
+  MethodLog('Set_SlowingInMilliliters.Begin');
+  Driver.Set_SlowingInMilliliters(Value);
+  MethodLog('Set_SlowingInMilliliters.End');
+end;
+
+function  ToleMain.Get_SlowingValve: WordBool;
+begin
+  MethodLog('Get_SlowingValve.Begin');
+  Result := Driver.Get_SlowingValve;
+  MethodLog('Get_SlowingValve.End');
+end;
+
+function  ToleMain.Get_StatusRK: Integer;
+begin
+  MethodLog('Get_StatusRK.Begin');
+  Result := Driver.Get_StatusRK;
+  MethodLog('Get_StatusRK.End');
+end;
+
+function  ToleMain.Get_StatusRKDescription: WideString;
+begin
+  MethodLog('Get_StatusRKDescription.Begin');
+  Result := Driver.Get_StatusRKDescription;
+  MethodLog('Get_StatusRKDescription.End');
+end;
+
+function  ToleMain.Get_StringForPrinting: WideString;
+begin
+  MethodLog('Get_StringForPrinting.Begin');
+  Result := Driver.Get_StringForPrinting;
+  MethodLog('Get_StringForPrinting.End');
+end;
+
+procedure ToleMain.Set_StringForPrinting(const Value: WideString);
+begin
+  MethodLog('Set_StringForPrinting.Begin');
+  Driver.Set_StringForPrinting(Value);
+  MethodLog('Set_StringForPrinting.End');
+end;
+
+function  ToleMain.Get_StringQuantity: Integer;
+begin
+  MethodLog('Get_StringQuantity.Begin');
+  Result := Driver.Get_StringQuantity;
+  MethodLog('Get_StringQuantity.End');
+end;
+
+procedure ToleMain.Set_StringQuantity(Value: Integer);
+begin
+  MethodLog('Set_StringQuantity.Begin');
+  Driver.Set_StringQuantity(Value);
+  MethodLog('Set_StringQuantity.End');
+end;
+
+function  ToleMain.Get_Summ1: Currency;
+begin
+  MethodLog('Get_Summ1.Begin');
+  Result := Driver.Get_Summ1;
+  MethodLog('Get_Summ1.End');
+end;
+
+procedure ToleMain.Set_Summ1(Value: Currency);
+begin
+  MethodLog('Set_Summ1.Begin');
+  Driver.Set_Summ1(Value);
+  MethodLog('Set_Summ1.End');
+end;
+
+function  ToleMain.Get_Summ2: Currency;
+begin
+  MethodLog('Get_Summ2.Begin');
+  Result := Driver.Get_Summ2;
+  MethodLog('Get_Summ2.End');
+end;
+
+procedure ToleMain.Set_Summ2(Value: Currency);
+begin
+  MethodLog('Set_Summ2.Begin');
+  Driver.Set_Summ2(Value);
+  MethodLog('Set_Summ2.End');
+end;
+
+function  ToleMain.Get_Summ3: Currency;
+begin
+  MethodLog('Get_Summ3.Begin');
+  Result := Driver.Get_Summ3;
+  MethodLog('Get_Summ3.End');
+end;
+
+procedure ToleMain.Set_Summ3(Value: Currency);
+begin
+  MethodLog('Set_Summ3.Begin');
+  Driver.Set_Summ3(Value);
+  MethodLog('Set_Summ3.End');
+end;
+
+function  ToleMain.Get_Summ4: Currency;
+begin
+  MethodLog('Get_Summ4.Begin');
+  Result := Driver.Get_Summ4;
+  MethodLog('Get_Summ4.End');
+end;
+
+procedure ToleMain.Set_Summ4(Value: Currency);
+begin
+  MethodLog('Set_Summ4.Begin');
+  Driver.Set_Summ4(Value);
+  MethodLog('Set_Summ4.End');
+end;
+
+function  ToleMain.Get_TableName: WideString;
+begin
+  MethodLog('Get_TableName.Begin');
+  Result := Driver.Get_TableName;
+  MethodLog('Get_TableName.End');
+end;
+
+function  ToleMain.Get_TableNumber: Integer;
+begin
+  MethodLog('Get_TableNumber.Begin');
+  Result := Driver.Get_TableNumber;
+  MethodLog('Get_TableNumber.End');
+end;
+
+procedure ToleMain.Set_TableNumber(Value: Integer);
+begin
+  MethodLog('Set_TableNumber.Begin');
+  Driver.Set_TableNumber(Value);
+  MethodLog('Set_TableNumber.End');
+end;
+
+function  ToleMain.Get_Tax1: Integer;
+begin
+  MethodLog('Get_Tax1.Begin');
+  Result := Driver.Get_Tax1;
+  MethodLog('Get_Tax1.End');
+end;
+
+procedure ToleMain.Set_Tax1(Value: Integer);
+begin
+  MethodLog('Set_Tax1.Begin');
+  Driver.Set_Tax1(Value);
+  MethodLog('Set_Tax1.End');
+end;
+
+function  ToleMain.Get_Tax2: Integer;
+begin
+  MethodLog('Get_Tax2.Begin');
+  Result := Driver.Get_Tax2;
+  MethodLog('Get_Tax2.End');
+end;
+
+procedure ToleMain.Set_Tax2(Value: Integer);
+begin
+  MethodLog('Set_Tax2.Begin');
+  Driver.Set_Tax2(Value);
+  MethodLog('Set_Tax2.End');
+end;
+
+function  ToleMain.Get_Tax3: Integer;
+begin
+  MethodLog('Get_Tax3.Begin');
+  Result := Driver.Get_Tax3;
+  MethodLog('Get_Tax3.End');
+end;
+
+procedure ToleMain.Set_Tax3(Value: Integer);
+begin
+  MethodLog('Set_Tax3.Begin');
+  Driver.Set_Tax3(Value);
+  MethodLog('Set_Tax3.End');
+end;
+
+function  ToleMain.Get_Tax4: Integer;
+begin
+  MethodLog('Get_Tax4.Begin');
+  Result := Driver.Get_Tax4;
+  MethodLog('Get_Tax4.End');
+end;
+
+procedure ToleMain.Set_Tax4(Value: Integer);
+begin
+  MethodLog('Set_Tax4.Begin');
+  Driver.Set_Tax4(Value);
+  MethodLog('Set_Tax4.End');
+end;
+
+function  ToleMain.Get_Time: TDateTime;
+begin
+  MethodLog('Get_Time.Begin');
+  Result := Driver.Get_Time;
+  MethodLog('Get_Time.End');
+end;
+
+procedure ToleMain.Set_Time(Value: TDateTime);
+begin
+  MethodLog('Set_Time.Begin');
+  Driver.Set_Time(Value);
+  MethodLog('Set_Time.End');
+end;
+
+function  ToleMain.Get_Timeout: Integer;
+begin
+  MethodLog('Get_Timeout.Begin');
+  Result := Driver.Get_Timeout;
+  MethodLog('Get_Timeout.End');
+end;
+
+procedure ToleMain.Set_Timeout(Value: Integer);
+begin
+  MethodLog('Set_Timeout.Begin');
+  Driver.Set_Timeout(Value);
+  MethodLog('Set_Timeout.End');
+end;
+
+function  ToleMain.Get_TimeStr: WideString;
+begin
+  MethodLog('Get_TimeStr.Begin');
+  Result := Driver.Get_TimeStr;
+  MethodLog('Get_TimeStr.End');
+end;
+
+procedure ToleMain.Set_TimeStr(const Value: WideString);
+begin
+  MethodLog('Set_TimeStr.Begin');
+  Driver.Set_TimeStr(Value);
+  MethodLog('Set_TimeStr.End');
+end;
+
+function  ToleMain.Get_TransferBytes: WideString;
+begin
+  MethodLog('Get_TransferBytes.Begin');
+  Result := Driver.Get_TransferBytes;
+  MethodLog('Get_TransferBytes.End');
+end;
+
+procedure ToleMain.Set_TransferBytes(const Value: WideString);
+begin
+  MethodLog('Set_TransferBytes.Begin');
+  Driver.Set_TransferBytes(Value);
+  MethodLog('Set_TransferBytes.End');
+end;
+
+function  ToleMain.Get_TRKNumber: Integer;
+begin
+  MethodLog('Get_TRKNumber.Begin');
+  Result := Driver.Get_TRKNumber;
+  MethodLog('Get_TRKNumber.End');
+end;
+
+procedure ToleMain.Set_TRKNumber(Value: Integer);
+begin
+  MethodLog('Set_TRKNumber.Begin');
+  Driver.Set_TRKNumber(Value);
+  MethodLog('Set_TRKNumber.End');
+end;
+
+function  ToleMain.Get_TypeOfLastEntryFM: WordBool;
+begin
+  MethodLog('Get_TypeOfLastEntryFM.Begin');
+  Result := Driver.Get_TypeOfLastEntryFM;
+  MethodLog('Get_TypeOfLastEntryFM.End');
+end;
+
+function  ToleMain.Get_TypeOfSumOfEntriesFM: WordBool;
+begin
+  MethodLog('Get_TypeOfSumOfEntriesFM.Begin');
+  Result := Driver.Get_TypeOfSumOfEntriesFM;
+  MethodLog('Get_TypeOfSumOfEntriesFM.End');
+end;
+
+procedure ToleMain.Set_TypeOfSumOfEntriesFM(Value: WordBool);
+begin
+  MethodLog('Set_TypeOfSumOfEntriesFM.Begin');
+  Driver.Set_TypeOfSumOfEntriesFM(Value);
+  MethodLog('Set_TypeOfSumOfEntriesFM.End');
+end;
+
+function  ToleMain.Get_UCodePage: Integer;
+begin
+  MethodLog('Get_UCodePage.Begin');
+  Result := Driver.Get_UCodePage;
+  MethodLog('Get_UCodePage.End');
+end;
+
+function  ToleMain.Get_UDescription: WideString;
+begin
+  MethodLog('Get_UDescription.Begin');
+  Result := Driver.Get_UDescription;
+  MethodLog('Get_UDescription.End');
+end;
+
+function  ToleMain.Get_UMajorProtocolVersion: Integer;
+begin
+  MethodLog('Get_UMajorProtocolVersion.Begin');
+  Result := Driver.Get_UMajorProtocolVersion;
+  MethodLog('Get_UMajorProtocolVersion.End');
+end;
+
+function  ToleMain.Get_UMajorType: Integer;
+begin
+  MethodLog('Get_UMajorType.Begin');
+  Result := Driver.Get_UMajorType;
+  MethodLog('Get_UMajorType.End');
+end;
+
+function  ToleMain.Get_UMinorProtocolVersion: Integer;
+begin
+  MethodLog('Get_UMinorProtocolVersion.Begin');
+  Result := Driver.Get_UMinorProtocolVersion;
+  MethodLog('Get_UMinorProtocolVersion.End');
+end;
+
+function  ToleMain.Get_UMinorType: Integer;
+begin
+  MethodLog('Get_UMinorType.Begin');
+  Result := Driver.Get_UMinorType;
+  MethodLog('Get_UMinorType.End');
+end;
+
+function  ToleMain.Get_UModel: Integer;
+begin
+  MethodLog('Get_UModel.Begin');
+  Result := Driver.Get_UModel;
+  MethodLog('Get_UModel.End');
+end;
+
+function  ToleMain.Get_UseJournalRibbon: WordBool;
+begin
+  MethodLog('Get_UseJournalRibbon.Begin');
+  Result := Driver.Get_UseJournalRibbon;
+  MethodLog('Get_UseJournalRibbon.End');
+end;
+
+procedure ToleMain.Set_UseJournalRibbon(Value: WordBool);
+begin
+  MethodLog('Set_UseJournalRibbon.Begin');
+  Driver.Set_UseJournalRibbon(Value);
+  MethodLog('Set_UseJournalRibbon.End');
+end;
+
+function  ToleMain.Get_UseReceiptRibbon: WordBool;
+begin
+  MethodLog('Get_UseReceiptRibbon.Begin');
+  Result := Driver.Get_UseReceiptRibbon;
+  MethodLog('Get_UseReceiptRibbon.End');
+end;
+
+procedure ToleMain.Set_UseReceiptRibbon(Value: WordBool);
+begin
+  MethodLog('Set_UseReceiptRibbon.Begin');
+  Driver.Set_UseReceiptRibbon(Value);
+  MethodLog('Set_UseReceiptRibbon.End');
+end;
+
+function  ToleMain.Get_UseSlipDocument: WordBool;
+begin
+  MethodLog('Get_UseSlipDocument.Begin');
+  Result := Driver.Get_UseSlipDocument;
+  MethodLog('Get_UseSlipDocument.End');
+end;
+
+procedure ToleMain.Set_UseSlipDocument(Value: WordBool);
+begin
+  MethodLog('Set_UseSlipDocument.Begin');
+  Driver.Set_UseSlipDocument(Value);
+  MethodLog('Set_UseSlipDocument.End');
+end;
+
+function  ToleMain.Get_ValueOfFieldInteger: Integer;
+begin
+  MethodLog('Get_ValueOfFieldInteger.Begin');
+  Result := Driver.Get_ValueOfFieldInteger;
+  MethodLog('Get_ValueOfFieldInteger.End');
+end;
+
+procedure ToleMain.Set_ValueOfFieldInteger(Value: Integer);
+begin
+  MethodLog('Set_ValueOfFieldInteger.Begin');
+  Driver.Set_ValueOfFieldInteger(Value);
+  MethodLog('Set_ValueOfFieldInteger.End');
+end;
+
+function  ToleMain.Get_ValueOfFieldString: WideString;
+begin
+  MethodLog('Get_ValueOfFieldString.Begin');
+  Result := Driver.Get_ValueOfFieldString;
+  MethodLog('Get_ValueOfFieldString.End');
+end;
+
+procedure ToleMain.Set_ValueOfFieldString(const Value: WideString);
+begin
+  MethodLog('Set_ValueOfFieldString.Begin');
+  Driver.Set_ValueOfFieldString(Value);
+  MethodLog('Set_ValueOfFieldString.End');
+end;
+
+function  ToleMain.PrintStringWithFont: Integer;
+begin
+  MethodLog('PrintStringWithFont.Begin');
+  Result := Driver.PrintStringWithFont;
+  MethodLog('PrintStringWithFont.End');
+end;
+
+function  ToleMain.Get_FontType: Integer;
+begin
+  MethodLog('Get_FontType.Begin');
+  Result := Driver.Get_FontType;
+  MethodLog('Get_FontType.End');
+end;
+
+procedure ToleMain.Set_FontType(Value: Integer);
+begin
+  MethodLog('Set_FontType.Begin');
+  Driver.Set_FontType(Value);
+  MethodLog('Set_FontType.End');
+end;
+
+function  ToleMain.Get_LDBaudrate: Integer;
+begin
+  MethodLog('Get_LDBaudrate.Begin');
+  Result := Driver.Get_LDBaudrate;
+  MethodLog('Get_LDBaudrate.End');
+end;
+
+procedure ToleMain.Set_LDBaudrate(Value: Integer);
+begin
+  MethodLog('Set_LDBaudrate.Begin');
+  Driver.Set_LDBaudrate(Value);
+  MethodLog('Set_LDBaudrate.End');
+end;
+
+function  ToleMain.Get_LDComNumber: Integer;
+begin
+  MethodLog('Get_LDComNumber.Begin');
+  Result := Driver.Get_LDComNumber;
+  MethodLog('Get_LDComNumber.End');
+end;
+
+procedure ToleMain.Set_LDComNumber(Value: Integer);
+begin
+  MethodLog('Set_LDComNumber.Begin');
+  Driver.Set_LDComNumber(Value);
+  MethodLog('Set_LDComNumber.End');
+end;
+
+function  ToleMain.Get_LDCount: Integer;
+begin
+  MethodLog('Get_LDCount.Begin');
+  Result := Driver.Get_LDCount;
+  MethodLog('Get_LDCount.End');
+end;
+
+function  ToleMain.Get_LDIndex: Integer;
+begin
+  MethodLog('Get_LDIndex.Begin');
+  Result := Driver.Get_LDIndex;
+  MethodLog('Get_LDIndex.End');
+end;
+
+procedure ToleMain.Set_LDIndex(Value: Integer);
+begin
+  MethodLog('Set_LDIndex.Begin');
+  Driver.Set_LDIndex(Value);
+  MethodLog('Set_LDIndex.End');
+end;
+
+function  ToleMain.Get_LDName: WideString;
+begin
+  MethodLog('Get_LDName.Begin');
+  Result := Driver.Get_LDName;
+  MethodLog('Get_LDName.End');
+end;
+
+procedure ToleMain.Set_LDName(const Value: WideString);
+begin
+  MethodLog('Set_LDName.Begin');
+  Driver.Set_LDName(Value);
+  MethodLog('Set_LDName.End');
+end;
+
+function  ToleMain.Get_LDNumber: Integer;
+begin
+  MethodLog('Get_LDNumber.Begin');
+  Result := Driver.Get_LDNumber;
+  MethodLog('Get_LDNumber.End');
+end;
+
+procedure ToleMain.Set_LDNumber(Value: Integer);
+begin
+  MethodLog('Set_LDNumber.Begin');
+  Driver.Set_LDNumber(Value);
+  MethodLog('Set_LDNumber.End');
+end;
+
+function  ToleMain.Get_WaitPrintingTime: Integer;
+begin
+  MethodLog('Get_WaitPrintingTime.Begin');
+  Result := Driver.Get_WaitPrintingTime;
+  MethodLog('Get_WaitPrintingTime.End');
+end;
+
+function  ToleMain.Get_IsPrinterLeftSensorFailure: WordBool;
+begin
+  MethodLog('Get_IsPrinterLeftSensorFailure.Begin');
+  Result := Driver.Get_IsPrinterLeftSensorFailure;
+  MethodLog('Get_IsPrinterLeftSensorFailure.End');
+end;
+
+function  ToleMain.Get_IsPrinterRightSensorFailure: WordBool;
+begin
+  MethodLog('Get_IsPrinterRightSensorFailure.Begin');
+  Result := Driver.Get_IsPrinterRightSensorFailure;
+  MethodLog('Get_IsPrinterRightSensorFailure.End');
+end;
+
+function  ToleMain.EKLZActivizationResult: Integer;
+begin
+  MethodLog('EKLZActivizationResult.Begin');
+  Result := Driver.EKLZActivizationResult;
+  MethodLog('EKLZActivizationResult.End');
+end;
+
+function  ToleMain.EKLZActivization: Integer;
+begin
+  MethodLog('EKLZActivization.Begin');
+  Result := Driver.EKLZActivization;
+  MethodLog('EKLZActivization.End');
+end;
+
+function  ToleMain.CloseEKLZArchive: Integer;
+begin
+  MethodLog('CloseEKLZArchive.Begin');
+  Result := Driver.CloseEKLZArchive;
+  MethodLog('CloseEKLZArchive.End');
+end;
+
+function  ToleMain.GetEKLZSerialNumber: Integer;
+begin
+  MethodLog('GetEKLZSerialNumber.Begin');
+  Result := Driver.GetEKLZSerialNumber;
+  MethodLog('GetEKLZSerialNumber.End');
+end;
+
+function  ToleMain.Get_EKLZNumber: WideString;
+begin
+  MethodLog('Get_EKLZNumber.Begin');
+  Result := Driver.Get_EKLZNumber;
+  MethodLog('Get_EKLZNumber.End');
+end;
+
+function  ToleMain.EKLZInterrupt: Integer;
+begin
+  MethodLog('EKLZInterrupt.Begin');
+  Result := Driver.EKLZInterrupt;
+  MethodLog('EKLZInterrupt.End');
+end;
+
+function  ToleMain.GetEKLZCode1Report: Integer;
+begin
+  MethodLog('GetEKLZCode1Report.Begin');
+  Result := Driver.GetEKLZCode1Report;
+  MethodLog('GetEKLZCode1Report.End');
+end;
+
+function  ToleMain.Get_LastKPKDocumentResult: Currency;
+begin
+  MethodLog('Get_LastKPKDocumentResult.Begin');
+  Result := Driver.Get_LastKPKDocumentResult;
+  MethodLog('Get_LastKPKDocumentResult.End');
+end;
+
+function  ToleMain.Get_LastKPKDate: TDateTime;
+begin
+  MethodLog('Get_LastKPKDate.Begin');
+  Result := Driver.Get_LastKPKDate;
+  MethodLog('Get_LastKPKDate.End');
+end;
+
+function  ToleMain.Get_LastKPKTime: TDateTime;
+begin
+  MethodLog('Get_LastKPKTime.Begin');
+  Result := Driver.Get_LastKPKTime;
+  MethodLog('Get_LastKPKTime.End');
+end;
+
+function  ToleMain.Get_LastKPKNumber: Integer;
+begin
+  MethodLog('Get_LastKPKNumber.Begin');
+  Result := Driver.Get_LastKPKNumber;
+  MethodLog('Get_LastKPKNumber.End');
+end;
+
+function  ToleMain.Get_EKLZFlags: Integer;
+begin
+  MethodLog('Get_EKLZFlags.Begin');
+  Result := Driver.Get_EKLZFlags;
+  MethodLog('Get_EKLZFlags.End');
+end;
+
+function  ToleMain.GetEKLZCode2Report: Integer;
+begin
+  MethodLog('GetEKLZCode2Report.Begin');
+  Result := Driver.GetEKLZCode2Report;
+  MethodLog('GetEKLZCode2Report.End');
+end;
+
+function  ToleMain.TestEKLZArchiveIntegrity: Integer;
+begin
+  MethodLog('TestEKLZArchiveIntegrity.Begin');
+  Result := Driver.TestEKLZArchiveIntegrity;
+  MethodLog('TestEKLZArchiveIntegrity.End');
+end;
+
+function  ToleMain.Get_TestNumber: Integer;
+begin
+  MethodLog('Get_TestNumber.Begin');
+  Result := Driver.Get_TestNumber;
+  MethodLog('Get_TestNumber.End');
+end;
+
+procedure ToleMain.Set_TestNumber(Value: Integer);
+begin
+  MethodLog('Set_TestNumber.Begin');
+  Driver.Set_TestNumber(Value);
+  MethodLog('Set_TestNumber.End');
+end;
+
+function  ToleMain.Get_EKLZVersion: WideString;
+begin
+  MethodLog('Get_EKLZVersion.Begin');
+  Result := Driver.Get_EKLZVersion;
+  MethodLog('Get_EKLZVersion.End');
+end;
+
+function  ToleMain.Get_EKLZData: WideString;
+begin
+  MethodLog('Get_EKLZData.Begin');
+  Result := Driver.Get_EKLZData;
+  MethodLog('Get_EKLZData.End');
+end;
+
+function  ToleMain.GetEKLZVersion: Integer;
+begin
+  MethodLog('GetEKLZVersion.Begin');
+  Result := Driver.GetEKLZVersion;
+  MethodLog('GetEKLZVersion.End');
+end;
+
+function  ToleMain.InitEKLZArchive: Integer;
+begin
+  MethodLog('InitEKLZArchive.Begin');
+  Result := Driver.InitEKLZArchive;
+  MethodLog('InitEKLZArchive.End');
+end;
+
+function  ToleMain.GetEKLZData: Integer;
+begin
+  MethodLog('GetEKLZData.Begin');
+  Result := Driver.GetEKLZData;
+  MethodLog('GetEKLZData.End');
+end;
+
+function  ToleMain.GetEKLZJournal: Integer;
+begin
+  MethodLog('GetEKLZJournal.Begin');
+  Result := Driver.GetEKLZJournal;
+  MethodLog('GetEKLZJournal.End');
+end;
+
+function  ToleMain.GetEKLZDocument: Integer;
+begin
+  MethodLog('GetEKLZDocument.Begin');
+  Result := Driver.GetEKLZDocument;
+  MethodLog('GetEKLZDocument.End');
+end;
+
+function  ToleMain.GetEKLZDepartmentReportInDatesRange: Integer;
+begin
+  MethodLog('GetEKLZDepartmentReportInDatesRange.Begin');
+  Result := Driver.GetEKLZDepartmentReportInDatesRange;
+  MethodLog('GetEKLZDepartmentReportInDatesRange.End');
+end;
+
+function  ToleMain.GetEKLZDepartmentReportInSessionsRange: Integer;
+begin
+  MethodLog('GetEKLZDepartmentReportInSessionsRange.Begin');
+  Result := Driver.GetEKLZDepartmentReportInSessionsRange;
+  MethodLog('GetEKLZDepartmentReportInSessionsRange.End');
+end;
+
+function  ToleMain.GetEKLZSessionReportInDatesRange: Integer;
+begin
+  MethodLog('GetEKLZSessionReportInDatesRange.Begin');
+  Result := Driver.GetEKLZSessionReportInDatesRange;
+  MethodLog('GetEKLZSessionReportInDatesRange.End');
+end;
+
+function  ToleMain.GetEKLZSessionReportInSessionsRange: Integer;
+begin
+  MethodLog('GetEKLZSessionReportInSessionsRange.Begin');
+  Result := Driver.GetEKLZSessionReportInSessionsRange;
+  MethodLog('GetEKLZSessionReportInSessionsRange.End');
+end;
+
+function  ToleMain.GetEKLZSessionTotal: Integer;
+begin
+  MethodLog('GetEKLZSessionTotal.Begin');
+  Result := Driver.GetEKLZSessionTotal;
+  MethodLog('GetEKLZSessionTotal.End');
+end;
+
+function  ToleMain.GetEKLZActivizationResult: Integer;
+begin
+  MethodLog('GetEKLZActivizationResult.Begin');
+  Result := Driver.GetEKLZActivizationResult;
+  MethodLog('GetEKLZActivizationResult.End');
+end;
+
+function  ToleMain.SetEKLZResultCode: Integer;
+begin
+  MethodLog('SetEKLZResultCode.Begin');
+  Result := Driver.SetEKLZResultCode;
+  MethodLog('SetEKLZResultCode.End');
+end;
+
+function  ToleMain.Get_EKLZResultCode: Integer;
+begin
+  MethodLog('Get_EKLZResultCode.Begin');
+  Result := Driver.Get_EKLZResultCode;
+  MethodLog('Get_EKLZResultCode.End');
+end;
+
+procedure ToleMain.Set_EKLZResultCode(Value: Integer);
+begin
+  MethodLog('Set_EKLZResultCode.Begin');
+  Driver.Set_EKLZResultCode(Value);
+  MethodLog('Set_EKLZResultCode.End');
+end;
+
+function  ToleMain.Get_FMResultCode: Integer;
+begin
+  MethodLog('Get_FMResultCode.Begin');
+  Result := Driver.Get_FMResultCode;
+  MethodLog('Get_FMResultCode.End');
+end;
+
+function  ToleMain.Get_PowerSourceVoltage: Double;
+begin
+  MethodLog('Get_PowerSourceVoltage.Begin');
+  Result := Driver.Get_PowerSourceVoltage;
+  MethodLog('Get_PowerSourceVoltage.End');
+end;
+
+function  ToleMain.Get_IsEKLZOverflow: WordBool;
+begin
+  MethodLog('Get_IsEKLZOverflow.Begin');
+  Result := Driver.Get_IsEKLZOverflow;
+  MethodLog('Get_IsEKLZOverflow.End');
+end;
+
+function  ToleMain.OpenFiscalSlipDocument: Integer;
+begin
+  MethodLog('OpenFiscalSlipDocument.Begin');
+  Result := Driver.OpenFiscalSlipDocument;
+  MethodLog('OpenFiscalSlipDocument.End');
+end;
+
+function  ToleMain.OpenStandardFiscalSlipDocument: Integer;
+begin
+  MethodLog('OpenStandardFiscalSlipDocument.Begin');
+  Result := Driver.OpenStandardFiscalSlipDocument;
+  MethodLog('OpenStandardFiscalSlipDocument.End');
+end;
+
+function  ToleMain.RegistrationOnSlipDocument: Integer;
+begin
+  MethodLog('RegistrationOnSlipDocument.Begin');
+  Result := Driver.RegistrationOnSlipDocument;
+  MethodLog('RegistrationOnSlipDocument.End');
+end;
+
+function  ToleMain.StandardRegistrationOnSlipDocument: Integer;
+begin
+  MethodLog('StandardRegistrationOnSlipDocument.Begin');
+  Result := Driver.StandardRegistrationOnSlipDocument;
+  MethodLog('StandardRegistrationOnSlipDocument.End');
+end;
+
+function  ToleMain.ChargeOnSlipDocument: Integer;
+begin
+  MethodLog('ChargeOnSlipDocument.Begin');
+  Result := Driver.ChargeOnSlipDocument;
+  MethodLog('ChargeOnSlipDocument.End');
+end;
+
+function  ToleMain.StandardChargeOnSlipDocument: Integer;
+begin
+  MethodLog('StandardChargeOnSlipDocument.Begin');
+  Result := Driver.StandardChargeOnSlipDocument;
+  MethodLog('StandardChargeOnSlipDocument.End');
+end;
+
+function  ToleMain.CloseCheckOnSlipDocument: Integer;
+begin
+  MethodLog('CloseCheckOnSlipDocument.Begin');
+  Result := Driver.CloseCheckOnSlipDocument;
+  MethodLog('CloseCheckOnSlipDocument.End');
+end;
+
+function  ToleMain.StandardCloseCheckOnSlipDocument: Integer;
+begin
+  MethodLog('StandardCloseCheckOnSlipDocument.Begin');
+  Result := Driver.StandardCloseCheckOnSlipDocument;
+  MethodLog('StandardCloseCheckOnSlipDocument.End');
+end;
+
+function  ToleMain.ConfigureSlipDocument: Integer;
+begin
+  MethodLog('ConfigureSlipDocument.Begin');
+  Result := Driver.ConfigureSlipDocument;
+  MethodLog('ConfigureSlipDocument.End');
+end;
+
+function  ToleMain.ConfigureStandardSlipDocument: Integer;
+begin
+  MethodLog('ConfigureStandardSlipDocument.Begin');
+  Result := Driver.ConfigureStandardSlipDocument;
+  MethodLog('ConfigureStandardSlipDocument.End');
+end;
+
+function  ToleMain.FillSlipDocumentWithUnfiscalInfo: Integer;
+begin
+  MethodLog('FillSlipDocumentWithUnfiscalInfo.Begin');
+  Result := Driver.FillSlipDocumentWithUnfiscalInfo;
+  MethodLog('FillSlipDocumentWithUnfiscalInfo.End');
+end;
+
+function  ToleMain.ClearSlipDocumentBufferString: Integer;
+begin
+  MethodLog('ClearSlipDocumentBufferString.Begin');
+  Result := Driver.ClearSlipDocumentBufferString;
+  MethodLog('ClearSlipDocumentBufferString.End');
+end;
+
+function  ToleMain.ClearSlipDocumentBuffer: Integer;
+begin
+  MethodLog('ClearSlipDocumentBuffer.Begin');
+  Result := Driver.ClearSlipDocumentBuffer;
+  MethodLog('ClearSlipDocumentBuffer.End');
+end;
+
+function  ToleMain.PrintSlipDocument: Integer;
+begin
+  MethodLog('PrintSlipDocument.Begin');
+  Result := Driver.PrintSlipDocument;
+  MethodLog('PrintSlipDocument.End');
+end;
+
+function  ToleMain.Get_CopyType: Integer;
+begin
+  MethodLog('Get_CopyType.Begin');
+  Result := Driver.Get_CopyType;
+  MethodLog('Get_CopyType.End');
+end;
+
+procedure ToleMain.Set_CopyType(Value: Integer);
+begin
+  MethodLog('Set_CopyType.Begin');
+  Driver.Set_CopyType(Value);
+  MethodLog('Set_CopyType.End');
+end;
+
+function  ToleMain.Get_NumberOfCopies: Integer;
+begin
+  MethodLog('Get_NumberOfCopies.Begin');
+  Result := Driver.Get_NumberOfCopies;
+  MethodLog('Get_NumberOfCopies.End');
+end;
+
+procedure ToleMain.Set_NumberOfCopies(Value: Integer);
+begin
+  MethodLog('Set_NumberOfCopies.Begin');
+  Driver.Set_NumberOfCopies(Value);
+  MethodLog('Set_NumberOfCopies.End');
+end;
+
+function  ToleMain.Get_CopyOffset1: Integer;
+begin
+  MethodLog('Get_CopyOffset1.Begin');
+  Result := Driver.Get_CopyOffset1;
+  MethodLog('Get_CopyOffset1.End');
+end;
+
+procedure ToleMain.Set_CopyOffset1(Value: Integer);
+begin
+  MethodLog('Set_CopyOffset1.Begin');
+  Driver.Set_CopyOffset1(Value);
+  MethodLog('Set_CopyOffset1.End');
+end;
+
+function  ToleMain.Get_CopyOffset2: Integer;
+begin
+  MethodLog('Get_CopyOffset2.Begin');
+  Result := Driver.Get_CopyOffset2;
+  MethodLog('Get_CopyOffset2.End');
+end;
+
+procedure ToleMain.Set_CopyOffset2(Value: Integer);
+begin
+  MethodLog('Set_CopyOffset2.Begin');
+  Driver.Set_CopyOffset2(Value);
+  MethodLog('Set_CopyOffset2.End');
+end;
+
+function  ToleMain.Get_CopyOffset3: Integer;
+begin
+  MethodLog('Get_CopyOffset3.Begin');
+  Result := Driver.Get_CopyOffset3;
+  MethodLog('Get_CopyOffset3.End');
+end;
+
+procedure ToleMain.Set_CopyOffset3(Value: Integer);
+begin
+  MethodLog('Set_CopyOffset3.Begin');
+  Driver.Set_CopyOffset3(Value);
+  MethodLog('Set_CopyOffset3.End');
+end;
+
+function  ToleMain.Get_CopyOffset4: Integer;
+begin
+  MethodLog('Get_CopyOffset4.Begin');
+  Result := Driver.Get_CopyOffset4;
+  MethodLog('Get_CopyOffset4.End');
+end;
+
+procedure ToleMain.Set_CopyOffset4(Value: Integer);
+begin
+  MethodLog('Set_CopyOffset4.Begin');
+  Driver.Set_CopyOffset4(Value);
+  MethodLog('Set_CopyOffset4.End');
+end;
+
+function  ToleMain.Get_CopyOffset5: Integer;
+begin
+  MethodLog('Get_CopyOffset5.Begin');
+  Result := Driver.Get_CopyOffset5;
+  MethodLog('Get_CopyOffset5.End');
+end;
+
+procedure ToleMain.Set_CopyOffset5(Value: Integer);
+begin
+  MethodLog('Set_CopyOffset5.Begin');
+  Driver.Set_CopyOffset5(Value);
+  MethodLog('Set_CopyOffset5.End');
+end;
+
+function  ToleMain.Get_ClicheFont: Integer;
+begin
+  MethodLog('Get_ClicheFont.Begin');
+  Result := Driver.Get_ClicheFont;
+  MethodLog('Get_ClicheFont.End');
+end;
+
+procedure ToleMain.Set_ClicheFont(Value: Integer);
+begin
+  MethodLog('Set_ClicheFont.Begin');
+  Driver.Set_ClicheFont(Value);
+  MethodLog('Set_ClicheFont.End');
+end;
+
+function  ToleMain.Get_HeaderFont: Integer;
+begin
+  MethodLog('Get_HeaderFont.Begin');
+  Result := Driver.Get_HeaderFont;
+  MethodLog('Get_HeaderFont.End');
+end;
+
+procedure ToleMain.Set_HeaderFont(Value: Integer);
+begin
+  MethodLog('Set_HeaderFont.Begin');
+  Driver.Set_HeaderFont(Value);
+  MethodLog('Set_HeaderFont.End');
+end;
+
+function  ToleMain.Get_EKLZFont: Integer;
+begin
+  MethodLog('Get_EKLZFont.Begin');
+  Result := Driver.Get_EKLZFont;
+  MethodLog('Get_EKLZFont.End');
+end;
+
+procedure ToleMain.Set_EKLZFont(Value: Integer);
+begin
+  MethodLog('Set_EKLZFont.Begin');
+  Driver.Set_EKLZFont(Value);
+  MethodLog('Set_EKLZFont.End');
+end;
+
+function  ToleMain.Get_ClicheStringNumber: Integer;
+begin
+  MethodLog('Get_ClicheStringNumber.Begin');
+  Result := Driver.Get_ClicheStringNumber;
+  MethodLog('Get_ClicheStringNumber.End');
+end;
+
+procedure ToleMain.Set_ClicheStringNumber(Value: Integer);
+begin
+  MethodLog('Set_ClicheStringNumber.Begin');
+  Driver.Set_ClicheStringNumber(Value);
+  MethodLog('Set_ClicheStringNumber.End');
+end;
+
+function  ToleMain.Get_HeaderStringNumber: Integer;
+begin
+  MethodLog('Get_HeaderStringNumber.Begin');
+  Result := Driver.Get_HeaderStringNumber;
+  MethodLog('Get_HeaderStringNumber.End');
+end;
+
+procedure ToleMain.Set_HeaderStringNumber(Value: Integer);
+begin
+  MethodLog('Set_HeaderStringNumber.Begin');
+  Driver.Set_HeaderStringNumber(Value);
+  MethodLog('Set_HeaderStringNumber.End');
+end;
+
+function  ToleMain.Get_EKLZStringNumber: Integer;
+begin
+  MethodLog('Get_EKLZStringNumber.Begin');
+  Result := Driver.Get_EKLZStringNumber;
+  MethodLog('Get_EKLZStringNumber.End');
+end;
+
+procedure ToleMain.Set_EKLZStringNumber(Value: Integer);
+begin
+  MethodLog('Set_EKLZStringNumber.Begin');
+  Driver.Set_EKLZStringNumber(Value);
+  MethodLog('Set_EKLZStringNumber.End');
+end;
+
+function  ToleMain.Get_FMStringNumber: Integer;
+begin
+  MethodLog('Get_FMStringNumber.Begin');
+  Result := Driver.Get_FMStringNumber;
+  MethodLog('Get_FMStringNumber.End');
+end;
+
+procedure ToleMain.Set_FMStringNumber(Value: Integer);
+begin
+  MethodLog('Set_FMStringNumber.Begin');
+  Driver.Set_FMStringNumber(Value);
+  MethodLog('Set_FMStringNumber.End');
+end;
+
+function  ToleMain.Get_ClicheOffset: Integer;
+begin
+  MethodLog('Get_ClicheOffset.Begin');
+  Result := Driver.Get_ClicheOffset;
+  MethodLog('Get_ClicheOffset.End');
+end;
+
+procedure ToleMain.Set_ClicheOffset(Value: Integer);
+begin
+  MethodLog('Set_ClicheOffset.Begin');
+  Driver.Set_ClicheOffset(Value);
+  MethodLog('Set_ClicheOffset.End');
+end;
+
+function  ToleMain.Get_HeaderOffset: Integer;
+begin
+  MethodLog('Get_HeaderOffset.Begin');
+  Result := Driver.Get_HeaderOffset;
+  MethodLog('Get_HeaderOffset.End');
+end;
+
+procedure ToleMain.Set_HeaderOffset(Value: Integer);
+begin
+  MethodLog('Set_HeaderOffset.Begin');
+  Driver.Set_HeaderOffset(Value);
+  MethodLog('Set_HeaderOffset.End');
+end;
+
+function  ToleMain.Get_EKLZOffset: Integer;
+begin
+  MethodLog('Get_EKLZOffset.Begin');
+  Result := Driver.Get_EKLZOffset;
+  MethodLog('Get_EKLZOffset.End');
+end;
+
+procedure ToleMain.Set_EKLZOffset(Value: Integer);
+begin
+  MethodLog('Set_EKLZOffset.Begin');
+  Driver.Set_EKLZOffset(Value);
+  MethodLog('Set_EKLZOffset.End');
+end;
+
+function  ToleMain.Get_KPKOffset: Integer;
+begin
+  MethodLog('Get_KPKOffset.Begin');
+  Result := Driver.Get_KPKOffset;
+  MethodLog('Get_KPKOffset.End');
+end;
+
+procedure ToleMain.Set_KPKOffset(Value: Integer);
+begin
+  MethodLog('Set_KPKOffset.Begin');
+  Driver.Set_KPKOffset(Value);
+  MethodLog('Set_KPKOffset.End');
+end;
+
+function  ToleMain.Get_FMOffset: Integer;
+begin
+  MethodLog('Get_FMOffset.Begin');
+  Result := Driver.Get_FMOffset;
+  MethodLog('Get_FMOffset.End');
+end;
+
+procedure ToleMain.Set_FMOffset(Value: Integer);
+begin
+  MethodLog('Set_FMOffset.Begin');
+  Driver.Set_FMOffset(Value);
+  MethodLog('Set_FMOffset.End');
+end;
+
+function  ToleMain.Get_OperationBlockFirstString: Integer;
+begin
+  MethodLog('Get_OperationBlockFirstString.Begin');
+  Result := Driver.Get_OperationBlockFirstString;
+  MethodLog('Get_OperationBlockFirstString.End');
+end;
+
+procedure ToleMain.Set_OperationBlockFirstString(Value: Integer);
+begin
+  MethodLog('Set_OperationBlockFirstString.Begin');
+  Driver.Set_OperationBlockFirstString(Value);
+  MethodLog('Set_OperationBlockFirstString.End');
+end;
+
+function  ToleMain.Get_QuantityFormat: Integer;
+begin
+  MethodLog('Get_QuantityFormat.Begin');
+  Result := Driver.Get_QuantityFormat;
+  MethodLog('Get_QuantityFormat.End');
+end;
+
+procedure ToleMain.Set_QuantityFormat(Value: Integer);
+begin
+  MethodLog('Set_QuantityFormat.Begin');
+  Driver.Set_QuantityFormat(Value);
+  MethodLog('Set_QuantityFormat.End');
+end;
+
+function  ToleMain.Get_StringQuantityInOperation: Integer;
+begin
+  MethodLog('Get_StringQuantityInOperation.Begin');
+  Result := Driver.Get_StringQuantityInOperation;
+  MethodLog('Get_StringQuantityInOperation.End');
+end;
+
+procedure ToleMain.Set_StringQuantityInOperation(Value: Integer);
+begin
+  MethodLog('Set_StringQuantityInOperation.Begin');
+  Driver.Set_StringQuantityInOperation(Value);
+  MethodLog('Set_StringQuantityInOperation.End');
+end;
+
+function  ToleMain.Get_TextStringNumber: Integer;
+begin
+  MethodLog('Get_TextStringNumber.Begin');
+  Result := Driver.Get_TextStringNumber;
+  MethodLog('Get_TextStringNumber.End');
+end;
+
+procedure ToleMain.Set_TextStringNumber(Value: Integer);
+begin
+  MethodLog('Set_TextStringNumber.Begin');
+  Driver.Set_TextStringNumber(Value);
+  MethodLog('Set_TextStringNumber.End');
+end;
+
+function  ToleMain.Get_QuantityStringNumber: Integer;
+begin
+  MethodLog('Get_QuantityStringNumber.Begin');
+  Result := Driver.Get_QuantityStringNumber;
+  MethodLog('Get_QuantityStringNumber.End');
+end;
+
+procedure ToleMain.Set_QuantityStringNumber(Value: Integer);
+begin
+  MethodLog('Set_QuantityStringNumber.Begin');
+  Driver.Set_QuantityStringNumber(Value);
+  MethodLog('Set_QuantityStringNumber.End');
+end;
+
+function  ToleMain.Get_SummStringNumber: Integer;
+begin
+  MethodLog('Get_SummStringNumber.Begin');
+  Result := Driver.Get_SummStringNumber;
+  MethodLog('Get_SummStringNumber.End');
+end;
+
+procedure ToleMain.Set_SummStringNumber(Value: Integer);
+begin
+  MethodLog('Set_SummStringNumber.Begin');
+  Driver.Set_SummStringNumber(Value);
+  MethodLog('Set_SummStringNumber.End');
+end;
+
+function  ToleMain.Get_DepartmentStringNumber: Integer;
+begin
+  MethodLog('Get_DepartmentStringNumber.Begin');
+  Result := Driver.Get_DepartmentStringNumber;
+  MethodLog('Get_DepartmentStringNumber.End');
+end;
+
+procedure ToleMain.Set_DepartmentStringNumber(Value: Integer);
+begin
+  MethodLog('Set_DepartmentStringNumber.Begin');
+  Driver.Set_DepartmentStringNumber(Value);
+  MethodLog('Set_DepartmentStringNumber.End');
+end;
+
+function  ToleMain.Get_TextFont: Integer;
+begin
+  MethodLog('Get_TextFont.Begin');
+  Result := Driver.Get_TextFont;
+  MethodLog('Get_TextFont.End');
+end;
+
+procedure ToleMain.Set_TextFont(Value: Integer);
+begin
+  MethodLog('Set_TextFont.Begin');
+  Driver.Set_TextFont(Value);
+  MethodLog('Set_TextFont.End');
+end;
+
+function  ToleMain.Get_QuantityFont: Integer;
+begin
+  MethodLog('Get_QuantityFont.Begin');
+  Result := Driver.Get_QuantityFont;
+  MethodLog('Get_QuantityFont.End');
+end;
+
+procedure ToleMain.Set_QuantityFont(Value: Integer);
+begin
+  MethodLog('Set_QuantityFont.Begin');
+  Driver.Set_QuantityFont(Value);
+  MethodLog('Set_QuantityFont.End');
+end;
+
+function  ToleMain.Get_MultiplicationFont: Integer;
+begin
+  MethodLog('Get_MultiplicationFont.Begin');
+  Result := Driver.Get_MultiplicationFont;
+  MethodLog('Get_MultiplicationFont.End');
+end;
+
+procedure ToleMain.Set_MultiplicationFont(Value: Integer);
+begin
+  MethodLog('Set_MultiplicationFont.Begin');
+  Driver.Set_MultiplicationFont(Value);
+  MethodLog('Set_MultiplicationFont.End');
+end;
+
+function  ToleMain.Get_PriceFont: Integer;
+begin
+  MethodLog('Get_PriceFont.Begin');
+  Result := Driver.Get_PriceFont;
+  MethodLog('Get_PriceFont.End');
+end;
+
+procedure ToleMain.Set_PriceFont(Value: Integer);
+begin
+  MethodLog('Set_PriceFont.Begin');
+  Driver.Set_PriceFont(Value);
+  MethodLog('Set_PriceFont.End');
+end;
+
+function  ToleMain.Get_SummFont: Integer;
+begin
+  MethodLog('Get_SummFont.Begin');
+  Result := Driver.Get_SummFont;
+  MethodLog('Get_SummFont.End');
+end;
+
+procedure ToleMain.Set_SummFont(Value: Integer);
+begin
+  MethodLog('Set_SummFont.Begin');
+  Driver.Set_SummFont(Value);
+  MethodLog('Set_SummFont.End');
+end;
+
+function  ToleMain.Get_DepartmentFont: Integer;
+begin
+  MethodLog('Get_DepartmentFont.Begin');
+  Result := Driver.Get_DepartmentFont;
+  MethodLog('Get_DepartmentFont.End');
+end;
+
+procedure ToleMain.Set_DepartmentFont(Value: Integer);
+begin
+  MethodLog('Set_DepartmentFont.Begin');
+  Driver.Set_DepartmentFont(Value);
+  MethodLog('Set_DepartmentFont.End');
+end;
+
+function  ToleMain.Get_TextSymbolNumber: Integer;
+begin
+  MethodLog('Get_TextSymbolNumber.Begin');
+  Result := Driver.Get_TextSymbolNumber;
+  MethodLog('Get_TextSymbolNumber.End');
+end;
+
+procedure ToleMain.Set_TextSymbolNumber(Value: Integer);
+begin
+  MethodLog('Set_TextSymbolNumber.Begin');
+  Driver.Set_TextSymbolNumber(Value);
+  MethodLog('Set_TextSymbolNumber.End');
+end;
+
+function  ToleMain.Get_QuantitySymbolNumber: Integer;
+begin
+  MethodLog('Get_QuantitySymbolNumber.Begin');
+  Result := Driver.Get_QuantitySymbolNumber;
+  MethodLog('Get_QuantitySymbolNumber.End');
+end;
+
+procedure ToleMain.Set_QuantitySymbolNumber(Value: Integer);
+begin
+  MethodLog('Set_QuantitySymbolNumber.Begin');
+  Driver.Set_QuantitySymbolNumber(Value);
+  MethodLog('Set_QuantitySymbolNumber.End');
+end;
+
+function  ToleMain.Get_PriceSymbolNumber: Integer;
+begin
+  MethodLog('Get_PriceSymbolNumber.Begin');
+  Result := Driver.Get_PriceSymbolNumber;
+  MethodLog('Get_PriceSymbolNumber.End');
+end;
+
+procedure ToleMain.Set_PriceSymbolNumber(Value: Integer);
+begin
+  MethodLog('Set_PriceSymbolNumber.Begin');
+  Driver.Set_PriceSymbolNumber(Value);
+  MethodLog('Set_PriceSymbolNumber.End');
+end;
+
+function  ToleMain.Get_SummSymbolNumber: Integer;
+begin
+  MethodLog('Get_SummSymbolNumber.Begin');
+  Result := Driver.Get_SummSymbolNumber;
+  MethodLog('Get_SummSymbolNumber.End');
+end;
+
+procedure ToleMain.Set_SummSymbolNumber(Value: Integer);
+begin
+  MethodLog('Set_SummSymbolNumber.Begin');
+  Driver.Set_SummSymbolNumber(Value);
+  MethodLog('Set_SummSymbolNumber.End');
+end;
+
+function  ToleMain.Get_DepartmentSymbolNumber: Integer;
+begin
+  MethodLog('Get_DepartmentSymbolNumber.Begin');
+  Result := Driver.Get_DepartmentSymbolNumber;
+  MethodLog('Get_DepartmentSymbolNumber.End');
+end;
+
+procedure ToleMain.Set_DepartmentSymbolNumber(Value: Integer);
+begin
+  MethodLog('Set_DepartmentSymbolNumber.Begin');
+  Driver.Set_DepartmentSymbolNumber(Value);
+  MethodLog('Set_DepartmentSymbolNumber.End');
+end;
+
+function  ToleMain.Get_TextOffset: Integer;
+begin
+  MethodLog('Get_TextOffset.Begin');
+  Result := Driver.Get_TextOffset;
+  MethodLog('Get_TextOffset.End');
+end;
+
+procedure ToleMain.Set_TextOffset(Value: Integer);
+begin
+  MethodLog('Set_TextOffset.Begin');
+  Driver.Set_TextOffset(Value);
+  MethodLog('Set_TextOffset.End');
+end;
+
+function  ToleMain.Get_QuantityOffset: Integer;
+begin
+  MethodLog('Get_QuantityOffset.Begin');
+  Result := Driver.Get_QuantityOffset;
+  MethodLog('Get_QuantityOffset.End');
+end;
+
+procedure ToleMain.Set_QuantityOffset(Value: Integer);
+begin
+  MethodLog('Set_QuantityOffset.Begin');
+  Driver.Set_QuantityOffset(Value);
+  MethodLog('Set_QuantityOffset.End');
+end;
+
+function  ToleMain.Get_SummOffset: Integer;
+begin
+  MethodLog('Get_SummOffset.Begin');
+  Result := Driver.Get_SummOffset;
+  MethodLog('Get_SummOffset.End');
+end;
+
+procedure ToleMain.Set_SummOffset(Value: Integer);
+begin
+  MethodLog('Set_SummOffset.Begin');
+  Driver.Set_SummOffset(Value);
+  MethodLog('Set_SummOffset.End');
+end;
+
+function  ToleMain.Get_DepartmentOffset: Integer;
+begin
+  MethodLog('Get_DepartmentOffset.Begin');
+  Result := Driver.Get_DepartmentOffset;
+  MethodLog('Get_DepartmentOffset.End');
+end;
+
+procedure ToleMain.Set_DepartmentOffset(Value: Integer);
+begin
+  MethodLog('Set_DepartmentOffset.Begin');
+  Driver.Set_DepartmentOffset(Value);
+  MethodLog('Set_DepartmentOffset.End');
+end;
+
+function  ToleMain.DiscountOnSlipDocument: Integer;
+begin
+  MethodLog('DiscountOnSlipDocument.Begin');
+  Result := Driver.DiscountOnSlipDocument;
+  MethodLog('DiscountOnSlipDocument.End');
+end;
+
+function  ToleMain.StandardDiscountOnSlipDocument: Integer;
+begin
+  MethodLog('StandardDiscountOnSlipDocument.Begin');
+  Result := Driver.StandardDiscountOnSlipDocument;
+  MethodLog('StandardDiscountOnSlipDocument.End');
+end;
+
+function  ToleMain.Get_IsClearUnfiscalInfo: WordBool;
+begin
+  MethodLog('Get_IsClearUnfiscalInfo.Begin');
+  Result := Driver.Get_IsClearUnfiscalInfo;
+  MethodLog('Get_IsClearUnfiscalInfo.End');
+end;
+
+procedure ToleMain.Set_IsClearUnfiscalInfo(Value: WordBool);
+begin
+  MethodLog('Set_IsClearUnfiscalInfo.Begin');
+  Driver.Set_IsClearUnfiscalInfo(Value);
+  MethodLog('Set_IsClearUnfiscalInfo.End');
+end;
+
+function  ToleMain.Get_InfoType: Integer;
+begin
+  MethodLog('Get_InfoType.Begin');
+  Result := Driver.Get_InfoType;
+  MethodLog('Get_InfoType.End');
+end;
+
+procedure ToleMain.Set_InfoType(Value: Integer);
+begin
+  MethodLog('Set_InfoType.Begin');
+  Driver.Set_InfoType(Value);
+  MethodLog('Set_InfoType.End');
+end;
+
+function  ToleMain.Get_StringNumber: Integer;
+begin
+  MethodLog('Get_StringNumber.Begin');
+  Result := Driver.Get_StringNumber;
+  MethodLog('Get_StringNumber.End');
+end;
+
+procedure ToleMain.Set_StringNumber(Value: Integer);
+begin
+  MethodLog('Set_StringNumber.Begin');
+  Driver.Set_StringNumber(Value);
+  MethodLog('Set_StringNumber.End');
+end;
+
+function  ToleMain.EjectSlipDocument: Integer;
+begin
+  MethodLog('EjectSlipDocument.Begin');
+  Result := Driver.EjectSlipDocument;
+  MethodLog('EjectSlipDocument.End');
+end;
+
+function  ToleMain.Get_EjectDirection: Integer;
+begin
+  MethodLog('Get_EjectDirection.Begin');
+  Result := Driver.Get_EjectDirection;
+  MethodLog('Get_EjectDirection.End');
+end;
+
+procedure ToleMain.Set_EjectDirection(Value: Integer);
+begin
+  MethodLog('Set_EjectDirection.Begin');
+  Driver.Set_EjectDirection(Value);
+  MethodLog('Set_EjectDirection.End');
+end;
+
+function  ToleMain.LoadLineDataEx: Integer;
+begin
+  MethodLog('LoadLineDataEx.Begin');
+  Result := Driver.LoadLineDataEx;
+  MethodLog('LoadLineDataEx.End');
+end;
+
+function  ToleMain.DrawEx: Integer;
+begin
+  MethodLog('DrawEx.Begin');
+  Result := Driver.DrawEx;
+  MethodLog('DrawEx.End');
+end;
+
+function  ToleMain.ConfigureGeneralSlipDocument: Integer;
+begin
+  MethodLog('ConfigureGeneralSlipDocument.Begin');
+  Result := Driver.ConfigureGeneralSlipDocument;
+  MethodLog('ConfigureGeneralSlipDocument.End');
+end;
+
+function  ToleMain.Get_OperationNameStringNumber: Integer;
+begin
+  MethodLog('Get_OperationNameStringNumber.Begin');
+  Result := Driver.Get_OperationNameStringNumber;
+  MethodLog('Get_OperationNameStringNumber.End');
+end;
+
+procedure ToleMain.Set_OperationNameStringNumber(Value: Integer);
+begin
+  MethodLog('Set_OperationNameStringNumber.Begin');
+  Driver.Set_OperationNameStringNumber(Value);
+  MethodLog('Set_OperationNameStringNumber.End');
+end;
+
+function  ToleMain.Get_OperationNameFont: Integer;
+begin
+  MethodLog('Get_OperationNameFont.Begin');
+  Result := Driver.Get_OperationNameFont;
+  MethodLog('Get_OperationNameFont.End');
+end;
+
+procedure ToleMain.Set_OperationNameFont(Value: Integer);
+begin
+  MethodLog('Set_OperationNameFont.Begin');
+  Driver.Set_OperationNameFont(Value);
+  MethodLog('Set_OperationNameFont.End');
+end;
+
+function  ToleMain.Get_OperationNameOffset: Integer;
+begin
+  MethodLog('Get_OperationNameOffset.Begin');
+  Result := Driver.Get_OperationNameOffset;
+  MethodLog('Get_OperationNameOffset.End');
+end;
+
+procedure ToleMain.Set_OperationNameOffset(Value: Integer);
+begin
+  MethodLog('Set_OperationNameOffset.Begin');
+  Driver.Set_OperationNameOffset(Value);
+  MethodLog('Set_OperationNameOffset.End');
+end;
+
+function  ToleMain.Get_TotalStringNumber: Integer;
+begin
+  MethodLog('Get_TotalStringNumber.Begin');
+  Result := Driver.Get_TotalStringNumber;
+  MethodLog('Get_TotalStringNumber.End');
+end;
+
+procedure ToleMain.Set_TotalStringNumber(Value: Integer);
+begin
+  MethodLog('Set_TotalStringNumber.Begin');
+  Driver.Set_TotalStringNumber(Value);
+  MethodLog('Set_TotalStringNumber.End');
+end;
+
+function  ToleMain.Get_Summ1StringNumber: Integer;
+begin
+  MethodLog('Get_Summ1StringNumber.Begin');
+  Result := Driver.Get_Summ1StringNumber;
+  MethodLog('Get_Summ1StringNumber.End');
+end;
+
+procedure ToleMain.Set_Summ1StringNumber(Value: Integer);
+begin
+  MethodLog('Set_Summ1StringNumber.Begin');
+  Driver.Set_Summ1StringNumber(Value);
+  MethodLog('Set_Summ1StringNumber.End');
+end;
+
+function  ToleMain.Get_Summ2StringNumber: Integer;
+begin
+  MethodLog('Get_Summ2StringNumber.Begin');
+  Result := Driver.Get_Summ2StringNumber;
+  MethodLog('Get_Summ2StringNumber.End');
+end;
+
+procedure ToleMain.Set_Summ2StringNumber(Value: Integer);
+begin
+  MethodLog('Set_Summ2StringNumber.Begin');
+  Driver.Set_Summ2StringNumber(Value);
+  MethodLog('Set_Summ2StringNumber.End');
+end;
+
+function  ToleMain.Get_Summ3StringNumber: Integer;
+begin
+  MethodLog('Get_Summ3StringNumber.Begin');
+  Result := Driver.Get_Summ3StringNumber;
+  MethodLog('Get_Summ3StringNumber.End');
+end;
+
+procedure ToleMain.Set_Summ3StringNumber(Value: Integer);
+begin
+  MethodLog('Set_Summ3StringNumber.Begin');
+  Driver.Set_Summ3StringNumber(Value);
+  MethodLog('Set_Summ3StringNumber.End');
+end;
+
+function  ToleMain.Get_Summ4StringNumber: Integer;
+begin
+  MethodLog('Get_Summ4StringNumber.Begin');
+  Result := Driver.Get_Summ4StringNumber;
+  MethodLog('Get_Summ4StringNumber.End');
+end;
+
+procedure ToleMain.Set_Summ4StringNumber(Value: Integer);
+begin
+  MethodLog('Set_Summ4StringNumber.Begin');
+  Driver.Set_Summ4StringNumber(Value);
+  MethodLog('Set_Summ4StringNumber.End');
+end;
+
+function  ToleMain.Get_ChangeStringNumber: Integer;
+begin
+  MethodLog('Get_ChangeStringNumber.Begin');
+  Result := Driver.Get_ChangeStringNumber;
+  MethodLog('Get_ChangeStringNumber.End');
+end;
+
+procedure ToleMain.Set_ChangeStringNumber(Value: Integer);
+begin
+  MethodLog('Set_ChangeStringNumber.Begin');
+  Driver.Set_ChangeStringNumber(Value);
+  MethodLog('Set_ChangeStringNumber.End');
+end;
+
+function  ToleMain.Get_Tax1TurnOverStringNumber: Integer;
+begin
+  MethodLog('Get_Tax1TurnOverStringNumber.Begin');
+  Result := Driver.Get_Tax1TurnOverStringNumber;
+  MethodLog('Get_Tax1TurnOverStringNumber.End');
+end;
+
+procedure ToleMain.Set_Tax1TurnOverStringNumber(Value: Integer);
+begin
+  MethodLog('Set_Tax1TurnOverStringNumber.Begin');
+  Driver.Set_Tax1TurnOverStringNumber(Value);
+  MethodLog('Set_Tax1TurnOverStringNumber.End');
+end;
+
+function  ToleMain.Get_Tax2TurnOverStringNumber: Integer;
+begin
+  MethodLog('Get_Tax2TurnOverStringNumber.Begin');
+  Result := Driver.Get_Tax2TurnOverStringNumber;
+  MethodLog('Get_Tax2TurnOverStringNumber.End');
+end;
+
+procedure ToleMain.Set_Tax2TurnOverStringNumber(Value: Integer);
+begin
+  MethodLog('Set_Tax2TurnOverStringNumber.Begin');
+  Driver.Set_Tax2TurnOverStringNumber(Value);
+  MethodLog('Set_Tax2TurnOverStringNumber.End');
+end;
+
+function  ToleMain.Get_Tax3TurnOverStringNumber: Integer;
+begin
+  MethodLog('Get_Tax3TurnOverStringNumber.Begin');
+  Result := Driver.Get_Tax3TurnOverStringNumber;
+  MethodLog('Get_Tax3TurnOverStringNumber.End');
+end;
+
+procedure ToleMain.Set_Tax3TurnOverStringNumber(Value: Integer);
+begin
+  MethodLog('Set_Tax3TurnOverStringNumber.Begin');
+  Driver.Set_Tax3TurnOverStringNumber(Value);
+  MethodLog('Set_Tax3TurnOverStringNumber.End');
+end;
+
+function  ToleMain.Get_Tax4TurnOverStringNumber: Integer;
+begin
+  MethodLog('Get_Tax4TurnOverStringNumber.Begin');
+  Result := Driver.Get_Tax4TurnOverStringNumber;
+  MethodLog('Get_Tax4TurnOverStringNumber.End');
+end;
+
+procedure ToleMain.Set_Tax4TurnOverStringNumber(Value: Integer);
+begin
+  MethodLog('Set_Tax4TurnOverStringNumber.Begin');
+  Driver.Set_Tax4TurnOverStringNumber(Value);
+  MethodLog('Set_Tax4TurnOverStringNumber.End');
+end;
+
+function  ToleMain.Get_Tax1SumStringNumber: Integer;
+begin
+  MethodLog('Get_Tax1SumStringNumber.Begin');
+  Result := Driver.Get_Tax1SumStringNumber;
+  MethodLog('Get_Tax1SumStringNumber.End');
+end;
+
+procedure ToleMain.Set_Tax1SumStringNumber(Value: Integer);
+begin
+  MethodLog('Set_Tax1SumStringNumber.Begin');
+  Driver.Set_Tax1SumStringNumber(Value);
+  MethodLog('Set_Tax1SumStringNumber.End');
+end;
+
+function  ToleMain.Get_Tax2SumStringNumber: Integer;
+begin
+  MethodLog('Get_Tax2SumStringNumber.Begin');
+  Result := Driver.Get_Tax2SumStringNumber;
+  MethodLog('Get_Tax2SumStringNumber.End');
+end;
+
+procedure ToleMain.Set_Tax2SumStringNumber(Value: Integer);
+begin
+  MethodLog('Set_Tax2SumStringNumber.Begin');
+  Driver.Set_Tax2SumStringNumber(Value);
+  MethodLog('Set_Tax2SumStringNumber.End');
+end;
+
+function  ToleMain.Get_Tax3SumStringNumber: Integer;
+begin
+  MethodLog('Get_Tax3SumStringNumber.Begin');
+  Result := Driver.Get_Tax3SumStringNumber;
+  MethodLog('Get_Tax3SumStringNumber.End');
+end;
+
+procedure ToleMain.Set_Tax3SumStringNumber(Value: Integer);
+begin
+  MethodLog('Set_Tax3SumStringNumber.Begin');
+  Driver.Set_Tax3SumStringNumber(Value);
+  MethodLog('Set_Tax3SumStringNumber.End');
+end;
+
+function  ToleMain.Get_Tax4SumStringNumber: Integer;
+begin
+  MethodLog('Get_Tax4SumStringNumber.Begin');
+  Result := Driver.Get_Tax4SumStringNumber;
+  MethodLog('Get_Tax4SumStringNumber.End');
+end;
+
+procedure ToleMain.Set_Tax4SumStringNumber(Value: Integer);
+begin
+  MethodLog('Set_Tax4SumStringNumber.Begin');
+  Driver.Set_Tax4SumStringNumber(Value);
+  MethodLog('Set_Tax4SumStringNumber.End');
+end;
+
+function  ToleMain.Get_SubTotalStringNumber: Integer;
+begin
+  MethodLog('Get_SubTotalStringNumber.Begin');
+  Result := Driver.Get_SubTotalStringNumber;
+  MethodLog('Get_SubTotalStringNumber.End');
+end;
+
+procedure ToleMain.Set_SubTotalStringNumber(Value: Integer);
+begin
+  MethodLog('Set_SubTotalStringNumber.Begin');
+  Driver.Set_SubTotalStringNumber(Value);
+  MethodLog('Set_SubTotalStringNumber.End');
+end;
+
+function  ToleMain.Get_DiscountOnCheckStringNumber: Integer;
+begin
+  MethodLog('Get_DiscountOnCheckStringNumber.Begin');
+  Result := Driver.Get_DiscountOnCheckStringNumber;
+  MethodLog('Get_DiscountOnCheckStringNumber.End');
+end;
+
+procedure ToleMain.Set_DiscountOnCheckStringNumber(Value: Integer);
+begin
+  MethodLog('Set_DiscountOnCheckStringNumber.Begin');
+  Driver.Set_DiscountOnCheckStringNumber(Value);
+  MethodLog('Set_DiscountOnCheckStringNumber.End');
+end;
+
+function  ToleMain.Get_TotalFont: Integer;
+begin
+  MethodLog('Get_TotalFont.Begin');
+  Result := Driver.Get_TotalFont;
+  MethodLog('Get_TotalFont.End');
+end;
+
+procedure ToleMain.Set_TotalFont(Value: Integer);
+begin
+  MethodLog('Set_TotalFont.Begin');
+  Driver.Set_TotalFont(Value);
+  MethodLog('Set_TotalFont.End');
+end;
+
+function  ToleMain.Get_TotalSumFont: Integer;
+begin
+  MethodLog('Get_TotalSumFont.Begin');
+  Result := Driver.Get_TotalSumFont;
+  MethodLog('Get_TotalSumFont.End');
+end;
+
+procedure ToleMain.Set_TotalSumFont(Value: Integer);
+begin
+  MethodLog('Set_TotalSumFont.Begin');
+  Driver.Set_TotalSumFont(Value);
+  MethodLog('Set_TotalSumFont.End');
+end;
+
+function  ToleMain.Get_Summ1Font: Integer;
+begin
+  MethodLog('Get_Summ1Font.Begin');
+  Result := Driver.Get_Summ1Font;
+  MethodLog('Get_Summ1Font.End');
+end;
+
+procedure ToleMain.Set_Summ1Font(Value: Integer);
+begin
+  MethodLog('Set_Summ1Font.Begin');
+  Driver.Set_Summ1Font(Value);
+  MethodLog('Set_Summ1Font.End');
+end;
+
+function  ToleMain.Get_Summ1NameFont: Integer;
+begin
+  MethodLog('Get_Summ1NameFont.Begin');
+  Result := Driver.Get_Summ1NameFont;
+  MethodLog('Get_Summ1NameFont.End');
+end;
+
+procedure ToleMain.Set_Summ1NameFont(Value: Integer);
+begin
+  MethodLog('Set_Summ1NameFont.Begin');
+  Driver.Set_Summ1NameFont(Value);
+  MethodLog('Set_Summ1NameFont.End');
+end;
+
+function  ToleMain.Get_Summ2NameFont: Integer;
+begin
+  MethodLog('Get_Summ2NameFont.Begin');
+  Result := Driver.Get_Summ2NameFont;
+  MethodLog('Get_Summ2NameFont.End');
+end;
+
+procedure ToleMain.Set_Summ2NameFont(Value: Integer);
+begin
+  MethodLog('Set_Summ2NameFont.Begin');
+  Driver.Set_Summ2NameFont(Value);
+  MethodLog('Set_Summ2NameFont.End');
+end;
+
+function  ToleMain.Get_Summ3NameFont: Integer;
+begin
+  MethodLog('Get_Summ3NameFont.Begin');
+  Result := Driver.Get_Summ3NameFont;
+  MethodLog('Get_Summ3NameFont.End');
+end;
+
+procedure ToleMain.Set_Summ3NameFont(Value: Integer);
+begin
+  MethodLog('Set_Summ3NameFont.Begin');
+  Driver.Set_Summ3NameFont(Value);
+  MethodLog('Set_Summ3NameFont.End');
+end;
+
+function  ToleMain.Get_Summ4NameFont: Integer;
+begin
+  MethodLog('Get_Summ4NameFont.Begin');
+  Result := Driver.Get_Summ4NameFont;
+  MethodLog('Get_Summ4NameFont.End');
+end;
+
+procedure ToleMain.Set_Summ4NameFont(Value: Integer);
+begin
+  MethodLog('Set_Summ4NameFont.Begin');
+  Driver.Set_Summ4NameFont(Value);
+  MethodLog('Set_Summ4NameFont.End');
+end;
+
+function  ToleMain.Get_Summ2Font: Integer;
+begin
+  MethodLog('Get_Summ2Font.Begin');
+  Result := Driver.Get_Summ2Font;
+  MethodLog('Get_Summ2Font.End');
+end;
+
+procedure ToleMain.Set_Summ2Font(Value: Integer);
+begin
+  MethodLog('Set_Summ2Font.Begin');
+  Driver.Set_Summ2Font(Value);
+  MethodLog('Set_Summ2Font.End');
+end;
+
+function  ToleMain.Get_Summ3Font: Integer;
+begin
+  MethodLog('Get_Summ3Font.Begin');
+  Result := Driver.Get_Summ3Font;
+  MethodLog('Get_Summ3Font.End');
+end;
+
+procedure ToleMain.Set_Summ3Font(Value: Integer);
+begin
+  MethodLog('Set_Summ3Font.Begin');
+  Driver.Set_Summ3Font(Value);
+  MethodLog('Set_Summ3Font.End');
+end;
+
+function  ToleMain.Get_Summ4Font: Integer;
+begin
+  MethodLog('Get_Summ4Font.Begin');
+  Result := Driver.Get_Summ4Font;
+  MethodLog('Get_Summ4Font.End');
+end;
+
+procedure ToleMain.Set_Summ4Font(Value: Integer);
+begin
+  MethodLog('Set_Summ4Font.Begin');
+  Driver.Set_Summ4Font(Value);
+  MethodLog('Set_Summ4Font.End');
+end;
+
+function  ToleMain.Get_ChangeFont: Integer;
+begin
+  MethodLog('Get_ChangeFont.Begin');
+  Result := Driver.Get_ChangeFont;
+  MethodLog('Get_ChangeFont.End');
+end;
+
+procedure ToleMain.Set_ChangeFont(Value: Integer);
+begin
+  MethodLog('Set_ChangeFont.Begin');
+  Driver.Set_ChangeFont(Value);
+  MethodLog('Set_ChangeFont.End');
+end;
+
+function  ToleMain.Get_ChangeSumFont: Integer;
+begin
+  MethodLog('Get_ChangeSumFont.Begin');
+  Result := Driver.Get_ChangeSumFont;
+  MethodLog('Get_ChangeSumFont.End');
+end;
+
+procedure ToleMain.Set_ChangeSumFont(Value: Integer);
+begin
+  MethodLog('Set_ChangeSumFont.Begin');
+  Driver.Set_ChangeSumFont(Value);
+  MethodLog('Set_ChangeSumFont.End');
+end;
+
+function  ToleMain.Get_Tax1NameFont: Integer;
+begin
+  MethodLog('Get_Tax1NameFont.Begin');
+  Result := Driver.Get_Tax1NameFont;
+  MethodLog('Get_Tax1NameFont.End');
+end;
+
+procedure ToleMain.Set_Tax1NameFont(Value: Integer);
+begin
+  MethodLog('Set_Tax1NameFont.Begin');
+  Driver.Set_Tax1NameFont(Value);
+  MethodLog('Set_Tax1NameFont.End');
+end;
+
+function  ToleMain.Get_Tax2NameFont: Integer;
+begin
+  MethodLog('Get_Tax2NameFont.Begin');
+  Result := Driver.Get_Tax2NameFont;
+  MethodLog('Get_Tax2NameFont.End');
+end;
+
+procedure ToleMain.Set_Tax2NameFont(Value: Integer);
+begin
+  MethodLog('Set_Tax2NameFont.Begin');
+  Driver.Set_Tax2NameFont(Value);
+  MethodLog('Set_Tax2NameFont.End');
+end;
+
+function  ToleMain.Get_Tax3NameFont: Integer;
+begin
+  MethodLog('Get_Tax3NameFont.Begin');
+  Result := Driver.Get_Tax3NameFont;
+  MethodLog('Get_Tax3NameFont.End');
+end;
+
+procedure ToleMain.Set_Tax3NameFont(Value: Integer);
+begin
+  MethodLog('Set_Tax3NameFont.Begin');
+  Driver.Set_Tax3NameFont(Value);
+  MethodLog('Set_Tax3NameFont.End');
+end;
+
+function  ToleMain.Get_Tax4NameFont: Integer;
+begin
+  MethodLog('Get_Tax4NameFont.Begin');
+  Result := Driver.Get_Tax4NameFont;
+  MethodLog('Get_Tax4NameFont.End');
+end;
+
+procedure ToleMain.Set_Tax4NameFont(Value: Integer);
+begin
+  MethodLog('Set_Tax4NameFont.Begin');
+  Driver.Set_Tax4NameFont(Value);
+  MethodLog('Set_Tax4NameFont.End');
+end;
+
+function  ToleMain.Get_Tax1TurnOverFont: Integer;
+begin
+  MethodLog('Get_Tax1TurnOverFont.Begin');
+  Result := Driver.Get_Tax1TurnOverFont;
+  MethodLog('Get_Tax1TurnOverFont.End');
+end;
+
+procedure ToleMain.Set_Tax1TurnOverFont(Value: Integer);
+begin
+  MethodLog('Set_Tax1TurnOverFont.Begin');
+  Driver.Set_Tax1TurnOverFont(Value);
+  MethodLog('Set_Tax1TurnOverFont.End');
+end;
+
+function  ToleMain.Get_Tax2TurnOverFont: Integer;
+begin
+  MethodLog('Get_Tax2TurnOverFont.Begin');
+  Result := Driver.Get_Tax2TurnOverFont;
+  MethodLog('Get_Tax2TurnOverFont.End');
+end;
+
+procedure ToleMain.Set_Tax2TurnOverFont(Value: Integer);
+begin
+  MethodLog('Set_Tax2TurnOverFont.Begin');
+  Driver.Set_Tax2TurnOverFont(Value);
+  MethodLog('Set_Tax2TurnOverFont.End');
+end;
+
+function  ToleMain.Get_Tax3TurnOverFont: Integer;
+begin
+  MethodLog('Get_Tax3TurnOverFont.Begin');
+  Result := Driver.Get_Tax3TurnOverFont;
+  MethodLog('Get_Tax3TurnOverFont.End');
+end;
+
+procedure ToleMain.Set_Tax3TurnOverFont(Value: Integer);
+begin
+  MethodLog('Set_Tax3TurnOverFont.Begin');
+  Driver.Set_Tax3TurnOverFont(Value);
+  MethodLog('Set_Tax3TurnOverFont.End');
+end;
+
+function  ToleMain.Get_Tax4TurnOverFont: Integer;
+begin
+  MethodLog('Get_Tax4TurnOverFont.Begin');
+  Result := Driver.Get_Tax4TurnOverFont;
+  MethodLog('Get_Tax4TurnOverFont.End');
+end;
+
+procedure ToleMain.Set_Tax4TurnOverFont(Value: Integer);
+begin
+  MethodLog('Set_Tax4TurnOverFont.Begin');
+  Driver.Set_Tax4TurnOverFont(Value);
+  MethodLog('Set_Tax4TurnOverFont.End');
+end;
+
+function  ToleMain.Get_Tax1RateFont: Integer;
+begin
+  MethodLog('Get_Tax1RateFont.Begin');
+  Result := Driver.Get_Tax1RateFont;
+  MethodLog('Get_Tax1RateFont.End');
+end;
+
+procedure ToleMain.Set_Tax1RateFont(Value: Integer);
+begin
+  MethodLog('Set_Tax1RateFont.Begin');
+  Driver.Set_Tax1RateFont(Value);
+  MethodLog('Set_Tax1RateFont.End');
+end;
+
+function  ToleMain.Get_Tax2RateFont: Integer;
+begin
+  MethodLog('Get_Tax2RateFont.Begin');
+  Result := Driver.Get_Tax2RateFont;
+  MethodLog('Get_Tax2RateFont.End');
+end;
+
+procedure ToleMain.Set_Tax2RateFont(Value: Integer);
+begin
+  MethodLog('Set_Tax2RateFont.Begin');
+  Driver.Set_Tax2RateFont(Value);
+  MethodLog('Set_Tax2RateFont.End');
+end;
+
+function  ToleMain.Get_Tax3RateFont: Integer;
+begin
+  MethodLog('Get_Tax3RateFont.Begin');
+  Result := Driver.Get_Tax3RateFont;
+  MethodLog('Get_Tax3RateFont.End');
+end;
+
+procedure ToleMain.Set_Tax3RateFont(Value: Integer);
+begin
+  MethodLog('Set_Tax3RateFont.Begin');
+  Driver.Set_Tax3RateFont(Value);
+  MethodLog('Set_Tax3RateFont.End');
+end;
+
+function  ToleMain.Get_Tax4RateFont: Integer;
+begin
+  MethodLog('Get_Tax4RateFont.Begin');
+  Result := Driver.Get_Tax4RateFont;
+  MethodLog('Get_Tax4RateFont.End');
+end;
+
+procedure ToleMain.Set_Tax4RateFont(Value: Integer);
+begin
+  MethodLog('Set_Tax4RateFont.Begin');
+  Driver.Set_Tax4RateFont(Value);
+  MethodLog('Set_Tax4RateFont.End');
+end;
+
+function  ToleMain.Get_Tax1SumFont: Integer;
+begin
+  MethodLog('Get_Tax1SumFont.Begin');
+  Result := Driver.Get_Tax1SumFont;
+  MethodLog('Get_Tax1SumFont.End');
+end;
+
+procedure ToleMain.Set_Tax1SumFont(Value: Integer);
+begin
+  MethodLog('Set_Tax1SumFont.Begin');
+  Driver.Set_Tax1SumFont(Value);
+  MethodLog('Set_Tax1SumFont.End');
+end;
+
+function  ToleMain.Get_Tax2SumFont: Integer;
+begin
+  MethodLog('Get_Tax2SumFont.Begin');
+  Result := Driver.Get_Tax2SumFont;
+  MethodLog('Get_Tax2SumFont.End');
+end;
+
+procedure ToleMain.Set_Tax2SumFont(Value: Integer);
+begin
+  MethodLog('Set_Tax2SumFont.Begin');
+  Driver.Set_Tax2SumFont(Value);
+  MethodLog('Set_Tax2SumFont.End');
+end;
+
+function  ToleMain.Get_Tax3SumFont: Integer;
+begin
+  MethodLog('Get_Tax3SumFont.Begin');
+  Result := Driver.Get_Tax3SumFont;
+  MethodLog('Get_Tax3SumFont.End');
+end;
+
+procedure ToleMain.Set_Tax3SumFont(Value: Integer);
+begin
+  MethodLog('Set_Tax3SumFont.Begin');
+  Driver.Set_Tax3SumFont(Value);
+  MethodLog('Set_Tax3SumFont.End');
+end;
+
+function  ToleMain.Get_Tax4SumFont: Integer;
+begin
+  MethodLog('Get_Tax4SumFont.Begin');
+  Result := Driver.Get_Tax4SumFont;
+  MethodLog('Get_Tax4SumFont.End');
+end;
+
+procedure ToleMain.Set_Tax4SumFont(Value: Integer);
+begin
+  MethodLog('Set_Tax4SumFont.Begin');
+  Driver.Set_Tax4SumFont(Value);
+  MethodLog('Set_Tax4SumFont.End');
+end;
+
+function  ToleMain.Get_SubTotalFont: Integer;
+begin
+  MethodLog('Get_SubTotalFont.Begin');
+  Result := Driver.Get_SubTotalFont;
+  MethodLog('Get_SubTotalFont.End');
+end;
+
+procedure ToleMain.Set_SubTotalFont(Value: Integer);
+begin
+  MethodLog('Set_SubTotalFont.Begin');
+  Driver.Set_SubTotalFont(Value);
+  MethodLog('Set_SubTotalFont.End');
+end;
+
+function  ToleMain.Get_SubTotalSumFont: Integer;
+begin
+  MethodLog('Get_SubTotalSumFont.Begin');
+  Result := Driver.Get_SubTotalSumFont;
+  MethodLog('Get_SubTotalSumFont.End');
+end;
+
+procedure ToleMain.Set_SubTotalSumFont(Value: Integer);
+begin
+  MethodLog('Set_SubTotalSumFont.Begin');
+  Driver.Set_SubTotalSumFont(Value);
+  MethodLog('Set_SubTotalSumFont.End');
+end;
+
+function  ToleMain.Get_DiscountOnCheckFont: Integer;
+begin
+  MethodLog('Get_DiscountOnCheckFont.Begin');
+  Result := Driver.Get_DiscountOnCheckFont;
+  MethodLog('Get_DiscountOnCheckFont.End');
+end;
+
+procedure ToleMain.Set_DiscountOnCheckFont(Value: Integer);
+begin
+  MethodLog('Set_DiscountOnCheckFont.Begin');
+  Driver.Set_DiscountOnCheckFont(Value);
+  MethodLog('Set_DiscountOnCheckFont.End');
+end;
+
+function  ToleMain.Get_DiscountOnCheckSumFont: Integer;
+begin
+  MethodLog('Get_DiscountOnCheckSumFont.Begin');
+  Result := Driver.Get_DiscountOnCheckSumFont;
+  MethodLog('Get_DiscountOnCheckSumFont.End');
+end;
+
+procedure ToleMain.Set_DiscountOnCheckSumFont(Value: Integer);
+begin
+  MethodLog('Set_DiscountOnCheckSumFont.Begin');
+  Driver.Set_DiscountOnCheckSumFont(Value);
+  MethodLog('Set_DiscountOnCheckSumFont.End');
+end;
+
+function  ToleMain.Get_TotalSymbolNumber: Integer;
+begin
+  MethodLog('Get_TotalSymbolNumber.Begin');
+  Result := Driver.Get_TotalSymbolNumber;
+  MethodLog('Get_TotalSymbolNumber.End');
+end;
+
+procedure ToleMain.Set_TotalSymbolNumber(Value: Integer);
+begin
+  MethodLog('Set_TotalSymbolNumber.Begin');
+  Driver.Set_TotalSymbolNumber(Value);
+  MethodLog('Set_TotalSymbolNumber.End');
+end;
+
+function  ToleMain.Get_Summ1SymbolNumber: Integer;
+begin
+  MethodLog('Get_Summ1SymbolNumber.Begin');
+  Result := Driver.Get_Summ1SymbolNumber;
+  MethodLog('Get_Summ1SymbolNumber.End');
+end;
+
+procedure ToleMain.Set_Summ1SymbolNumber(Value: Integer);
+begin
+  MethodLog('Set_Summ1SymbolNumber.Begin');
+  Driver.Set_Summ1SymbolNumber(Value);
+  MethodLog('Set_Summ1SymbolNumber.End');
+end;
+
+function  ToleMain.Get_Summ2SymbolNumber: Integer;
+begin
+  MethodLog('Get_Summ2SymbolNumber.Begin');
+  Result := Driver.Get_Summ2SymbolNumber;
+  MethodLog('Get_Summ2SymbolNumber.End');
+end;
+
+procedure ToleMain.Set_Summ2SymbolNumber(Value: Integer);
+begin
+  MethodLog('Set_Summ2SymbolNumber.Begin');
+  Driver.Set_Summ2SymbolNumber(Value);
+  MethodLog('Set_Summ2SymbolNumber.End');
+end;
+
+function  ToleMain.Get_Summ3SymbolNumber: Integer;
+begin
+  MethodLog('Get_Summ3SymbolNumber.Begin');
+  Result := Driver.Get_Summ3SymbolNumber;
+  MethodLog('Get_Summ3SymbolNumber.End');
+end;
+
+procedure ToleMain.Set_Summ3SymbolNumber(Value: Integer);
+begin
+  MethodLog('Set_Summ3SymbolNumber.Begin');
+  Driver.Set_Summ3SymbolNumber(Value);
+  MethodLog('Set_Summ3SymbolNumber.End');
+end;
+
+function  ToleMain.Get_Summ4SymbolNumber: Integer;
+begin
+  MethodLog('Get_Summ4SymbolNumber.Begin');
+  Result := Driver.Get_Summ4SymbolNumber;
+  MethodLog('Get_Summ4SymbolNumber.End');
+end;
+
+procedure ToleMain.Set_Summ4SymbolNumber(Value: Integer);
+begin
+  MethodLog('Set_Summ4SymbolNumber.Begin');
+  Driver.Set_Summ4SymbolNumber(Value);
+  MethodLog('Set_Summ4SymbolNumber.End');
+end;
+
+function  ToleMain.Get_ChangeSymbolNumber: Integer;
+begin
+  MethodLog('Get_ChangeSymbolNumber.Begin');
+  Result := Driver.Get_ChangeSymbolNumber;
+  MethodLog('Get_ChangeSymbolNumber.End');
+end;
+
+procedure ToleMain.Set_ChangeSymbolNumber(Value: Integer);
+begin
+  MethodLog('Set_ChangeSymbolNumber.Begin');
+  Driver.Set_ChangeSymbolNumber(Value);
+  MethodLog('Set_ChangeSymbolNumber.End');
+end;
+
+function  ToleMain.Get_Tax1NameSymbolNumber: Integer;
+begin
+  MethodLog('Get_Tax1NameSymbolNumber.Begin');
+  Result := Driver.Get_Tax1NameSymbolNumber;
+  MethodLog('Get_Tax1NameSymbolNumber.End');
+end;
+
+procedure ToleMain.Set_Tax1NameSymbolNumber(Value: Integer);
+begin
+  MethodLog('Set_Tax1NameSymbolNumber.Begin');
+  Driver.Set_Tax1NameSymbolNumber(Value);
+  MethodLog('Set_Tax1NameSymbolNumber.End');
+end;
+
+function  ToleMain.Get_Tax1TurnOverSymbolNumber: Integer;
+begin
+  MethodLog('Get_Tax1TurnOverSymbolNumber.Begin');
+  Result := Driver.Get_Tax1TurnOverSymbolNumber;
+  MethodLog('Get_Tax1TurnOverSymbolNumber.End');
+end;
+
+procedure ToleMain.Set_Tax1TurnOverSymbolNumber(Value: Integer);
+begin
+  MethodLog('Set_Tax1TurnOverSymbolNumber.Begin');
+  Driver.Set_Tax1TurnOverSymbolNumber(Value);
+  MethodLog('Set_Tax1TurnOverSymbolNumber.End');
+end;
+
+function  ToleMain.Get_Tax1RateSymbolNumber: Integer;
+begin
+  MethodLog('Get_Tax1RateSymbolNumber.Begin');
+  Result := Driver.Get_Tax1RateSymbolNumber;
+  MethodLog('Get_Tax1RateSymbolNumber.End');
+end;
+
+procedure ToleMain.Set_Tax1RateSymbolNumber(Value: Integer);
+begin
+  MethodLog('Set_Tax1RateSymbolNumber.Begin');
+  Driver.Set_Tax1RateSymbolNumber(Value);
+  MethodLog('Set_Tax1RateSymbolNumber.End');
+end;
+
+function  ToleMain.Get_Tax1SumSymbolNumber: Integer;
+begin
+  MethodLog('Get_Tax1SumSymbolNumber.Begin');
+  Result := Driver.Get_Tax1SumSymbolNumber;
+  MethodLog('Get_Tax1SumSymbolNumber.End');
+end;
+
+procedure ToleMain.Set_Tax1SumSymbolNumber(Value: Integer);
+begin
+  MethodLog('Set_Tax1SumSymbolNumber.Begin');
+  Driver.Set_Tax1SumSymbolNumber(Value);
+  MethodLog('Set_Tax1SumSymbolNumber.End');
+end;
+
+function  ToleMain.Get_Tax2NameSymbolNumber: Integer;
+begin
+  MethodLog('Get_Tax2NameSymbolNumber.Begin');
+  Result := Driver.Get_Tax2NameSymbolNumber;
+  MethodLog('Get_Tax2NameSymbolNumber.End');
+end;
+
+procedure ToleMain.Set_Tax2NameSymbolNumber(Value: Integer);
+begin
+  MethodLog('Set_Tax2NameSymbolNumber.Begin');
+  Driver.Set_Tax2NameSymbolNumber(Value);
+  MethodLog('Set_Tax2NameSymbolNumber.End');
+end;
+
+function  ToleMain.Get_Tax2TurnOverSymbolNumber: Integer;
+begin
+  MethodLog('Get_Tax2TurnOverSymbolNumber.Begin');
+  Result := Driver.Get_Tax2TurnOverSymbolNumber;
+  MethodLog('Get_Tax2TurnOverSymbolNumber.End');
+end;
+
+procedure ToleMain.Set_Tax2TurnOverSymbolNumber(Value: Integer);
+begin
+  MethodLog('Set_Tax2TurnOverSymbolNumber.Begin');
+  Driver.Set_Tax2TurnOverSymbolNumber(Value);
+  MethodLog('Set_Tax2TurnOverSymbolNumber.End');
+end;
+
+function  ToleMain.Get_Tax2RateSymbolNumber: Integer;
+begin
+  MethodLog('Get_Tax2RateSymbolNumber.Begin');
+  Result := Driver.Get_Tax2RateSymbolNumber;
+  MethodLog('Get_Tax2RateSymbolNumber.End');
+end;
+
+procedure ToleMain.Set_Tax2RateSymbolNumber(Value: Integer);
+begin
+  MethodLog('Set_Tax2RateSymbolNumber.Begin');
+  Driver.Set_Tax2RateSymbolNumber(Value);
+  MethodLog('Set_Tax2RateSymbolNumber.End');
+end;
+
+function  ToleMain.Get_Tax2SumSymbolNumber: Integer;
+begin
+  MethodLog('Get_Tax2SumSymbolNumber.Begin');
+  Result := Driver.Get_Tax2SumSymbolNumber;
+  MethodLog('Get_Tax2SumSymbolNumber.End');
+end;
+
+procedure ToleMain.Set_Tax2SumSymbolNumber(Value: Integer);
+begin
+  MethodLog('Set_Tax2SumSymbolNumber.Begin');
+  Driver.Set_Tax2SumSymbolNumber(Value);
+  MethodLog('Set_Tax2SumSymbolNumber.End');
+end;
+
+function  ToleMain.Get_Tax3NameSymbolNumber: Integer;
+begin
+  MethodLog('Get_Tax3NameSymbolNumber.Begin');
+  Result := Driver.Get_Tax3NameSymbolNumber;
+  MethodLog('Get_Tax3NameSymbolNumber.End');
+end;
+
+procedure ToleMain.Set_Tax3NameSymbolNumber(Value: Integer);
+begin
+  MethodLog('Set_Tax3NameSymbolNumber.Begin');
+  Driver.Set_Tax3NameSymbolNumber(Value);
+  MethodLog('Set_Tax3NameSymbolNumber.End');
+end;
+
+function  ToleMain.Get_Tax3TurnOverSymbolNumber: Integer;
+begin
+  MethodLog('Get_Tax3TurnOverSymbolNumber.Begin');
+  Result := Driver.Get_Tax3TurnOverSymbolNumber;
+  MethodLog('Get_Tax3TurnOverSymbolNumber.End');
+end;
+
+procedure ToleMain.Set_Tax3TurnOverSymbolNumber(Value: Integer);
+begin
+  MethodLog('Set_Tax3TurnOverSymbolNumber.Begin');
+  Driver.Set_Tax3TurnOverSymbolNumber(Value);
+  MethodLog('Set_Tax3TurnOverSymbolNumber.End');
+end;
+
+function  ToleMain.Get_Tax3RateSymbolNumber: Integer;
+begin
+  MethodLog('Get_Tax3RateSymbolNumber.Begin');
+  Result := Driver.Get_Tax3RateSymbolNumber;
+  MethodLog('Get_Tax3RateSymbolNumber.End');
+end;
+
+procedure ToleMain.Set_Tax3RateSymbolNumber(Value: Integer);
+begin
+  MethodLog('Set_Tax3RateSymbolNumber.Begin');
+  Driver.Set_Tax3RateSymbolNumber(Value);
+  MethodLog('Set_Tax3RateSymbolNumber.End');
+end;
+
+function  ToleMain.Get_Tax3SumSymbolNumber: Integer;
+begin
+  MethodLog('Get_Tax3SumSymbolNumber.Begin');
+  Result := Driver.Get_Tax3SumSymbolNumber;
+  MethodLog('Get_Tax3SumSymbolNumber.End');
+end;
+
+procedure ToleMain.Set_Tax3SumSymbolNumber(Value: Integer);
+begin
+  MethodLog('Set_Tax3SumSymbolNumber.Begin');
+  Driver.Set_Tax3SumSymbolNumber(Value);
+  MethodLog('Set_Tax3SumSymbolNumber.End');
+end;
+
+function  ToleMain.Get_Tax4NameSymbolNumber: Integer;
+begin
+  MethodLog('Get_Tax4NameSymbolNumber.Begin');
+  Result := Driver.Get_Tax4NameSymbolNumber;
+  MethodLog('Get_Tax4NameSymbolNumber.End');
+end;
+
+procedure ToleMain.Set_Tax4NameSymbolNumber(Value: Integer);
+begin
+  MethodLog('Set_Tax4NameSymbolNumber.Begin');
+  Driver.Set_Tax4NameSymbolNumber(Value);
+  MethodLog('Set_Tax4NameSymbolNumber.End');
+end;
+
+function  ToleMain.Get_Tax4TurnOverSymbolNumber: Integer;
+begin
+  MethodLog('Get_Tax4TurnOverSymbolNumber.Begin');
+  Result := Driver.Get_Tax4TurnOverSymbolNumber;
+  MethodLog('Get_Tax4TurnOverSymbolNumber.End');
+end;
+
+procedure ToleMain.Set_Tax4TurnOverSymbolNumber(Value: Integer);
+begin
+  MethodLog('Set_Tax4TurnOverSymbolNumber.Begin');
+  Driver.Set_Tax4TurnOverSymbolNumber(Value);
+  MethodLog('Set_Tax4TurnOverSymbolNumber.End');
+end;
+
+function  ToleMain.Get_Tax4RateSymbolNumber: Integer;
+begin
+  MethodLog('Get_Tax4RateSymbolNumber.Begin');
+  Result := Driver.Get_Tax4RateSymbolNumber;
+  MethodLog('Get_Tax4RateSymbolNumber.End');
+end;
+
+procedure ToleMain.Set_Tax4RateSymbolNumber(Value: Integer);
+begin
+  MethodLog('Set_Tax4RateSymbolNumber.Begin');
+  Driver.Set_Tax4RateSymbolNumber(Value);
+  MethodLog('Set_Tax4RateSymbolNumber.End');
+end;
+
+function  ToleMain.Get_Tax4SumSymbolNumber: Integer;
+begin
+  MethodLog('Get_Tax4SumSymbolNumber.Begin');
+  Result := Driver.Get_Tax4SumSymbolNumber;
+  MethodLog('Get_Tax4SumSymbolNumber.End');
+end;
+
+procedure ToleMain.Set_Tax4SumSymbolNumber(Value: Integer);
+begin
+  MethodLog('Set_Tax4SumSymbolNumber.Begin');
+  Driver.Set_Tax4SumSymbolNumber(Value);
+  MethodLog('Set_Tax4SumSymbolNumber.End');
+end;
+
+function  ToleMain.Get_SubTotalSymbolNumber: Integer;
+begin
+  MethodLog('Get_SubTotalSymbolNumber.Begin');
+  Result := Driver.Get_SubTotalSymbolNumber;
+  MethodLog('Get_SubTotalSymbolNumber.End');
+end;
+
+procedure ToleMain.Set_SubTotalSymbolNumber(Value: Integer);
+begin
+  MethodLog('Set_SubTotalSymbolNumber.Begin');
+  Driver.Set_SubTotalSymbolNumber(Value);
+  MethodLog('Set_SubTotalSymbolNumber.End');
+end;
+
+function  ToleMain.Get_DiscountOnCheckSymbolNumber: Integer;
+begin
+  MethodLog('Get_DiscountOnCheckSymbolNumber.Begin');
+  Result := Driver.Get_DiscountOnCheckSymbolNumber;
+  MethodLog('Get_DiscountOnCheckSymbolNumber.End');
+end;
+
+procedure ToleMain.Set_DiscountOnCheckSymbolNumber(Value: Integer);
+begin
+  MethodLog('Set_DiscountOnCheckSymbolNumber.Begin');
+  Driver.Set_DiscountOnCheckSymbolNumber(Value);
+  MethodLog('Set_DiscountOnCheckSymbolNumber.End');
+end;
+
+function  ToleMain.Get_DiscountOnCheckSumSymbolNumber: Integer;
+begin
+  MethodLog('Get_DiscountOnCheckSumSymbolNumber.Begin');
+  Result := Driver.Get_DiscountOnCheckSumSymbolNumber;
+  MethodLog('Get_DiscountOnCheckSumSymbolNumber.End');
+end;
+
+procedure ToleMain.Set_DiscountOnCheckSumSymbolNumber(Value: Integer);
+begin
+  MethodLog('Set_DiscountOnCheckSumSymbolNumber.Begin');
+  Driver.Set_DiscountOnCheckSumSymbolNumber(Value);
+  MethodLog('Set_DiscountOnCheckSumSymbolNumber.End');
+end;
+
+function  ToleMain.Get_TotalOffset: Integer;
+begin
+  MethodLog('Get_TotalOffset.Begin');
+  Result := Driver.Get_TotalOffset;
+  MethodLog('Get_TotalOffset.End');
+end;
+
+procedure ToleMain.Set_TotalOffset(Value: Integer);
+begin
+  MethodLog('Set_TotalOffset.Begin');
+  Driver.Set_TotalOffset(Value);
+  MethodLog('Set_TotalOffset.End');
+end;
+
+function  ToleMain.Get_Summ1Offset: Integer;
+begin
+  MethodLog('Get_Summ1Offset.Begin');
+  Result := Driver.Get_Summ1Offset;
+  MethodLog('Get_Summ1Offset.End');
+end;
+
+procedure ToleMain.Set_Summ1Offset(Value: Integer);
+begin
+  MethodLog('Set_Summ1Offset.Begin');
+  Driver.Set_Summ1Offset(Value);
+  MethodLog('Set_Summ1Offset.End');
+end;
+
+function  ToleMain.Get_TotalSumOffset: Integer;
+begin
+  MethodLog('Get_TotalSumOffset.Begin');
+  Result := Driver.Get_TotalSumOffset;
+  MethodLog('Get_TotalSumOffset.End');
+end;
+
+procedure ToleMain.Set_TotalSumOffset(Value: Integer);
+begin
+  MethodLog('Set_TotalSumOffset.Begin');
+  Driver.Set_TotalSumOffset(Value);
+  MethodLog('Set_TotalSumOffset.End');
+end;
+
+function  ToleMain.Get_Summ1NameOffset: Integer;
+begin
+  MethodLog('Get_Summ1NameOffset.Begin');
+  Result := Driver.Get_Summ1NameOffset;
+  MethodLog('Get_Summ1NameOffset.End');
+end;
+
+procedure ToleMain.Set_Summ1NameOffset(Value: Integer);
+begin
+  MethodLog('Set_Summ1NameOffset.Begin');
+  Driver.Set_Summ1NameOffset(Value);
+  MethodLog('Set_Summ1NameOffset.End');
+end;
+
+function  ToleMain.Get_Summ2Offset: Integer;
+begin
+  MethodLog('Get_Summ2Offset.Begin');
+  Result := Driver.Get_Summ2Offset;
+  MethodLog('Get_Summ2Offset.End');
+end;
+
+procedure ToleMain.Set_Summ2Offset(Value: Integer);
+begin
+  MethodLog('Set_Summ2Offset.Begin');
+  Driver.Set_Summ2Offset(Value);
+  MethodLog('Set_Summ2Offset.End');
+end;
+
+function  ToleMain.Get_Summ2NameOffset: Integer;
+begin
+  MethodLog('Get_Summ2NameOffset.Begin');
+  Result := Driver.Get_Summ2NameOffset;
+  MethodLog('Get_Summ2NameOffset.End');
+end;
+
+procedure ToleMain.Set_Summ2NameOffset(Value: Integer);
+begin
+  MethodLog('Set_Summ2NameOffset.Begin');
+  Driver.Set_Summ2NameOffset(Value);
+  MethodLog('Set_Summ2NameOffset.End');
+end;
+
+function  ToleMain.Get_Summ3Offset: Integer;
+begin
+  MethodLog('Get_Summ3Offset.Begin');
+  Result := Driver.Get_Summ3Offset;
+  MethodLog('Get_Summ3Offset.End');
+end;
+
+procedure ToleMain.Set_Summ3Offset(Value: Integer);
+begin
+  MethodLog('Set_Summ3Offset.Begin');
+  Driver.Set_Summ3Offset(Value);
+  MethodLog('Set_Summ3Offset.End');
+end;
+
+function  ToleMain.Get_Summ3NameOffset: Integer;
+begin
+  MethodLog('Get_Summ3NameOffset.Begin');
+  Result := Driver.Get_Summ3NameOffset;
+  MethodLog('Get_Summ3NameOffset.End');
+end;
+
+procedure ToleMain.Set_Summ3NameOffset(Value: Integer);
+begin
+  MethodLog('Set_Summ3NameOffset.Begin');
+  Driver.Set_Summ3NameOffset(Value);
+  MethodLog('Set_Summ3NameOffset.End');
+end;
+
+function  ToleMain.Get_Summ4Offset: Integer;
+begin
+  MethodLog('Get_Summ4Offset.Begin');
+  Result := Driver.Get_Summ4Offset;
+  MethodLog('Get_Summ4Offset.End');
+end;
+
+procedure ToleMain.Set_Summ4Offset(Value: Integer);
+begin
+  MethodLog('Set_Summ4Offset.Begin');
+  Driver.Set_Summ4Offset(Value);
+  MethodLog('Set_Summ4Offset.End');
+end;
+
+function  ToleMain.Get_Summ4NameOffset: Integer;
+begin
+  MethodLog('Get_Summ4NameOffset.Begin');
+  Result := Driver.Get_Summ4NameOffset;
+  MethodLog('Get_Summ4NameOffset.End');
+end;
+
+procedure ToleMain.Set_Summ4NameOffset(Value: Integer);
+begin
+  MethodLog('Set_Summ4NameOffset.Begin');
+  Driver.Set_Summ4NameOffset(Value);
+  MethodLog('Set_Summ4NameOffset.End');
+end;
+
+function  ToleMain.Get_ChangeOffset: Integer;
+begin
+  MethodLog('Get_ChangeOffset.Begin');
+  Result := Driver.Get_ChangeOffset;
+  MethodLog('Get_ChangeOffset.End');
+end;
+
+procedure ToleMain.Set_ChangeOffset(Value: Integer);
+begin
+  MethodLog('Set_ChangeOffset.Begin');
+  Driver.Set_ChangeOffset(Value);
+  MethodLog('Set_ChangeOffset.End');
+end;
+
+function  ToleMain.Get_ChangeSumOffset: Integer;
+begin
+  MethodLog('Get_ChangeSumOffset.Begin');
+  Result := Driver.Get_ChangeSumOffset;
+  MethodLog('Get_ChangeSumOffset.End');
+end;
+
+procedure ToleMain.Set_ChangeSumOffset(Value: Integer);
+begin
+  MethodLog('Set_ChangeSumOffset.Begin');
+  Driver.Set_ChangeSumOffset(Value);
+  MethodLog('Set_ChangeSumOffset.End');
+end;
+
+function  ToleMain.Get_Tax1NameOffset: Integer;
+begin
+  MethodLog('Get_Tax1NameOffset.Begin');
+  Result := Driver.Get_Tax1NameOffset;
+  MethodLog('Get_Tax1NameOffset.End');
+end;
+
+procedure ToleMain.Set_Tax1NameOffset(Value: Integer);
+begin
+  MethodLog('Set_Tax1NameOffset.Begin');
+  Driver.Set_Tax1NameOffset(Value);
+  MethodLog('Set_Tax1NameOffset.End');
+end;
+
+function  ToleMain.Get_Tax1TurnOverOffset: Integer;
+begin
+  MethodLog('Get_Tax1TurnOverOffset.Begin');
+  Result := Driver.Get_Tax1TurnOverOffset;
+  MethodLog('Get_Tax1TurnOverOffset.End');
+end;
+
+procedure ToleMain.Set_Tax1TurnOverOffset(Value: Integer);
+begin
+  MethodLog('Set_Tax1TurnOverOffset.Begin');
+  Driver.Set_Tax1TurnOverOffset(Value);
+  MethodLog('Set_Tax1TurnOverOffset.End');
+end;
+
+function  ToleMain.Get_Tax1RateOffset: Integer;
+begin
+  MethodLog('Get_Tax1RateOffset.Begin');
+  Result := Driver.Get_Tax1RateOffset;
+  MethodLog('Get_Tax1RateOffset.End');
+end;
+
+procedure ToleMain.Set_Tax1RateOffset(Value: Integer);
+begin
+  MethodLog('Set_Tax1RateOffset.Begin');
+  Driver.Set_Tax1RateOffset(Value);
+  MethodLog('Set_Tax1RateOffset.End');
+end;
+
+function  ToleMain.Get_Tax1SumOffset: Integer;
+begin
+  MethodLog('Get_Tax1SumOffset.Begin');
+  Result := Driver.Get_Tax1SumOffset;
+  MethodLog('Get_Tax1SumOffset.End');
+end;
+
+procedure ToleMain.Set_Tax1SumOffset(Value: Integer);
+begin
+  MethodLog('Set_Tax1SumOffset.Begin');
+  Driver.Set_Tax1SumOffset(Value);
+  MethodLog('Set_Tax1SumOffset.End');
+end;
+
+function  ToleMain.Get_Tax2NameOffset: Integer;
+begin
+  MethodLog('Get_Tax2NameOffset.Begin');
+  Result := Driver.Get_Tax2NameOffset;
+  MethodLog('Get_Tax2NameOffset.End');
+end;
+
+procedure ToleMain.Set_Tax2NameOffset(Value: Integer);
+begin
+  MethodLog('Set_Tax2NameOffset.Begin');
+  Driver.Set_Tax2NameOffset(Value);
+  MethodLog('Set_Tax2NameOffset.End');
+end;
+
+function  ToleMain.Get_Tax2TurnOverOffset: Integer;
+begin
+  MethodLog('Get_Tax2TurnOverOffset.Begin');
+  Result := Driver.Get_Tax2TurnOverOffset;
+  MethodLog('Get_Tax2TurnOverOffset.End');
+end;
+
+procedure ToleMain.Set_Tax2TurnOverOffset(Value: Integer);
+begin
+  MethodLog('Set_Tax2TurnOverOffset.Begin');
+  Driver.Set_Tax2TurnOverOffset(Value);
+  MethodLog('Set_Tax2TurnOverOffset.End');
+end;
+
+function  ToleMain.Get_Tax2RateOffset: Integer;
+begin
+  MethodLog('Get_Tax2RateOffset.Begin');
+  Result := Driver.Get_Tax2RateOffset;
+  MethodLog('Get_Tax2RateOffset.End');
+end;
+
+procedure ToleMain.Set_Tax2RateOffset(Value: Integer);
+begin
+  MethodLog('Set_Tax2RateOffset.Begin');
+  Driver.Set_Tax2RateOffset(Value);
+  MethodLog('Set_Tax2RateOffset.End');
+end;
+
+function  ToleMain.Get_Tax2SumOffset: Integer;
+begin
+  MethodLog('Get_Tax2SumOffset.Begin');
+  Result := Driver.Get_Tax2SumOffset;
+  MethodLog('Get_Tax2SumOffset.End');
+end;
+
+procedure ToleMain.Set_Tax2SumOffset(Value: Integer);
+begin
+  MethodLog('Set_Tax2SumOffset.Begin');
+  Driver.Set_Tax2SumOffset(Value);
+  MethodLog('Set_Tax2SumOffset.End');
+end;
+
+function  ToleMain.Get_Tax3NameOffset: Integer;
+begin
+  MethodLog('Get_Tax3NameOffset.Begin');
+  Result := Driver.Get_Tax3NameOffset;
+  MethodLog('Get_Tax3NameOffset.End');
+end;
+
+procedure ToleMain.Set_Tax3NameOffset(Value: Integer);
+begin
+  MethodLog('Set_Tax3NameOffset.Begin');
+  Driver.Set_Tax3NameOffset(Value);
+  MethodLog('Set_Tax3NameOffset.End');
+end;
+
+function  ToleMain.Get_Tax3TurnOverOffset: Integer;
+begin
+  MethodLog('Get_Tax3TurnOverOffset.Begin');
+  Result := Driver.Get_Tax3TurnOverOffset;
+  MethodLog('Get_Tax3TurnOverOffset.End');
+end;
+
+procedure ToleMain.Set_Tax3TurnOverOffset(Value: Integer);
+begin
+  MethodLog('Set_Tax3TurnOverOffset.Begin');
+  Driver.Set_Tax3TurnOverOffset(Value);
+  MethodLog('Set_Tax3TurnOverOffset.End');
+end;
+
+function  ToleMain.Get_Tax3RateOffset: Integer;
+begin
+  MethodLog('Get_Tax3RateOffset.Begin');
+  Result := Driver.Get_Tax3RateOffset;
+  MethodLog('Get_Tax3RateOffset.End');
+end;
+
+procedure ToleMain.Set_Tax3RateOffset(Value: Integer);
+begin
+  MethodLog('Set_Tax3RateOffset.Begin');
+  Driver.Set_Tax3RateOffset(Value);
+  MethodLog('Set_Tax3RateOffset.End');
+end;
+
+function  ToleMain.Get_Tax3SumOffset: Integer;
+begin
+  MethodLog('Get_Tax3SumOffset.Begin');
+  Result := Driver.Get_Tax3SumOffset;
+  MethodLog('Get_Tax3SumOffset.End');
+end;
+
+procedure ToleMain.Set_Tax3SumOffset(Value: Integer);
+begin
+  MethodLog('Set_Tax3SumOffset.Begin');
+  Driver.Set_Tax3SumOffset(Value);
+  MethodLog('Set_Tax3SumOffset.End');
+end;
+
+function  ToleMain.Get_Tax4NameOffset: Integer;
+begin
+  MethodLog('Get_Tax4NameOffset.Begin');
+  Result := Driver.Get_Tax4NameOffset;
+  MethodLog('Get_Tax4NameOffset.End');
+end;
+
+procedure ToleMain.Set_Tax4NameOffset(Value: Integer);
+begin
+  MethodLog('Set_Tax4NameOffset.Begin');
+  Driver.Set_Tax4NameOffset(Value);
+  MethodLog('Set_Tax4NameOffset.End');
+end;
+
+function  ToleMain.Get_Tax4TurnOverOffset: Integer;
+begin
+  MethodLog('Get_Tax4TurnOverOffset.Begin');
+  Result := Driver.Get_Tax4TurnOverOffset;
+  MethodLog('Get_Tax4TurnOverOffset.End');
+end;
+
+procedure ToleMain.Set_Tax4TurnOverOffset(Value: Integer);
+begin
+  MethodLog('Set_Tax4TurnOverOffset.Begin');
+  Driver.Set_Tax4TurnOverOffset(Value);
+  MethodLog('Set_Tax4TurnOverOffset.End');
+end;
+
+function  ToleMain.Get_Tax4RateOffset: Integer;
+begin
+  MethodLog('Get_Tax4RateOffset.Begin');
+  Result := Driver.Get_Tax4RateOffset;
+  MethodLog('Get_Tax4RateOffset.End');
+end;
+
+procedure ToleMain.Set_Tax4RateOffset(Value: Integer);
+begin
+  MethodLog('Set_Tax4RateOffset.Begin');
+  Driver.Set_Tax4RateOffset(Value);
+  MethodLog('Set_Tax4RateOffset.End');
+end;
+
+function  ToleMain.Get_Tax4SumOffset: Integer;
+begin
+  MethodLog('Get_Tax4SumOffset.Begin');
+  Result := Driver.Get_Tax4SumOffset;
+  MethodLog('Get_Tax4SumOffset.End');
+end;
+
+procedure ToleMain.Set_Tax4SumOffset(Value: Integer);
+begin
+  MethodLog('Set_Tax4SumOffset.Begin');
+  Driver.Set_Tax4SumOffset(Value);
+  MethodLog('Set_Tax4SumOffset.End');
+end;
+
+function  ToleMain.Get_SubTotalOffset: Integer;
+begin
+  MethodLog('Get_SubTotalOffset.Begin');
+  Result := Driver.Get_SubTotalOffset;
+  MethodLog('Get_SubTotalOffset.End');
+end;
+
+procedure ToleMain.Set_SubTotalOffset(Value: Integer);
+begin
+  MethodLog('Set_SubTotalOffset.Begin');
+  Driver.Set_SubTotalOffset(Value);
+  MethodLog('Set_SubTotalOffset.End');
+end;
+
+function  ToleMain.Get_SubTotalSumOffset: Integer;
+begin
+  MethodLog('Get_SubTotalSumOffset.Begin');
+  Result := Driver.Get_SubTotalSumOffset;
+  MethodLog('Get_SubTotalSumOffset.End');
+end;
+
+procedure ToleMain.Set_SubTotalSumOffset(Value: Integer);
+begin
+  MethodLog('Set_SubTotalSumOffset.Begin');
+  Driver.Set_SubTotalSumOffset(Value);
+  MethodLog('Set_SubTotalSumOffset.End');
+end;
+
+function  ToleMain.Get_SlipDocumentWidth: Integer;
+begin
+  MethodLog('Get_SlipDocumentWidth.Begin');
+  Result := Driver.Get_SlipDocumentWidth;
+  MethodLog('Get_SlipDocumentWidth.End');
+end;
+
+procedure ToleMain.Set_SlipDocumentWidth(Value: Integer);
+begin
+  MethodLog('Set_SlipDocumentWidth.Begin');
+  Driver.Set_SlipDocumentWidth(Value);
+  MethodLog('Set_SlipDocumentWidth.End');
+end;
+
+function  ToleMain.Get_SlipDocumentLength: Integer;
+begin
+  MethodLog('Get_SlipDocumentLength.Begin');
+  Result := Driver.Get_SlipDocumentLength;
+  MethodLog('Get_SlipDocumentLength.End');
+end;
+
+procedure ToleMain.Set_SlipDocumentLength(Value: Integer);
+begin
+  MethodLog('Set_SlipDocumentLength.Begin');
+  Driver.Set_SlipDocumentLength(Value);
+  MethodLog('Set_SlipDocumentLength.End');
+end;
+
+function  ToleMain.Get_PrintingAlignment: Integer;
+begin
+  MethodLog('Get_PrintingAlignment.Begin');
+  Result := Driver.Get_PrintingAlignment;
+  MethodLog('Get_PrintingAlignment.End');
+end;
+
+procedure ToleMain.Set_PrintingAlignment(Value: Integer);
+begin
+  MethodLog('Set_PrintingAlignment.Begin');
+  Driver.Set_PrintingAlignment(Value);
+  MethodLog('Set_PrintingAlignment.End');
+end;
+
+function  ToleMain.Get_SlipStringIntervals: WideString;
+begin
+  MethodLog('Get_SlipStringIntervals.Begin');
+  Result := Driver.Get_SlipStringIntervals;
+  MethodLog('Get_SlipStringIntervals.End');
+end;
+
+procedure ToleMain.Set_SlipStringIntervals(const Value: WideString);
+begin
+  MethodLog('Set_SlipStringIntervals.Begin');
+  Driver.Set_SlipStringIntervals(Value);
+  MethodLog('Set_SlipStringIntervals.End');
+end;
+
+function  ToleMain.Get_SlipEqualStringIntervals: Integer;
+begin
+  MethodLog('Get_SlipEqualStringIntervals.Begin');
+  Result := Driver.Get_SlipEqualStringIntervals;
+  MethodLog('Get_SlipEqualStringIntervals.End');
+end;
+
+procedure ToleMain.Set_SlipEqualStringIntervals(Value: Integer);
+begin
+  MethodLog('Set_SlipEqualStringIntervals.Begin');
+  Driver.Set_SlipEqualStringIntervals(Value);
+  MethodLog('Set_SlipEqualStringIntervals.End');
+end;
+
+function  ToleMain.Get_KPKFont: Integer;
+begin
+  MethodLog('Get_KPKFont.Begin');
+  Result := Driver.Get_KPKFont;
+  MethodLog('Get_KPKFont.End');
+end;
+
+procedure ToleMain.Set_KPKFont(Value: Integer);
+begin
+  MethodLog('Set_KPKFont.Begin');
+  Driver.Set_KPKFont(Value);
+  MethodLog('Set_KPKFont.End');
+end;
+
+function  ToleMain.Get_DiscountOnCheckOffset: Integer;
+begin
+  MethodLog('Get_DiscountOnCheckOffset.Begin');
+  Result := Driver.Get_DiscountOnCheckOffset;
+  MethodLog('Get_DiscountOnCheckOffset.End');
+end;
+
+procedure ToleMain.Set_DiscountOnCheckOffset(Value: Integer);
+begin
+  MethodLog('Set_DiscountOnCheckOffset.Begin');
+  Driver.Set_DiscountOnCheckOffset(Value);
+  MethodLog('Set_DiscountOnCheckOffset.End');
+end;
+
+function  ToleMain.Get_DiscountOnCheckSumOffset: Integer;
+begin
+  MethodLog('Get_DiscountOnCheckSumOffset.Begin');
+  Result := Driver.Get_DiscountOnCheckSumOffset;
+  MethodLog('Get_DiscountOnCheckSumOffset.End');
+end;
+
+procedure ToleMain.Set_DiscountOnCheckSumOffset(Value: Integer);
+begin
+  MethodLog('Set_DiscountOnCheckSumOffset.Begin');
+  Driver.Set_DiscountOnCheckSumOffset(Value);
+  MethodLog('Set_DiscountOnCheckSumOffset.End');
+end;
+
+function  ToleMain.WideLoadLineData: Integer;
+begin
+  MethodLog('WideLoadLineData.Begin');
+  Result := Driver.WideLoadLineData;
+  MethodLog('WideLoadLineData.End');
+end;
+
+function  ToleMain.PrintTaxReport: Integer;
+begin
+  MethodLog('PrintTaxReport.Begin');
+  Result := Driver.PrintTaxReport;
+  MethodLog('PrintTaxReport.End');
+end;
+
+function  ToleMain.Get_QuantityPointPosition: WordBool;
+begin
+  MethodLog('Get_QuantityPointPosition.Begin');
+  Result := Driver.Get_QuantityPointPosition;
+  MethodLog('Get_QuantityPointPosition.End');
+end;
+
+function  ToleMain.Get_FileVersionMS: LongWord;
+begin
+  MethodLog('Get_FileVersionMS.Begin');
+  Result := Driver.Get_FileVersionMS;
+  MethodLog('Get_FileVersionMS.End');
+end;
+
+function  ToleMain.Get_FileVersionLS: LongWord;
+begin
+  MethodLog('Get_FileVersionLS.Begin');
+  Result := Driver.Get_FileVersionLS;
+  MethodLog('Get_FileVersionLS.End');
+end;
+
+function  ToleMain.GetLongSerialNumberAndLongRNM: Integer;
+begin
+  MethodLog('GetLongSerialNumberAndLongRNM.Begin');
+  Result := Driver.GetLongSerialNumberAndLongRNM;
+  MethodLog('GetLongSerialNumberAndLongRNM.End');
+end;
+
+function  ToleMain.SetLongSerialNumber: Integer;
+begin
+  MethodLog('SetLongSerialNumber.Begin');
+  Result := Driver.SetLongSerialNumber;
+  MethodLog('SetLongSerialNumber.End');
+end;
+
+function  ToleMain.FiscalizationWithLongRNM: Integer;
+begin
+  MethodLog('FiscalizationWithLongRNM.Begin');
+  Result := Driver.FiscalizationWithLongRNM;
+  MethodLog('FiscalizationWithLongRNM.End');
+end;
+
+function  ToleMain.Get_IsBatteryLow: WordBool;
+begin
+  MethodLog('Get_IsBatteryLow.Begin');
+  Result := Driver.Get_IsBatteryLow;
+  MethodLog('Get_IsBatteryLow.End');
+end;
+
+function  ToleMain.Get_IsLastFMRecordCorrupted: WordBool;
+begin
+  MethodLog('Get_IsLastFMRecordCorrupted.Begin');
+  Result := Driver.Get_IsLastFMRecordCorrupted;
+  MethodLog('Get_IsLastFMRecordCorrupted.End');
+end;
+
+function  ToleMain.Get_IsFMSessionOpen: WordBool;
+begin
+  MethodLog('Get_IsFMSessionOpen.Begin');
+  Result := Driver.Get_IsFMSessionOpen;
+  MethodLog('Get_IsFMSessionOpen.End');
+end;
+
+function  ToleMain.Get_IsFM24HoursOver: WordBool;
+begin
+  MethodLog('Get_IsFM24HoursOver.Begin');
+  Result := Driver.Get_IsFM24HoursOver;
+  MethodLog('Get_IsFM24HoursOver.End');
+end;
+
+function  ToleMain.Connect2: Integer;
+begin
+  MethodLog('Connect2.Begin');
+  Result := Driver.Connect2;
+  MethodLog('Connect2.End');
+end;
+
+function  ToleMain.Get_ECRModeStatus: Integer;
+begin
+  MethodLog('Get_ECRModeStatus.Begin');
+  Result := Driver.Get_ECRModeStatus;
+  MethodLog('Get_ECRModeStatus.End');
+end;
+
+function  ToleMain.GetECRPrinterStatus: Integer;
+begin
+  MethodLog('GetECRPrinterStatus.Begin');
+  Result := Driver.GetECRPrinterStatus;
+  MethodLog('GetECRPrinterStatus.End');
+end;
+
+function  ToleMain.Get_PrinterStatus: Integer;
+begin
+  MethodLog('Get_PrinterStatus.Begin');
+  Result := Driver.Get_PrinterStatus;
+  MethodLog('Get_PrinterStatus.End');
+end;
+
+// IDrvFR2
+
+function  ToleMain.Get_ServerVersion: WideString;
+begin
+  MethodLog('Get_ServerVersion.Begin');
+  Result := Driver.Get_ServerVersion;
+  MethodLog('Get_ServerVersion.End');
+end;
+
+function  ToleMain.Get_LDComputerName: WideString;
+begin
+  MethodLog('Get_LDComputerName.Begin');
+  Result := Driver.Get_LDComputerName;
+  MethodLog('Get_LDComputerName.End');
+end;
+
+procedure ToleMain.Set_LDComputerName(const Value: WideString);
+begin
+  MethodLog('Set_LDComputerName.Begin');
+  Driver.Set_LDComputerName(Value);
+  MethodLog('Set_LDComputerName.End');
+end;
+
+function  ToleMain.Get_LDTimeout: Integer;
+begin
+  MethodLog('Get_LDTimeout.Begin');
+  Result := Driver.Get_LDTimeout;
+  MethodLog('Get_LDTimeout.End');
+end;
+
+procedure ToleMain.Set_LDTimeout(Value: Integer);
+begin
+  MethodLog('Set_LDTimeout.Begin');
+  Driver.Set_LDTimeout(Value);
+  MethodLog('Set_LDTimeout.End');
+end;
+
+function  ToleMain.Get_ComputerName: WideString;
+begin
+  MethodLog('Get_ComputerName.Begin');
+  Result := Driver.Get_ComputerName;
+  MethodLog('Get_ComputerName.End');
+end;
+
+procedure ToleMain.Set_ComputerName(const Value: WideString);
+begin
+  MethodLog('Set_ComputerName.Begin');
+  Driver.Set_ComputerName(Value);
+  MethodLog('Set_ComputerName.End');
+end;
+
+function  ToleMain.ServerConnect: Integer;
+begin
+  MethodLog('ServerConnect.Begin');
+  Result := Driver.ServerConnect;
+  MethodLog('ServerConnect.End');
+end;
+
+function  ToleMain.ServerDisconnect: Integer;
+begin
+  MethodLog('ServerDisconnect.Begin');
+  Result := Driver.ServerDisconnect;
+  MethodLog('ServerDisconnect.End');
+end;
+
+function  ToleMain.Get_ServerConnected: WordBool;
+begin
+  MethodLog('Get_ServerConnected.Begin');
+  Result := Driver.Get_ServerConnected;
+  MethodLog('Get_ServerConnected.End');
+end;
+
+function  ToleMain.LockPort: Integer;
+begin
+  MethodLog('LockPort.Begin');
+  Result := Driver.LockPort;
+  MethodLog('LockPort.End');
+end;
+
+function  ToleMain.UnlockPort: Integer;
+begin
+  MethodLog('UnlockPort.Begin');
+  Result := Driver.UnlockPort;
+  MethodLog('UnlockPort.End');
+end;
+
+function  ToleMain.Get_PortLocked: WordBool;
+begin
+  MethodLog('Get_PortLocked.Begin');
+  Result := Driver.Get_PortLocked;
+  MethodLog('Get_PortLocked.End');
+end;
+
+function  ToleMain.AdminUnlockPort: Integer;
+begin
+  MethodLog('AdminUnlockPort.Begin');
+  Result := Driver.AdminUnlockPort;
+  MethodLog('AdminUnlockPort.End');
+end;
+
+function  ToleMain.AdminUnlockPorts: Integer;
+begin
+  MethodLog('AdminUnlockPorts.Begin');
+  Result := Driver.AdminUnlockPorts;
+  MethodLog('AdminUnlockPorts.End');
+end;
+
+function  ToleMain.ServerCheckKey: Integer;
+begin
+  MethodLog('ServerCheckKey.Begin');
+  Result := Driver.ServerCheckKey;
+  MethodLog('ServerCheckKey.End');
+end;
+
+function  ToleMain.GetFontMetrics: Integer;
+begin
+  MethodLog('GetFontMetrics.Begin');
+  Result := Driver.GetFontMetrics;
+  MethodLog('GetFontMetrics.End');
+end;
+
+function  ToleMain.Get_PrintWidth: Integer;
+begin
+  MethodLog('Get_PrintWidth.Begin');
+  Result := Driver.Get_PrintWidth;
+  MethodLog('Get_PrintWidth.End');
+end;
+
+function  ToleMain.Get_CharWidth: Integer;
+begin
+  MethodLog('Get_CharWidth.Begin');
+  Result := Driver.Get_CharWidth;
+  MethodLog('Get_CharWidth.End');
+end;
+
+function  ToleMain.Get_CharHeight: Integer;
+begin
+  MethodLog('Get_CharHeight.Begin');
+  Result := Driver.Get_CharHeight;
+  MethodLog('Get_CharHeight.End');
+end;
+
+function  ToleMain.Get_FontCount: Integer;
+begin
+  MethodLog('Get_FontCount.Begin');
+  Result := Driver.Get_FontCount;
+  MethodLog('Get_FontCount.End');
+end;
+
+function  ToleMain.GetFreeLDNumber: Integer;
+begin
+  MethodLog('GetFreeLDNumber.Begin');
+  Result := Driver.GetFreeLDNumber;
+  MethodLog('GetFreeLDNumber.End');
+end;
+
+// IDrvFR3
+
+function  ToleMain.Get_LogOn: WordBool;
+begin
+  MethodLog('Get_LogOn.Begin');
+  Result := Driver.Get_LogOn;
+  MethodLog('Get_LogOn.End');
+end;
+
+procedure ToleMain.Set_LogOn(Value: WordBool);
+begin
+  MethodLog('Set_LogOn.Begin');
+  Driver.Set_LogOn(Value);
+  MethodLog('Set_LogOn.End');
+end;
+
+procedure ToleMain.SetIsString(Value: WordBool);
+begin
+  MethodLog('SetIsString.Begin');
+  MethodLog('SetIsString.End');
+end;
+
+procedure ToleMain.SetFieldSize(Value: Integer);
+begin
+  MethodLog('SetFieldSize.Begin');
+  MethodLog('SetFieldSize.End');
+end;
+
+function  ToleMain.ReadTable2: Integer;
+begin
+  MethodLog('ReadTable2.Begin');
+  Result := Driver.ReadTable2;
+  MethodLog('ReadTable2.End');
+end;
+
+function  ToleMain.WriteTable2: Integer;
+begin
+  MethodLog('WriteTable2.Begin');
+  Result := Driver.WriteTable2;
+  MethodLog('WriteTable2.End');
+end;
+
+procedure ToleMain.SetFieldMinValue(Value: Integer);
+begin
+  MethodLog('SetFieldMinValue.Begin');
+  MethodLog('SetFieldMinValue.End');
+end;
+
+procedure ToleMain.SetFieldMaxValue(Value: Integer);
+begin
+  MethodLog('SetFieldMaxValue.Begin');
+  MethodLog('SetFieldMaxValue.End');
+end;
+
+// IDrvFR4
+
+function  ToleMain.Get_CPLog: WordBool;
+begin
+  MethodLog('Get_CPLog.Begin');
+  Result := Driver.Get_CPLog;
+  MethodLog('Get_CPLog.End');
+end;
+
+procedure ToleMain.Set_CPLog(Value: WordBool);
+begin
+  MethodLog('Set_CPLog.Begin');
+  Driver.Set_CPLog(Value);
+  MethodLog('Set_CPLog.End');
+end;
+
+// IDrvFR6
+
+function  ToleMain.Get_CashControlHost: WideString;
+begin
+  MethodLog('Get_CashControlHost.Begin');
+  Result := Driver.Get_CashControlHost;
+  MethodLog('Get_CashControlHost.End');
+end;
+
+procedure ToleMain.Set_CashControlHost(const Value: WideString);
+begin
+  MethodLog('Set_CashControlHost.Begin');
+  Driver.Set_CashControlHost(Value);
+  MethodLog('Set_CashControlHost.End');
+end;
+
+function  ToleMain.Get_CashControlPort: WideString;
+begin
+  MethodLog('Get_CashControlPort.Begin');
+  Result := Driver.Get_CashControlPort;
+  MethodLog('Get_CashControlPort.End');
+end;
+
+procedure ToleMain.Set_CashControlPort(const Value: WideString);
+begin
+  MethodLog('Set_CashControlPort.Begin');
+  Driver.Set_CashControlPort(Value);
+  MethodLog('Set_CashControlPort.End');
+end;
+
+function  ToleMain.Get_CashControlEnabled: WordBool;
+begin
+  MethodLog('Get_CashControlEnabled.Begin');
+  Result := Driver.Get_CashControlEnabled;
+  MethodLog('Get_CashControlEnabled.End');
+end;
+
+procedure ToleMain.Set_CashControlEnabled(Value: WordBool);
+begin
+  MethodLog('Set_CashControlEnabled.Begin');
+  Driver.Set_CashControlEnabled(Value);
+  MethodLog('Set_CashControlEnabled.End');
+end;
+
+function  ToleMain.Get_CashControlUseTCP: WordBool;
+begin
+  MethodLog('Get_CashControlUseTCP.Begin');
+  Result := Driver.Get_CashControlUseTCP;
+  MethodLog('Get_CashControlUseTCP.End');
+end;
+
+procedure ToleMain.Set_CashControlUseTCP(Value: WordBool);
+begin
+  MethodLog('Set_CashControlUseTCP.Begin');
+  Driver.Set_CashControlUseTCP(Value);
+  MethodLog('Set_CashControlUseTCP.End');
+end;
+
+function  ToleMain.Get_CashControlPassword: Integer;
+begin
+  MethodLog('Get_CashControlPassword.Begin');
+  Result := Driver.Get_CashControlPassword;
+  MethodLog('Get_CashControlPassword.End');
+end;
+
+procedure ToleMain.Set_CashControlPassword(Value: Integer);
+begin
+  MethodLog('Set_CashControlPassword.Begin');
+  Driver.Set_CashControlPassword(Value);
+  MethodLog('Set_CashControlPassword.End');
+end;
+
+function  ToleMain.CashControlOpen: Integer;
+begin
+  MethodLog('CashControlOpen.Begin');
+  Result := Driver.CashControlOpen;
+  MethodLog('CashControlOpen.End');
+end;
+
+function  ToleMain.CashControlClose: Integer;
+begin
+  MethodLog('CashControlClose.Begin');
+  Result := Driver.CashControlClose;
+  MethodLog('CashControlClose.End');
+end;
+
+// IDrvFR7
+
+function  ToleMain.Get_ConnectionType: Integer;
+begin
+  MethodLog('Get_ConnectionType.Begin');
+  Result := Driver.Get_ConnectionType;
+  MethodLog('Get_ConnectionType.End');
+end;
+
+procedure ToleMain.Set_ConnectionType(Value: Integer);
+begin
+  MethodLog('Set_ConnectionType.Begin');
+  Driver.Set_ConnectionType(Value);
+  MethodLog('Set_ConnectionType.End');
+end;
+
+function  ToleMain.Get_LDConnectionType: Integer;
+begin
+  MethodLog('Get_LDConnectionType.Begin');
+  Result := Driver.Get_LDConnectionType;
+  MethodLog('Get_LDConnectionType.End');
+end;
+
+procedure ToleMain.Set_LDConnectionType(Value: Integer);
+begin
+  MethodLog('Set_LDConnectionType.Begin');
+  Driver.Set_LDConnectionType(Value);
+  MethodLog('Set_LDConnectionType.End');
+end;
+
+function  ToleMain.Get_TCPPort: Integer;
+begin
+  MethodLog('Get_TCPPort.Begin');
+  Result := Driver.Get_TCPPort;
+  MethodLog('Get_TCPPort.End');
+end;
+
+procedure ToleMain.Set_TCPPort(Value: Integer);
+begin
+  MethodLog('Set_TCPPort.Begin');
+  Driver.Set_TCPPort(Value);
+  MethodLog('Set_TCPPort.End');
+end;
+
+function  ToleMain.Get_LDTCPPort: Integer;
+begin
+  MethodLog('Get_LDTCPPort.Begin');
+  Result := Driver.Get_LDTCPPort;
+  MethodLog('Get_LDTCPPort.End');
+end;
+
+procedure ToleMain.Set_LDTCPPort(Value: Integer);
+begin
+  MethodLog('Set_LDTCPPort.Begin');
+  Driver.Set_LDTCPPort(Value);
+  MethodLog('Set_LDTCPPort.End');
+end;
+
+function  ToleMain.Get_IPAddress: WideString;
+begin
+  MethodLog('Get_IPAddress.Begin');
+  Result := Driver.Get_IPAddress;
+  MethodLog('Get_IPAddress.End');
+end;
+
+procedure ToleMain.Set_IPAddress(const Value: WideString);
+begin
+  MethodLog('Set_IPAddress.Begin');
+  Driver.Set_IPAddress(Value);
+  MethodLog('Set_IPAddress.End');
+end;
+
+function  ToleMain.Get_LDIPAddress: WideString;
+begin
+  MethodLog('Get_LDIPAddress.Begin');
+  Result := Driver.Get_LDIPAddress;
+  MethodLog('Get_LDIPAddress.End');
+end;
+
+procedure ToleMain.Set_LDIPAddress(const Value: WideString);
+begin
+  MethodLog('Set_LDIPAddress.Begin');
+  Driver.Set_LDIPAddress(Value);
+  MethodLog('Set_LDIPAddress.End');
+end;
+
+function  ToleMain.Get_UseIPAddress: WordBool;
+begin
+  MethodLog('Get_UseIPAddress.Begin');
+  Result := Driver.Get_UseIPAddress;
+  MethodLog('Get_UseIPAddress.End');
+end;
+
+procedure ToleMain.Set_UseIPAddress(Value: WordBool);
+begin
+  MethodLog('Set_UseIPAddress.Begin');
+  Driver.Set_UseIPAddress(Value);
+  MethodLog('Set_UseIPAddress.End');
+end;
+
+function  ToleMain.Get_LDUseIPAddress: WordBool;
+begin
+  MethodLog('Get_LDUseIPAddress.Begin');
+  Result := Driver.Get_LDUseIPAddress;
+  MethodLog('Get_LDUseIPAddress.End');
+end;
+
+procedure ToleMain.Set_LDUseIPAddress(Value: WordBool);
+begin
+  MethodLog('Set_LDUseIPAddress.Begin');
+  Driver.Set_LDUseIPAddress(Value);
+  MethodLog('Set_LDUseIPAddress.End');
+end;
+
+function  ToleMain.SaveParams: Integer;
+begin
+  MethodLog('SaveParams.Begin');
+  Result := Driver.SaveParams;
+  MethodLog('SaveParams.End');
+end;
+
+// IDrvFR8
+
+function  ToleMain.Get_CPLogFile: WideString;
+begin
+  MethodLog('Get_CPLogFile.Begin');
+  Result := Driver.Get_CPLogFile;
+  MethodLog('Get_CPLogFile.End');
+end;
+
+procedure ToleMain.Set_CPLogFile(const Value: WideString);
+begin
+  MethodLog('Set_CPLogFile.Begin');
+  Driver.Set_CPLogFile(Value);
+  MethodLog('Set_CPLogFile.End');
+end;
+
+function  ToleMain.Get_ComLogFile: WideString;
+begin
+  MethodLog('Get_ComLogFile.Begin');
+  Result := Driver.Get_ComLogFile;
+  MethodLog('Get_ComLogFile.End');
+end;
+
+procedure ToleMain.Set_ComLogFile(const Value: WideString);
+begin
+  MethodLog('Set_ComLogFile.Begin');
+  Driver.Set_ComLogFile(Value);
+  MethodLog('Set_ComLogFile.End');
+end;
+
+// IDrvFR9
+
+function  ToleMain.Get_LineData2: WideString;
+begin
+  MethodLog('Get_LineData2.Begin');
+  Result := Driver.Get_LineData2;
+  MethodLog('Get_LineData2.End');
+end;
+
+procedure ToleMain.Set_LineData2(const Value: WideString);
+begin
+  MethodLog('Set_LineData2.Begin');
+  Driver.Set_LineData2(Value);
+  MethodLog('Set_LineData2.End');
+end;
+
+// IDrvFR10
+
+function  ToleMain.Get_SysAdminPassword: Integer;
+begin
+  MethodLog('Get_SysAdminPassword.Begin');
+  Result := Driver.Get_SysAdminPassword;
+  MethodLog('Get_SysAdminPassword.End');
+end;
+
+procedure ToleMain.Set_SysAdminPassword(Value: Integer);
+begin
+  MethodLog('Set_SysAdminPassword.Begin');
+  Driver.Set_SysAdminPassword(Value);
+  MethodLog('Set_SysAdminPassword.End');
+end;
+
+function  ToleMain.Get_RecoverError165: WordBool;
+begin
+  MethodLog('Get_RecoverError165.Begin');
+  Result := Driver.Get_RecoverError165;
+  MethodLog('Get_RecoverError165.End');
+end;
+
+procedure ToleMain.Set_RecoverError165(Value: WordBool);
+begin
+  MethodLog('Set_RecoverError165.Begin');
+  Driver.Set_RecoverError165(Value);
+  MethodLog('Set_RecoverError165.End');
+end;
+
+function  ToleMain.Get_MaxRecoverCount: Integer;
+begin
+  MethodLog('Get_MaxRecoverCount.Begin');
+  Result := Driver.Get_MaxRecoverCount;
+  MethodLog('Get_MaxRecoverCount.End');
+end;
+
+procedure ToleMain.Set_MaxRecoverCount(Value: Integer);
+begin
+  MethodLog('Set_MaxRecoverCount.Begin');
+  Driver.Set_MaxRecoverCount(Value);
+  MethodLog('Set_MaxRecoverCount.End');
+end;
+
+// IDrvFR11
+
+function  ToleMain.GetEKLZCode1Status: Integer;
+begin
+  MethodLog('GetEKLZCode1Status.Begin');
+  Result := Driver.GetEKLZCode1Status;
+  MethodLog('GetEKLZCode1Status.End');
+end;
+
+function  ToleMain.GetEKLZCode2Status: Integer;
+begin
+  MethodLog('GetEKLZCode2Status.Begin');
+  Result := Driver.GetEKLZCode2Status;
+  MethodLog('GetEKLZCode2Status.End');
+end;
+
+function  ToleMain.ReadWriteFM: Integer;
+begin
+  MethodLog('ReadWriteFM.Begin');
+  Result := Driver.ReadWriteFM;
+  MethodLog('ReadWriteFM.End');
+end;
+
+function  ToleMain.PrintHeader: Integer;
+begin
+  MethodLog('PrintHeader.Begin');
+  Result := Driver.PrintHeader;
+  MethodLog('PrintHeader.End');
+end;
+
+function  ToleMain.CloseCheckWithResult: Integer;
+begin
+  MethodLog('CloseCheckWithResult.Begin');
+  Result := Driver.CloseCheckWithResult;
+  MethodLog('CloseCheckWithResult.End');
+end;
+
+function  ToleMain.Get_OperationCode: Integer;
+begin
+  MethodLog('Get_OperationCode.Begin');
+  Result := Driver.Get_OperationCode;
+  MethodLog('Get_OperationCode.End');
+end;
+
+function  ToleMain.Get_AccType: Integer;
+begin
+  MethodLog('Get_AccType.Begin');
+  Result := Driver.Get_AccType;
+  MethodLog('Get_AccType.End');
+end;
+
+procedure ToleMain.Set_AccType(Value: Integer);
+begin
+  MethodLog('Set_AccType.Begin');
+  Driver.Set_AccType(Value);
+  MethodLog('Set_AccType.End');
+end;
+
+function  ToleMain.Get_Address: Integer;
+begin
+  MethodLog('Get_Address.Begin');
+  Result := Driver.Get_Address;
+  MethodLog('Get_Address.End');
+end;
+
+procedure ToleMain.Set_Address(Value: Integer);
+begin
+  MethodLog('Set_Address.Begin');
+  Driver.Set_Address(Value);
+  MethodLog('Set_Address.End');
+end;
+
+function  ToleMain.Get_WrittenByte: Integer;
+begin
+  MethodLog('Get_WrittenByte.Begin');
+  Result := Driver.Get_WrittenByte;
+  MethodLog('Get_WrittenByte.End');
+end;
+
+procedure ToleMain.Set_WrittenByte(Value: Integer);
+begin
+  MethodLog('Set_WrittenByte.Begin');
+  Driver.Set_WrittenByte(Value);
+  MethodLog('Set_WrittenByte.End');
+end;
+
+function  ToleMain.Get_ReadByte: Integer;
+begin
+  MethodLog('Get_ReadByte.Begin');
+  Result := Driver.Get_ReadByte;
+  MethodLog('Get_ReadByte.End');
+end;
+
+function  ToleMain.Get_TransferByte: WideString;
+begin
+  MethodLog('Get_TransferByte.Begin');
+  Result := Driver.Get_TransferByte;
+  MethodLog('Get_TransferByte.End');
+end;
+
+procedure ToleMain.Set_TransferByte(const Value: WideString);
+begin
+  MethodLog('Set_TransferByte.Begin');
+  Driver.Set_TransferByte(Value);
+  MethodLog('Set_TransferByte.End');
+end;
+
+function  ToleMain.Get_OperationType: Integer;
+begin
+  MethodLog('Get_OperationType.Begin');
+  Result := Driver.Get_OperationType;
+  MethodLog('Get_OperationType.End');
+end;
+
+procedure ToleMain.Set_OperationType(Value: Integer);
+begin
+  MethodLog('Set_OperationType.Begin');
+  Driver.Set_OperationType(Value);
+  MethodLog('Set_OperationType.End');
+end;
+
+function  ToleMain.AboutBox: Integer;
+begin
+  MethodLog('AboutBox.Begin');
+  Result := Driver.AboutBox;
+  MethodLog('AboutBox.End');
+end;
+
+// IDrvFR12
+
+function  ToleMain.Get_PresenterIn: WordBool;
+begin
+  MethodLog('Get_PresenterIn.Begin');
+  Result := Driver.Get_PresenterIn;
+  MethodLog('Get_PresenterIn.End');
+end;
+
+function  ToleMain.Get_PresenterOut: WordBool;
+begin
+  MethodLog('Get_PresenterOut.Begin');
+  Result := Driver.Get_PresenterOut;
+  MethodLog('Get_PresenterOut.End');
+end;
+
+function  ToleMain.PresenterKeep: Integer;
+begin
+  MethodLog('PresenterKeep.Begin');
+  Result := Driver.PresenterKeep;
+  MethodLog('PresenterKeep.End');
+end;
+
+function  ToleMain.PresenterPush: Integer;
+begin
+  MethodLog('PresenterPush.Begin');
+  Result := Driver.PresenterPush;
+  MethodLog('PresenterPush.End');
+end;
+
+function  ToleMain.OpenScreen: Integer;
+begin
+  MethodLog('OpenScreen.Begin');
+  Result := Driver.OpenScreen;
+  MethodLog('OpenScreen.End');
+end;
+
+function  ToleMain.CloseScreen: Integer;
+begin
+  MethodLog('CloseScreen.Begin');
+  Result := Driver.CloseScreen;
+  MethodLog('CloseScreen.End');
+end;
+
+// IDrvFR13
+
+function  ToleMain.Get_ComLogOnlyErrors: WordBool;
+begin
+  MethodLog('Get_ComLogOnlyErrors.Begin');
+  Result := Driver.Get_ComLogOnlyErrors;
+  MethodLog('Get_ComLogOnlyErrors.End');
+end;
+
+procedure ToleMain.Set_ComLogOnlyErrors(Value: WordBool);
+begin
+  MethodLog('Set_ComLogOnlyErrors.Begin');
+  Driver.Set_ComLogOnlyErrors(Value);
+  MethodLog('Set_ComLogOnlyErrors.End');
+end;
+
+// IDrvFR14
+
+function  ToleMain.SetSCPassword: Integer;
+begin
+  MethodLog('SetSCPassword.Begin');
+  Result := Driver.SetSCPassword;
+  MethodLog('SetSCPassword.End');
+end;
+
+function  ToleMain.Get_SCPassword: Integer;
+begin
+  MethodLog('Get_SCPassword.Begin');
+  Result := Driver.Get_SCPassword;
+  MethodLog('Get_SCPassword.End');
+end;
+
+procedure ToleMain.Set_SCPassword(Value: Integer);
+begin
+  MethodLog('Set_SCPassword.Begin');
+  Driver.Set_SCPassword(Value);
+  MethodLog('Set_SCPassword.End');
+end;
+
+function  ToleMain.Get_NewSCPassword: Integer;
+begin
+  MethodLog('Get_NewSCPassword.Begin');
+  Result := Driver.Get_NewSCPassword;
+  MethodLog('Get_NewSCPassword.End');
+end;
+
+procedure ToleMain.Set_NewSCPassword(Value: Integer);
+begin
+  MethodLog('Set_NewSCPassword.Begin');
+  Driver.Set_NewSCPassword(Value);
+  MethodLog('Set_NewSCPassword.End');
+end;
+
+// IDrvFR15
+
+function  ToleMain.Get_LastKPKDateStr: WideString;
+begin
+  MethodLog('Get_LastKPKDateStr.Begin');
+  Result := Driver.Get_LastKPKDateStr;
+  MethodLog('Get_LastKPKDateStr.End');
+end;
+
+function  ToleMain.Get_LastKPKTimeStr: WideString;
+begin
+  MethodLog('Get_LastKPKTimeStr.Begin');
+  Result := Driver.Get_LastKPKTimeStr;
+  MethodLog('Get_LastKPKTimeStr.End');
+end;
+
+function  ToleMain.MethodSupported: WordBool;
+begin
+  MethodLog('MethodSupported.Begin');
+  Result := Driver.MethodSupported;
+  MethodLog('MethodSupported.End');
+end;
+
+function  ToleMain.Get_MethodName: WideString;
+begin
+  MethodLog('Get_MethodName.Begin');
+  Result := Driver.Get_MethodName;
+  MethodLog('Get_MethodName.End');
+end;
+
+procedure ToleMain.Set_MethodName(const Value: WideString);
+begin
+  MethodLog('Set_MethodName.Begin');
+  Driver.Set_MethodName(Value);
+  MethodLog('Set_MethodName.End');
+end;
+
+function  ToleMain.Get_PropertyName: WideString;
+begin
+  MethodLog('Get_PropertyName.Begin');
+  Result := Driver.Get_PropertyName;
+  MethodLog('Get_PropertyName.End');
+end;
+
+procedure ToleMain.Set_PropertyName(const Value: WideString);
+begin
+  MethodLog('Set_PropertyName.Begin');
+  Driver.Set_PropertyName(Value);
+  MethodLog('Set_PropertyName.End');
+end;
+
+function  ToleMain.PropertySupported: WordBool;
+begin
+  MethodLog('PropertySupported.Begin');
+  Result := Driver.PropertySupported;
+  MethodLog('PropertySupported.End');
+end;
+
+// IDrvFR16
+
+function  ToleMain.Get_LockTimeout: Integer;
+begin
+  MethodLog('Get_LockTimeout.Begin');
+  Result := Driver.Get_LockTimeout;
+  MethodLog('Get_LockTimeout.End');
+end;
+
+procedure ToleMain.Set_LockTimeout(Value: Integer);
+begin
+  MethodLog('Set_LockTimeout.Begin');
+  Driver.Set_LockTimeout(Value);
+  MethodLog('Set_LockTimeout.End');
+end;
+
+function  ToleMain.LockPortTimeout: Integer;
+begin
+  MethodLog('LockPortTimeout.Begin');
+  Result := Driver.LockPortTimeout;
+  MethodLog('LockPortTimeout.End');
+end;
+
+// IDrVFR17
+
+function  ToleMain.Get_SlipStringInterval: Integer;
+begin
+  MethodLog('Get_SlipStringInterval.Begin');
+  Result := Driver.Get_SlipStringInterval;
+  MethodLog('Get_SlipStringInterval.End');
+end;
+
+procedure ToleMain.Set_SlipStringInterval(Value: Integer);
+begin
+  MethodLog('Set_SlipStringInterval.Begin');
+  Driver.Set_SlipStringInterval(Value);
+  MethodLog('Set_SlipStringInterval.End');
+end;

@@ -23,10 +23,10 @@ type
     procedure TearDown; override;
 
     procedure TestUploadOrder;
+    procedure TestChangeToken;
   published
     procedure TestConnect;
     procedure TestAuthenticate;
-    procedure TestChangeToken;
     procedure TestAuthenticateError;
     procedure TestReadCashboxes;
     procedure TestCashIn;
@@ -43,6 +43,7 @@ type
     procedure TestSendReceipt;
     procedure TestReadReceipt;
     procedure TestReadReceiptText;
+    procedure TestSendReceipt2;
   end;
 
 implementation
@@ -122,6 +123,7 @@ var
 begin
   Command := TAuthCommand.Create;
   try
+    FClient.RaiseErrors := False;
     Command.Request.Login := '123';
     Command.Request.Password := '123';
     Command.Data.Token := '';
@@ -348,6 +350,42 @@ begin
   CheckEquals('SWK00032685', FReceipt.Data.Cashbox.UniqueNumber, 'FReceipt.Data.Cashbox.UniqueNumber');
   CheckEquals('https://devkkm.webkassa.kz/Ticket?chb=SWK00032685&extnum=8234682763482746', FReceipt.Data.TicketPrintUrl, 'FReceipt.Data.TicketPrintUrl');
 *)
+end;
+
+procedure TWebkassaTest.TestSendReceipt2;
+var
+  Payment: TPayment;
+  Item: TTicketItem;
+begin
+  FClient.Connect;
+
+  FReceipt.Request.Token := FClient.Token;
+  FReceipt.Request.CashboxUniqueNumber := FClient.CashboxNumber;
+  FReceipt.Request.ExternalCheckNumber := CreateGUIDStr;
+  FReceipt.Request.OperationType := OperationTypeSell;
+  // Item 1
+  Item := FReceipt.Request.Positions.Add as TTicketItem;
+  Item.Count := 2;
+  Item.Price := 23;
+  Item.TaxPercent := 0;
+  Item.Tax := 0;
+  Item.TaxType := TaxTypeNoTax;
+  Item.PositionName := 'Позиция чека 1';
+  Item.PositionCode := '1';
+  Item.DisplayName := 'Товар номер 1';
+  Item.UnitCode := 796;
+  Item.Discount := 0;
+  Item.Markup := 0;
+  Item.WarehouseType := 0;
+
+  FReceipt.Request.Change := 0;
+  FReceipt.Request.RoundType := 0;
+  Payment := FReceipt.Request.Payments.Add as TPayment;
+  Payment.Sum := 46;
+  Payment.PaymentType := PaymentTypeCash;
+
+  FClient.SendReceipt(FReceipt);
+  WriteFileData(GetModulePath + 'SendReceipt.txt', FClient.AnswerJson);
 end;
 
 procedure TWebkassaTest.TestReadReceipt;

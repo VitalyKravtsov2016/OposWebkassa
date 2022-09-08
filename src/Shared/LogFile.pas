@@ -110,10 +110,6 @@ type
     procedure SetTimeStampEnabled(const Value: Boolean);
     procedure GetFileNames(const Mask: AnsiString; FileNames: TTntStrings);
 
-    class function VariantToStr(V: Variant): AnsiString;
-    class function ParamsToStr(const Params: array of const): AnsiString;
-    class function VarArrayToStr(const AVarArray: TVariantArray): AnsiString;
-
     property Opened: Boolean read GetOpened;
   public
     constructor Create;
@@ -140,6 +136,12 @@ type
     procedure LogParam(const ParamName: AnsiString; const ParamValue: Variant);
     procedure WriteRxData(Data: AnsiString);
     procedure WriteTxData(Data: AnsiString);
+
+    class function VariantToStr(V: Variant): AnsiString;
+    class function ParamsToStr(const Params: array of const): AnsiString;
+    class function ParamsToStr2(const Params: array of const): AnsiString;
+    class function VarArrayToStr(const AVarArray: TVariantArray): AnsiString;
+    class function VarArrayToStr2(const AVarArray: TVariantArray): AnsiString;
 
     property FileSize: Int64 read GetFileSize;
     property Enabled: Boolean read GetEnabled write SetEnabled;
@@ -535,6 +537,11 @@ begin
   Result := VarArrayToStr(ConstArrayToVarArray(Params));
 end;
 
+class function TLogFile.ParamsToStr2(const Params: array of const): AnsiString;
+begin
+  Result := VarArrayToStr2(ConstArrayToVarArray(Params));
+end;
+
 procedure TLogFile.Debug(const Data: AnsiString; Params: array of const);
 begin
   Debug(Data + ParamsToStr(Params));
@@ -622,6 +629,19 @@ begin
     else
       Result := VarToStr(V);
     end;
+  end;
+end;
+
+class function TLogFile.VarArrayToStr2(const AVarArray: TVariantArray): AnsiString;
+var
+  I: Integer;
+begin
+  Result := '';
+  for i := Low(AVarArray) to High(AVarArray) do
+  begin
+    if Length(Result) > 0 then
+      Result := Result + ', ';
+    Result := Result + VariantToStr(AVarArray[I]);
   end;
 end;
 

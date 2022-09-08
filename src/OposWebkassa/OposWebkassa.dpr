@@ -52,7 +52,9 @@ uses
   uLkJSON in '..\Shared\uLkJSON.pas',
   VatRate in '..\Shared\VatRate.pas',
   OposPtrUtils in '..\Opos\OposPtrUtils.pas',
-  OposPtrhi in '..\Opos\OposPtrhi.pas';
+  OposPtrhi in '..\Opos\OposPtrhi.pas',
+  OposFiscalPrinter_CCO_TLB in '..\Opos\OposFiscalPrinter_CCO_TLB.pas',
+  POSPrinterLog in '..\Opos\POSPrinterLog.pas';
 
 exports
   DllGetClassObject,

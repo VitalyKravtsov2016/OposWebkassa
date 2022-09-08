@@ -20,7 +20,7 @@ uses
   WebkassaClient, FiscalPrinterState, CustomReceipt, NonFiscalDoc, ServiceVersion,
   PrinterParameters, PrinterParametersX, CashInReceipt, CashOutReceipt,
   SalesReceipt, TextDocument, ReceiptItem, StringUtils, PrinterLines,
-  DebugUtils, VatRate;
+  DebugUtils, VatRate, PosPrinterLog;
 
 const
   FPTR_DEVICE_DESCRIPTION = 'WebKassa OPOS driver';
@@ -57,6 +57,7 @@ type
     FDocument: TTextDocument;
     FReceipt: TCustomReceipt;
     FPrinter: IOPOSPOSPrinter;
+    FPrinterLog: TPOSPrinterLog;
     FParams: TPrinterParameters;
     FOposDevice: TOposServiceDevice19;
     FPrinterState: TFiscalPrinterState;
@@ -67,6 +68,7 @@ type
     procedure CheckCanPrint;
     function GetVatRate(Code: Integer): TVatRate;
     function AmountToStr(Value: Currency): AnsiString;
+    procedure SetPrinter(const Value: IOPOSPOSPrinter);
   public
     procedure Initialize;
     procedure CheckEnabled;
@@ -103,7 +105,7 @@ type
 
     property Receipt: TCustomReceipt read FReceipt;
     property Document: TTextDocument read FDocument;
-    property Printer: IOPOSPOSPrinter read GetPrinter write FPrinter;
+    property Printer: IOPOSPOSPrinter read GetPrinter write SetPrinter;
     property PrinterState: Integer read GetPrinterState write SetPrinterState;
   private
     FPostLine: WideString;
@@ -396,6 +398,7 @@ begin
   FTrailer.Free;
   FReceipt.Free;
   FPrinter := nil;
+  FPrinterLog.Free;
   inherited Destroy;
 end;
 
@@ -422,6 +425,13 @@ begin
   Result := FPrinter;
 end;
 
+procedure TWebkassaImpl.SetPrinter(const Value: IOPOSPOSPrinter);
+begin
+  FPrinterLog.Free;
+  FPrinterLog := TPosPrinterLog.Create2(nil, Value, Logger);
+  FPrinter := FPrinterLog;
+end;
+
 function TWebkassaImpl.CreateReceipt(FiscalReceiptType: Integer): TCustomReceipt;
 begin
   case FiscalReceiptType of
@@ -432,10 +442,10 @@ begin
     FPTR_RT_GENERIC,
     FPTR_RT_SERVICE,
     FPTR_RT_SIMPLE_INVOICE:
-      Result := TSalesReceipt.Create(False, FAmountDecimalPlaces);
+      Result := TSalesReceipt.CreateReceipt(False, FAmountDecimalPlaces);
 
     FPTR_RT_REFUND:
-      Result := TSalesReceipt.Create(True, FAmountDecimalPlaces);
+      Result := TSalesReceipt.CreateReceipt(True, FAmountDecimalPlaces);
   else
     Result := nil;
     InvalidPropertyValue('FiscalReceiptType', IntToStr(FiscalReceiptType));
@@ -810,7 +820,7 @@ begin
   try
     CheckEnabled;
     CheckState(FPTR_PS_NONFISCAL);
-
+    Document.AddText(Params.Trailer);
     PrintDocument(Document);
     SetPrinterState(FPTR_PS_MONITOR);
     Result := ClearResult;
@@ -1541,6 +1551,8 @@ begin
       (Command.Data.EndNonNullable.ReturnBuy - Command.Data.StartNonNullable.ReturnBuy);
 
     Document.LineChars := Printer.RecLineChars;
+    Document.AddText(Params.Header);
+
     Separator := StringOfChar('-', Document.LineChars);
     Document.AddLines('»ÕÕ/¡»Õ', Command.Data.CashboxRN);
     Document.AddLines('«ÕÃ', Command.Data.CashboxSN);
@@ -1625,6 +1637,8 @@ begin
     Document.AddLines('¬Œ«¬–¿“Œ¬ œ–Œƒ¿∆', CurrencyToStr(Command.Data.EndNonNullable.ReturnSell));
     Document.AddLines('¬Œ«¬–¿“Œ¬ œŒ ”œŒ ', CurrencyToStr(Command.Data.EndNonNullable.ReturnBuy));
     Document.AddLines('—‘ÓÏËÓ‚‡ÌÓ Œ‘ƒ: ', Command.Data.Ofd.Name);
+    Document.AddText(Params.Trailer);
+
     PrintDocumentSafe(Document);
   finally
     Document.Free;
@@ -1962,7 +1976,8 @@ begin
       PosPrinter.OnErrorEvent := PrinterErrorEvent;
       PosPrinter.OnDirectIOEvent := PrinterDirectIOEvent;
       PosPrinter.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
-      FPrinter := PosPrinter.ControlInterface;
+      FPrinterLog := TPosPrinterLog.Create2(nil, PosPrinter.ControlInterface, Logger);
+      FPrinter := FPrinterLog;
     end;
     CheckPtr(Printer.Open(FParams.PrinterName));
 
@@ -2108,13 +2123,17 @@ begin
     FClient.Execute(Command);
     // Create Document
     Document.LineChars := Printer.RecLineChars;
+    Document.AddText(Params.Header);
     Document.Add('¡»Õ ' + Command.Data.Cashbox.RegistrationNumber);
     Document.Add(Format('«ÕÃ %s »Õ  Œ‘ƒ %s', [Command.Data.Cashbox.UniqueNumber,
       Command.Data.Cashbox.IdentityNumber]));
     Document.Add(Command.Data.DateTime);
+    Document.AddText(Receipt.Lines.Text);
     Document.AddCurrency('¬Õ≈—≈Õ»≈ ƒ≈Õ≈√ ¬  ¿——”', Receipt.GetTotal);
     Document.AddCurrency('Õ¿À»◊Õ€’ ¬  ¿——≈', Command.Data.Sum);
     Document.Add('ŒÔÂ‡ÚÓ: ' + FCashierFullName);
+    Document.AddText(Params.Trailer);
+    Document.AddText(Receipt.Trailer.Text);
     // Print
     PrintDocumentSafe(Document);
   finally
@@ -2139,13 +2158,17 @@ begin
     FClient.Execute(Command);
     //
     Document.LineChars := Printer.RecLineChars;
+    Document.AddText(Params.Header);
     Document.Add('¡»Õ ' + Command.Data.Cashbox.RegistrationNumber);
     Document.Add(Format('«ÕÃ %s »Õ  Œ‘ƒ %s', [Command.Data.Cashbox.UniqueNumber,
       Command.Data.Cashbox.IdentityNumber]));
     Document.Add(Command.Data.DateTime);
+    Document.AddText(Receipt.Lines.Text);
     Document.AddCurrency('»«⁄ﬂ“»≈ ƒ≈Õ≈√ »«  ¿——€', Receipt.GetTotal);
     Document.AddCurrency('Õ¿À»◊Õ€’ ¬  ¿——≈', Command.Data.Sum);
     Document.Add('ŒÔÂ‡ÚÓ: ' + FCashierFullName);
+    Document.AddText(Receipt.Trailer.Text);
+    Document.AddText(Params.Trailer);
     // print
     PrintDocumentSafe(Document);
   finally
@@ -2242,8 +2265,15 @@ begin
       Item := Receipt.Items[i];
       VatRate := GetVatRate(Item.VatInfo);
       Position := Command.Request.Positions.Add as TTicketItem;
-      Position.Count := Item.Quantity;
-      Position.Price := Item.Price;
+      if Item.UnitPrice <> 0 then
+      begin
+        Position.Count := Item.Quantity;
+        Position.Price := Item.UnitPrice;
+      end else
+      begin
+        Position.Count := 1;
+        Position.Price := Item.Price;
+      end;
       Position.PositionName := Item.Description;
       Position.DisplayName := Item.Description;
       Position.PositionCode := '';
@@ -2326,6 +2356,7 @@ begin
     Command.Request.paperKind := GetPaperKind(Printer.RecLineWidth);
     FClient.ReadReceiptText(Command);
 
+    Document.AddText(Params.Header);
     for i := 0 to Command.Data.Lines.Count-1 do
     begin
       Item := Command.Data.Lines.Items[i] as TReceiptTextItem;
@@ -2349,6 +2380,8 @@ begin
       end;
     end;
     Printer.RecLineChars := FMaxRecLineChars;
+    Document.AddText(Params.Trailer);
+
     PrintDocumentSafe(Document);
     Printer.RecLineChars := FRecLineChars;
   finally

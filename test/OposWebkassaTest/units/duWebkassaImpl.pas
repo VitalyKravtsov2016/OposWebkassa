@@ -110,6 +110,9 @@ begin
     '           Callцентр 039458039850 ' + CRLF +
     '          Горячая линия 20948802934' + CRLF +
     '            СПАСИБО ЗА ПОКУПКУ';
+
+  FDriver.Logger.CloseFile;
+  DeleteFile(FDriver.Logger.FileName);
 end;
 
 procedure TWebkassaImplTest.TearDown;

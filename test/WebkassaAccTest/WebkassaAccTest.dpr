@@ -59,7 +59,8 @@ uses
   OposPtrUtils in '..\..\src\Opos\OposPtrUtils.pas',
   OposPtrhi in '..\..\src\Opos\OposPtrhi.pas',
   duWebkassaImpl in 'units\duWebkassaImpl.pas',
-  MockPosPrinter in '..\OposWebkassaTest\units\MockPosPrinter.pas';
+  MockPosPrinter in '..\OposWebkassaTest\units\MockPosPrinter.pas',
+  POSPrinterLog in '..\..\src\Opos\POSPrinterLog.pas';
 
 {$R *.RES}
 

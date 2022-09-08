@@ -626,76 +626,77 @@ end;
 
 function TMockPOSPrinter.BeginInsertion(Timeout: Integer): Integer;
 begin
-
+  Result := 0;
 end;
 
 function TMockPOSPrinter.BeginRemoval(Timeout: Integer): Integer;
 begin
-
+  Result := 0;
 end;
 
 function TMockPOSPrinter.ChangePrintSide(Side: Integer): Integer;
 begin
-
+  Result := 0;
 end;
 
 function TMockPOSPrinter.CheckHealth(Level: Integer): Integer;
 begin
-
+  Result := 0;
 end;
 
 function TMockPOSPrinter.ClaimDevice(Timeout: Integer): Integer;
 begin
+  Result := 0;
   FClaimed := True;
 end;
 
 function TMockPOSPrinter.ClearOutput: Integer;
 begin
-
+  Result := 0;
 end;
 
 function TMockPOSPrinter.ClearPrintArea: Integer;
 begin
-
+  Result := 0;
 end;
 
 function TMockPOSPrinter.Close: Integer;
 begin
-
+  Result := 0;
 end;
 
 function TMockPOSPrinter.CompareFirmwareVersion(
   const FirmwareFileName: WideString; out pResult: Integer): Integer;
 begin
-
+  Result := 0;
 end;
 
 function TMockPOSPrinter.CutPaper(Percentage: Integer): Integer;
 begin
-
+  Result := 0;
 end;
 
 function TMockPOSPrinter.DirectIO(Command: Integer; var pData: Integer;
   var pString: WideString): Integer;
 begin
-
+  Result := 0;
 end;
 
 function TMockPOSPrinter.DrawRuledLine(Station: Integer;
   const PositionList: WideString; LineDirection, LineWidth, LineStyle,
   LineColor: Integer): Integer;
 begin
-
+  Result := 0;
 end;
 
 function TMockPOSPrinter.EndInsertion: Integer;
 begin
-
+  Result := 0;
 end;
 
 function TMockPOSPrinter.EndRemoval: Integer;
 begin
-
+  Result := 0;
 end;
 
 function TMockPOSPrinter.Get_AsyncMode: WordBool;
@@ -1440,76 +1441,77 @@ end;
 
 function TMockPOSPrinter.MarkFeed(Type_: Integer): Integer;
 begin
-
+  Result := 0;
 end;
 
 function TMockPOSPrinter.Open(const DeviceName: WideString): Integer;
 begin
-
+  Result := 0;
 end;
 
 function TMockPOSPrinter.PageModePrint(Control: Integer): Integer;
 begin
-
+  Result := 0;
 end;
 
 function TMockPOSPrinter.PrintBarCode(Station: Integer;
   const Data: WideString; Symbology, Height, Width, Alignment,
   TextPosition: Integer): Integer;
 begin
-
+  Result := 0;
 end;
 
 function TMockPOSPrinter.PrintBitmap(Station: Integer;
   const FileName: WideString; Width, Alignment: Integer): Integer;
 begin
-
+  Result := 0;
 end;
 
 function TMockPOSPrinter.PrintImmediate(Station: Integer;
   const Data: WideString): Integer;
 begin
-
+  Result := 0;
 end;
 
 function TMockPOSPrinter.PrintMemoryBitmap(Station: Integer;
   const Data: WideString; Type_, Width, Alignment: Integer): Integer;
 begin
-
+  Result := 0;
 end;
 
 function TMockPOSPrinter.PrintNormal(Station: Integer;
   const Data: WideString): Integer;
 begin
-
+  Result := 0;
 end;
 
 function TMockPOSPrinter.PrintTwoNormal(Stations: Integer; const Data1,
   Data2: WideString): Integer;
 begin
-
+  Result := 0;
 end;
 
 function TMockPOSPrinter.ReleaseDevice: Integer;
 begin
+  Result := 0;
   FClaimed := False;
 end;
 
 function TMockPOSPrinter.ResetStatistics(
   const StatisticsBuffer: WideString): Integer;
 begin
-
+  Result := 0;
 end;
 
 function TMockPOSPrinter.RetrieveStatistics(
   var pStatisticsBuffer: WideString): Integer;
 begin
-
+  Result := 0;
 end;
 
 function TMockPOSPrinter.RotatePrint(Station, Rotation: Integer): Integer;
 begin
-
+  Result := 0;
 end;
 
 procedure TMockPOSPrinter.Set_AsyncMode(pAsyncMode: WordBool);
@@ -1680,13 +1682,13 @@ end;
 function TMockPOSPrinter.SetBitmap(BitmapNumber, Station: Integer;
   const FileName: WideString; Width, Alignment: Integer): Integer;
 begin
-
+  Result := 0;
 end;
 
 function TMockPOSPrinter.SetLogo(Location: Integer;
   const Data: WideString): Integer;
 begin
-
+  Result := 0;
 end;
 
 procedure TMockPOSPrinter.SODataDummy(Status: Integer);
@@ -1724,25 +1726,25 @@ end;
 function TMockPOSPrinter.TransactionPrint(Station,
   Control: Integer): Integer;
 begin
-
+  Result := 0;
 end;
 
 function TMockPOSPrinter.UpdateFirmware(
   const FirmwareFileName: WideString): Integer;
 begin
-
+  Result := 0;
 end;
 
 function TMockPOSPrinter.UpdateStatistics(
   const StatisticsBuffer: WideString): Integer;
 begin
-
+  Result := 0;
 end;
 
 function TMockPOSPrinter.ValidateData(Station: Integer;
   const Data: WideString): Integer;
 begin
-
+  Result := 0;
 end;
 
 end.

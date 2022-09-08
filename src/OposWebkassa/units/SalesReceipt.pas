@@ -20,7 +20,6 @@ type
   TSalesReceipt = class(TCustomReceipt)
   private
     FChange: Currency;
-    FFooter: TTntStrings;
     FIsRefund: Boolean;
     FPayments: TPayments;
     FItems: TReceiptItems;
@@ -39,7 +38,7 @@ type
     procedure SubtotalDiscount(Amount: Currency;
       const Description: WideString);
   public
-    constructor Create(AIsRefund: Boolean; AAmountDecimalPlaces: Integer);
+    constructor CreateReceipt(AIsRefund: Boolean; AAmountDecimalPlaces: Integer);
     destructor Destroy; override;
 
     function GetTotal: Currency; override;
@@ -105,14 +104,11 @@ type
       VatInfo: Integer; UnitAmount: Currency;
       const AUnitName: WideString); override;
 
-    procedure PrintRecMessage(const Message: WideString); override;
-
     procedure Print(AVisitor: TObject); override;
 
     property Change: Currency read FChange;
     property Items: TReceiptItems read FItems;
     property IsRefund: Boolean read FIsRefund;
-    property Footer: TTntStrings read FFooter;
     property Payments: TPayments read FPayments;
     property Adjustments: TAdjustments read FAdjustments;
     property AmountDecimalPlaces: Integer read FAmountDecimalPlaces;
@@ -144,7 +140,7 @@ end;
 
 { TSalesReceipt }
 
-constructor TSalesReceipt.Create(AIsRefund: Boolean; AAmountDecimalPlaces: Integer);
+constructor TSalesReceipt.CreateReceipt(AIsRefund: Boolean; AAmountDecimalPlaces: Integer);
 begin
   inherited Create;
   FIsRefund := AIsRefund;
@@ -156,13 +152,11 @@ begin
 
   FItems := TReceiptItems.Create;
   FAdjustments := TAdjustments.Create;
-  FFooter := TTntStringLIst.Create;
 end;
 
 destructor TSalesReceipt.Destroy;
 begin
   FItems.Free;
-  FFooter.Free;
   FAdjustments.Free;
   inherited Destroy;
 end;
@@ -237,14 +231,8 @@ begin
 
   Item := FItems.Add;
   Item.Quantity := Quantity;
-  if UnitPrice = 0 then
-  begin
-    if Price <> 0 then Item.Quantity := 1;
-    Item.Price := Price;
-  end else
-  begin
-    Item.Price := UnitPrice;
-  end;
+  Item.Price := Price;
+  Item.UnitPrice := UnitPrice;
   Item.VatInfo := VatInfo;
   Item.Description := Description;
   Item.UnitName := UnitName;
@@ -263,14 +251,8 @@ begin
 
   Item := FItems.Add;
   Item.Quantity := -Quantity;
-  if UnitPrice = 0 then
-  begin
-    if Price <> 0 then Item.Quantity := -1;
-    Item.Price := Price;
-  end else
-  begin
-    Item.Price := UnitPrice;
-  end;
+  Item.Price := Price;
+  Item.UnitPrice := UnitPrice;
   Item.VatInfo := VatInfo;
   Item.Description := Description;
   Item.UnitName := UnitName;
@@ -291,18 +273,11 @@ begin
 
   Item := FItems.Add;
   Item.Quantity := Quantity;
-  if UnitAmount = 0 then
-  begin
-    if Amount <> 0 then Item.Quantity := 1;
-    Item.Price := Amount;
-  end else
-  begin
-    Item.Price := UnitAmount;
-  end;
+  Item.Price := Amount;
+  Item.UnitPrice := UnitAmount;
   Item.VatInfo := VatInfo;
   Item.Description := ADescription;
   Item.UnitName := AUnitName;
-  Item.UnitPrice := UnitAmount;
 end;
 
 procedure TSalesReceipt.PrintRecItemRefundVoid(
@@ -330,6 +305,7 @@ begin
   Item.VatInfo := VatInfo;
   Item.Description := Description;
   Item.UnitName := '';
+  Item.UnitPrice := 0;
 end;
 
 procedure TSalesReceipt.PrintRecItemAdjustment(
@@ -538,20 +514,13 @@ begin
   CheckAmount(Total);
   CheckAmount(Payment);
 
+  FAfterTotal := True;
   Index := StrToIntDef(Description, 0);
   FPayments[Index] := FPayments[Index] + Payment;
 
   if GetPayment >= GetTotal then
   begin
     FChange := GetPayment - GetTotal;
-  end;
-end;
-
-procedure TSalesReceipt.PrintRecMessage(const Message: WideString);
-begin
-  if GetPayment > GetTotal then
-  begin
-    FFooter.Add(Message);
   end;
 end;
 
