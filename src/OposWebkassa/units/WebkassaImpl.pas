@@ -771,9 +771,14 @@ const
   DIO_WRITE_FS_STRING_TAG_OP      = 65; // Write string tag bound to operation
   DIO_READ_FS_PARAMETER           = 41; // Read fiscal storage parameter
   DIO_FS_PARAMETER_LAST_DOC_NUM2  = 11; // Document number
+  DriverParameterBarcode                  = 80;
 begin
   try
     FOposDevice.CheckOpened;
+    if (Command = DIO_SET_DRIVER_PARAMETER)and(pData = DriverParameterBarcode) then
+    begin
+      Receipt.DirectIO(Command, pData, pString);
+    end;
     Result := ClearResult;
   except
     on E: Exception do

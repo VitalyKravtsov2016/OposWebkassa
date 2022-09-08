@@ -106,6 +106,8 @@ type
 
     procedure Print(AVisitor: TObject); override;
 
+    procedure DirectIO(Command: Integer; var pData: Integer; var pString: WideString); override;
+
     property Change: Currency read FChange;
     property Items: TReceiptItems read FItems;
     property IsRefund: Boolean read FIsRefund;
@@ -521,6 +523,18 @@ begin
   if GetPayment >= GetTotal then
   begin
     FChange := GetPayment - GetTotal;
+  end;
+end;
+
+procedure TSalesReceipt.DirectIO(Command: Integer; var pData: Integer;
+  var pString: WideString);
+const
+  DIO_SET_DRIVER_PARAMETER        = 30; // write internal driver parameter
+  DriverParameterBarcode          = 80;
+begin
+  if (Command = DIO_SET_DRIVER_PARAMETER)and(pData = DriverParameterBarcode) then
+  begin
+    GetLastItem.MarkCode := pString;
   end;
 end;
 

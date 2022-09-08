@@ -107,7 +107,10 @@ type
 
     procedure PrintNormal(const Text: WideString; Station: Integer); virtual;
 
+    procedure DirectIO(Command: Integer; var pData: Integer; var pString: WideString); virtual;
+
     procedure Print(AVisitor: TObject); virtual;
+
 
     property Lines: TTntStrings read FLines;
     property Trailer: TTntStrings read FTrailer;
@@ -320,6 +323,12 @@ procedure TCustomReceipt.CheckNotVoided;
 begin
   if FIsVoided then
     raiseExtendedError(OPOS_EFPTR_WRONG_STATE);
+end;
+
+procedure TCustomReceipt.DirectIO(Command: Integer; var pData: Integer;
+  var pString: WideString);
+begin
+
 end;
 
 end.

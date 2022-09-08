@@ -59,7 +59,6 @@ type
     procedure Assign(Item: TReceiptItem);
 
     property Total: Currency read GetTotal;
-    property MarkCode: string read FMarkCode;
     property Adjustments: TAdjustments read FAdjustments;
     property Price: Currency read FPrice write FPrice;
     property VatInfo: Integer read FVatInfo write FVatInfo;
@@ -67,6 +66,7 @@ type
     property UnitPrice: Currency read FUnitPrice write FUnitPrice;
     property UnitName: WideString read FUnitName write FUnitName;
     property Description: WideString read FDescription write FDescription;
+    property MarkCode: string read FMarkCode write FMarkCode;
   end;
 
   { TAdjustments }
