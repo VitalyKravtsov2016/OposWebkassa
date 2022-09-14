@@ -34,6 +34,7 @@ type
 
     procedure Save;
     procedure Clear;
+    procedure AddSeparator;
     procedure AddText(const Text: string); overload;
     procedure AddText(Index: Integer; const Text: string); overload;
     procedure Add(const Line: string); overload;
@@ -171,6 +172,11 @@ end;
 procedure TTextDocument.Save;
 begin
   { !!! }
+end;
+
+procedure TTextDocument.AddSeparator;
+begin
+  Add(StringOfChar('-', LineChars));
 end;
 
 { TTextItems }

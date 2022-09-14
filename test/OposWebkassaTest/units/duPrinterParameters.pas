@@ -69,7 +69,7 @@ begin
   FParams.PaymentType3 := 0;
   FParams.PaymentType4 := 0;
   FParams.RoundType := 1;
-  FParams.VATNumber := '1234';
+  FParams.VATNumber := 1234;
 end;
 
 procedure TPrinterParametersTest.CheckNonDefaultParams;
@@ -97,7 +97,7 @@ begin
   CheckEquals(0, FParams.PaymentType3, 'PaymentType3');
   CheckEquals(0, FParams.PaymentType4, 'PaymentType4');
   CheckEquals(1, FParams.RoundType, 'RoundType');
-  CheckEquals('1234', FParams.VATNumber, 'VATNumber');
+  CheckEquals(1234, FParams.VATNumber, 'VATNumber');
 end;
 
 

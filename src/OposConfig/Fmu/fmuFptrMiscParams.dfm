@@ -26,12 +26,19 @@ object fmFptrMiscParams: TfmFptrMiscParams
     Height = 13
     Caption = #1054#1082#1088#1091#1075#1083#1077#1085#1080#1077':'
   end
-  object lblVATNumber: TTntLabel
+  object lblVATSeries: TTntLabel
     Left = 8
     Top = 48
     Width = 61
     Height = 13
     Caption = #1057#1077#1088#1080#1103' '#1053#1044#1057':'
+  end
+  object lblVATNumber: TTntLabel
+    Left = 8
+    Top = 80
+    Width = 64
+    Height = 13
+    Caption = #1053#1086#1084#1077#1088' '#1053#1044#1057':'
   end
   object cbRoundType: TComboBox
     Left = 96
@@ -47,13 +54,22 @@ object fmFptrMiscParams: TfmFptrMiscParams
       #1048#1090#1086#1075' '#1095#1077#1082#1072
       #1055#1086#1079#1080#1094#1080#1080' '#1095#1077#1082#1072)
   end
-  object edtVATNumber: TEdit
+  object edtVATSeries: TEdit
     Left = 96
     Top = 48
     Width = 169
     Height = 21
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 1
+    Text = 'edtVATSeries'
+  end
+  object edtVATNumber: TEdit
+    Left = 94
+    Top = 80
+    Width = 169
+    Height = 21
+    Anchors = [akLeft, akTop, akRight]
+    TabOrder = 2
     Text = 'edtVATNumber'
   end
 end

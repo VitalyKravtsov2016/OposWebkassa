@@ -16,6 +16,8 @@ type
   TfmFptrMiscParams = class(TFptrPage)
     cbRoundType: TComboBox;
     lblRoundType: TTntLabel;
+    edtVATSeries: TEdit;
+    lblVATSeries: TTntLabel;
     edtVATNumber: TEdit;
     lblVATNumber: TTntLabel;
   public
@@ -32,13 +34,15 @@ implementation
 procedure TfmFptrMiscParams.UpdatePage;
 begin
   cbRoundType.ItemIndex := Parameters.RoundType;
-  edtVATNumber.Text := Parameters.VATNumber;
+  edtVATSeries.Text := IntToStr(Parameters.VATSeries);
+  edtVATNumber.Text := IntToStr(Parameters.VATNumber);
 end;
 
 procedure TfmFptrMiscParams.UpdateObject;
 begin
   Parameters.RoundType := cbRoundType.ItemIndex;
-  Parameters.VATNumber := edtVATNumber.Text;
+  Parameters.VATSeries := StrToInt(edtVATSeries.Text);
+  Parameters.VATNumber := StrToInt(edtVATNumber.Text);
 end;
 
 end.

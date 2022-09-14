@@ -4,13 +4,13 @@ interface
 
 uses
   // VCL
-  Windows, SysUtils, Forms, Controls, Classes, Messages, Math, 
+  Windows, SysUtils, Forms, Controls, Classes, Messages, Math,
   // Opos
   Opos, OposFptrUtils, OposException, OposFptr,
   // Tnt
   TntClasses,
   // This
-  CustomReceipt, ReceiptItem, gnugettext, WException;
+  CustomReceipt, ReceiptItem, gnugettext, WException, MathUtils;
 
 type
   TPayments = array [0..4] of Currency;
@@ -23,16 +23,18 @@ type
     FIsRefund: Boolean;
     FPayments: TPayments;
     FItems: TReceiptItems;
-    FAdjustments: TAdjustments;
+    FAdjustments: TList;
+    FRecItems: TList;
     FAmountDecimalPlaces: Integer;
     function RoundAmount(Amount: Currency): Currency;
+    function AddItem: TSalesReceiptItem;
   protected
     procedure SetRefundReceipt;
     procedure CheckPrice(Value: Currency);
     procedure CheckPercents(Value: Currency);
     procedure CheckQuantity(Quantity: Double);
     procedure CheckAmount(Amount: Currency);
-    function GetLastItem: TReceiptItem;
+    function GetLastItem: TSalesReceiptItem;
     procedure RecSubtotalAdjustment(const Description: WideString;
       AdjustmentType: Integer; Amount: Currency);
     procedure SubtotalDiscount(Amount: Currency;
@@ -112,7 +114,7 @@ type
     property Items: TReceiptItems read FItems;
     property IsRefund: Boolean read FIsRefund;
     property Payments: TPayments read FPayments;
-    property Adjustments: TAdjustments read FAdjustments;
+    property Adjustments: TList read FAdjustments;
     property AmountDecimalPlaces: Integer read FAmountDecimalPlaces;
   end;
 
@@ -153,12 +155,14 @@ begin
   FAmountDecimalPlaces := AAmountDecimalPlaces;
 
   FItems := TReceiptItems.Create;
-  FAdjustments := TAdjustments.Create;
+  FRecItems := TList.Create;
+  FAdjustments := TList.Create;
 end;
 
 destructor TSalesReceipt.Destroy;
 begin
   FItems.Free;
+  FRecItems.Free;
   FAdjustments.Free;
   inherited Destroy;
 end;
@@ -181,11 +185,11 @@ begin
     FIsRefund := True;
 end;
 
-function TSalesReceipt.GetLastItem: TReceiptItem;
+function TSalesReceipt.GetLastItem: TSalesReceiptItem;
 begin
-  if FItems.Count = 0 then
+  if FRecItems.Count = 0 then
     raiseException(_('Не задан последний элемент чека'));
-  Result := FItems[FItems.Count-1];
+  Result := TSalesReceiptItem(FRecItems[FRecItems.Count-1]);
 end;
 
 procedure TSalesReceipt.CheckPrice(Value: Currency);
@@ -220,18 +224,25 @@ procedure TSalesReceipt.EndFiscalReceipt;
 begin
 end;
 
+function TSalesReceipt.AddItem: TSalesReceiptItem;
+begin
+  Result := TSalesReceiptItem.Create(FItems);
+  FRecItems.Add(Result);
+  Result.Number := FRecItems.Count;
+end;
+
 procedure TSalesReceipt.PrintRecItem(const Description: WideString;
   Price: Currency; Quantity: Double; VatInfo: Integer;
   UnitPrice: Currency; const UnitName: WideString);
 var
-  Item: TReceiptItem;
+  Item: TSalesReceiptItem;
 begin
   CheckNotVoided;
   CheckPrice(Price);
   CheckPrice(UnitPrice);
   CheckQuantity(Quantity);
 
-  Item := FItems.Add;
+  Item := AddItem;
   Item.Quantity := Quantity;
   Item.Price := Price;
   Item.UnitPrice := UnitPrice;
@@ -244,14 +255,14 @@ procedure TSalesReceipt.PrintRecItemVoid(const Description: WideString;
   Price: Currency; Quantity: Double; VatInfo: Integer; UnitPrice: Currency;
   const UnitName: WideString);
 var
-  Item: TReceiptItem;
+  Item: TSalesReceiptItem;
 begin
   CheckNotVoided;
   CheckPrice(Price);
   CheckPrice(UnitPrice);
   CheckQuantity(Quantity);
 
-  Item := FItems.Add;
+  Item := AddItem;
   Item.Quantity := -Quantity;
   Item.Price := Price;
   Item.UnitPrice := UnitPrice;
@@ -264,7 +275,7 @@ procedure TSalesReceipt.PrintRecItemRefund(const ADescription: WideString;
   Amount: Currency; Quantity: Double; VatInfo: Integer;
   UnitAmount: Currency; const AUnitName: WideString);
 var
-  Item: TReceiptItem;
+  Item: TSalesReceiptItem;
 begin
   CheckNotVoided;
   SetRefundReceipt;
@@ -273,7 +284,7 @@ begin
   CheckPrice(UnitAmount);
   CheckQuantity(Quantity);
 
-  Item := FItems.Add;
+  Item := AddItem;
   Item.Quantity := Quantity;
   Item.Price := Amount;
   Item.UnitPrice := UnitAmount;
@@ -295,13 +306,13 @@ procedure TSalesReceipt.PrintRecVoidItem(const Description: WideString;
   Amount: Currency; Quantity: Double; AdjustmentType: Integer;
   Adjustment: Currency; VatInfo: Integer);
 var
-  Item: TReceiptItem;
+  Item: TSalesReceiptItem;
 begin
   CheckNotVoided;
   CheckPrice(Amount);
   CheckQuantity(Quantity);
 
-  Item := FItems.Add;
+  Item := AddItem;
   Item.Price := Amount;
   Item.Quantity := -Quantity;
   Item.VatInfo := VatInfo;
@@ -316,49 +327,49 @@ procedure TSalesReceipt.PrintRecItemAdjustment(
   Amount: Currency;
   VatInfo: Integer);
 var
-  Discount: TAdjustment;
+  Adjustment: TAdjustment;
 begin
   CheckNotVoided;
   case AdjustmentType of
     FPTR_AT_AMOUNT_DISCOUNT:
     begin
-      Discount := GetLastItem.Adjustments.Add;
-      Discount.Amount := RoundAmount(Amount);
-      Discount.Total := RoundAmount(Amount);
-      Discount.VatInfo := VatInfo;
-      Discount.Description := Description;
-      Discount.AdjustmentType := AdjustmentType;
+      Adjustment := GetLastItem.AddAdjustment;
+      Adjustment.Amount := RoundAmount(Amount);
+      Adjustment.Total := -RoundAmount(Amount);
+      Adjustment.VatInfo := VatInfo;
+      Adjustment.Description := Description;
+      Adjustment.AdjustmentType := AdjustmentType;
     end;
 
     FPTR_AT_AMOUNT_SURCHARGE:
     begin
-      Discount := GetLastItem.Adjustments.Add;
-      Discount.Amount := RoundAmount(Amount);
-      Discount.Total := -RoundAmount(Amount);
-      Discount.VatInfo := VatInfo;
-      Discount.Description := Description;
-      Discount.AdjustmentType := AdjustmentType;
+      Adjustment := GetLastItem.AddAdjustment;
+      Adjustment.Amount := RoundAmount(Amount);
+      Adjustment.Total := RoundAmount(Amount);
+      Adjustment.VatInfo := VatInfo;
+      Adjustment.Description := Description;
+      Adjustment.AdjustmentType := AdjustmentType;
     end;
     FPTR_AT_PERCENTAGE_DISCOUNT:
     begin
       CheckPercents(Amount);
-      Discount := GetLastItem.Adjustments.Add;
-      Discount.Amount := Amount;
-      Discount.Total := RoundAmount(GetLastItem.GetTotal * Amount/100);
-      Discount.VatInfo := VatInfo;
-      Discount.Description := Description;
-      Discount.AdjustmentType := AdjustmentType;
+      Adjustment := GetLastItem.AddAdjustment;
+      Adjustment.Amount := Amount;
+      Adjustment.Total := -RoundAmount(GetLastItem.GetTotal * Amount/100);
+      Adjustment.VatInfo := VatInfo;
+      Adjustment.Description := Description;
+      Adjustment.AdjustmentType := AdjustmentType;
     end;
 
     FPTR_AT_PERCENTAGE_SURCHARGE:
     begin
       CheckPercents(Amount);
-      Discount := GetLastItem.Adjustments.Add;
-      Discount.Amount := Amount;
-      Discount.Total := -RoundAmount(GetLastItem.GetTotal * Amount/100);
-      Discount.VatInfo := VatInfo;
-      Discount.Description := Description;
-      Discount.AdjustmentType := AdjustmentType;
+      Adjustment := GetLastItem.AddAdjustment;
+      Adjustment.Amount := Amount;
+      Adjustment.Total := RoundAmount(GetLastItem.GetTotal * Amount/100);
+      Adjustment.VatInfo := VatInfo;
+      Adjustment.Description := Description;
+      Adjustment.AdjustmentType := AdjustmentType;
     end;
   else
     InvalidParameterValue('AdjustmentType', IntToStr(AdjustmentType));
@@ -390,13 +401,13 @@ end;
 procedure TSalesReceipt.PrintRecRefund(const Description: WideString;
   Amount: Currency; VatInfo: Integer);
 var
-  Item: TREceiptItem;
+  Item: TSalesReceiptItem;
 begin
   CheckNotVoided;
   SetRefundReceipt;
   CheckAmount(Amount);
 
-  Item := FItems.Add;
+  Item := AddItem;
   Item.Quantity := 1;
   Item.Price := Amount;
   Item.UnitPrice := Amount;
@@ -409,13 +420,13 @@ procedure TSalesReceipt.PrintRecRefundVoid(
   const Description: WideString;
   Amount: Currency; VatInfo: Integer);
 var
-  Item: TREceiptItem;
+  Item: TSalesReceiptItem;
 begin
   CheckNotVoided;
   SetRefundReceipt;
   CheckAmount(Amount);
 
-  Item := FItems.Add;
+  Item := AddItem;
   Item.Quantity := -1;
   Item.Price := Amount;
   Item.UnitPrice := Amount;
@@ -443,26 +454,26 @@ begin
   case AdjustmentType of
     FPTR_AT_AMOUNT_DISCOUNT:
     begin
-      SubtotalDiscount(Amount, Description);
+      SubtotalDiscount(-Amount, Description);
     end;
 
     FPTR_AT_AMOUNT_SURCHARGE:
     begin
-      SubtotalDiscount(-Amount, Description);
+      SubtotalDiscount(Amount, Description);
     end;
 
     FPTR_AT_PERCENTAGE_DISCOUNT:
     begin
       CheckPercents(Amount);
       Amount := GetTotal * Amount/100;
-      SubtotalDiscount(Amount, Description);
+      SubtotalDiscount(-Amount, Description);
     end;
 
     FPTR_AT_PERCENTAGE_SURCHARGE:
     begin
       CheckPercents(Amount);
       Amount := GetTotal * Amount/100;
-      SubtotalDiscount(-Amount, Description);
+      SubtotalDiscount(Amount, Description);
     end;
   else
     InvalidParameterValue('AdjustmentType', IntToStr(AdjustmentType));
@@ -474,14 +485,16 @@ var
   K: Integer;
 begin
   K := Round(Power(10, AmountDecimalPlaces));
-  Result := Round(Amount * K) / K;
+  Result := Round2(Amount * K) / K;
 end;
 
 procedure TSalesReceipt.SubtotalDiscount(Amount: Currency; const Description: WideString);
 var
   Discount: TAdjustment;
 begin
-  Discount := FAdjustments.Add;
+  Discount := TTotalAdjustment.Create(FItems);
+  FAdjustments.Add(Discount);
+
   Discount.Total := RoundAmount(Amount);
   Discount.Amount := Discount.Total;
   Discount.VatInfo := 0;
@@ -491,7 +504,7 @@ end;
 
 function TSalesReceipt.GetTotal: Currency;
 begin
-  Result := FItems.GetTotal - FAdjustments.GetTotal;
+  Result := FItems.GetTotal;
 end;
 
 function TSalesReceipt.GetPayment: Currency;

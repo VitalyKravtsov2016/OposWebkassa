@@ -208,7 +208,10 @@ begin
         Parameters.RoundType := Reg.ReadInteger('RoundType');
 
       if Reg.ValueExists('VATNumber') then
-        Parameters.VATNumber := Reg.ReadString('VATNumber');
+        Parameters.VATNumber := Reg.ReadInteger('VATNumber');
+
+      if Reg.ValueExists('VATSeries') then
+        Parameters.VATSeries := Reg.ReadInteger('VATSeries');
 
       Reg.CloseKey;
     end;
@@ -277,7 +280,8 @@ begin
     Reg.WriteInteger('PaymentType4', FParameters.PaymentType4);
     Reg.WriteBool('VatRateEnabled', FParameters.VatRateEnabled);
     Reg.WriteInteger('RoundType', FParameters.RoundType);
-    Reg.WriteString('VATNumber', FParameters.VATNumber);
+    Reg.WriteInteger('VATNumber', FParameters.VATNumber);
+    Reg.WriteInteger('VATSeries', FParameters.VATSeries);
 
     Reg.CloseKey;
     // VatRates

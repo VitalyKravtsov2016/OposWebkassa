@@ -96,6 +96,8 @@ type
   TTicketModifier = class;
   TPayments = class;
   TPayment = class;
+  TCashBoxes = class;
+  TCashBox = class;
 
   { TErrorResult }
 
@@ -724,18 +726,18 @@ type
 
   TCashboxesResponse = class(TPersistent)
   private
-    FList: TCollection;
-    procedure SetList(const Value: TCollection);
+    FList: TCashBoxes;
+    procedure SetList(const Value: TCashBoxes);
   public
     constructor Create;
     destructor Destroy; override;
   published
-    property List: TCollection read FList write SetList;
+    property List: TCashBoxes read FList write SetList;
   end;
 
-  { TCashboxItem }
+  { TCashbox }
 
-  TCashboxItem = class(TCollectionItem)
+  TCashbox = class(TCollectionItem)
   private
     FUniqueNumber: WideString;
     FRegistrationNumber: WideString;
@@ -745,6 +747,8 @@ type
     FIsOffline: Boolean;
     FCurrentStatus: Integer;
     FShift: Integer;
+  public
+    procedure Assign(Source: TPersistent); override;
   published
     property UniqueNumber: WideString read FUniqueNumber write FUniqueNumber;
     property RegistrationNumber: WideString read FRegistrationNumber write FRegistrationNumber;
@@ -754,6 +758,16 @@ type
     property IsOffline: Boolean read FIsOffline write FIsOffline;
     property CurrentStatus: Integer read FCurrentStatus write FCurrentStatus;
     property Shift: Integer read FShift write FShift;
+  end;
+
+  { TCashBoxes }
+
+  TCashBoxes = class(TCollection)
+  published
+    function GetItem(Index: Integer): TCashBox;
+    function ItemByUniqueNumber(const Value: WideString): TCashBox;
+  public
+    property Items[Index: Integer]: TCashBox read GetItem; default;
   end;
 
   { TCashboxesCommand }
@@ -2487,7 +2501,7 @@ end;
 constructor TCashboxesResponse.Create;
 begin
   inherited Create;
-  FList := TCollection.Create(TCashboxItem);
+  FList := TCashBoxes.Create(TCashbox);
 end;
 
 destructor TCashboxesResponse.Destroy;
@@ -2496,7 +2510,7 @@ begin
   inherited Destroy;
 end;
 
-procedure TCashboxesResponse.SetList(const Value: TCollection);
+procedure TCashboxesResponse.SetList(const Value: TCashBoxes);
 begin
   FList.Assign(Value);
 end;
@@ -3071,6 +3085,46 @@ end;
 function TPositionItems.GetItem(Index: Integer): TPositionItem;
 begin
   Result := inherited Items[Index] as TPositionItem;
+end;
+
+{ TCashbox }
+
+procedure TCashbox.Assign(Source: TPersistent);
+var
+  Src: TCashbox;
+begin
+  if Source is TCashbox then
+  begin
+    Src := Source as TCashbox;
+    UniqueNumber := Src.UniqueNumber;
+    RegistrationNumber := src.RegistrationNumber;
+    IdentificationNumber := Src.IdentificationNumber;
+    Name := Src.Name;
+    Description := Src.Description;
+    IsOffline := Src.IsOffline;
+    CurrentStatus := Src.CurrentStatus;
+    Shift := SRc.Shift;
+  end else
+    inherited Assign(Source);
+end;
+
+{ TCashBoxes }
+
+function TCashBoxes.GetItem(Index: Integer): TCashBox;
+begin
+  Result := inherited Items[Index] as TCashBox;
+end;
+
+function TCashBoxes.ItemByUniqueNumber(const Value: WideString): TCashBox;
+var
+  i: Integer;
+begin
+  for i := 0 to Count-1 do
+  begin
+    Result := Items[i];
+    if Result.UniqueNumber = Value then Exit;
+  end;
+  Result := nil;
 end;
 
 initialization

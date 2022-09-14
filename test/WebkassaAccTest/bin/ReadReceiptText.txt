@@ -1,1 +1,282 @@
-{"Data":{"Lines":[{"Order":1,"Type":0,"Value":"             ТОО SOFT IT KAZAKHSTAN             ","Style":0},{"Order":2,"Type":0,"Value":"                БИН 131240010479                ","Style":0},{"Order":3,"Type":0,"Value":"НДС Серия 00000                        № 0000000","Style":0},{"Order":4,"Type":0,"Value":"------------------------------------------------","Style":0},{"Order":5,"Type":0,"Value":"                     КОФД 2                     ","Style":0},{"Order":6,"Type":0,"Value":"                    Смена 178                   ","Style":0},{"Order":7,"Type":0,"Value":"            Порядковый номер чека №2            ","Style":0},{"Order":8,"Type":0,"Value":"Чек №925871425876","Style":0},{"Order":9,"Type":0,"Value":"Кассир webkassa4@softit.kz","Style":0},{"Order":10,"Type":0,"Value":"ПРОДАЖА","Style":0},{"Order":11,"Type":0,"Value":"------------------------------------------------","Style":0},{"Order":12,"Type":0,"Value":"  1. Позиция чека 1","Style":0},{"Order":13,"Type":0,"Value":"   123,456 шт x 123,45","Style":0},{"Order":14,"Type":0,"Value":"   Скидка                                 -12,00","Style":0},{"Order":15,"Type":0,"Value":"   Наценка                                +13,00","Style":0},{"Order":16,"Type":0,"Value":"   Стоимость                           15 241,64","Style":0},{"Order":17,"Type":0,"Value":"  2. Позиция чека 2","Style":0},{"Order":18,"Type":0,"Value":"   12,456 шт x 12,45","Style":0},{"Order":19,"Type":0,"Value":"   Скидка                                 -12,00","Style":0},{"Order":20,"Type":0,"Value":"   Наценка                                +13,00","Style":0},{"Order":21,"Type":0,"Value":"   Стоимость                              156,08","Style":0},{"Order":22,"Type":0,"Value":"  3. Позиция чека 1","Style":0},{"Order":23,"Type":0,"Value":"   2 шт x 23,00","Style":0},{"Order":24,"Type":0,"Value":"   Стоимость                               46,00","Style":0},{"Order":25,"Type":0,"Value":"------------------------------------------------","Style":0},{"Order":26,"Type":0,"Value":"Наличные:                                 800,00","Style":0},{"Order":27,"Type":0,"Value":"Банковская карта:                      14 597,72","Style":0},{"Order":28,"Type":0,"Value":"Наличные:                                  46,00","Style":0},{"Order":29,"Type":0,"Value":"Скидка:                                    24,00","Style":0},{"Order":30,"Type":0,"Value":"Наценка:                                   26,00","Style":0},{"Order":31,"Type":0,"Value":"ИТОГО:                                  15443,72","Style":1},{"Order":32,"Type":0,"Value":"в т.ч. НДС 12%:                          1649,75","Style":0},{"Order":33,"Type":0,"Value":"------------------------------------------------","Style":0},{"Order":34,"Type":0,"Value":"Фискальный признак: 925871425876","Style":0},{"Order":35,"Type":0,"Value":"Время: 26.08.2022 21:00:14","Style":0},{"Order":36,"Type":0,"Value":"тест","Style":0},{"Order":37,"Type":0,"Value":"Оператор фискальных данных: АО \"КазТранском\"","Style":0},{"Order":38,"Type":0,"Value":"Для проверки чека зайдите на сайт: ","Style":0},{"Order":39,"Type":0,"Value":"dev.kofd.kz/consumer","Style":0},{"Order":40,"Type":0,"Value":"------------------------------------------------","Style":0},{"Order":41,"Type":0,"Value":"                 ФИСКАЛЬНЫЙ ЧЕK                 ","Style":1},{"Order":42,"Type":2,"Value":"http://dev.kofd.kz/consumer?i=925871425876&f=211030200207&s=15443.72&t=20220826T210014","Style":0},{"Order":43,"Type":0,"Value":"                  ИНК ОФД: 270                  ","Style":0},{"Order":44,"Type":0,"Value":"         Код ККМ КГД (РНМ): 211030200207        ","Style":0},{"Order":45,"Type":0,"Value":"                ЗНМ: SWK00032685                ","Style":0},{"Order":46,"Type":0,"Value":"                   WEBKASSA.KZ                  ","Style":0}]}}
+{
+	"Data": {
+		"Lines": [
+			{
+				"Order": 1,
+				"Type": 0,
+				"Value": "             ТОО SOFT IT KAZAKHSTAN             ",
+				"Style": 0
+			},
+			{
+				"Order": 2,
+				"Type": 0,
+				"Value": "                БИН 131240010479                ",
+				"Style": 0
+			},
+			{
+				"Order": 3,
+				"Type": 0,
+				"Value": "НДС Серия 00000                        № 0000000",
+				"Style": 0
+			},
+			{
+				"Order": 4,
+				"Type": 0,
+				"Value": "------------------------------------------------",
+				"Style": 0
+			},
+			{
+				"Order": 5,
+				"Type": 0,
+				"Value": "                     КОФД 2                     ",
+				"Style": 0
+			},
+			{
+				"Order": 6,
+				"Type": 0,
+				"Value": "                    Смена 178                   ",
+				"Style": 0
+			},
+			{
+				"Order": 7,
+				"Type": 0,
+				"Value": "            Порядковый номер чека №2            ",
+				"Style": 0
+			},
+			{
+				"Order": 8,
+				"Type": 0,
+				"Value": "Чек №925871425876",
+				"Style": 0
+			},
+			{
+				"Order": 9,
+				"Type": 0,
+				"Value": "Кассир webkassa4@softit.kz",
+				"Style": 0
+			},
+			{
+				"Order": 10,
+				"Type": 0,
+				"Value": "ПРОДАЖА",
+				"Style": 0
+			},
+			{
+				"Order": 11,
+				"Type": 0,
+				"Value": "------------------------------------------------",
+				"Style": 0
+			},
+			{
+				"Order": 12,
+				"Type": 0,
+				"Value": "  1. Позиция чека 1",
+				"Style": 0
+			},
+			{
+				"Order": 13,
+				"Type": 0,
+				"Value": "   123,456 шт x 123,45",
+				"Style": 0
+			},
+			{
+				"Order": 14,
+				"Type": 0,
+				"Value": "   Скидка                                 -12,00",
+				"Style": 0
+			},
+			{
+				"Order": 15,
+				"Type": 0,
+				"Value": "   Наценка                                +13,00",
+				"Style": 0
+			},
+			{
+				"Order": 16,
+				"Type": 0,
+				"Value": "   Стоимость                           15 241,64",
+				"Style": 0
+			},
+			{
+				"Order": 17,
+				"Type": 0,
+				"Value": "  2. Позиция чека 2",
+				"Style": 0
+			},
+			{
+				"Order": 18,
+				"Type": 0,
+				"Value": "   12,456 шт x 12,45",
+				"Style": 0
+			},
+			{
+				"Order": 19,
+				"Type": 0,
+				"Value": "   Скидка                                 -12,00",
+				"Style": 0
+			},
+			{
+				"Order": 20,
+				"Type": 0,
+				"Value": "   Наценка                                +13,00",
+				"Style": 0
+			},
+			{
+				"Order": 21,
+				"Type": 0,
+				"Value": "   Стоимость                              156,08",
+				"Style": 0
+			},
+			{
+				"Order": 22,
+				"Type": 0,
+				"Value": "  3. Позиция чека 1",
+				"Style": 0
+			},
+			{
+				"Order": 23,
+				"Type": 0,
+				"Value": "   2 шт x 23,00",
+				"Style": 0
+			},
+			{
+				"Order": 24,
+				"Type": 0,
+				"Value": "   Стоимость                               46,00",
+				"Style": 0
+			},
+			{
+				"Order": 25,
+				"Type": 0,
+				"Value": "------------------------------------------------",
+				"Style": 0
+			},
+			{
+				"Order": 26,
+				"Type": 0,
+				"Value": "Наличные:                                 800,00",
+				"Style": 0
+			},
+			{
+				"Order": 27,
+				"Type": 0,
+				"Value": "Банковская карта:                      14 597,72",
+				"Style": 0
+			},
+			{
+				"Order": 28,
+				"Type": 0,
+				"Value": "Наличные:                                  46,00",
+				"Style": 0
+			},
+			{
+				"Order": 29,
+				"Type": 0,
+				"Value": "Скидка:                                    24,00",
+				"Style": 0
+			},
+			{
+				"Order": 30,
+				"Type": 0,
+				"Value": "Наценка:                                   26,00",
+				"Style": 0
+			},
+			{
+				"Order": 31,
+				"Type": 0,
+				"Value": "ИТОГО:                                  15443,72",
+				"Style": 1
+			},
+			{
+				"Order": 32,
+				"Type": 0,
+				"Value": "в т.ч. НДС 12%:                          1649,75",
+				"Style": 0
+			},
+			{
+				"Order": 33,
+				"Type": 0,
+				"Value": "------------------------------------------------",
+				"Style": 0
+			},
+			{
+				"Order": 34,
+				"Type": 0,
+				"Value": "Фискальный признак: 925871425876",
+				"Style": 0
+			},
+			{
+				"Order": 35,
+				"Type": 0,
+				"Value": "Время: 26.08.2022 21:00:14",
+				"Style": 0
+			},
+			{
+				"Order": 36,
+				"Type": 0,
+				"Value": "тест",
+				"Style": 0
+			},
+			{
+				"Order": 37,
+				"Type": 0,
+				"Value": "Оператор фискальных данных: АО \"КазТранском\"",
+				"Style": 0
+			},
+			{
+				"Order": 38,
+				"Type": 0,
+				"Value": "Для проверки чека зайдите на сайт: ",
+				"Style": 0
+			},
+			{
+				"Order": 39,
+				"Type": 0,
+				"Value": "dev.kofd.kz/consumer",
+				"Style": 0
+			},
+			{
+				"Order": 40,
+				"Type": 0,
+				"Value": "------------------------------------------------",
+				"Style": 0
+			},
+			{
+				"Order": 41,
+				"Type": 0,
+				"Value": "                 ФИСКАЛЬНЫЙ ЧЕK                 ",
+				"Style": 1
+			},
+			{
+				"Order": 42,
+				"Type": 2,
+				"Value": "http://dev.kofd.kz/consumer?i=925871425876&f=211030200207&s=15443.72&t=20220826T210014",
+				"Style": 0
+			},
+			{
+				"Order": 43,
+				"Type": 0,
+				"Value": "                  ИНК ОФД: 270                  ",
+				"Style": 0
+			},
+			{
+				"Order": 44,
+				"Type": 0,
+				"Value": "         Код ККМ КГД (РНМ): 211030200207        ",
+				"Style": 0
+			},
+			{
+				"Order": 45,
+				"Type": 0,
+				"Value": "                ЗНМ: SWK00032685                ",
+				"Style": 0
+			},
+			{
+				"Order": 46,
+				"Type": 0,
+				"Value": "                   WEBKASSA.KZ                  ",
+				"Style": 0
+			}
+		]
+	}
+}

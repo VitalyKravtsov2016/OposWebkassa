@@ -108,7 +108,7 @@ procedure TfmFptrConnection.btnUpdateCashBoxNumbersClick(Sender: TObject);
 var
   i: Integer;
   Index: Integer;
-  Item: TCashboxItem;
+  Item: TCashbox;
   Command: TCashboxesCommand;
 begin
   EnableButtons(False);
@@ -129,7 +129,7 @@ begin
     try
       for i := 0 to Command.Data.List.Count-1 do
       begin
-        Item := Command.Data.List.Items[i] as TCashboxItem;
+        Item := Command.Data.List.Items[i] as TCashbox;
         cbCashboxNumber.Items.Add(Item.UniqueNumber);
       end;
       Index := cbCashboxNumber.Items.IndexOf(Parameters.CashboxNumber);

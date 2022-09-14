@@ -99,24 +99,24 @@ begin
   CheckEquals(124.56, FReceipt.GetTotal, 'FReceipt.Total');
   // Percent discount
   FReceipt.PrintRecItemAdjustment(FPTR_AT_PERCENTAGE_DISCOUNT, 'Скидка 5%', 5, 0);
-  CheckEquals(118.33, FReceipt.GetTotal, 'FReceipt.Total');
+  CheckEquals(118.39, FReceipt.GetTotal, 'FReceipt.Total');
   // Percent charge
   FReceipt.PrintRecItemAdjustment(FPTR_AT_PERCENTAGE_SURCHARGE, 'Надбавка 10%', 10, 0);
-  CheckEquals(130.16, FReceipt.GetTotal, 'FReceipt.Total');
+  CheckEquals(130.74, FReceipt.GetTotal, 'FReceipt.Total');
   // Void amount discount
   FReceipt.PrintRecItemAdjustmentVoid(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка 1.23', 1.23, 0);
-  CheckEquals(131.39, FReceipt.GetTotal, 'FReceipt.Total');
+  CheckEquals(131.97, FReceipt.GetTotal, 'FReceipt.Total');
   // Void amount charge
   FReceipt.PrintRecItemAdjustmentVoid(FPTR_AT_AMOUNT_SURCHARGE, 'Надбавка 2.34', 2.34, 0);
-  CheckEquals(129.05, FReceipt.GetTotal, 'FReceipt.Total');
+  CheckEquals(129.63, FReceipt.GetTotal, 'FReceipt.Total');
   // Void percent discount
   FReceipt.PrintRecItemAdjustmentVoid(FPTR_AT_PERCENTAGE_DISCOUNT, 'Скидка 5%', 5, 0);
-  CheckEquals(135.50, FReceipt.GetTotal, 'FReceipt.Total');
+  CheckEquals(135.8, FReceipt.GetTotal, 'FReceipt.Total');
   // Void percent charge
   FReceipt.PrintRecItemAdjustmentVoid(FPTR_AT_PERCENTAGE_SURCHARGE, 'Надбавка 10%', 10, 0);
-  CheckEquals(121.95, FReceipt.GetTotal, 'FReceipt.Total');
+  CheckEquals(123.45, FReceipt.GetTotal, 'FReceipt.Total');
 
-  FReceipt.PrintRecTotal(121.95, 130, 'Наличными');
+  FReceipt.PrintRecTotal(123.44, 130, 'Наличными');
   FReceipt.EndFiscalReceipt;
 end;
 

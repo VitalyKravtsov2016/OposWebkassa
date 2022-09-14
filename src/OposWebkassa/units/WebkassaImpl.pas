@@ -51,6 +51,8 @@ type
     FCashierID: WideString;
     FLogger: ILogFile;
     FUnits: TUnitItems;
+    FCashBox: TCashBox;
+    FCashBoxes: TCashBoxes;
     FHeader: TPrinterLines;
     FTrailer: TPrinterLines;
     FClient: TWebkassaClient;
@@ -80,10 +82,11 @@ type
     procedure Print(Receipt: TCashInReceipt); overload;
     procedure Print(Receipt: TCashOutReceipt); overload;
     procedure Print(Receipt: TSalesReceipt); overload;
-    procedure PrintReceipt(const ACheckNumber: string; IsDuplicate: Boolean);
+    procedure PrintReceipt(Receipt: TSalesReceipt; Command: TSendReceiptCommand);
     function GetPrinterState: Integer;
     function DoRelease: Integer;
     procedure UpdateUnits;
+    procedure UpdateCashBoxes;
     procedure CheckCapSetVatTable;
     procedure CheckPtr(AResultCode: Integer);
     function CreateReceipt(FiscalReceiptType: Integer): TCustomReceipt;
@@ -192,6 +195,7 @@ type
     FCashierFullName: WideString;
     FCheckNumber: WideString;
     FUnitsUpdated: Boolean;
+    FCashBoxesUpdated: Boolean;
 
     function DoCloseDevice: Integer;
     function DoOpen(const DeviceClass, DeviceName: WideString;
@@ -364,6 +368,18 @@ begin
   end;
 end;
 
+function AlignCenter(const Line: WideString; LineWidth: Integer): WideString;
+var
+  L: Integer;
+begin
+  Result := Copy(Line, 1, LineWidth);
+  if Length(Result) < LineWidth then
+  begin
+    L := (LineWidth - Length(Result)) div 2;
+    Result := StringOfChar(' ', L) + Result + StringOfChar(' ', LineWidth - Length(Result) - L);
+  end;
+end;
+
 { TWebkassaImpl }
 
 constructor TWebkassaImpl.Create(AOwner: TComponent);
@@ -379,6 +395,8 @@ begin
   FOposDevice.ErrorEventEnabled := False;
   FPrinterState := TFiscalPrinterState.Create;
   FUnits := TUnitItems.Create(TUnitItem);
+  FCashBoxes := TCashBoxes.Create(TCashBox);
+  FCashBox := TCashBox.Create(nil);
   FClient.RaiseErrors := True;
   FHeader := TPrinterLines.Create(TPrinterLine);
   FTrailer := TPrinterLines.Create(TPrinterLine);
@@ -399,6 +417,8 @@ begin
   FReceipt.Free;
   FPrinter := nil;
   FPrinterLog.Free;
+  FCashBoxes.Free;
+  FCashBox.Free;
   inherited Destroy;
 end;
 
@@ -1487,19 +1507,6 @@ begin
   Result := IllegalError;
 end;
 
-
-function AlignCenter(const Line: WideString; LineWidth: Integer): WideString;
-var
-  L: Integer;
-begin
-  Result := Copy(Line, 1, LineWidth);
-  if Length(Result) < LineWidth then
-  begin
-    L := (LineWidth - Length(Result)) div 2;
-    Result := StringOfChar(' ', L) + Result + StringOfChar(' ', LineWidth - Length(Result) - L);
-  end;
-end;
-
 function TWebkassaImpl.PrintXReport: Integer;
 begin
   try
@@ -2086,12 +2093,15 @@ begin
     begin
       FParams.CheckPrameters;
       FClient.Connect;
+      UpdateCashBoxes;
       UpdateUnits;
     end else
     begin
       FClient.Disconnect;
     end;
     FDeviceEnabled := Value;
+    FUnitsUpdated := False;
+    FCashBoxesUpdated := False;
     FOposDevice.DeviceEnabled := Value;
     Printer.DeviceEnabled := Value;
     FRecLineChars := Printer.RecLineChars;
@@ -2227,6 +2237,29 @@ begin
   end;
 end;
 
+procedure TWebkassaImpl.UpdateCashBoxes;
+var
+  ACashBox: TCashBox;
+  Command: TCashboxesCommand;
+begin
+  if FCashBoxesUpdated then Exit;
+  Command := TCashboxesCommand.Create;
+  try
+    Command.Request.Token := FClient.Token;
+    FClient.ReadCashBoxes(Command);
+    FCashBoxes.Assign(Command.Data.List);
+    ACashBox := FCashBoxes.ItemByUniqueNumber(Params.Login);
+    if ACashBox <> nil then
+    begin
+      FCashBox.Assign(ACashBox);
+    end;
+
+    FCashBoxesUpdated := True;
+  finally
+    Command.FRee;
+  end;
+end;
+
 function TWebkassaImpl.GetVatRate(Code: Integer): TVatRate;
 begin
   Result := nil;
@@ -2242,7 +2275,8 @@ var
   Payment: TPayment;
   Discount: TAdjustment;
   VatRate: TVatRate;
-  Item: TReceiptItem;
+  Item: TSalesReceiptItem;
+  ReceiptItem: TReceiptItem;
   OperationType: Integer;
   Position: TTicketItem;
   Modifier: TTicketModifier;
@@ -2267,42 +2301,47 @@ begin
     // Items
     for i := 0 to Receipt.Items.Count-1 do
     begin
-      Item := Receipt.Items[i];
-      VatRate := GetVatRate(Item.VatInfo);
-      Position := Command.Request.Positions.Add as TTicketItem;
-      if Item.UnitPrice <> 0 then
+      ReceiptItem := Receipt.Items[i];
+      if ReceiptItem is TSalesReceiptItem then
       begin
-        Position.Count := Item.Quantity;
-        Position.Price := Item.UnitPrice;
-      end else
-      begin
-        Position.Count := 1;
-        Position.Price := Item.Price;
-      end;
-      Position.PositionName := Item.Description;
-      Position.DisplayName := Item.Description;
-      Position.PositionCode := '';
-      Position.Discount := Item.Adjustments.GetDiscounts;
-      Position.Markup := Item.Adjustments.GetCharges;
-      Position.IsStorno := False;
-      Position.MarkupDeleted := False;
-      Position.DiscountDeleted := False;
-      Position.UnitCode := GetUnitCode(Item.UnitName);
-      Position.SectionCode := 0;
-      Position.Mark := Item.MarkCode;
-      Position.GTIN := '';
-      Position.Productld := 0;
-      Position.WarehouseType := 0;
-      if VatRate = nil then
-      begin
-        Position.Tax := 0;
-        Position.TaxPercent := 0;
-        Position.TaxType := TaxTypeNoTax;
-      end else
-      begin
-        Position.Tax := Abs(VatRate.GetTax(Item.Total));
-        Position.TaxType := TaxTypeVAT;
-        Position.TaxPercent := VatRate.Rate;
+        Item := ReceiptItem as TSalesReceiptItem;
+
+        VatRate := GetVatRate(Item.VatInfo);
+        Position := Command.Request.Positions.Add as TTicketItem;
+        if Item.UnitPrice <> 0 then
+        begin
+          Position.Count := Item.Quantity;
+          Position.Price := Item.UnitPrice;
+        end else
+        begin
+          Position.Count := 1;
+          Position.Price := Item.Price;
+        end;
+        Position.PositionName := Item.Description;
+        Position.DisplayName := Item.Description;
+        Position.PositionCode := '';
+        Position.Discount := Item.GetDiscount;
+        Position.Markup := Item.GetCharge;
+        Position.IsStorno := False;
+        Position.MarkupDeleted := False;
+        Position.DiscountDeleted := False;
+        Position.UnitCode := GetUnitCode(Item.UnitName);
+        Position.SectionCode := 0;
+        Position.Mark := Item.MarkCode;
+        Position.GTIN := '';
+        Position.Productld := 0;
+        Position.WarehouseType := 0;
+        if VatRate = nil then
+        begin
+          Position.Tax := 0;
+          Position.TaxPercent := 0;
+          Position.TaxType := TaxTypeNoTax;
+        end else
+        begin
+          Position.Tax := Abs(VatRate.GetTax(Item.Total));
+          Position.TaxType := TaxTypeVAT;
+          Position.TaxPercent := VatRate.Rate;
+        end;
       end;
     end;
     // Discounts
@@ -2331,7 +2370,8 @@ begin
     end;
     FClient.SendReceipt(Command);
     FCheckNumber := Command.Data.CheckNumber;
-    PrintReceipt(Command.Request.ExternalCheckNumber, False);
+
+    PrintReceipt(Receipt, Command);
   finally
     Command.Free;
   end;
@@ -2344,54 +2384,148 @@ begin
     Result := PaperKind58mm;
 end;
 
-procedure TWebkassaImpl.PrintReceipt(const ACheckNumber: string; IsDuplicate: Boolean);
+(*
+"             ТОО SOFT IT KAZAKHSTAN             ",
+"                БИН 131240010479                ",
+"НДС Серия 00000                        № 0000000",
+"------------------------------------------------",
+"                     КОФД 2                     ",
+"                    Смена 178                   ",
+"            Порядковый номер чека №2            ",
+"Чек №925871425876",
+"Кассир webkassa4@softit.kz",
+"ПРОДАЖА",
+"------------------------------------------------",
+"  1. Позиция чека 1",
+"   123,456 шт x 123,45",
+"   Скидка                                 -12,00",
+"   Наценка                                +13,00",
+"   Стоимость                           15 241,64",
+"  2. Позиция чека 2",
+"   12,456 шт x 12,45",
+"   Скидка                                 -12,00",
+"   Наценка                                +13,00",
+"   Стоимость                              156,08",
+"  3. Позиция чека 1",
+"   2 шт x 23,00",
+"   Стоимость                               46,00",
+"------------------------------------------------",
+"Наличные:                                 800,00",
+"Банковская карта:                      14 597,72",
+"Наличные:                                  46,00",
+"Скидка:                                    24,00",
+"Наценка:                                   26,00",
+"ИТОГО:                                  15443,72",
+"в т.ч. НДС 12%:                          1649,75",
+"------------------------------------------------",
+"Фискальный признак: 925871425876",
+"Время: 26.08.2022 21:00:14",
+"тест",
+"Оператор фискальных данных: АО \"КазТранском\"",
+"Для проверки чека зайдите на сайт: ",
+"dev.kofd.kz/consumer",
+"------------------------------------------------",
+"                 ФИСКАЛЬНЫЙ ЧЕK                 ",
+"http://dev.kofd.kz/consumer?i=925871425876&f=211030200207&s=15443.72&t=20220826T210014",
+"                  ИНК ОФД: 270                  ",
+"         Код ККМ КГД (РНМ): 211030200207        ",
+"                ЗНМ: SWK00032685                ",
+"                   WEBKASSA.KZ                  ",
+
+
+
+*)
+procedure TWebkassaImpl.PrintReceipt(Receipt: TSalesReceipt;
+  Command: TSendReceiptCommand);
 var
   i: Integer;
-  TextStyle: Integer;
-  Item: TReceiptTextItem;
-  Command: TReceiptTextCommand;
+  TextItem: TRecTexItem;
+  ReceiptItem: TReceiptItem;
+  RecItem: TSalesReceiptItem;
+  ItemAdjustment: TItemAdjustment;
+  TotalAdjustment: TTotalAdjustment;
+  ItemQuantity: Double;
+  UnitPrice: Currency;
+  AdjustmentName: WideString;
 begin
   Document.Clear;
-  Command := TReceiptTextCommand.Create;
-  try
-    Command.Request.token := FClient.Token;
-    Command.Request.CashboxUniqueNumber := FClient.CashboxNumber;
-    Command.Request.externalCheckNumber := ACheckNumber;
-    Command.Request.isDuplicate := IsDuplicate;
-    Command.Request.paperKind := GetPaperKind(Printer.RecLineWidth);
-    FClient.ReadReceiptText(Command);
+  Document.AddText(Params.Header);
+  Document.Addlines(Format('НДС Серия %.5d', [Params.VATSeries]),
+    Format('№ %.7d', [Params.VATNumber]));
+  Document.AddSeparator;
+  Document.Add(AlignCenter(FCashBox.Name, Document.LineChars));
+  Document.Add(AlignCenter(Format('Смена %d', [Command.Data.ShiftNumber]), Document.LineChars));
+  //Document.Add(AlignCenter(Format('Порядковый номер чека №%d', [Command.Data.DocumentNumber])));
+  Document.Add(Format('Чек №%s', [Command.Data.CheckNumber]));
+  Document.Add(Format('Кассир %s', [Command.Data.EmployeeName]));
+  //Document.Add(UpperCase(Command.Data.OperationTypeText));
+  Document.AddSeparator;
 
-    Document.AddText(Params.Header);
-    for i := 0 to Command.Data.Lines.Count-1 do
+
+  for i := 0 to Receipt.Items.Count-1 do
+  begin
+    ReceiptItem := Receipt.Items[i];
+    if ReceiptItem is TSalesReceiptItem then
     begin
-      Item := Command.Data.Lines.Items[i] as TReceiptTextItem;
-      if Item._Type = ItemTypeText then
-      begin
-        TextStyle := STYLE_NORMAL;
-        (*
-        if Item.Style = TextStyleBold then
-          TextStyle := STYLE_DWIDTH_HEIGHT;
-        *)
+      RecItem := ReceiptItem as TSalesReceiptItem;
+      Document.Add(Format('%-3d. %s', [RecItem.Number, RecItem.Description]));
 
-        Document.Add(Item.Value, TextStyle);
-      end;
-      if Item._Type = ItemTypePicture then
+      ItemQuantity := 1;
+      UnitPrice := RecItem.Price;
+      if RecItem.Quantity <> 0 then
       begin
-        Document.Add(Item.Value, STYLE_IMAGE);
+        ItemQuantity := RecItem.Quantity;
+        UnitPrice := RecItem.UnitPrice;
       end;
-      if Item._Type = ItemTypeQRCode then
+      Document.Add(Format('   %.3f %s x %s', [ItemQuantity,
+        RecItem.UnitName, CurrencyToStr(UnitPrice)]));
+
+      RecItem.GetDiscount
+    end;
+    // Text
+    if ReceiptItem is TRecTexItem then
+    begin
+      TextItem := ReceiptItem as TRecTexItem;
+      Document.Add(TextItem.Text, TextItem.Style);
+    end;
+    // Скидка на позицию
+    if ReceiptItem is TItemAdjustment then
+    begin
+      AdjustmentName := '';
+      ItemAdjustment := ReceiptItem as TItemAdjustment;
+      if (ItemAdjustment.AdjustmentType = FPTR_AT_PERCENTAGE_DISCOUNT) or
+        (ItemAdjustment.AdjustmentType = FPTR_AT_PERCENTAGE_SURCHARGE) then
       begin
-        Document.Add(Item.Value, STYLE_QR_CODE);
+        AdjustmentName := Format('%% %.2f', [ItemAdjustment.Amount]);
+      end;
+
+      if ItemAdjustment.GetTotal < 0 then
+      begin
+        Document.AddLines('   Скидка ' + AdjustmentName,
+          '-' + CurrencyToStr(ItemAdjustment.GetTotal));
+      end else
+      begin
+        Document.AddLines('   Наценка ' + AdjustmentName,
+          '+' + CurrencyToStr(ItemAdjustment.GetTotal));
       end;
     end;
-    Printer.RecLineChars := FMaxRecLineChars;
-    Document.AddText(Params.Trailer);
-
-    PrintDocumentSafe(Document);
-    Printer.RecLineChars := FRecLineChars;
-  finally
-    Command.Free;
+    // Скидка на чек
+    if ReceiptItem is TTotalAdjustment then
+    begin
+      TotalAdjustment := ReceiptItem as TTotalAdjustment;
+      if TotalAdjustment.GetTotal < 0 then
+      begin
+        Document.AddLines('   Скидка на чек', '-' + CurrencyToStr(TotalAdjustment.GetTotal));
+      end else
+      begin
+        Document.AddLines('   Наценка на чек', '+' + CurrencyToStr(TotalAdjustment.GetTotal));
+      end;
+    end;
   end;
+  Printer.RecLineChars := FMaxRecLineChars;
+  Document.AddText(Params.Trailer);
+  PrintDocumentSafe(Document);
+  Printer.RecLineChars := FRecLineChars;
 end;
 
 procedure TWebkassaImpl.CheckCanPrint;
