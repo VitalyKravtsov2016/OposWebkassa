@@ -43,6 +43,7 @@ type
     procedure AddLines(const Line1, Line2: string; Style: Integer); overload;
     procedure Add(const Line: string; Style: Integer); overload;
     procedure AddCurrency(const Line: string; Value: Currency);
+    function AlignCenter(const Line: WideString): WideString;
 
     property Items: TTextItems read FItems;
     property LineChars: Integer read FLineChars write FLineChars;
@@ -69,7 +70,22 @@ type
     property Text: WideString read FText;
   end;
 
+function AlignCenter2(const Line: WideString; LineWidth: Integer): WideString;
+
 implementation
+
+function AlignCenter2(const Line: WideString; LineWidth: Integer): WideString;
+var
+  L: Integer;
+begin
+  Result := Copy(Line, 1, LineWidth);
+  if Length(Result) < LineWidth then
+  begin
+    L := (LineWidth - Length(Result)) div 2;
+    Result := StringOfChar(' ', L) + Result + StringOfChar(' ', LineWidth - Length(Result) - L);
+  end;
+end;
+
 
 { TTextDocument }
 
@@ -177,6 +193,11 @@ end;
 procedure TTextDocument.AddSeparator;
 begin
   Add(StringOfChar('-', LineChars));
+end;
+
+function TTextDocument.AlignCenter(const Line: WideString): WideString;
+begin
+  Result := AlignCenter2(Line, LineChars);
 end;
 
 { TTextItems }

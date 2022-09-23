@@ -14,6 +14,8 @@ type
   { TMockPOSPrinter }
 
   TMockPOSPrinter = class(TComponent, IOPOSPOSPrinter)
+  private
+    FLines: TStringList;
   public
     FOpenResult: Integer;
     FCheckHealthText: WideString;
@@ -165,6 +167,9 @@ type
     FCapSlpRuledLine: Integer;
 
     constructor Create(AOwner: Tcomponent); override;
+    destructor Destroy; override;
+
+    property Lines: TStringList read FLines;
   public
     // IOPOSPOSPrinter_1_5
     procedure SODataDummy(Status: Integer); safecall;
@@ -554,6 +559,7 @@ implementation
 constructor TMockPOSPrinter.Create(AOwner: Tcomponent);
 begin
   inherited Create(AOwner);
+  FLines := TStringList.Create;
   FCapConcurrentJrnRec := True;
   FCapConcurrentJrnSlp := True;
   FCapConcurrentRecSlp := True;
@@ -622,6 +628,12 @@ begin
   FCapSlpPageMode := True;
   FCapRecRuledLine := 0;
   FCapSlpRuledLine := 0;
+end;
+
+destructor TMockPOSPrinter.Destroy;
+begin
+  FLines.Free;
+  inherited Destroy;
 end;
 
 function TMockPOSPrinter.BeginInsertion(Timeout: Integer): Integer;
@@ -1483,6 +1495,7 @@ function TMockPOSPrinter.PrintNormal(Station: Integer;
   const Data: WideString): Integer;
 begin
   Result := 0;
+  FLines.AddObject(Data, TObject(Station));
 end;
 
 function TMockPOSPrinter.PrintTwoNormal(Stations: Integer; const Data1,

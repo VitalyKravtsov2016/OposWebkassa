@@ -21,11 +21,14 @@ type
   private
     FChange: Currency;
     FIsRefund: Boolean;
+    FRecItems: TList;
     FPayments: TPayments;
     FItems: TReceiptItems;
-    FAdjustments: TList;
-    FRecItems: TList;
+    FAdjustments: TAdjustments;
     FAmountDecimalPlaces: Integer;
+    FExternalCheckNumber: WideString;
+    FFiscalSign: WideString;
+
     function RoundAmount(Amount: Currency): Currency;
     function AddItem: TSalesReceiptItem;
   protected
@@ -43,8 +46,11 @@ type
     constructor CreateReceipt(AIsRefund: Boolean; AAmountDecimalPlaces: Integer);
     destructor Destroy; override;
 
+    function GetCharge: Currency;
+    function GetDiscount: Currency;
     function GetTotal: Currency; override;
     function GetPayment: Currency; override;
+    function GetTotalByVAT(VatInfo: Integer): Currency;
 
     procedure PrintRecVoid(const Description: WideString); override;
 
@@ -113,9 +119,13 @@ type
     property Change: Currency read FChange;
     property Items: TReceiptItems read FItems;
     property IsRefund: Boolean read FIsRefund;
+    property Charge: Currency read GetCharge;
+    property Discount: Currency read GetDiscount;
     property Payments: TPayments read FPayments;
-    property Adjustments: TList read FAdjustments;
+    property Adjustments: TAdjustments read FAdjustments;
     property AmountDecimalPlaces: Integer read FAmountDecimalPlaces;
+    property ExternalCheckNumber: WideString read FExternalCheckNumber;
+    property FiscalSign: WideString read FFiscalSign;
   end;
 
 implementation
@@ -154,9 +164,9 @@ begin
 
   FAmountDecimalPlaces := AAmountDecimalPlaces;
 
-  FItems := TReceiptItems.Create;
   FRecItems := TList.Create;
-  FAdjustments := TList.Create;
+  FItems := TReceiptItems.Create;
+  FAdjustments := TAdjustments.Create;
 end;
 
 destructor TSalesReceipt.Destroy;
@@ -165,6 +175,16 @@ begin
   FRecItems.Free;
   FAdjustments.Free;
   inherited Destroy;
+end;
+
+function TSalesReceipt.GetCharge: Currency;
+begin
+  Result := Adjustments.GetCharge;
+end;
+
+function TSalesReceipt.GetDiscount: Currency;
+begin
+  Result := Adjustments.GetDiscount;
 end;
 
 procedure TSalesReceipt.Print(AVisitor: TObject);
@@ -507,6 +527,11 @@ begin
   Result := FItems.GetTotal;
 end;
 
+function TSalesReceipt.GetTotalByVAT(VatInfo: Integer): Currency;
+begin
+  Result := FItems.GetTotal;
+end;
+
 function TSalesReceipt.GetPayment: Currency;
 begin
   Result := FPayments[0] + FPayments[1] + FPayments[2] + FPayments[3];
@@ -545,9 +570,13 @@ const
   DIO_SET_DRIVER_PARAMETER        = 30; // write internal driver parameter
   DriverParameterBarcode          = 80;
 begin
-  if (Command = DIO_SET_DRIVER_PARAMETER)and(pData = DriverParameterBarcode) then
+  if Command = DIO_SET_DRIVER_PARAMETER then
   begin
-    GetLastItem.MarkCode := pString;
+    case pData of
+      DriverParameterBarcode: GetLastItem.MarkCode := pString;
+      DriverParameterExternalCheckNumber: FExternalCheckNumber := pString;
+      DriverParameterFiscalSign: FFiscalSign := pString;
+    end;
   end;
 end;
 

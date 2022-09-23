@@ -65,7 +65,7 @@ type
     FPrinterState: TFiscalPrinterState;
     FVatValues: array [MinVatID..MaxVatID] of Integer;
     FRecLineChars: Integer;
-    FMaxRecLineChars: Integer;
+
     procedure PrintDocumentSafe(Document: TTextDocument);
     procedure CheckCanPrint;
     function GetVatRate(Code: Integer): TVatRate;
@@ -365,18 +365,6 @@ begin
     Result := Tnt_WideFormat('%.2f', [Value]);
   finally
     DecimalSeparator := SaveDecimalSeparator;
-  end;
-end;
-
-function AlignCenter(const Line: WideString; LineWidth: Integer): WideString;
-var
-  L: Integer;
-begin
-  Result := Copy(Line, 1, LineWidth);
-  if Length(Result) < LineWidth then
-  begin
-    L := (LineWidth - Length(Result)) div 2;
-    Result := StringOfChar(' ', L) + Result + StringOfChar(' ', LineWidth - Length(Result) - L);
   end;
 end;
 
@@ -786,18 +774,17 @@ end;
 
 function TWebkassaImpl.DirectIO(Command: Integer; var pData: Integer;
   var pString: WideString): Integer;
-const
-  DIO_SET_DRIVER_PARAMETER        = 30; // write internal driver parameter
-  DIO_WRITE_FS_STRING_TAG_OP      = 65; // Write string tag bound to operation
-  DIO_READ_FS_PARAMETER           = 41; // Read fiscal storage parameter
-  DIO_FS_PARAMETER_LAST_DOC_NUM2  = 11; // Document number
-  DriverParameterBarcode                  = 80;
 begin
   try
     FOposDevice.CheckOpened;
-    if (Command = DIO_SET_DRIVER_PARAMETER)and(pData = DriverParameterBarcode) then
+    if Command = DIO_SET_DRIVER_PARAMETER then
     begin
-      Receipt.DirectIO(Command, pData, pString);
+      case pData of
+        DriverParameterBarcode,
+        DriverParameterExternalCheckNumber,
+        DriverParameterFiscalSign:
+          Receipt.DirectIO(Command, pData, pString);
+      end;
     end;
     Result := ClearResult;
   except
@@ -1570,16 +1557,16 @@ begin
     Document.AddLines('ЗНМ', Command.Data.CashboxSN);
     Document.AddLines('Код ККМ КГД (РНМ)', IntToStr(Command.Data.CashboxIN));
     if IsZReport then
-      Document.Add(AlignCenter('Z-ОТЧЕТ', Document.LineChars))
+      Document.Add(Document.AlignCenter('Z-ОТЧЕТ'))
     else
-      Document.Add(AlignCenter('X-ОТЧЕТ', Document.LineChars));
-    Document.Add(AlignCenter(Format('СМЕНА №%d', [Command.Data.ShiftNumber]), Document.LineChars));
-    Document.Add(AlignCenter(Format('%s-%s', [Command.Data.StartOn, Command.Data.ReportOn]), Document.LineChars));
+      Document.Add(Document.AlignCenter('X-ОТЧЕТ'));
+    Document.Add(Document.AlignCenter(Format('СМЕНА №%d', [Command.Data.ShiftNumber])));
+    Document.Add(Document.AlignCenter(Format('%s-%s', [Command.Data.StartOn, Command.Data.ReportOn])));
     Node := Doc.Field['Data'].Field['Sections'];
     if Node.Count > 0 then
     begin
       Document.Add(Separator);
-      Document.Add(AlignCenter('ОТЧЕТ ПО СЕКЦИЯМ', Document.LineChars));
+      Document.Add(Document.AlignCenter('ОТЧЕТ ПО СЕКЦИЯМ'));
       Document.Add(Separator);
       for i := 0 to Node.Count-1 do
       begin
@@ -1592,9 +1579,9 @@ begin
     end;
     Document.Add(Separator);
     if IsZReport then
-      Document.Add(AlignCenter('ОТЧЕТ С ГАШЕНИЕМ', Document.LineChars))
+      Document.Add(Document.AlignCenter('ОТЧЕТ С ГАШЕНИЕМ'))
     else
-      Document.Add(AlignCenter('ОТЧЕТ БЕЗ ГАШЕНИЯ', Document.LineChars));
+      Document.Add(Document.AlignCenter('ОТЧЕТ БЕЗ ГАШЕНИЯ'));
     Document.Add(Separator);
     Document.Add('НЕОБНУЛ. СУММЫ НА НАЧАЛО СМЕНЫ');
     Document.AddLines('ПРОДАЖ', CurrencyToStr(Command.Data.StartNonNullable.Sell));
@@ -2105,7 +2092,6 @@ begin
     FOposDevice.DeviceEnabled := Value;
     Printer.DeviceEnabled := Value;
     FRecLineChars := Printer.RecLineChars;
-    FMaxRecLineChars := GetMaxRecLine(Printer.RecLineCharsList);
   end;
 end;
 
@@ -2439,6 +2425,7 @@ procedure TWebkassaImpl.PrintReceipt(Receipt: TSalesReceipt;
   Command: TSendReceiptCommand);
 var
   i: Integer;
+  VatRate: TVatRate;
   Amount: Currency;
   TextItem: TRecTexItem;
   ReceiptItem: TReceiptItem;
@@ -2454,8 +2441,8 @@ begin
   Document.Addlines(Format('НДС Серия %.5d', [Params.VATSeries]),
     Format('№ %.7d', [Params.VATNumber]));
   Document.AddSeparator;
-  Document.Add(AlignCenter(FCashBox.Name, Document.LineChars));
-  Document.Add(AlignCenter(Format('Смена %d', [Command.Data.ShiftNumber]), Document.LineChars));
+  Document.Add(Document.AlignCenter(FCashBox.Name));
+  Document.Add(Document.AlignCenter(Format('Смена %d', [Command.Data.ShiftNumber])));
   //Document.Add(AlignCenter(Format('Порядковый номер чека №%d', [Command.Data.DocumentNumber])));
   Document.Add(Format('Чек №%s', [Command.Data.CheckNumber]));
   Document.Add(Format('Кассир %s', [Command.Data.EmployeeName]));
@@ -2513,7 +2500,6 @@ begin
       Document.AddLines(GetPaymentName(i) + ':', CurrencyToStr(Amount));
     end;
   end;
-  (*
   // Скидка на чек
   Amount := Receipt.GetDiscount;
   if Amount <> 0 then
@@ -2527,35 +2513,30 @@ begin
     Document.AddLines('Наценка:', CurrencyToStr(Amount));
   end;
   Document.AddLines('ИТОГО:', CurrencyToStr(Receipt.GetTotal));
-  Amount := Receipt.GetVATAmount;
-  if Amount <> 0 then
+  // VAT amounts
+  for i := 0 to Params.VatRates.Count-1 do
   begin
-    Document.AddLines(Format('в т.ч. НДС %d %%', [VATPercent]),
-      CurrencyToStr(Amount));
+    VatRate := Params.VatRates[i];
+    Amount := Receipt.GetTotalByVAT(VatRate.Code);
+    if Amount <> 0 then
+    begin
+      Document.AddLines(Format('в т.ч. %s', [VATRate.Name]),
+        CurrencyToStr(Amount));
+    end;
   end;
   Document.AddSeparator;
-  Document.AddLines('Фискальный признак:',  );
-  Command.Data.
-*)
-
-
-(*
-"Фискальный признак: 925871425876",
-"Время: 26.08.2022 21:00:14",
-"тест",
-"Оператор фискальных данных: АО \"КазТранском\"",
-"Для проверки чека зайдите на сайт: ",
-"dev.kofd.kz/consumer",
-"------------------------------------------------",
-"                 ФИСКАЛЬНЫЙ ЧЕK                 ",
-"http://dev.kofd.kz/consumer?i=925871425876&f=211030200207&s=15443.72&t=20220826T210014",
-"                  ИНК ОФД: 270                  ",
-"         Код ККМ КГД (РНМ): 211030200207        ",
-"                ЗНМ: SWK00032685                ",
-"                   WEBKASSA.KZ                  ",
-
-*)
-  Printer.RecLineChars := FMaxRecLineChars;
+  Document.AddLines('Фискальный признак:',  Receipt.FiscalSign);
+  Document.AddLines('Время:',  Command.Data.DateTime);
+  Document.AddLines('Оператор фискальных данных:',  Command.Data.Cashbox.Ofd.Name);
+  Document.Add('Для проверки чека зайдите на сайт: ');
+  Document.Add(Command.Data.Cashbox.Ofd.Host);
+  Document.AddSeparator;
+  Document.Add(Document.AlignCenter('ФИСКАЛЬНЫЙ ЧЕK'));
+  Document.Add(Command.Data.TicketUrl);
+  Document.Add(Document.AlignCenter('ИНК ОФД: ' + Command.Data.Cashbox.IdentityNumber));
+  Document.Add(Document.AlignCenter('Код ККМ КГД (РНМ): ' + Command.Data.Cashbox.RegistrationNumber));
+  Document.Add(Document.AlignCenter('ЗНМ: ' + Command.Data.Cashbox.UniqueNumber));
+  Document.Add(Document.AlignCenter('ЗНМ: ' + Command.Data.Cashbox.UniqueNumber));
   Document.AddText(Params.Trailer);
   PrintDocumentSafe(Document);
   Printer.RecLineChars := FRecLineChars;

@@ -10,6 +10,16 @@ uses
   // This
   gnugettext;
 
+const
+  DIO_SET_DRIVER_PARAMETER        = 30; // write internal driver parameter
+  DIO_WRITE_FS_STRING_TAG_OP      = 65; // Write string tag bound to operation
+  DIO_READ_FS_PARAMETER           = 41; // Read fiscal storage parameter
+  DIO_FS_PARAMETER_LAST_DOC_NUM2  = 11; // Document number
+  DriverParameterBarcode                  = 80;
+
+  DriverParameterExternalCheckNumber = 300;
+  DriverParameterFiscalSign          = 301;
+
 type
   { TCustomReceipt }
 

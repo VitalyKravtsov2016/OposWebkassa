@@ -45,6 +45,7 @@ type
     constructor Create(AOwner: TReceiptItems); virtual;
     destructor Destroy; override;
     function GetTotal: Currency; virtual;
+    function GetTotalByVAT(AVatInfo: Integer): Currency; virtual;
   end;
 
   { TSalesReceiptItem }
@@ -63,11 +64,13 @@ type
   public
     constructor Create(AOwner: TReceiptItems); override;
     destructor Destroy; override;
-    function GetTotal: Currency; override;
-    function GetDiscount: Currency;
+
     function GetCharge: Currency;
-    procedure Assign(Item: TSalesReceiptItem);
+    function GetDiscount: Currency;
+    function GetTotal: Currency; override;
+    function GetTotalByVAT(AVatInfo: Integer): Currency; override;
     function AddAdjustment: TAdjustment;
+    procedure Assign(Item: TSalesReceiptItem);
 
     property Total: Currency read GetTotal;
     property Price: Currency read FPrice write FPrice;
@@ -115,6 +118,7 @@ type
     procedure Assign(Item: TAdjustment);
     function IsDiscount: Boolean;
     function GetTotal: Currency; override;
+    function GetTotalByVAT(AVatInfo: Integer): Currency; override;
 
     property Total: Currency read FTotal write FTotal;
     property Amount: Currency read FAmount write FAmount;
@@ -234,6 +238,11 @@ begin
   Result := 0;
 end;
 
+function TReceiptItem.GetTotalByVAT(AVatInfo: Integer): Currency;
+begin
+  Result := 0;
+end;
+
 { TSalesReceiptItem }
 
 constructor TSalesReceiptItem.Create(AOwner: TReceiptItems);
@@ -286,6 +295,13 @@ begin
   Result := FAdjustments.GetDiscount;
 end;
 
+function TSalesReceiptItem.GetTotalByVAT(AVatInfo: Integer): Currency;
+begin
+  Result := 0;
+  if VatInfo = AVatInfo then
+    Result := FPrice;
+end;
+
 { TAdjustment }
 
 procedure TAdjustment.Assign(Item: TAdjustment);
@@ -311,6 +327,13 @@ end;
 function TAdjustment.GetTotal: Currency;
 begin
   Result := FTotal;
+end;
+
+function TAdjustment.GetTotalByVAT(AVatInfo: Integer): Currency;
+begin
+  Result := 0;
+  if VatInfo = AVatInfo then
+    Result := FTotal;
 end;
 
 { TAdjustments }

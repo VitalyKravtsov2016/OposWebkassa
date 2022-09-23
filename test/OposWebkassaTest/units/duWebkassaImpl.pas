@@ -69,6 +69,7 @@ type
   published
     procedure OpenClaimEnable;
     procedure TestFiscalReceipt;
+    procedure TestFiscalReceipt2;
     procedure TestCoverError;
     procedure TestRecEmpty;
     procedure TestStatusUpateEvent;
@@ -340,6 +341,25 @@ begin
   finally
     ErrorResult.Free;
   end;
+end;
+
+procedure TWebkassaImplTest.TestFiscalReceipt2;
+begin
+  OpenClaimEnable;
+
+  CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
+  CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
+  CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
+
+  FptrCheck(Driver.BeginFiscalReceipt(False));
+  CheckEquals(FPTR_PS_FISCAL_RECEIPT, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+  FptrCheck(Driver.PrintRecItem('Item 1', 123.45, 1000, 0, 123.45, 'Í„'));
+  FptrCheck(Driver.PrintRecTotal(123.45, 123.45, '1'));
+  CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+  CheckEquals(OPOS_SUCCESS, Driver.EndFiscalReceipt(False));
+
+  CheckEquals(0, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
 end;
 
 procedure TWebkassaImplTest.TestCoverError;

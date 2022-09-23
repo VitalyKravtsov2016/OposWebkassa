@@ -21,6 +21,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
+
     procedure Clear;
     function Add(ACode: Integer; ARate: Double; const AName: string): TVatRate;
     function ItemByCode(Code: Integer): TVatRate;
@@ -37,6 +38,7 @@ type
     FCode: Integer;
     FRate: Double;
     FName: WideString;
+    FTotal: Currency;
     procedure SetOwner(AOwner: TVatRates);
   public
     constructor Create(AOwner: TVatRates; ACode: Integer; ARate: Double;
@@ -48,6 +50,7 @@ type
     property Rate: Double read FRate write FRate;
     property Code: Integer read FCode write FCode;
     property Name: WideString read FName write FName;
+    property Total: Currency read FTotal write FTotal;
   end;
 
 implementation
