@@ -8,109 +8,111 @@
   resources were bound to the produced executable.
 */
 
-#define SynEditStrConst_SYNS_ScrollInfoFmt 65200
-#define SynEditStrConst_SYNS_ScrollInfoFmtTop 65201
-#define SynEditStrConst_SYNS_EDuplicateShortcut 65202
-#define SynEditStrConst_SYNS_FilterXML 65203
-#define SynEditStrConst_SYNS_LangXML 65204
-#define SynEditTextBuffer_SListIndexOutOfBounds 65205
-#define SynEditTextBuffer_SInvalidCapacity 65206
-#define OleConst_SInvalidLicense 65216
-#define OleConst_SNotLicensed 65217
-#define OleConst_sNoRunningObject 65218
-#define SynEditStrConst_SYNS_AttrAttributeName 65219
-#define SynEditStrConst_SYNS_AttrAttributeValue 65220
-#define SynEditStrConst_SYNS_AttrCDATASection 65221
-#define SynEditStrConst_SYNS_AttrComment 65222
-#define SynEditStrConst_SYNS_AttrDOCTYPESection 65223
-#define SynEditStrConst_SYNS_AttrElementName 65224
-#define SynEditStrConst_SYNS_AttrEntityReference 65225
-#define SynEditStrConst_SYNS_AttrNamespaceAttrName 65226
-#define SynEditStrConst_SYNS_AttrNamespaceAttrValue 65227
-#define SynEditStrConst_SYNS_AttrProcessingInstr 65228
-#define SynEditStrConst_SYNS_AttrSymbol 65229
-#define SynEditStrConst_SYNS_AttrText 65230
-#define SynEditStrConst_SYNS_AttrWhitespace 65231
-#define ComStrs_sNeedAllowNone 65232
-#define ComStrs_sFailSetCalDateTime 65233
-#define ComStrs_sFailSetCalMaxSelRange 65234
-#define ComStrs_sFailSetCalMinMaxRange 65235
-#define ComStrs_sFailsetCalSelRange 65236
-#define WinHelpViewer_hNoKeyword 65237
-#define ComConst_SOleError 65238
-#define ComConst_SNoMethod 65239
-#define ComConst_SVarNotObject 65240
-#define ComConst_STooManyParams 65241
-#define ComConst_SDCOMNotInstalled 65242
-#define TntSystem_SBufferOverflow 65243
-#define TntSystem_SInvalidUTF7 65244
-#define TntFormatStrUtils_SInvalidFormatSpecifier 65245
-#define OleConst_SCannotActivate 65246
-#define OleConst_SNoWindowHandle 65247
-#define ExtCtrls_clNameWindow 65248
-#define ExtCtrls_clNameWindowFrame 65249
-#define ExtCtrls_clNameWindowText 65250
-#define ComStrs_sTabFailClear 65251
-#define ComStrs_sTabFailDelete 65252
-#define ComStrs_sTabFailRetrieve 65253
-#define ComStrs_sTabFailGetObject 65254
-#define ComStrs_sTabFailSet 65255
-#define ComStrs_sTabFailSetObject 65256
-#define ComStrs_sTabMustBeMultiLine 65257
-#define ComStrs_sInvalidOwner 65258
-#define ComStrs_sRichEditInsertError 65259
-#define ComStrs_sPageIndexError 65260
-#define ComStrs_sInvalidComCtl32 65261
-#define ComStrs_sDateTimeMax 65262
-#define ComStrs_sDateTimeMin 65263
-#define ExtCtrls_clNameCaptionText 65264
-#define ExtCtrls_clNameDefault 65265
-#define ExtCtrls_clNameGrayText 65266
-#define ExtCtrls_clNameHighlight 65267
-#define ExtCtrls_clNameHighlightText 65268
-#define ExtCtrls_clNameInactiveBorder 65269
-#define ExtCtrls_clNameInactiveCaption 65270
-#define ExtCtrls_clNameInactiveCaptionText 65271
-#define ExtCtrls_clNameInfoBk 65272
-#define ExtCtrls_clNameInfoText 65273
-#define ExtCtrls_clNameMenu 65274
-#define ExtCtrls_clNameMenuText 65275
-#define ExtCtrls_clNameNone 65276
-#define ExtCtrls_clNameScrollBar 65277
-#define ExtCtrls_clName3DDkShadow 65278
-#define ExtCtrls_clName3DLight 65279
-#define ExtCtrls_clNameBlue 65280
-#define ExtCtrls_clNameFuchsia 65281
-#define ExtCtrls_clNameAqua 65282
-#define ExtCtrls_clNameWhite 65283
-#define ExtCtrls_clNameMoneyGreen 65284
-#define ExtCtrls_clNameSkyBlue 65285
-#define ExtCtrls_clNameCream 65286
-#define ExtCtrls_clNameMedGray 65287
-#define ExtCtrls_clNameActiveBorder 65288
-#define ExtCtrls_clNameActiveCaption 65289
-#define ExtCtrls_clNameAppWorkSpace 65290
-#define ExtCtrls_clNameBackground 65291
-#define ExtCtrls_clNameBtnFace 65292
-#define ExtCtrls_clNameBtnHighlight 65293
-#define ExtCtrls_clNameBtnShadow 65294
-#define ExtCtrls_clNameBtnText 65295
-#define HelpIntfs_hNoTableOfContents 65296
-#define HelpIntfs_hNothingFound 65297
-#define HelpIntfs_hNoContext 65298
-#define HelpIntfs_hNoTopics 65299
-#define ExtCtrls_clNameBlack 65300
-#define ExtCtrls_clNameMaroon 65301
-#define ExtCtrls_clNameGreen 65302
-#define ExtCtrls_clNameOlive 65303
-#define ExtCtrls_clNameNavy 65304
-#define ExtCtrls_clNamePurple 65305
-#define ExtCtrls_clNameTeal 65306
-#define ExtCtrls_clNameGray 65307
-#define ExtCtrls_clNameSilver 65308
-#define ExtCtrls_clNameRed 65309
-#define ExtCtrls_clNameLime 65310
-#define ExtCtrls_clNameYellow 65311
+#define SynEditStrConst_SYNS_FriendlyAttrWhitespace 65200
+#define SynEditStrConst_SYNS_ScrollInfoFmt 65201
+#define SynEditStrConst_SYNS_ScrollInfoFmtTop 65202
+#define SynEditStrConst_SYNS_EDuplicateShortcut 65203
+#define SynEditStrConst_SYNS_FilterXML 65204
+#define SynEditStrConst_SYNS_FriendlyLangXML 65205
+#define SynEditStrConst_SYNS_FriendlyLangUnknown 65206
+#define SynEditTextBuffer_SListIndexOutOfBounds 65207
+#define SynEditTextBuffer_SInvalidCapacity 65208
+#define OleConst_SNoWindowHandle 65216
+#define OleConst_SInvalidLicense 65217
+#define OleConst_SNotLicensed 65218
+#define OleConst_sNoRunningObject 65219
+#define SynEditStrConst_SYNS_FriendlyAttrAttributeName 65220
+#define SynEditStrConst_SYNS_FriendlyAttrAttributeValue 65221
+#define SynEditStrConst_SYNS_FriendlyAttrCDATASection 65222
+#define SynEditStrConst_SYNS_FriendlyAttrComment 65223
+#define SynEditStrConst_SYNS_FriendlyAttrDOCTYPESection 65224
+#define SynEditStrConst_SYNS_FriendlyAttrElementName 65225
+#define SynEditStrConst_SYNS_FriendlyAttrEntityReference 65226
+#define SynEditStrConst_SYNS_FriendlyAttrNamespaceAttrName 65227
+#define SynEditStrConst_SYNS_FriendlyAttrNamespaceAttrValue 65228
+#define SynEditStrConst_SYNS_FriendlyAttrProcessingInstr 65229
+#define SynEditStrConst_SYNS_FriendlyAttrSymbol 65230
+#define SynEditStrConst_SYNS_FriendlyAttrText 65231
+#define ComStrs_sDateTimeMin 65232
+#define ComStrs_sNeedAllowNone 65233
+#define ComStrs_sFailSetCalDateTime 65234
+#define ComStrs_sFailSetCalMaxSelRange 65235
+#define ComStrs_sFailSetCalMinMaxRange 65236
+#define ComStrs_sFailsetCalSelRange 65237
+#define WinHelpViewer_hNoKeyword 65238
+#define ComConst_SOleError 65239
+#define ComConst_SNoMethod 65240
+#define ComConst_SVarNotObject 65241
+#define ComConst_STooManyParams 65242
+#define ComConst_SDCOMNotInstalled 65243
+#define TntSystem_SBufferOverflow 65244
+#define TntSystem_SInvalidUTF7 65245
+#define TntFormatStrUtils_SInvalidFormatSpecifier 65246
+#define OleConst_SCannotActivate 65247
+#define ExtCtrls_clName3DLight 65248
+#define ExtCtrls_clNameWindow 65249
+#define ExtCtrls_clNameWindowFrame 65250
+#define ExtCtrls_clNameWindowText 65251
+#define ComStrs_sTabFailClear 65252
+#define ComStrs_sTabFailDelete 65253
+#define ComStrs_sTabFailRetrieve 65254
+#define ComStrs_sTabFailGetObject 65255
+#define ComStrs_sTabFailSet 65256
+#define ComStrs_sTabFailSetObject 65257
+#define ComStrs_sTabMustBeMultiLine 65258
+#define ComStrs_sInvalidOwner 65259
+#define ComStrs_sRichEditInsertError 65260
+#define ComStrs_sPageIndexError 65261
+#define ComStrs_sInvalidComCtl32 65262
+#define ComStrs_sDateTimeMax 65263
+#define ExtCtrls_clNameBtnText 65264
+#define ExtCtrls_clNameCaptionText 65265
+#define ExtCtrls_clNameDefault 65266
+#define ExtCtrls_clNameGrayText 65267
+#define ExtCtrls_clNameHighlight 65268
+#define ExtCtrls_clNameHighlightText 65269
+#define ExtCtrls_clNameInactiveBorder 65270
+#define ExtCtrls_clNameInactiveCaption 65271
+#define ExtCtrls_clNameInactiveCaptionText 65272
+#define ExtCtrls_clNameInfoBk 65273
+#define ExtCtrls_clNameInfoText 65274
+#define ExtCtrls_clNameMenu 65275
+#define ExtCtrls_clNameMenuText 65276
+#define ExtCtrls_clNameNone 65277
+#define ExtCtrls_clNameScrollBar 65278
+#define ExtCtrls_clName3DDkShadow 65279
+#define ExtCtrls_clNameYellow 65280
+#define ExtCtrls_clNameBlue 65281
+#define ExtCtrls_clNameFuchsia 65282
+#define ExtCtrls_clNameAqua 65283
+#define ExtCtrls_clNameWhite 65284
+#define ExtCtrls_clNameMoneyGreen 65285
+#define ExtCtrls_clNameSkyBlue 65286
+#define ExtCtrls_clNameCream 65287
+#define ExtCtrls_clNameMedGray 65288
+#define ExtCtrls_clNameActiveBorder 65289
+#define ExtCtrls_clNameActiveCaption 65290
+#define ExtCtrls_clNameAppWorkSpace 65291
+#define ExtCtrls_clNameBackground 65292
+#define ExtCtrls_clNameBtnFace 65293
+#define ExtCtrls_clNameBtnHighlight 65294
+#define ExtCtrls_clNameBtnShadow 65295
+#define Consts_SNoGetItemEventHandler 65296
+#define HelpIntfs_hNoTableOfContents 65297
+#define HelpIntfs_hNothingFound 65298
+#define HelpIntfs_hNoContext 65299
+#define HelpIntfs_hNoTopics 65300
+#define ExtCtrls_clNameBlack 65301
+#define ExtCtrls_clNameMaroon 65302
+#define ExtCtrls_clNameGreen 65303
+#define ExtCtrls_clNameOlive 65304
+#define ExtCtrls_clNameNavy 65305
+#define ExtCtrls_clNamePurple 65306
+#define ExtCtrls_clNameTeal 65307
+#define ExtCtrls_clNameGray 65308
+#define ExtCtrls_clNameSilver 65309
+#define ExtCtrls_clNameRed 65310
+#define ExtCtrls_clNameLime 65311
 #define Consts_SmkcShift 65312
 #define Consts_SmkcCtrl 65313
 #define Consts_SmkcAlt 65314
@@ -124,9 +126,9 @@
 #define Consts_SDockTreeRemoveError 65322
 #define Consts_SDockZoneNotFound 65323
 #define Consts_SDockZoneHasNoCtl 65324
-#define Consts_SErrorSettingCount 65325
-#define Consts_SListBoxMustBeVirtual 65326
-#define Consts_SNoGetItemEventHandler 65327
+#define Consts_STextNotFound 65325
+#define Consts_SErrorSettingCount 65326
+#define Consts_SListBoxMustBeVirtual 65327
 #define Consts_SMsgDlgYesToAll 65328
 #define Consts_SmkcBkSp 65329
 #define Consts_SmkcTab 65330
@@ -337,29 +339,32 @@
 #define SysConst_SRangeError 65535
 STRINGTABLE
 BEGIN
+	SynEditStrConst_SYNS_FriendlyAttrWhitespace,	"Whitespace"
 	SynEditStrConst_SYNS_ScrollInfoFmt,	"%d - %d"
 	SynEditStrConst_SYNS_ScrollInfoFmtTop,	"Top Line: %d"
 	SynEditStrConst_SYNS_EDuplicateShortcut,	"Shortcut already exists"
 	SynEditStrConst_SYNS_FilterXML,	"XML Files (*.xml;*.xsd;*.xsl;*.xslt;*.dtd)|*.xml;*.xsd;*.xsl;*.xslt;*.dtd"
-	SynEditStrConst_SYNS_LangXML,	"XML"
+	SynEditStrConst_SYNS_FriendlyLangXML,	"XML"
+	SynEditStrConst_SYNS_FriendlyLangUnknown,	"<Unknown>"
 	SynEditTextBuffer_SListIndexOutOfBounds,	"Invalid stringlist index %d"
 	SynEditTextBuffer_SInvalidCapacity,	"Stringlist capacity cannot be smaller than count"
+	OleConst_SNoWindowHandle,	"Could not obtain OLE control window handle"
 	OleConst_SInvalidLicense,	"License information for %s is invalid"
 	OleConst_SNotLicensed,	"License information for %s not found. You cannot use this control in design mode"
 	OleConst_sNoRunningObject,	"Unable to retrieve a pointer to a running object registered with OLE for %s/%s"
-	SynEditStrConst_SYNS_AttrAttributeName,	"Attribute Name"
-	SynEditStrConst_SYNS_AttrAttributeValue,	"Attribute Value"
-	SynEditStrConst_SYNS_AttrCDATASection,	"CDATA Section"
-	SynEditStrConst_SYNS_AttrComment,	"Comment"
-	SynEditStrConst_SYNS_AttrDOCTYPESection,	"DOCTYPE Section"
-	SynEditStrConst_SYNS_AttrElementName,	"Element Name"
-	SynEditStrConst_SYNS_AttrEntityReference,	"Entity Reference"
-	SynEditStrConst_SYNS_AttrNamespaceAttrName,	"Namespace Attribute Name"
-	SynEditStrConst_SYNS_AttrNamespaceAttrValue,	"Namespace Attribute Value"
-	SynEditStrConst_SYNS_AttrProcessingInstr,	"Processing Instruction"
-	SynEditStrConst_SYNS_AttrSymbol,	"Symbol"
-	SynEditStrConst_SYNS_AttrText,	"Text"
-	SynEditStrConst_SYNS_AttrWhitespace,	"Whitespace"
+	SynEditStrConst_SYNS_FriendlyAttrAttributeName,	"Attribute Name"
+	SynEditStrConst_SYNS_FriendlyAttrAttributeValue,	"Attribute Value"
+	SynEditStrConst_SYNS_FriendlyAttrCDATASection,	"CDATA Section"
+	SynEditStrConst_SYNS_FriendlyAttrComment,	"Comment"
+	SynEditStrConst_SYNS_FriendlyAttrDOCTYPESection,	"DOCTYPE Section"
+	SynEditStrConst_SYNS_FriendlyAttrElementName,	"Element Name"
+	SynEditStrConst_SYNS_FriendlyAttrEntityReference,	"Entity Reference"
+	SynEditStrConst_SYNS_FriendlyAttrNamespaceAttrName,	"Namespace Attribute Name"
+	SynEditStrConst_SYNS_FriendlyAttrNamespaceAttrValue,	"Namespace Attribute Value"
+	SynEditStrConst_SYNS_FriendlyAttrProcessingInstr,	"Processing Instruction"
+	SynEditStrConst_SYNS_FriendlyAttrSymbol,	"Symbol"
+	SynEditStrConst_SYNS_FriendlyAttrText,	"Text"
+	ComStrs_sDateTimeMin,	"Date is less than minimum of %s"
 	ComStrs_sNeedAllowNone,	"You must be in ShowCheckbox mode to set to this date"
 	ComStrs_sFailSetCalDateTime,	"Failed to set calendar date or time"
 	ComStrs_sFailSetCalMaxSelRange,	"Failed to set maximum selection range"
@@ -375,7 +380,7 @@ BEGIN
 	TntSystem_SInvalidUTF7,	"Invalid UTF7"
 	TntFormatStrUtils_SInvalidFormatSpecifier,	"Invalid Format Specifier: %s"
 	OleConst_SCannotActivate,	"OLE control activation failed"
-	OleConst_SNoWindowHandle,	"Could not obtain OLE control window handle"
+	ExtCtrls_clName3DLight,	"3D Light"
 	ExtCtrls_clNameWindow,	"Window Background"
 	ExtCtrls_clNameWindowFrame,	"Window Frame"
 	ExtCtrls_clNameWindowText,	"Window Text"
@@ -391,7 +396,7 @@ BEGIN
 	ComStrs_sPageIndexError,	"%d is an invalid PageIndex value.  PageIndex must be between 0 and %d"
 	ComStrs_sInvalidComCtl32,	"This control requires version 4.70 or greater of COMCTL32.DLL"
 	ComStrs_sDateTimeMax,	"Date exceeds maximum of %s"
-	ComStrs_sDateTimeMin,	"Date is less than minimum of %s"
+	ExtCtrls_clNameBtnText,	"Button Text"
 	ExtCtrls_clNameCaptionText,	"Caption Text"
 	ExtCtrls_clNameDefault,	"Default"
 	ExtCtrls_clNameGrayText,	"Gray Text"
@@ -407,7 +412,7 @@ BEGIN
 	ExtCtrls_clNameNone,	"None"
 	ExtCtrls_clNameScrollBar,	"Scroll Bar"
 	ExtCtrls_clName3DDkShadow,	"3D Dark Shadow"
-	ExtCtrls_clName3DLight,	"3D Light"
+	ExtCtrls_clNameYellow,	"Yellow"
 	ExtCtrls_clNameBlue,	"Blue"
 	ExtCtrls_clNameFuchsia,	"Fuchsia"
 	ExtCtrls_clNameAqua,	"Aqua"
@@ -423,7 +428,7 @@ BEGIN
 	ExtCtrls_clNameBtnFace,	"Button Face"
 	ExtCtrls_clNameBtnHighlight,	"Button Highlight"
 	ExtCtrls_clNameBtnShadow,	"Button Shadow"
-	ExtCtrls_clNameBtnText,	"Button Text"
+	Consts_SNoGetItemEventHandler,	"No OnGetItem event handler assigned"
 	HelpIntfs_hNoTableOfContents,	"Unable to find a Table of Contents"
 	HelpIntfs_hNothingFound,	"No help found for %s"
 	HelpIntfs_hNoContext,	"No context-sensitive help installed"
@@ -439,7 +444,6 @@ BEGIN
 	ExtCtrls_clNameSilver,	"Silver"
 	ExtCtrls_clNameRed,	"Red"
 	ExtCtrls_clNameLime,	"Lime"
-	ExtCtrls_clNameYellow,	"Yellow"
 	Consts_SmkcShift,	"Shift+"
 	Consts_SmkcCtrl,	"Ctrl+"
 	Consts_SmkcAlt,	"Alt+"
@@ -453,9 +457,9 @@ BEGIN
 	Consts_SDockTreeRemoveError,	"Error removing control from dock tree"
 	Consts_SDockZoneNotFound,	" - Dock zone not found"
 	Consts_SDockZoneHasNoCtl,	" - Dock zone has no control"
+	Consts_STextNotFound,	"Text not found: \"%s\""
 	Consts_SErrorSettingCount,	"Error setting %s.Count"
 	Consts_SListBoxMustBeVirtual,	"Listbox (%s) style must be virtual in order to set Count"
-	Consts_SNoGetItemEventHandler,	"No OnGetItem event handler assigned"
 	Consts_SMsgDlgYesToAll,	"Yes to &All"
 	Consts_SmkcBkSp,	"BkSp"
 	Consts_SmkcTab,	"Tab"
