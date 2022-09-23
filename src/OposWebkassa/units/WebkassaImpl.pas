@@ -2439,6 +2439,7 @@ procedure TWebkassaImpl.PrintReceipt(Receipt: TSalesReceipt;
   Command: TSendReceiptCommand);
 var
   i: Integer;
+  Amount: Currency;
   TextItem: TRecTexItem;
   ReceiptItem: TReceiptItem;
   RecItem: TSalesReceiptItem;
@@ -2479,8 +2480,21 @@ begin
       end;
       Document.Add(Format('   %.3f %s x %s', [ItemQuantity,
         RecItem.UnitName, CurrencyToStr(UnitPrice)]));
-
-      RecItem.GetDiscount
+      // Скидка
+      Amount := RecItem.GetDiscount;
+      if Amount <> 0 then
+      begin
+        Document.AddLines('   Скидка ' + AdjustmentName,
+          '-' + CurrencyToStr(Amount));
+      end;
+      // Наценка
+      Amount := RecItem.GetCharge;
+      if Amount <> 0 then
+      begin
+        Document.AddLines('   Наценка ' + AdjustmentName,
+          '+' + CurrencyToStr(Amount));
+      end;
+      Document.AddLines('   Стоимость', CurrencyToStr(RecItem.GetTotal));
     end;
     // Text
     if ReceiptItem is TRecTexItem then
@@ -2488,40 +2502,59 @@ begin
       TextItem := ReceiptItem as TRecTexItem;
       Document.Add(TextItem.Text, TextItem.Style);
     end;
-    // Скидка на позицию
-    if ReceiptItem is TItemAdjustment then
+  end;
+  Document.AddSeparator;
+  // Payments
+  for i := Low(Receipt.Payments) to High(Receipt.Payments) do
+  begin
+    Amount := Receipt.Payments[i];
+    if Amount <> 0 then
     begin
-      AdjustmentName := '';
-      ItemAdjustment := ReceiptItem as TItemAdjustment;
-      if (ItemAdjustment.AdjustmentType = FPTR_AT_PERCENTAGE_DISCOUNT) or
-        (ItemAdjustment.AdjustmentType = FPTR_AT_PERCENTAGE_SURCHARGE) then
-      begin
-        AdjustmentName := Format('%% %.2f', [ItemAdjustment.Amount]);
-      end;
-
-      if ItemAdjustment.GetTotal < 0 then
-      begin
-        Document.AddLines('   Скидка ' + AdjustmentName,
-          '-' + CurrencyToStr(ItemAdjustment.GetTotal));
-      end else
-      begin
-        Document.AddLines('   Наценка ' + AdjustmentName,
-          '+' + CurrencyToStr(ItemAdjustment.GetTotal));
-      end;
-    end;
-    // Скидка на чек
-    if ReceiptItem is TTotalAdjustment then
-    begin
-      TotalAdjustment := ReceiptItem as TTotalAdjustment;
-      if TotalAdjustment.GetTotal < 0 then
-      begin
-        Document.AddLines('   Скидка на чек', '-' + CurrencyToStr(TotalAdjustment.GetTotal));
-      end else
-      begin
-        Document.AddLines('   Наценка на чек', '+' + CurrencyToStr(TotalAdjustment.GetTotal));
-      end;
+      Document.AddLines(GetPaymentName(i) + ':', CurrencyToStr(Amount));
     end;
   end;
+  (*
+  // Скидка на чек
+  Amount := Receipt.GetDiscount;
+  if Amount <> 0 then
+  begin
+    Document.AddLines('Скидка:', CurrencyToStr(Amount));
+  end;
+  // Наценка на чек
+  Amount := Receipt.GetCharge;
+  if Amount <> 0 then
+  begin
+    Document.AddLines('Наценка:', CurrencyToStr(Amount));
+  end;
+  Document.AddLines('ИТОГО:', CurrencyToStr(Receipt.GetTotal));
+  Amount := Receipt.GetVATAmount;
+  if Amount <> 0 then
+  begin
+    Document.AddLines(Format('в т.ч. НДС %d %%', [VATPercent]),
+      CurrencyToStr(Amount));
+  end;
+  Document.AddSeparator;
+  Document.AddLines('Фискальный признак:',  );
+  Command.Data.
+*)
+
+
+(*
+"Фискальный признак: 925871425876",
+"Время: 26.08.2022 21:00:14",
+"тест",
+"Оператор фискальных данных: АО \"КазТранском\"",
+"Для проверки чека зайдите на сайт: ",
+"dev.kofd.kz/consumer",
+"------------------------------------------------",
+"                 ФИСКАЛЬНЫЙ ЧЕK                 ",
+"http://dev.kofd.kz/consumer?i=925871425876&f=211030200207&s=15443.72&t=20220826T210014",
+"                  ИНК ОФД: 270                  ",
+"         Код ККМ КГД (РНМ): 211030200207        ",
+"                ЗНМ: SWK00032685                ",
+"                   WEBKASSA.KZ                  ",
+
+*)
   Printer.RecLineChars := FMaxRecLineChars;
   Document.AddText(Params.Trailer);
   PrintDocumentSafe(Document);
