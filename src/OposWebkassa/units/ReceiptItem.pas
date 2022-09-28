@@ -70,6 +70,7 @@ type
     function GetCharge: Currency;
     function GetDiscount: Currency;
     function GetTotal: Currency; override;
+    function GetTotalWithDiscount: Currency;
     function GetTotalByVAT(AVatInfo: Integer): Currency; override;
     function AddAdjustment: TAdjustment;
     procedure Assign(Item: TSalesReceiptItem);
@@ -273,6 +274,11 @@ begin
   Result := FPrice;
 end;
 
+function TSalesReceiptItem.GetTotalWithDiscount: Currency;
+begin
+  Result := FPrice + FAdjustments.GetTotal;
+end;
+
 procedure TSalesReceiptItem.Assign(Item: TSalesReceiptItem);
 var
   Src: TSalesReceiptItem;
@@ -310,7 +316,7 @@ function TSalesReceiptItem.GetTotalByVAT(AVatInfo: Integer): Currency;
 begin
   Result := 0;
   if VatInfo = AVatInfo then
-    Result := FPrice;
+    Result := GetTotal;
 end;
 
 { TAdjustment }

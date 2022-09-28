@@ -563,7 +563,7 @@ begin
   FErrorStation := FPTR_S_RECEIPT;
   SetPrinterState(FPTR_PS_MONITOR);
   FQuantityDecimalPlaces := 3;
-  FAmountDecimalPlaces := 0;
+  FAmountDecimalPlaces := 2;
   FQuantityLength := 10;
   FSlipSelection := FPTR_SS_FULL_LENGTH;
   FActualCurrency := FPTR_AC_RUR;
@@ -2478,7 +2478,7 @@ begin
         Document.AddLines('   Наценка ' + AdjustmentName,
           '+' + CurrencyToStr(Amount));
       end;
-      Document.AddLines('   Стоимость', CurrencyToStr(RecItem.GetTotal));
+      Document.AddLines('   Стоимость', CurrencyToStr(RecItem.GetTotalWithDiscount));
     end;
     // Text
     if ReceiptItem is TRecTexItem then
@@ -2510,6 +2510,11 @@ begin
     Document.AddLines('Наценка:', CurrencyToStr(Amount));
   end;
   Document.AddLines('ИТОГО:', CurrencyToStr(Receipt.GetTotal));
+  if Receipt.Change <> 0 then
+  begin
+    Document.AddLines('  СДАЧА:', CurrencyToStr(Receipt.Change));
+  end;
+
   // VAT amounts
   for i := 0 to Params.VatRates.Count-1 do
   begin
@@ -2517,6 +2522,7 @@ begin
     Amount := Receipt.GetTotalByVAT(VatRate.Code);
     if Amount <> 0 then
     begin
+      Amount := Receipt.RoundAmount(Amount * VATRate.Rate / (100 + VATRate.Rate));
       Document.AddLines(Format('в т.ч. %s', [VATRate.Name]),
         CurrencyToStr(Amount));
     end;

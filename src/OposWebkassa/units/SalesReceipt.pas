@@ -19,6 +19,7 @@ type
 
   TSalesReceipt = class(TCustomReceipt)
   private
+    FBarcode: string;
     FChange: Currency;
     FIsRefund: Boolean;
     FRecItems: TList;
@@ -29,7 +30,6 @@ type
     FExternalCheckNumber: WideString;
     FFiscalSign: WideString;
 
-    function RoundAmount(Amount: Currency): Currency;
     function AddItem: TSalesReceiptItem;
   protected
     procedure SetRefundReceipt;
@@ -50,6 +50,7 @@ type
     function GetDiscount: Currency;
     function GetTotal: Currency; override;
     function GetPayment: Currency; override;
+    function RoundAmount(Amount: Currency): Currency;
     function GetTotalByVAT(VatInfo: Integer): Currency;
 
     procedure PrintRecVoid(const Description: WideString); override;
@@ -116,6 +117,7 @@ type
 
     procedure DirectIO(Command: Integer; var pData: Integer; var pString: WideString); override;
 
+    property Barcode: string read FBarcode;
     property Change: Currency read FChange;
     property Items: TReceiptItems read FItems;
     property IsRefund: Boolean read FIsRefund;
@@ -269,6 +271,8 @@ begin
   Item.VatInfo := VatInfo;
   Item.Description := Description;
   Item.UnitName := UnitName;
+  Item.MarkCode := FBarcode;
+  FBarcode := '';
 end;
 
 procedure TSalesReceipt.PrintRecItemVoid(const Description: WideString;
@@ -375,7 +379,7 @@ begin
       CheckPercents(Amount);
       Adjustment := GetLastItem.AddAdjustment;
       Adjustment.Amount := Amount;
-      Adjustment.Total := -RoundAmount(GetLastItem.GetTotal * Amount/100);
+      Adjustment.Total := -RoundAmount(GetLastItem.Price * Amount/100);
       Adjustment.VatInfo := VatInfo;
       Adjustment.Description := Description;
       Adjustment.AdjustmentType := AdjustmentType;
@@ -386,7 +390,7 @@ begin
       CheckPercents(Amount);
       Adjustment := GetLastItem.AddAdjustment;
       Adjustment.Amount := Amount;
-      Adjustment.Total := RoundAmount(GetLastItem.GetTotal * Amount/100);
+      Adjustment.Total := RoundAmount(GetLastItem.Price * Amount/100);
       Adjustment.VatInfo := VatInfo;
       Adjustment.Description := Description;
       Adjustment.AdjustmentType := AdjustmentType;
@@ -573,7 +577,7 @@ begin
   if Command = DIO_SET_DRIVER_PARAMETER then
   begin
     case pData of
-      DriverParameterBarcode: GetLastItem.MarkCode := pString;
+      DriverParameterBarcode: FBarcode := pString;
       DriverParameterExternalCheckNumber: FExternalCheckNumber := pString;
       DriverParameterFiscalSign: FFiscalSign := pString;
     end;
