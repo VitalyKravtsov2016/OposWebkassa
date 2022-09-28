@@ -26,6 +26,8 @@ type
 
     function Add: TReceiptItem;
     function GetTotal: Currency;
+    function GetTotalByVAT(VatInfo: Integer): Currency;
+
     procedure Clear;
     procedure InsertItem(AItem: TReceiptItem);
     procedure RemoveItem(AItem: TReceiptItem);
@@ -208,6 +210,15 @@ end;
 function TReceiptItems.Add: TReceiptItem;
 begin
   Result := TReceiptItem.Create(Self);
+end;
+
+function TReceiptItems.GetTotalByVAT(VatInfo: Integer): Currency;
+var
+  i: Integer;
+begin
+  Result := 0;
+  for i := 0 to Count-1 do
+    Result := Result + Items[i].GetTotalByVAT(VatInfo);
 end;
 
 { TReceiptItem }

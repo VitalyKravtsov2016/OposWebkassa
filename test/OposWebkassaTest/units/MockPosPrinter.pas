@@ -628,6 +628,7 @@ begin
   FCapSlpPageMode := True;
   FCapRecRuledLine := 0;
   FCapSlpRuledLine := 0;
+  FRecLinesToPaperCut := 4;
 end;
 
 destructor TMockPOSPrinter.Destroy;
@@ -713,12 +714,12 @@ end;
 
 function TMockPOSPrinter.Get_AsyncMode: WordBool;
 begin
-
+  Result := FAsyncMode;
 end;
 
 function TMockPOSPrinter.Get_BinaryConversion: Integer;
 begin
-
+  Result := FBinaryConversion;
 end;
 
 function TMockPOSPrinter.Get_CapCharacterSet: Integer;
@@ -858,17 +859,17 @@ end;
 
 function TMockPOSPrinter.Get_CapRecDhigh: WordBool;
 begin
-
+  Result := FCapRecDhigh;
 end;
 
 function TMockPOSPrinter.Get_CapRecDwide: WordBool;
 begin
-
+  Result := FCapRecDwide;
 end;
 
 function TMockPOSPrinter.Get_CapRecDwideDhigh: WordBool;
 begin
-
+  Result := FCapRecDwideDhigh;
 end;
 
 function TMockPOSPrinter.Get_CapRecEmptySensor: WordBool;
@@ -878,222 +879,222 @@ end;
 
 function TMockPOSPrinter.Get_CapRecItalic: WordBool;
 begin
-
+  Result := FCapRecItalic;
 end;
 
 function TMockPOSPrinter.Get_CapRecLeft90: WordBool;
 begin
-
+  Result := FCapRecLeft90;
 end;
 
 function TMockPOSPrinter.Get_CapRecMarkFeed: Integer;
 begin
-
+  Result := FCapRecMarkFeed;
 end;
 
 function TMockPOSPrinter.Get_CapRecNearEndSensor: WordBool;
 begin
-
+  Result := FCapRecNearEndSensor;
 end;
 
 function TMockPOSPrinter.Get_CapRecPageMode: WordBool;
 begin
-
+  Result := FCapRecPageMode;
 end;
 
 function TMockPOSPrinter.Get_CapRecPapercut: WordBool;
 begin
-
+  Result := FCapRecPapercut;
 end;
 
 function TMockPOSPrinter.Get_CapRecPresent: WordBool;
 begin
-
+  Result := FCapRecPresent;
 end;
 
 function TMockPOSPrinter.Get_CapRecRight90: WordBool;
 begin
-
+  Result := FCapRecRight90;
 end;
 
 function TMockPOSPrinter.Get_CapRecRotate180: WordBool;
 begin
-
+  Result := FCapRecRotate180;
 end;
 
 function TMockPOSPrinter.Get_CapRecRuledLine: Integer;
 begin
-
+  Result := FCapRecRuledLine;
 end;
 
 function TMockPOSPrinter.Get_CapRecStamp: WordBool;
 begin
-
+  Result := FCapRecStamp;
 end;
 
 function TMockPOSPrinter.Get_CapRecUnderline: WordBool;
 begin
-
+  Result := FCapRecUnderline;
 end;
 
 function TMockPOSPrinter.Get_CapSlp2Color: WordBool;
 begin
-
+  Result := FCapSlp2Color;
 end;
 
 function TMockPOSPrinter.Get_CapSlpBarCode: WordBool;
 begin
-
+  Result := FCapSlpBarCode;
 end;
 
 function TMockPOSPrinter.Get_CapSlpBitmap: WordBool;
 begin
-
+  Result := FCapSlpBitmap;
 end;
 
 function TMockPOSPrinter.Get_CapSlpBold: WordBool;
 begin
-
+  Result := FCapSlpBold;
 end;
 
 function TMockPOSPrinter.Get_CapSlpBothSidesPrint: WordBool;
 begin
-
+  Result := FCapSlpBothSidesPrint;
 end;
 
 function TMockPOSPrinter.Get_CapSlpCartridgeSensor: Integer;
 begin
-
+  Result := FCapSlpCartridgeSensor;
 end;
 
 function TMockPOSPrinter.Get_CapSlpColor: Integer;
 begin
-
+  Result := FCapSlpColor;
 end;
 
 function TMockPOSPrinter.Get_CapSlpDhigh: WordBool;
 begin
-
+  Result := FCapSlpDhigh;
 end;
 
 function TMockPOSPrinter.Get_CapSlpDwide: WordBool;
 begin
-
+  Result := FCapSlpDwide;
 end;
 
 function TMockPOSPrinter.Get_CapSlpDwideDhigh: WordBool;
 begin
-
+  Result := FCapSlpDwideDhigh;
 end;
 
 function TMockPOSPrinter.Get_CapSlpEmptySensor: WordBool;
 begin
-
+  Result := FCapSlpEmptySensor;
 end;
 
 function TMockPOSPrinter.Get_CapSlpFullslip: WordBool;
 begin
-
+  Result := FCapSlpFullslip;
 end;
 
 function TMockPOSPrinter.Get_CapSlpItalic: WordBool;
 begin
-
+  Result := FCapSlpItalic;
 end;
 
 function TMockPOSPrinter.Get_CapSlpLeft90: WordBool;
 begin
-
+  Result := FCapSlpLeft90;
 end;
 
 function TMockPOSPrinter.Get_CapSlpNearEndSensor: WordBool;
 begin
-
+  Result := FCapSlpNearEndSensor;
 end;
 
 function TMockPOSPrinter.Get_CapSlpPageMode: WordBool;
 begin
-
+  Result := FCapSlpPageMode;
 end;
 
 function TMockPOSPrinter.Get_CapSlpPresent: WordBool;
 begin
-
+  Result := FCapSlpPresent;
 end;
 
 function TMockPOSPrinter.Get_CapSlpRight90: WordBool;
 begin
-
+  Result := FCapSlpRight90;
 end;
 
 function TMockPOSPrinter.Get_CapSlpRotate180: WordBool;
 begin
-
+  Result := FCapSlpRotate180;
 end;
 
 function TMockPOSPrinter.Get_CapSlpRuledLine: Integer;
 begin
-
+  Result := FCapSlpRuledLine;
 end;
 
 function TMockPOSPrinter.Get_CapSlpUnderline: WordBool;
 begin
-
+  Result := FCapSlpUnderline;
 end;
 
 function TMockPOSPrinter.Get_CapStatisticsReporting: WordBool;
 begin
-
+  Result := FCapStatisticsReporting;
 end;
 
 function TMockPOSPrinter.Get_CapTransaction: WordBool;
 begin
-
+  Result := FCapTransaction;
 end;
 
 function TMockPOSPrinter.Get_CapUpdateFirmware: WordBool;
 begin
-
+  Result := FCapUpdateFirmware;
 end;
 
 function TMockPOSPrinter.Get_CapUpdateStatistics: WordBool;
 begin
-
+  Result := FCapUpdateStatistics;
 end;
 
 function TMockPOSPrinter.Get_CartridgeNotify: Integer;
 begin
-
+  Result := FCartridgeNotify;
 end;
 
 function TMockPOSPrinter.Get_CharacterSet: Integer;
 begin
-
+  Result := FCharacterSet;
 end;
 
 function TMockPOSPrinter.Get_CharacterSetList: WideString;
 begin
-
+  Result := FCharacterSetList;
 end;
 
 function TMockPOSPrinter.Get_CheckHealthText: WideString;
 begin
-
+  Result := FCharacterSetList;
 end;
 
 function TMockPOSPrinter.Get_Claimed: WordBool;
 begin
-
+  Result := FClaimed;
 end;
 
 function TMockPOSPrinter.Get_ControlObjectDescription: WideString;
 begin
-
+  Result := FControlObjectDescription;
 end;
 
 function TMockPOSPrinter.Get_ControlObjectVersion: Integer;
 begin
-
+  Result := FControlObjectVersion;
 end;
 
 function TMockPOSPrinter.Get_CoverOpen: WordBool;
@@ -1103,7 +1104,7 @@ end;
 
 function TMockPOSPrinter.Get_DeviceDescription: WideString;
 begin
-
+  Result := FDeviceDescription;
 end;
 
 function TMockPOSPrinter.Get_DeviceEnabled: WordBool;
@@ -1113,172 +1114,172 @@ end;
 
 function TMockPOSPrinter.Get_DeviceName: WideString;
 begin
-
+  Result := FDeviceName;
 end;
 
 function TMockPOSPrinter.Get_ErrorLevel: Integer;
 begin
-
+  Result := FErrorLevel;
 end;
 
 function TMockPOSPrinter.Get_ErrorStation: Integer;
 begin
-
+  Result := FErrorStation;
 end;
 
 function TMockPOSPrinter.Get_ErrorString: WideString;
 begin
-
+  Result := FErrorString;
 end;
 
 function TMockPOSPrinter.Get_FlagWhenIdle: WordBool;
 begin
-
+  Result := FFlagWhenIdle;
 end;
 
 function TMockPOSPrinter.Get_FontTypefaceList: WideString;
 begin
-
+  Result := FFontTypefaceList;
 end;
 
 function TMockPOSPrinter.Get_FreezeEvents: WordBool;
 begin
-
+  Result := FFreezeEvents;
 end;
 
 function TMockPOSPrinter.Get_JrnCartridgeState: Integer;
 begin
-
+  Result := FJrnCartridgeState;
 end;
 
 function TMockPOSPrinter.Get_JrnCurrentCartridge: Integer;
 begin
-
+  Result := FJrnCurrentCartridge;
 end;
 
 function TMockPOSPrinter.Get_JrnEmpty: WordBool;
 begin
-
+  Result := FJrnEmpty;
 end;
 
 function TMockPOSPrinter.Get_JrnLetterQuality: WordBool;
 begin
-
+  Result := FJrnLetterQuality;
 end;
 
 function TMockPOSPrinter.Get_JrnLineChars: Integer;
 begin
-
+  Result := FJrnLineChars;
 end;
 
 function TMockPOSPrinter.Get_JrnLineCharsList: WideString;
 begin
-
+  Result := FJrnLineCharsList;
 end;
 
 function TMockPOSPrinter.Get_JrnLineHeight: Integer;
 begin
-
+  Result := FJrnLineHeight;
 end;
 
 function TMockPOSPrinter.Get_JrnLineSpacing: Integer;
 begin
-
+  Result := FJrnLineSpacing;
 end;
 
 function TMockPOSPrinter.Get_JrnLineWidth: Integer;
 begin
-
+  Result := FJrnLineWidth;
 end;
 
 function TMockPOSPrinter.Get_JrnNearEnd: WordBool;
 begin
-
+  Result := FJrnNearEnd;
 end;
 
 function TMockPOSPrinter.Get_MapCharacterSet: WordBool;
 begin
-
+  Result := FMapCharacterSet;
 end;
 
 function TMockPOSPrinter.Get_MapMode: Integer;
 begin
-
+  Result := FMapMode;
 end;
 
 function TMockPOSPrinter.Get_OpenResult: Integer;
 begin
-
+  Result := FOpenResult;
 end;
 
 function TMockPOSPrinter.Get_OutputID: Integer;
 begin
-
+  Result := FOutputID;
 end;
 
 function TMockPOSPrinter.Get_PageModeArea: WideString;
 begin
-
+  Result := FPageModeArea;
 end;
 
 function TMockPOSPrinter.Get_PageModeDescriptor: Integer;
 begin
-
+  Result := FPageModeDescriptor;
 end;
 
 function TMockPOSPrinter.Get_PageModeHorizontalPosition: Integer;
 begin
-
+  Result := FPageModeHorizontalPosition;
 end;
 
 function TMockPOSPrinter.Get_PageModePrintArea: WideString;
 begin
-
+  Result := FPageModePrintArea;
 end;
 
 function TMockPOSPrinter.Get_PageModePrintDirection: Integer;
 begin
-
+  Result := FPageModePrintDirection;
 end;
 
 function TMockPOSPrinter.Get_PageModeStation: Integer;
 begin
-
+  Result := FPageModeStation;
 end;
 
 function TMockPOSPrinter.Get_PageModeVerticalPosition: Integer;
 begin
-
+  Result := FPageModeVerticalPosition;
 end;
 
 function TMockPOSPrinter.Get_PowerNotify: Integer;
 begin
-
+  Result := FPowerNotify;
 end;
 
 function TMockPOSPrinter.Get_PowerState: Integer;
 begin
-
+  Result := FPowerState;
 end;
 
 function TMockPOSPrinter.Get_RecBarCodeRotationList: WideString;
 begin
-
+  Result := FRecBarCodeRotationList;
 end;
 
 function TMockPOSPrinter.Get_RecBitmapRotationList: WideString;
 begin
-
+  Result := FRecBitmapRotationList;
 end;
 
 function TMockPOSPrinter.Get_RecCartridgeState: Integer;
 begin
-
+  Result := FRecCartridgeState;
 end;
 
 function TMockPOSPrinter.Get_RecCurrentCartridge: Integer;
 begin
-
+  Result := FRecCurrentCartridge;
 end;
 
 function TMockPOSPrinter.Get_RecEmpty: WordBool;
@@ -1288,167 +1289,167 @@ end;
 
 function TMockPOSPrinter.Get_RecLetterQuality: WordBool;
 begin
-
+  Result := FRecLetterQuality;
 end;
 
 function TMockPOSPrinter.Get_RecLineChars: Integer;
 begin
-
+  Result := FRecLineChars;
 end;
 
 function TMockPOSPrinter.Get_RecLineCharsList: WideString;
 begin
-
+  Result := FRecLineCharsList;
 end;
 
 function TMockPOSPrinter.Get_RecLineHeight: Integer;
 begin
-
+  Result := FRecLineHeight;
 end;
 
 function TMockPOSPrinter.Get_RecLineSpacing: Integer;
 begin
-
+  Result := FRecLineSpacing;
 end;
 
 function TMockPOSPrinter.Get_RecLinesToPaperCut: Integer;
 begin
-
+  Result := FRecLinesToPaperCut;
 end;
 
 function TMockPOSPrinter.Get_RecLineWidth: Integer;
 begin
-
+  Result := FRecLineWidth;
 end;
 
 function TMockPOSPrinter.Get_RecNearEnd: WordBool;
 begin
-
+  Result := FRecNearEnd;
 end;
 
 function TMockPOSPrinter.Get_RecSidewaysMaxChars: Integer;
 begin
-
+  Result := FRecSidewaysMaxChars;
 end;
 
 function TMockPOSPrinter.Get_RecSidewaysMaxLines: Integer;
 begin
-
+  Result := FRecSidewaysMaxLines;
 end;
 
 function TMockPOSPrinter.Get_ResultCode: Integer;
 begin
-
+  Result := FResultCode;
 end;
 
 function TMockPOSPrinter.Get_ResultCodeExtended: Integer;
 begin
-
+  Result := FResultCodeExtended;
 end;
 
 function TMockPOSPrinter.Get_RotateSpecial: Integer;
 begin
-
+  Result := FRotateSpecial;
 end;
 
 function TMockPOSPrinter.Get_ServiceObjectDescription: WideString;
 begin
-
+  Result := FServiceObjectDescription;
 end;
 
 function TMockPOSPrinter.Get_ServiceObjectVersion: Integer;
 begin
-
+  Result := FServiceObjectVersion;
 end;
 
 function TMockPOSPrinter.Get_SlpBarCodeRotationList: WideString;
 begin
-
+  Result := FSlpBarCodeRotationList;
 end;
 
 function TMockPOSPrinter.Get_SlpBitmapRotationList: WideString;
 begin
-
+  Result := FSlpBitmapRotationList;
 end;
 
 function TMockPOSPrinter.Get_SlpCartridgeState: Integer;
 begin
-
+  Result := FSlpCartridgeState;
 end;
 
 function TMockPOSPrinter.Get_SlpCurrentCartridge: Integer;
 begin
-
+  Result := FSlpCurrentCartridge;
 end;
 
 function TMockPOSPrinter.Get_SlpEmpty: WordBool;
 begin
-
+  Result := FSlpEmpty;
 end;
 
 function TMockPOSPrinter.Get_SlpLetterQuality: WordBool;
 begin
-
+  Result := FSlpLetterQuality;
 end;
 
 function TMockPOSPrinter.Get_SlpLineChars: Integer;
 begin
-
+  Result := FSlpLineChars;
 end;
 
 function TMockPOSPrinter.Get_SlpLineCharsList: WideString;
 begin
-
+  Result := FSlpLineCharsList;
 end;
 
 function TMockPOSPrinter.Get_SlpLineHeight: Integer;
 begin
-
+  Result := FSlpLineHeight;
 end;
 
 function TMockPOSPrinter.Get_SlpLinesNearEndToEnd: Integer;
 begin
-
+  Result := FSlpLinesNearEndToEnd;
 end;
 
 function TMockPOSPrinter.Get_SlpLineSpacing: Integer;
 begin
-
+  Result := FSlpLineSpacing;
 end;
 
 function TMockPOSPrinter.Get_SlpLineWidth: Integer;
 begin
-
+  Result := FSlpLineWidth;
 end;
 
 function TMockPOSPrinter.Get_SlpMaxLines: Integer;
 begin
-
+  Result := FSlpMaxLines;
 end;
 
 function TMockPOSPrinter.Get_SlpNearEnd: WordBool;
 begin
-
+  Result := FSlpNearEnd;
 end;
 
 function TMockPOSPrinter.Get_SlpPrintSide: Integer;
 begin
-
+  Result := FSlpPrintSide;
 end;
 
 function TMockPOSPrinter.Get_SlpSidewaysMaxChars: Integer;
 begin
-
+  Result := FSlpSidewaysMaxChars;
 end;
 
 function TMockPOSPrinter.Get_SlpSidewaysMaxLines: Integer;
 begin
-
+  Result := FSlpSidewaysMaxLines;
 end;
 
 function TMockPOSPrinter.Get_State: Integer;
 begin
-
+  Result := FState;
 end;
 
 function TMockPOSPrinter.MarkFeed(Type_: Integer): Integer;
@@ -1529,167 +1530,167 @@ end;
 
 procedure TMockPOSPrinter.Set_AsyncMode(pAsyncMode: WordBool);
 begin
-
+  FAsyncMode := pAsyncMode;
 end;
 
 procedure TMockPOSPrinter.Set_BinaryConversion(pBinaryConversion: Integer);
 begin
-
+  FBinaryConversion := pBinaryConversion;
 end;
 
 procedure TMockPOSPrinter.Set_CartridgeNotify(pCartridgeNotify: Integer);
 begin
-
+  FCartridgeNotify := pCartridgeNotify;
 end;
 
 procedure TMockPOSPrinter.Set_CharacterSet(pCharacterSet: Integer);
 begin
-
+  FCharacterSet := pCharacterSet;
 end;
 
 procedure TMockPOSPrinter.Set_DeviceEnabled(pDeviceEnabled: WordBool);
 begin
-  FDeviceEnabled := True;
+  FDeviceEnabled := pDeviceEnabled;
 end;
 
 procedure TMockPOSPrinter.Set_FlagWhenIdle(pFlagWhenIdle: WordBool);
 begin
-
+  FFlagWhenIdle := pFlagWhenIdle;
 end;
 
 procedure TMockPOSPrinter.Set_FreezeEvents(pFreezeEvents: WordBool);
 begin
-
+  FFreezeEvents := pFreezeEvents;
 end;
 
 procedure TMockPOSPrinter.Set_JrnCurrentCartridge(
   pJrnCurrentCartridge: Integer);
 begin
-
+  FJrnCurrentCartridge := pJrnCurrentCartridge;
 end;
 
 procedure TMockPOSPrinter.Set_JrnLetterQuality(
   pJrnLetterQuality: WordBool);
 begin
-
+  FJrnLetterQuality := pJrnLetterQuality;
 end;
 
 procedure TMockPOSPrinter.Set_JrnLineChars(pJrnLineChars: Integer);
 begin
-
+  FJrnLineChars := pJrnLineChars;
 end;
 
 procedure TMockPOSPrinter.Set_JrnLineHeight(pJrnLineHeight: Integer);
 begin
-
+  FJrnLineHeight := pJrnLineHeight;
 end;
 
 procedure TMockPOSPrinter.Set_JrnLineSpacing(pJrnLineSpacing: Integer);
 begin
-
+  FJrnLineSpacing := pJrnLineSpacing;
 end;
 
 procedure TMockPOSPrinter.Set_MapCharacterSet(pMapCharacterSet: WordBool);
 begin
-
+  FMapCharacterSet := pMapCharacterSet;
 end;
 
 procedure TMockPOSPrinter.Set_MapMode(pMapMode: Integer);
 begin
-
+  FMapMode := pMapMode;
 end;
 
 procedure TMockPOSPrinter.Set_PageModeHorizontalPosition(
   pPageModeHorizontalPosition: Integer);
 begin
-
+  FPageModeHorizontalPosition := pPageModeHorizontalPosition;
 end;
 
 procedure TMockPOSPrinter.Set_PageModePrintArea(
   const pPageModePrintArea: WideString);
 begin
-
+  FPageModePrintArea := pPageModePrintArea;
 end;
 
 procedure TMockPOSPrinter.Set_PageModePrintDirection(
   pPageModePrintDirection: Integer);
 begin
-
+  FPageModePrintDirection := pPageModePrintDirection;
 end;
 
 procedure TMockPOSPrinter.Set_PageModeStation(pPageModeStation: Integer);
 begin
-
+  FPageModeStation := pPageModeStation;
 end;
 
 procedure TMockPOSPrinter.Set_PageModeVerticalPosition(
   pPageModeVerticalPosition: Integer);
 begin
-
+  FPageModeVerticalPosition := pPageModeVerticalPosition;
 end;
 
 procedure TMockPOSPrinter.Set_PowerNotify(pPowerNotify: Integer);
 begin
-
+  FPowerNotify := pPowerNotify;
 end;
 
 procedure TMockPOSPrinter.Set_RecCurrentCartridge(
   pRecCurrentCartridge: Integer);
 begin
-
+  FRecCurrentCartridge := pRecCurrentCartridge;
 end;
 
 procedure TMockPOSPrinter.Set_RecLetterQuality(
   pRecLetterQuality: WordBool);
 begin
-
+  FRecLetterQuality := pRecLetterQuality;
 end;
 
 procedure TMockPOSPrinter.Set_RecLineChars(pRecLineChars: Integer);
 begin
-
+  FRecLineChars := pRecLineChars;
 end;
 
 procedure TMockPOSPrinter.Set_RecLineHeight(pRecLineHeight: Integer);
 begin
-
+  FRecLineHeight := pRecLineHeight;
 end;
 
 procedure TMockPOSPrinter.Set_RecLineSpacing(pRecLineSpacing: Integer);
 begin
-
+  FRecLineSpacing := pRecLineSpacing;
 end;
 
 procedure TMockPOSPrinter.Set_RotateSpecial(pRotateSpecial: Integer);
 begin
-
+  FRotateSpecial := pRotateSpecial;
 end;
 
 procedure TMockPOSPrinter.Set_SlpCurrentCartridge(
   pSlpCurrentCartridge: Integer);
 begin
-
+  FSlpCurrentCartridge := pSlpCurrentCartridge;
 end;
 
 procedure TMockPOSPrinter.Set_SlpLetterQuality(
   pSlpLetterQuality: WordBool);
 begin
-
+  FSlpLetterQuality := pSlpLetterQuality;
 end;
 
 procedure TMockPOSPrinter.Set_SlpLineChars(pSlpLineChars: Integer);
 begin
-
+  FSlpLineChars := pSlpLineChars;
 end;
 
 procedure TMockPOSPrinter.Set_SlpLineHeight(pSlpLineHeight: Integer);
 begin
-
+  FSlpLineHeight := pSlpLineHeight;
 end;
 
 procedure TMockPOSPrinter.Set_SlpLineSpacing(pSlpLineSpacing: Integer);
 begin
-
+  FSlpLineSpacing := pSlpLineSpacing;
 end;
 
 function TMockPOSPrinter.SetBitmap(BitmapNumber, Station: Integer;

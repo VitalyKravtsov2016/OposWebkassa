@@ -47,6 +47,7 @@ type
 
   TWebkassaImpl = class(TComponent, IFiscalPrinterService_1_12)
   private
+    FTestMode: Boolean;
     FPOSID: WideString;
     FCashierID: WideString;
     FLogger: ILogFile;
@@ -315,8 +316,10 @@ type
     function EncodeString(const S: WideString): WideString;
 
     property Logger: ILogFile read FLogger;
+    property CashBox: TCashBox read FCashBox;
     property Client: TWebkassaClient read FClient;
     property Params: TPrinterParameters read FParams;
+    property TestMode: Boolean read FTestMode write FTestMode;
     property OposDevice: TOposServiceDevice19 read FOposDevice;
   end;
 
@@ -1550,8 +1553,6 @@ begin
       (Command.Data.EndNonNullable.ReturnBuy - Command.Data.StartNonNullable.ReturnBuy);
 
     Document.LineChars := Printer.RecLineChars;
-    Document.AddText(Params.Header);
-
     Separator := StringOfChar('-', Document.LineChars);
     Document.AddLines('ÈÍÍ/ÁÈÍ', Command.Data.CashboxRN);
     Document.AddLines('ÇÍÌ', Command.Data.CashboxSN);
@@ -1636,8 +1637,6 @@ begin
     Document.AddLines('ÂÎÇÂĞÀÒÎÂ ÏĞÎÄÀÆ', CurrencyToStr(Command.Data.EndNonNullable.ReturnSell));
     Document.AddLines('ÂÎÇÂĞÀÒÎÂ ÏÎÊÓÏÎÊ', CurrencyToStr(Command.Data.EndNonNullable.ReturnBuy));
     Document.AddLines('ÑÔîğìèğîâàíî ÎÔÄ: ', Command.Data.Ofd.Name);
-    Document.AddText(Params.Trailer);
-
     PrintDocumentSafe(Document);
   finally
     Document.Free;
@@ -1950,7 +1949,10 @@ begin
   try
     Initialize;
     FOposDevice.Open(DeviceClass, DeviceName, GetEventInterface(pDispatch));
-    LoadParameters(FParams, DeviceName, FLogger);
+    if not FTestMode then
+    begin
+      LoadParameters(FParams, DeviceName, FLogger);
+    end;
 
     Logger.MaxCount := FParams.LogMaxCount;
     Logger.Enabled := FParams.LogFileEnabled;
@@ -2124,7 +2126,6 @@ begin
     FClient.Execute(Command);
     // Create Document
     Document.LineChars := Printer.RecLineChars;
-    Document.AddText(Params.Header);
     Document.Add('ÁÈÍ ' + Command.Data.Cashbox.RegistrationNumber);
     Document.Add(Format('ÇÍÌ %s ÈÍÊ ÎÔÄ %s', [Command.Data.Cashbox.UniqueNumber,
       Command.Data.Cashbox.IdentityNumber]));
@@ -2133,7 +2134,6 @@ begin
     Document.AddCurrency('ÂÍÅÑÅÍÈÅ ÄÅÍÅÃ Â ÊÀÑÑÓ', Receipt.GetTotal);
     Document.AddCurrency('ÍÀËÈ×ÍÛÕ Â ÊÀÑÑÅ', Command.Data.Sum);
     Document.Add('Îïåğàòîğ: ' + FCashierFullName);
-    Document.AddText(Params.Trailer);
     Document.AddText(Receipt.Trailer.Text);
     // Print
     PrintDocumentSafe(Document);
@@ -2159,7 +2159,6 @@ begin
     FClient.Execute(Command);
     //
     Document.LineChars := Printer.RecLineChars;
-    Document.AddText(Params.Header);
     Document.Add('ÁÈÍ ' + Command.Data.Cashbox.RegistrationNumber);
     Document.Add(Format('ÇÍÌ %s ÈÍÊ ÎÔÄ %s', [Command.Data.Cashbox.UniqueNumber,
       Command.Data.Cashbox.IdentityNumber]));
@@ -2169,7 +2168,6 @@ begin
     Document.AddCurrency('ÍÀËÈ×ÍÛÕ Â ÊÀÑÑÅ', Command.Data.Sum);
     Document.Add('Îïåğàòîğ: ' + FCashierFullName);
     Document.AddText(Receipt.Trailer.Text);
-    Document.AddText(Params.Trailer);
     // print
     PrintDocumentSafe(Document);
   finally
@@ -2430,16 +2428,15 @@ var
   TextItem: TRecTexItem;
   ReceiptItem: TReceiptItem;
   RecItem: TSalesReceiptItem;
-  ItemAdjustment: TItemAdjustment;
-  TotalAdjustment: TTotalAdjustment;
   ItemQuantity: Double;
   UnitPrice: Currency;
   AdjustmentName: WideString;
 begin
   Document.Clear;
-  Document.AddText(Params.Header);
-  Document.Addlines(Format('ÍÄÑ Ñåğèÿ %.5d', [Params.VATSeries]),
-    Format('¹ %.7d', [Params.VATNumber]));
+  Document.LineChars := Printer.RecLineChars;
+
+  Document.Addlines(Format('ÍÄÑ Ñåğèÿ %s', [Params.VATSeries]),
+    Format('¹ %s', [Params.VATNumber]));
   Document.AddSeparator;
   Document.Add(Document.AlignCenter(FCashBox.Name));
   Document.Add(Document.AlignCenter(Format('Ñìåíà %d', [Command.Data.ShiftNumber])));
@@ -2456,7 +2453,7 @@ begin
     if ReceiptItem is TSalesReceiptItem then
     begin
       RecItem := ReceiptItem as TSalesReceiptItem;
-      Document.Add(Format('%-3d. %s', [RecItem.Number, RecItem.Description]));
+      Document.Add(Format('%3d. %s', [RecItem.Number, RecItem.Description]));
 
       ItemQuantity := 1;
       UnitPrice := RecItem.Price;
@@ -2536,8 +2533,6 @@ begin
   Document.Add(Document.AlignCenter('ÈÍÊ ÎÔÄ: ' + Command.Data.Cashbox.IdentityNumber));
   Document.Add(Document.AlignCenter('Êîä ÊÊÌ ÊÃÄ (ĞÍÌ): ' + Command.Data.Cashbox.RegistrationNumber));
   Document.Add(Document.AlignCenter('ÇÍÌ: ' + Command.Data.Cashbox.UniqueNumber));
-  Document.Add(Document.AlignCenter('ÇÍÌ: ' + Command.Data.Cashbox.UniqueNumber));
-  Document.AddText(Params.Trailer);
   PrintDocumentSafe(Document);
   Printer.RecLineChars := FRecLineChars;
 end;

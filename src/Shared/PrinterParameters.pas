@@ -47,8 +47,8 @@ const
   DefPrinterName = '';
   DefPrinterType = 0;
   DefRoundType = 2; // Округление позиций
-  DefVATNumber = 0;
-  DefVATSeries = 0;
+  DefVATNumber = '00000';
+  DefVATSeries = '00000';
 
   /////////////////////////////////////////////////////////////////////////////
   // Header and trailer parameters
@@ -84,8 +84,8 @@ type
     FPaymentType3: Integer;
     FPaymentType4: Integer;
     FRoundType: Integer;
-    FVATNumber: Integer;
-    FVATSeries: Integer;
+    FVATNumber: WideString;
+    FVATSeries: WideString;
 
     procedure LogText(const Caption, Text: WideString);
     procedure SetNumHeaderLines(const Value: Integer);
@@ -119,8 +119,8 @@ type
     property PaymentType3: Integer read FPaymentType3 write FPaymentType3;
     property PaymentType4: Integer read FPaymentType4 write FPaymentType4;
     property RoundType: Integer read FRoundType write FRoundType;
-    property VATSeries: Integer read FVATSeries write FVATSeries;
-    property VATNumber: Integer read FVATNumber write FVATNumber;
+    property VATSeries: WideString read FVATSeries write FVATSeries;
+    property VATNumber: WideString read FVATNumber write FVATNumber;
   end;
 
 implementation
@@ -222,8 +222,8 @@ begin
   Logger.Debug('PaymentType4: ' + IntToStr(PaymentType4));
   Logger.Debug('VatRateEnabled: ' + BoolToStr(VatRateEnabled));
   Logger.Debug('RoundType: ' + IntToStr(RoundType));
-  Logger.Debug('VATSeries: ' + IntToStr(VATSeries));
-  Logger.Debug('VATNumber: ' + IntToStr(VATNumber));
+  Logger.Debug('VATSeries: ' + VATSeries);
+  Logger.Debug('VATNumber: ' + VATNumber);
   // VatRates
   for i := 0 to VatRates.Count-1 do
   begin

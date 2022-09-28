@@ -529,7 +529,7 @@ end;
 
 function TSalesReceipt.GetTotalByVAT(VatInfo: Integer): Currency;
 begin
-  Result := FItems.GetTotal;
+  Result := FItems.GetTotalByVAT(VatInfo);
 end;
 
 function TSalesReceipt.GetPayment: Currency;

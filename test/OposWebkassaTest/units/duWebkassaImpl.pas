@@ -14,7 +14,8 @@ uses
   // Tnt
   TntClasses, TntSysUtils,
   // This
-  LogFile, WebkassaImpl, WebkassaClient, MockPosPrinter;
+  LogFile, WebkassaImpl, WebkassaClient, MockPosPrinter, FileUtils,
+  CustomReceipt;
 
 const
   CRLF = #13#10;
@@ -24,6 +25,7 @@ type
 
   TWebkassaImplTest = class(TTestCase, IOposEvents)
   private
+    FLines: TStrings;
     FEvents: TOposEvents;
     FDriver: TWebkassaImpl;
     FPrinter: TMockPosPrinter;
@@ -70,6 +72,7 @@ type
     procedure OpenClaimEnable;
     procedure TestFiscalReceipt;
     procedure TestFiscalReceipt2;
+    procedure TestFiscalReceipt3;
     procedure TestCoverError;
     procedure TestRecEmpty;
     procedure TestStatusUpateEvent;
@@ -85,10 +88,14 @@ const
 procedure TWebkassaImplTest.SetUp;
 begin
   inherited SetUp;
+  FLines := TStringList.Create;
   FWaitEvent := TEvent.Create(nil, False, False, '');
   FEvents := TOposEvents.Create;
   FPrinter := TMockPosPrinter.Create(nil);
+  FPrinter.RecLineChars := 42;
+
   FDriver := TWebkassaImpl.Create(nil);
+  FDriver.TestMode := True;
   FDriver.Client.TestMode := True;
   FDriver.Printer := FPrinter;
   FDriver.Params.LogFileEnabled := True;
@@ -124,6 +131,7 @@ begin
   FDriver.Free;
   FEvents.Free;
   FWaitEvent.Free;
+  FLines.Free;
   inherited TearDown;
 end;
 
@@ -344,8 +352,29 @@ begin
 end;
 
 procedure TWebkassaImplTest.TestFiscalReceipt2;
+var
+  pData: Integer;
+  pString: WideString;
+  Separator: WideString;
 begin
+  Separator := StringOfChar('-', FPrinter.RecLineChars);
+
   OpenClaimEnable;
+
+  // FiscalSign
+  pData := DriverParameterFiscalSign;
+  pString := 'FiscalSign';
+  FptrCheck(FDriver.DirectIO(DIO_SET_DRIVER_PARAMETER, pData, pString));
+  // ExternalCheckNumber
+  pData := DriverParameterExternalCheckNumber;
+  pString := 'ExternalCheckNumber';
+  FptrCheck(FDriver.DirectIO(DIO_SET_DRIVER_PARAMETER, pData, pString));
+
+  FDriver.Client.TestMode := True;
+  FDriver.Client.AnswerJson := ReadFileData(GetModulePath + 'SendReceiptAnswer.txt');
+  FDriver.Params.VATSeries := 'VATSeries';
+  FDriver.Params.VATNumber := 'VATNumber';
+  FDriver.CashBox.Name := 'CashBox.Name';
 
   CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
   CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
@@ -359,7 +388,127 @@ begin
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   CheckEquals(OPOS_SUCCESS, Driver.EndFiscalReceipt(False));
 
-  CheckEquals(0, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
+  CheckEquals(33, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
+  FLines.Text := FDriver.Params.Header;
+  CheckEquals(Trim(FLines[0]), Trim(FPrinter.Lines[0]));
+  CheckEquals(Trim(FLines[1]), Trim(FPrinter.Lines[1]));
+  CheckEquals(Trim(FLines[2]), Trim(FPrinter.Lines[2]));
+  CheckEquals(Trim(FLines[3]), Trim(FPrinter.Lines[3]));
+  CheckEquals('НДС Серия VATSeries            № VATNumber', Trim(FPrinter.Lines[4]));
+  CheckEquals(Separator, Trim(FPrinter.Lines[5]));
+  CheckEquals(FDriver.CashBox.Name, Trim(FPrinter.Lines[6])); // CashBox.Name
+  CheckEquals('Смена 149', Trim(FPrinter.Lines[7]));
+  CheckEquals('Чек №923956785162', Trim(FPrinter.Lines[8]));
+  CheckEquals('Кассир webkassa4@softit.kz', Trim(FPrinter.Lines[9]));
+  CheckEquals(Separator, Trim(FPrinter.Lines[10]));
+  CheckEquals('  1. Item 1', TrimRight(FPrinter.Lines[11]));
+  CheckEquals('   1.000 кг x 123.45', TrimRight(FPrinter.Lines[12]));
+  CheckEquals('   Стоимость                        123.45', TrimRight(FPrinter.Lines[13]));
+  CheckEquals(Separator, TrimRight(FPrinter.Lines[14]));
+  CheckEquals('Банковская карта:                   123.45', TrimRight(FPrinter.Lines[15]));
+  CheckEquals('ИТОГО:                              123.45', TrimRight(FPrinter.Lines[16]));
+  CheckEquals(Separator, TrimRight(FPrinter.Lines[17]));
+  CheckEquals('Фискальный признак:', TrimRight(FPrinter.Lines[18]));
+  CheckEquals('Время:                 04.08.2022 17:09:35', TrimRight(FPrinter.Lines[19]));
+  CheckEquals('Оператор фискальных данных:АО "КазТранском', TrimRight(FPrinter.Lines[20]));
+  CheckEquals('Для проверки чека зайдите на сайт:', TrimRight(FPrinter.Lines[21]));
+  CheckEquals('dev.kofd.kz/consumer', TrimRight(FPrinter.Lines[22]));
+  CheckEquals(Separator, TrimRight(FPrinter.Lines[23]));
+  CheckEquals('              ФИСКАЛЬНЫЙ ЧЕK', TrimRight(FPrinter.Lines[24]));
+  CheckEquals('http://dev.kofd.kz/consumer?i=923956785162', TrimRight(FPrinter.Lines[25]));
+  CheckEquals('               ИНК ОФД: 270', TrimRight(FPrinter.Lines[26]));
+  CheckEquals('     Код ККМ КГД (РНМ): 211030200207', TrimRight(FPrinter.Lines[27]));
+  CheckEquals('             ЗНМ: SWK00032685', TrimRight(FPrinter.Lines[28]));
+  CheckEquals('           Callцентр 039458039850', TrimRight(FPrinter.Lines[29]));
+  CheckEquals('          Горячая линия 20948802934', TrimRight(FPrinter.Lines[30]));
+  CheckEquals('            СПАСИБО ЗА ПОКУПКУ', TrimRight(FPrinter.Lines[31]));
+  CheckEquals('', TrimRight(FPrinter.Lines[32]));
+end;
+
+procedure TWebkassaImplTest.TestFiscalReceipt3;
+var
+  pData: Integer;
+  pString: WideString;
+  Separator: WideString;
+begin
+  Separator := StringOfChar('-', FPrinter.RecLineChars);
+
+  OpenClaimEnable;
+
+  // FiscalSign
+  pData := DriverParameterFiscalSign;
+  pString := 'FiscalSign';
+  FptrCheck(FDriver.DirectIO(DIO_SET_DRIVER_PARAMETER, pData, pString));
+  // ExternalCheckNumber
+  pData := DriverParameterExternalCheckNumber;
+  pString := 'ExternalCheckNumber';
+  FptrCheck(FDriver.DirectIO(DIO_SET_DRIVER_PARAMETER, pData, pString));
+
+  FDriver.Client.TestMode := True;
+  FDriver.Client.AnswerJson := ReadFileData(GetModulePath + 'SendReceiptAnswer.txt');
+  FDriver.Params.VATSeries := 'VATSeries';
+  FDriver.Params.VATNumber := 'VATNumber';
+  FDriver.CashBox.Name := 'CashBox.Name';
+
+  CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
+  CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
+  CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
+
+  FptrCheck(Driver.BeginFiscalReceipt(False));
+  CheckEquals(FPTR_PS_FISCAL_RECEIPT, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+  // Item 1
+  FptrCheck(Driver.PrintRecItem('Item 1', 123.45, 1000, 1, 123.45, 'кг'));
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка 10', 10, 1));
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_SURCHARGE, 'Надбавка 5', 5, 1));
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_PERCENTAGE_DISCOUNT, 'Скидка 10%', 10, 1));
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_PERCENTAGE_SURCHARGE, 'Скидка 5%', 5, 1));
+  // Item 2
+  FptrCheck(Driver.PrintRecItem('Item 2', 1.45, 1000, 1, 1.45, 'кг'));
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка 0.45', 0.45, 1));
+  // Total adjustment
+  FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка 10', 10));
+  FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_AMOUNT_SURCHARGE, 'Надбавка 5', 5));
+  // Total
+  FptrCheck(Driver.PrintRecTotal(123.45, 123.45, '1'));
+  CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+  CheckEquals(OPOS_SUCCESS, Driver.EndFiscalReceipt(False));
+
+  CheckEquals(33, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
+  FLines.Text := FDriver.Params.Header;
+  CheckEquals(Trim(FLines[0]), Trim(FPrinter.Lines[0]));
+  CheckEquals(Trim(FLines[1]), Trim(FPrinter.Lines[1]));
+  CheckEquals(Trim(FLines[2]), Trim(FPrinter.Lines[2]));
+  CheckEquals(Trim(FLines[3]), Trim(FPrinter.Lines[3]));
+  CheckEquals('НДС Серия VATSeries            № VATNumber', Trim(FPrinter.Lines[4]));
+  CheckEquals(Separator, Trim(FPrinter.Lines[5]));
+  CheckEquals(FDriver.CashBox.Name, Trim(FPrinter.Lines[6])); // CashBox.Name
+  CheckEquals('Смена 149', Trim(FPrinter.Lines[7]));
+  CheckEquals('Чек №923956785162', Trim(FPrinter.Lines[8]));
+  CheckEquals('Кассир webkassa4@softit.kz', Trim(FPrinter.Lines[9]));
+  CheckEquals(Separator, Trim(FPrinter.Lines[10]));
+  CheckEquals('  1. Item 1', TrimRight(FPrinter.Lines[11]));
+  CheckEquals('   1.000 кг x 123.45', TrimRight(FPrinter.Lines[12]));
+  CheckEquals('   Стоимость                        123.45', TrimRight(FPrinter.Lines[13]));
+  CheckEquals(Separator, TrimRight(FPrinter.Lines[14]));
+  CheckEquals('Банковская карта:                   123.45', TrimRight(FPrinter.Lines[15]));
+  CheckEquals('ИТОГО:                              123.45', TrimRight(FPrinter.Lines[16]));
+  CheckEquals(Separator, TrimRight(FPrinter.Lines[17]));
+  CheckEquals('Фискальный признак:', TrimRight(FPrinter.Lines[18]));
+  CheckEquals('Время:                 04.08.2022 17:09:35', TrimRight(FPrinter.Lines[19]));
+  CheckEquals('Оператор фискальных данных:АО "КазТранском', TrimRight(FPrinter.Lines[20]));
+  CheckEquals('Для проверки чека зайдите на сайт:', TrimRight(FPrinter.Lines[21]));
+  CheckEquals('dev.kofd.kz/consumer', TrimRight(FPrinter.Lines[22]));
+  CheckEquals(Separator, TrimRight(FPrinter.Lines[23]));
+  CheckEquals('              ФИСКАЛЬНЫЙ ЧЕK', TrimRight(FPrinter.Lines[24]));
+  CheckEquals('http://dev.kofd.kz/consumer?i=923956785162', TrimRight(FPrinter.Lines[25]));
+  CheckEquals('               ИНК ОФД: 270', TrimRight(FPrinter.Lines[26]));
+  CheckEquals('     Код ККМ КГД (РНМ): 211030200207', TrimRight(FPrinter.Lines[27]));
+  CheckEquals('             ЗНМ: SWK00032685', TrimRight(FPrinter.Lines[28]));
+  CheckEquals('           Callцентр 039458039850', TrimRight(FPrinter.Lines[29]));
+  CheckEquals('          Горячая линия 20948802934', TrimRight(FPrinter.Lines[30]));
+  CheckEquals('            СПАСИБО ЗА ПОКУПКУ', TrimRight(FPrinter.Lines[31]));
+  CheckEquals('', TrimRight(FPrinter.Lines[32]));
 end;
 
 procedure TWebkassaImplTest.TestCoverError;

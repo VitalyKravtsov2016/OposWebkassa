@@ -34,15 +34,15 @@ implementation
 procedure TfmFptrMiscParams.UpdatePage;
 begin
   cbRoundType.ItemIndex := Parameters.RoundType;
-  edtVATSeries.Text := IntToStr(Parameters.VATSeries);
-  edtVATNumber.Text := IntToStr(Parameters.VATNumber);
+  edtVATSeries.Text := Parameters.VATSeries;
+  edtVATNumber.Text := Parameters.VATNumber;
 end;
 
 procedure TfmFptrMiscParams.UpdateObject;
 begin
   Parameters.RoundType := cbRoundType.ItemIndex;
-  Parameters.VATSeries := StrToInt(edtVATSeries.Text);
-  Parameters.VATNumber := StrToInt(edtVATNumber.Text);
+  Parameters.VATSeries := edtVATSeries.Text;
+  Parameters.VATNumber := edtVATNumber.Text;
 end;
 
 end.
