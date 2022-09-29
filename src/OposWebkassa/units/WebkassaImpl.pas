@@ -835,7 +835,6 @@ begin
   try
     CheckEnabled;
     CheckState(FPTR_PS_NONFISCAL);
-    Document.AddText(Params.Trailer);
     PrintDocument(Document);
     SetPrinterState(FPTR_PS_MONITOR);
     Result := ClearResult;

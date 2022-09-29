@@ -82,12 +82,13 @@ var
   Printer: TMockPOSPrinter;
 begin
   inherited SetUp;
-
-  Printer := TMockPOSPrinter.Create(nil);
   FDriver := TWebkassaImpl.Create(nil);
-  FDriver.Printer := Printer;
 
-  FDriver.Params.LogFileEnabled := True;
+  //Printer := TMockPOSPrinter.Create(nil);
+  //FDriver.Printer := Printer;
+
+  FDriver.TestMode := True;
+  FDriver.Params.LogFileEnabled := False;
   FDriver.Params.LogMaxCount := 10;
   FDriver.Params.LogFilePath := 'Logs';
   FDriver.Params.Login := 'webkassa4@softit.kz';
