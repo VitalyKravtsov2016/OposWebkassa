@@ -83,8 +83,7 @@ var
 begin
   inherited SetUp;
   FDriver := TWebkassaImpl.Create(nil);
-
-  //Printer := TMockPOSPrinter.Create(nil);
+  Printer := TMockPOSPrinter.Create(nil);
   //FDriver.Printer := Printer;
 
   FDriver.TestMode := True;

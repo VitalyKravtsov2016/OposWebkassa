@@ -53,6 +53,8 @@ type
     FLogger: ILogFile;
     FUnits: TUnitItems;
     FCashBox: TCashBox;
+    FCashier: TCashier;
+    FCashiers: TCashiers;
     FCashBoxes: TCashBoxes;
     FHeader: TPrinterLines;
     FTrailer: TPrinterLines;
@@ -87,6 +89,7 @@ type
     function GetPrinterState: Integer;
     function DoRelease: Integer;
     procedure UpdateUnits;
+    procedure UpdateCashiers;
     procedure UpdateCashBoxes;
     procedure CheckCapSetVatTable;
     procedure CheckPtr(AResultCode: Integer);
@@ -193,9 +196,9 @@ type
     FReservedWord: WideString;
     FChangeDue: WideString;
     FRemainingFiscalMemory: Integer;
-    FCashierFullName: WideString;
     FCheckNumber: WideString;
     FUnitsUpdated: Boolean;
+    FCashiersUpdated: Boolean;
     FCashBoxesUpdated: Boolean;
 
     function DoCloseDevice: Integer;
@@ -387,7 +390,9 @@ begin
   FPrinterState := TFiscalPrinterState.Create;
   FUnits := TUnitItems.Create(TUnitItem);
   FCashBoxes := TCashBoxes.Create(TCashBox);
+  FCashiers := TCashiers.Create;
   FCashBox := TCashBox.Create(nil);
+  FCashier := TCashier.Create(nil);
   FClient.RaiseErrors := True;
   FHeader := TPrinterLines.Create(TPrinterLine);
   FTrailer := TPrinterLines.Create(TPrinterLine);
@@ -410,6 +415,8 @@ begin
   FPrinterLog.Free;
   FCashBoxes.Free;
   FCashBox.Free;
+  FCashier.Free;
+  FCashiers.Free;
   inherited Destroy;
 end;
 
@@ -1537,7 +1544,7 @@ begin
   Command := TZXReportCommand.Create;
   try
     Command.Request.Token := FClient.Token;
-    Command.Request.CashboxUniqueNumber := FClient.CashboxNumber;
+    Command.Request.CashboxUniqueNumber := Params.CashboxNumber;
     if IsZReport then
       FClient.ZReport(Command)
     else
@@ -2082,6 +2089,7 @@ begin
       FParams.CheckPrameters;
       FClient.Connect;
       UpdateCashBoxes;
+      UpdateCashiers;
       UpdateUnits;
     end else
     begin
@@ -2118,7 +2126,7 @@ begin
   Command := TMoneyOperationCommand.Create;
   try
     Command.Request.Token := FClient.Token;
-    Command.Request.CashboxUniqueNumber := FClient.CashboxNumber;
+    Command.Request.CashboxUniqueNumber := Params.CashboxNumber;
     Command.Request.OperationType := OperationTypeCashIn;
     Command.Request.Sum := Receipt.GetTotal;
     Command.Request.ExternalCheckNumber := CreateGUIDStr;
@@ -2132,7 +2140,7 @@ begin
     Document.AddText(Receipt.Lines.Text);
     Document.AddCurrency('ÂÍÅÑÅÍÈÅ ÄÅÍÅÃ Â ÊÀÑÑÓ', Receipt.GetTotal);
     Document.AddCurrency('ÍÀËÈ×ÍÛÕ Â ÊÀÑÑÅ', Command.Data.Sum);
-    Document.Add('Îïåðàòîð: ' + FCashierFullName);
+    Document.Add('Îïåðàòîð: ' + FCashier.FullName);
     Document.AddText(Receipt.Trailer.Text);
     // Print
     PrintDocumentSafe(Document);
@@ -2151,7 +2159,7 @@ begin
   Command := TMoneyOperationCommand.Create;
   try
     Command.Request.Token := FClient.Token;
-    Command.Request.CashboxUniqueNumber := FClient.CashboxNumber;
+    Command.Request.CashboxUniqueNumber := Params.CashboxNumber;
     Command.Request.OperationType := OperationTypeCashOut;
     Command.Request.Sum := Receipt.GetTotal;
     Command.Request.ExternalCheckNumber := CreateGUIDStr;
@@ -2165,7 +2173,7 @@ begin
     Document.AddText(Receipt.Lines.Text);
     Document.AddCurrency('ÈÇÚßÒÈÅ ÄÅÍÅÃ ÈÇ ÊÀÑÑÛ', Receipt.GetTotal);
     Document.AddCurrency('ÍÀËÈ×ÍÛÕ Â ÊÀÑÑÅ', Command.Data.Sum);
-    Document.Add('Îïåðàòîð: ' + FCashierFullName);
+    Document.Add('Îïåðàòîð: ' + FCashier.FullName);
     Document.AddText(Receipt.Trailer.Text);
     // print
     PrintDocumentSafe(Document);
@@ -2231,13 +2239,35 @@ begin
     Command.Request.Token := FClient.Token;
     FClient.ReadCashBoxes(Command);
     FCashBoxes.Assign(Command.Data.List);
-    ACashBox := FCashBoxes.ItemByUniqueNumber(Params.Login);
+    ACashBox := FCashBoxes.ItemByUniqueNumber(Params.CashboxNumber);
     if ACashBox <> nil then
     begin
       FCashBox.Assign(ACashBox);
     end;
 
     FCashBoxesUpdated := True;
+  finally
+    Command.FRee;
+  end;
+end;
+
+procedure TWebkassaImpl.UpdateCashiers;
+var
+  ACashier: TCashier;
+  Command: TCashierCommand;
+begin
+  if FCashiersUpdated then Exit;
+  Command := TCashierCommand.Create;
+  try
+    Command.Request.Token := FClient.Token;
+    FClient.ReadCashiers(Command);
+    FCashiers.Assign(Command.Data);
+    ACashier := FCashiers.ItemByEMail(Params.Login);
+    if ACashier <> nil then
+    begin
+      FCashier.Assign(ACashier);
+    end;
+    FCashiersUpdated := True;
   finally
     Command.FRee;
   end;
@@ -2272,7 +2302,7 @@ begin
       OperationType := OperationTypeRetSell;
 
     Command.Request.Token := FClient.Token;
-    Command.Request.CashboxUniqueNumber := FClient.CashboxNumber;
+    Command.Request.CashboxUniqueNumber := Params.CashboxNumber;
     Command.Request.OperationType := OperationType;
     Command.Request.Change := Receipt.Change;
     Command.Request.RoundType := FParams.RoundType;

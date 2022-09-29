@@ -849,9 +849,9 @@ type
     property Data: TShiftResponse read FData write setData;
   end;
 
-  { TCashierItem }
+  { TCashier }
 
-  TCashierItem = class(TCollectionItem)
+  TCashier = class(TCollectionItem)
   private
     FFullName: WideString;
     FEmail: WideString;
@@ -860,25 +860,37 @@ type
   public
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
+    procedure Assign(Source: TPersistent); override;
   published
     property FullName: WideString read FFullName write FFullName;
     property Email: WideString read FEmail write FEmail;
     property Cashboxes: TStrings read FCashboxes write SetCashboxes;
   end;
 
+  { TCashiers }
+
+  TCashiers = class(TCollection)
+  private
+    function GetItem(Index: Integer): TCashier;
+  public
+    constructor Create;
+    function ItemByEMail(const email: string): TCashier;
+    property Items[Index: Integer]: TCashier read GetItem; default;
+  end;
+
   { TCashierCommand }
 
   TCashierCommand = class(TPersistent)
   private
-    FData: TCollection;
+    FData: TCashiers;
     FRequest: TTokenRequest;
-    procedure setData(const Value: TCollection);
+    procedure setData(const Value: TCashiers);
   public
     constructor Create;
     destructor Destroy; override;
     property Request: TTokenRequest read FRequest;
   published
-    property Data: TCollection read FData write setData;
+    property Data: TCashiers read FData write setData;
   end;
 
   { TReceiptRequest }
@@ -2576,23 +2588,37 @@ begin
   FData.Assign(Value);
 end;
 
-{ TCashierItem }
+{ TCashier }
 
-constructor TCashierItem.Create(Collection: TCollection);
+constructor TCashier.Create(Collection: TCollection);
 begin
   inherited Create(Collection);
   FCashboxes := TStringList.Create;
 end;
 
-destructor TCashierItem.Destroy;
+destructor TCashier.Destroy;
 begin
   FCashboxes.Free;
   inherited Destroy;
 end;
 
-procedure TCashierItem.SetCashboxes(const Value: TStrings);
+procedure TCashier.SetCashboxes(const Value: TStrings);
 begin
   FCashboxes.Assign(Value);
+end;
+
+procedure TCashier.Assign(Source: TPersistent);
+var
+  Src: TCashier;
+begin
+  if Source is TCashier then
+  begin
+    Src := Source as TCashier;
+    FFullName := Src.FullName;
+    FEmail := Src.Email;
+    FCashboxes.Assign(Src.Cashboxes);
+  end else
+    inherited Assign(Source);
 end;
 
 { TCashierCommand }
@@ -2601,7 +2627,7 @@ constructor TCashierCommand.Create;
 begin
   inherited Create;
   FRequest := TTokenRequest.Create;
-  FData := TCollection.Create(TCashierItem);
+  FData := TCashiers.Create;
 end;
 
 destructor TCashierCommand.Destroy;
@@ -2611,7 +2637,7 @@ begin
   inherited Destroy;
 end;
 
-procedure TCashierCommand.setData(const Value: TCollection);
+procedure TCashierCommand.setData(const Value: TCashiers);
 begin
   FData.Assign(Value);
 end;
@@ -3126,6 +3152,31 @@ begin
   end;
   Result := nil;
 end;
+
+{ TCashiers }
+
+constructor TCashiers.Create;
+begin
+  inherited Create(TCashier);
+end;
+
+function TCashiers.GetItem(Index: Integer): TCashier;
+begin
+  Result := inherited Items[Index] as TCashier;
+end;
+
+function TCashiers.ItemByEMail(const email: string): TCashier;
+var
+  i: Integer;
+begin
+  for i := 0 to Count-1 do
+  begin
+    Result := Items[i];
+    if AnsiCompareText(Result.Email, email) = 0 then Exit;
+  end;
+  Result := nil;
+end;
+
 
 initialization
   DecimalSeparator := '.';

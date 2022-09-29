@@ -344,7 +344,7 @@ end;
 
 procedure TWebkassaClientTest.TestReadCahiers;
 var
-  Item: TCashierItem;
+  Item: TCashier;
   Command: TCashierCommand;
 begin
   Command := TCashierCommand.Create;
@@ -355,14 +355,14 @@ begin
 
     CheckEquals(3, Command.Data.Count, 'Command.Data.Count');
     // Item 0
-    Item := Command.Data.Items[0] as TCashierItem;
+    Item := Command.Data.Items[0] as TCashier;
     CheckEquals('Пупкин В.С.', Item.FullName, 'Item.FullName');
     CheckEquals('pochta@pochta.com', Item.Email, 'Item.Email');
     CheckEquals(2, Item.Cashboxes.Count, 'Item.Cashboxes.Count');
     CheckEquals('SWK00000019', Item.Cashboxes[0], 'Item.Cashboxes[0]');
     CheckEquals('SWK00000020', Item.Cashboxes[1], 'Item.Cashboxes[1]');
     // Item 1
-    Item := Command.Data.Items[1] as TCashierItem;
+    Item := Command.Data.Items[1] as TCashier;
     CheckEquals('Сумкин Ф. Б.', Item.FullName, 'Item.FullName');
     CheckEquals('pochtal212@pochta.com', Item.Email, 'Item.Email');
     CheckEquals(1, Item.Cashboxes.Count, 'Item.Cashboxes.Count');
