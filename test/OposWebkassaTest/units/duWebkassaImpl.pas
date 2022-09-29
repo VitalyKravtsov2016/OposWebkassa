@@ -10,7 +10,7 @@ uses
   TestFramework,
   // Opos
   Opos, OposFptr, Oposhi, OposFptrhi, OposFptrUtils, OposUtils,
-  OposEvents, OposPtr, RCSEvents,
+  OposEvents, OposPtr, RCSEvents, OposEsc, 
   // Tnt
   TntClasses, TntSysUtils,
   // This
@@ -31,6 +31,7 @@ type
     FPrinter: TMockPosPrinter;
     FWaitEvent: TEvent;
     procedure WaitForEventsCount(Count: Integer);
+    procedure PrintReceipt3;
   protected
     procedure CheckNoEvent;
     procedure WaitForEvent;
@@ -71,11 +72,11 @@ type
   published
     procedure OpenClaimEnable;
     procedure TestFiscalReceipt;
-    procedure TestFiscalReceipt2;
     procedure TestFiscalReceipt3;
     procedure TestCoverError;
     procedure TestRecEmpty;
     procedure TestStatusUpateEvent;
+    procedure TestDuplicateReceipt;
   end;
 
 implementation
@@ -351,90 +352,8 @@ begin
   end;
 end;
 
-procedure TWebkassaImplTest.TestFiscalReceipt2;
-var
-  pData: Integer;
-  pString: WideString;
-  Separator: WideString;
-begin
-  Separator := StringOfChar('-', FPrinter.RecLineChars);
-
-  OpenClaimEnable;
-
-  // FiscalSign
-  pData := DriverParameterFiscalSign;
-  pString := 'FiscalSign';
-  FptrCheck(FDriver.DirectIO(DIO_SET_DRIVER_PARAMETER, pData, pString));
-  // ExternalCheckNumber
-  pData := DriverParameterExternalCheckNumber;
-  pString := 'ExternalCheckNumber';
-  FptrCheck(FDriver.DirectIO(DIO_SET_DRIVER_PARAMETER, pData, pString));
-
-  FDriver.Client.TestMode := True;
-  FDriver.Client.AnswerJson := ReadFileData(GetModulePath + 'SendReceiptAnswer.txt');
-  FDriver.Params.VATSeries := 'VATSeries';
-  FDriver.Params.VATNumber := 'VATNumber';
-  FDriver.CashBox.Name := 'CashBox.Name';
-
-  CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
-  CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
-  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
-  CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
-
-  FptrCheck(Driver.BeginFiscalReceipt(False));
-  CheckEquals(FPTR_PS_FISCAL_RECEIPT, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
-  FptrCheck(Driver.PrintRecItem('Item 1', 123.45, 1000, 0, 123.45, 'кг'));
-  FptrCheck(Driver.PrintRecTotal(123.45, 123.45, '1'));
-  CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
-  CheckEquals(OPOS_SUCCESS, Driver.EndFiscalReceipt(False));
-
-  CheckEquals(33, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
-  FLines.Text := FDriver.Params.Header;
-  CheckEquals(Trim(FLines[0]), Trim(FPrinter.Lines[0]));
-  CheckEquals(Trim(FLines[1]), Trim(FPrinter.Lines[1]));
-  CheckEquals(Trim(FLines[2]), Trim(FPrinter.Lines[2]));
-  CheckEquals(Trim(FLines[3]), Trim(FPrinter.Lines[3]));
-  CheckEquals('НДС Серия VATSeries            № VATNumber', Trim(FPrinter.Lines[4]));
-  CheckEquals(Separator, Trim(FPrinter.Lines[5]));
-  CheckEquals(FDriver.CashBox.Name, Trim(FPrinter.Lines[6])); // CashBox.Name
-  CheckEquals('Смена 149', Trim(FPrinter.Lines[7]));
-  CheckEquals('Чек №923956785162', Trim(FPrinter.Lines[8]));
-  CheckEquals('Кассир webkassa4@softit.kz', Trim(FPrinter.Lines[9]));
-  CheckEquals(Separator, Trim(FPrinter.Lines[10]));
-  CheckEquals('  1. Item 1', TrimRight(FPrinter.Lines[11]));
-  CheckEquals('   1.000 кг x 123.45', TrimRight(FPrinter.Lines[12]));
-  CheckEquals('   Стоимость                        123.45', TrimRight(FPrinter.Lines[13]));
-  CheckEquals(Separator, TrimRight(FPrinter.Lines[14]));
-  CheckEquals('Банковская карта:                   123.45', TrimRight(FPrinter.Lines[15]));
-  CheckEquals('ИТОГО:                              123.45', TrimRight(FPrinter.Lines[16]));
-  CheckEquals(Separator, TrimRight(FPrinter.Lines[17]));
-  CheckEquals('Фискальный признак:', TrimRight(FPrinter.Lines[18]));
-  CheckEquals('Время:                 04.08.2022 17:09:35', TrimRight(FPrinter.Lines[19]));
-  CheckEquals('Оператор фискальных данных:АО "КазТранском', TrimRight(FPrinter.Lines[20]));
-  CheckEquals('Для проверки чека зайдите на сайт:', TrimRight(FPrinter.Lines[21]));
-  CheckEquals('dev.kofd.kz/consumer', TrimRight(FPrinter.Lines[22]));
-  CheckEquals(Separator, TrimRight(FPrinter.Lines[23]));
-  CheckEquals('              ФИСКАЛЬНЫЙ ЧЕK', TrimRight(FPrinter.Lines[24]));
-  CheckEquals('http://dev.kofd.kz/consumer?i=923956785162', TrimRight(FPrinter.Lines[25]));
-  CheckEquals('               ИНК ОФД: 270', TrimRight(FPrinter.Lines[26]));
-  CheckEquals('     Код ККМ КГД (РНМ): 211030200207', TrimRight(FPrinter.Lines[27]));
-  CheckEquals('             ЗНМ: SWK00032685', TrimRight(FPrinter.Lines[28]));
-  CheckEquals('           Callцентр 039458039850', TrimRight(FPrinter.Lines[29]));
-  CheckEquals('          Горячая линия 20948802934', TrimRight(FPrinter.Lines[30]));
-  CheckEquals('            СПАСИБО ЗА ПОКУПКУ', TrimRight(FPrinter.Lines[31]));
-  CheckEquals('', TrimRight(FPrinter.Lines[32]));
-end;
-
-procedure TWebkassaImplTest.TestFiscalReceipt3;
-var
-  i: Integer;
-  Json: TlkJSON;
-  Doc: TlkJSONbase;
-  pData: Integer;
-  pString: WideString;
-  Separator: WideString;
 const
-  ReceiptText: string =
+  Receipt3Text: string =
     '                                          ' + CRLF +
     '   Восточно-Казастанская область, город   ' + CRLF +
     '    Усть-Каменогорск, ул. Грейдерная, 1/10' + CRLF +
@@ -456,21 +375,20 @@ const
     '   Скидка                            -0.45' + CRLF +
     '   Стоимость                          1.00' + CRLF +
     '------------------------------------------' + CRLF +
-    'Банковская карта:                   123.45' + CRLF +
     'Скидка:                              10.00' + CRLF +
     'Наценка:                              5.00' + CRLF +
-    'ИТОГО:                              108.27' + CRLF +
-    '  СДАЧА:                             15.18' + CRLF +
-    'в т.ч. НДС 12%                       12.14' + CRLF +
+    ESCDWDH + 'ИТОГ          =108.27' + CRLF +
+    'Банковская карта:                  =123.45' + CRLF +
+    '  СДАЧА                             =15.18' + CRLF +
+    'в т.ч. НДС 12%                      =12.14' + CRLF +
     '------------------------------------------' + CRLF +
-    'Фискальный признак:                       ' + CRLF +
-    'Время:                 04.08.2022 17:09:35' + CRLF +
-    'Оператор фискальных данных:АО "КазТранском' + CRLF +
+    'Время: 04.08.2022 17:09:35                ' + CRLF +
+    'Оператор фискальных данных: АО "КазТранско' + CRLF +
     'Для проверки чека зайдите на сайт:        ' + CRLF +
     'dev.kofd.kz/consumer                      ' + CRLF +
     '------------------------------------------' + CRLF +
     '              ФИСКАЛЬНЫЙ ЧЕK              ' + CRLF +
-    'http://dev.kofd.kz/consumer?i=923956785162' + CRLF +
+    'http://dev.kofd.kz/consumer?i=923956785162&f=211030200207&s=15240.64&t=20220804T170935' + CRLF +
     '               ИНК ОФД: 270               ' + CRLF +
     '     Код ККМ КГД (РНМ): 211030200207      ' + CRLF +
     '             ЗНМ: SWK00032685             ' + CRLF +
@@ -478,12 +396,42 @@ const
     '          Горячая линия 20948802934       ' + CRLF +
     '            СПАСИБО ЗА ПОКУПКУ            ' + CRLF +
     '                                          ';
-    ItemBarcode = '8234827364';
+
+const
+  ItemBarcode = '8234827364';
+
+procedure TWebkassaImplTest.TestFiscalReceipt3;
+var
+  i: Integer;
+  Json: TlkJSON;
+  Text: WideString;
+  Doc: TlkJSONbase;
 begin
-  Separator := StringOfChar('-', FPrinter.RecLineChars);
-
   OpenClaimEnable;
+  PrintReceipt3;
+  // Check
+  Json := TlkJSON.Create;
+  try
+    Doc := Json.ParseText(FDriver.Client.CommandJson);
+    Text := Doc.Field['Positions'].Child[0].Field['Mark'].Value;
+    CheckEquals(ItemBarcode, Text, 'ItemBarcode');
+  finally
+    Json.Free;
+  end;
 
+  FLines.Text := Receipt3Text;
+  CheckEquals(FLines.Count, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
+  for i := 0 to FLines.Count-1 do
+  begin
+    CheckEquals(Trim(FLines[i]), Trim(FPrinter.Lines[i]), IntToStr(i));
+  end;
+end;
+
+procedure TWebkassaImplTest.PrintReceipt3;
+var
+  pData: Integer;
+  pString: WideString;
+begin
   // FiscalSign
   pData := DriverParameterFiscalSign;
   pString := 'FiscalSign';
@@ -525,17 +473,19 @@ begin
   FptrCheck(Driver.PrintRecTotal(123.45, 123.45, '1'));
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   CheckEquals(OPOS_SUCCESS, Driver.EndFiscalReceipt(False));
-  // Check
-  Json := TlkJSON.Create;
-  try
-    Doc := Json.ParseText(FDriver.Client.CommandJson);
-    pString := Doc.Field['Positions'].Child[0].Field['Mark'].Value;
-    CheckEquals(ItemBarcode, pString, 'ItemBarcode');
-  finally
-    Json.Free;
-  end;
+end;
 
-  FLines.Text := ReceiptText;
+procedure TWebkassaImplTest.TestDuplicateReceipt;
+var
+  i: Integer;
+begin
+  OpenClaimEnable;
+  CheckEquals(1, Driver.GetPropertyNumber(PIDXFptr_CapDuplicateReceipt), 'CapDuplicateReceipt');
+  Driver.SetPropertyNumber(PIDXFptr_DuplicateReceipt, 1);
+  PrintReceipt3;
+  FLines.Assign(FPrinter.Lines);
+  FPrinter.Lines.Clear;
+  CheckEquals(OPOS_SUCCESS, Driver.PrintDuplicateReceipt, 'PrintDuplicateReceipt');
   CheckEquals(FLines.Count, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
   for i := 0 to FLines.Count-1 do
   begin

@@ -156,7 +156,7 @@ begin
     CheckEquals(757292213, Command.Data.ControlSum, 'Command.Data.ControlSum');
     CheckEquals(False, Command.Data.OfflineMode, 'Command.Data.OfflineMode');
     CheckEquals(False, Command.Data.CashboxOfflineMode, 'Command.Data.CashboxOfflineMode');
-    CheckEquals(17500, Command.Data.SumlnCashbox, 'Command.Data.SumlnCashbox');
+    CheckEquals(17500, Command.Data.SumInCashbox, 'Command.Data.SumInCashbox');
     CheckEquals(1, Command.Data.Sell.PaymentsByTypesApiModel.Count);
     CheckEquals(1050, Command.Data.Sell.PaymentsByTypesApiModel[0].Sum);
     CheckEquals(0, Command.Data.Sell.PaymentsByTypesApiModel[0]._Type);
@@ -220,7 +220,7 @@ begin
     CheckEquals(757292213, Command.Data.ControlSum, 'Command.Data.ControlSum');
     CheckEquals(False, Command.Data.OfflineMode, 'Command.Data.OfflineMode');
     CheckEquals(False, Command.Data.CashboxOfflineMode, 'Command.Data.CashboxOfflineMode');
-    CheckEquals(17500, Command.Data.SumlnCashbox, 'Command.Data.SumlnCashbox');
+    CheckEquals(17500, Command.Data.SumInCashbox, 'Command.Data.SumInCashbox');
     CheckEquals(1, Command.Data.Sell.PaymentsByTypesApiModel.Count);
     CheckEquals(1050, Command.Data.Sell.PaymentsByTypesApiModel[0].Sum);
     CheckEquals(0, Command.Data.Sell.PaymentsByTypesApiModel[0]._Type);
@@ -279,7 +279,7 @@ begin
 
     CheckEquals(False, Command.Data.OfflineMode, 'Command.Data.OfflineMode');
     CheckEquals(False, Command.Data.CashboxOfflineMode, 'Command.Data.CashboxOfflineMode');
-    CheckEquals(0, Command.Data.SumlnCashbox, 'Command.Data.SumlnCashbox');
+    CheckEquals(3670106.06, Command.Data.SumInCashbox, 'Command.Data.SumInCashbox');
     CheckEquals(0, Command.Data.Sell.PaymentsByTypesApiModel.Count);
     CheckEquals(0, Command.Data.Sell.Discount);
     CheckEquals(0, Command.Data.Sell.Markup);

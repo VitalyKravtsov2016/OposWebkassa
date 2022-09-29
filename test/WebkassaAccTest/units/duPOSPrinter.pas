@@ -31,6 +31,8 @@ type
     procedure TearDown; override;
   published
     procedure TestCheckHealth;
+    procedure TestPrintBarCode;
+    procedure TestPrintBarCode2;
   end;
 
 implementation
@@ -97,6 +99,48 @@ procedure TPOSPrinterTest.TestCheckHealth;
 begin
   OpenClaimEnable;
   PtrCheck(Printer.CheckHealth(OPOS_CH_INTERACTIVE));
+end;
+
+
+procedure TPOSPrinterTest.TestPrintBarCode;
+const
+  Barcode = 'http://dev.kofd.kz/consumer?i=925871425876&f=211030200207&s=15443.72&t=20220826T210014';
+  CRLF = #13#10;
+var
+  i: Integer;
+begin
+  OpenClaimEnable;
+
+  if Printer.CapTransaction then
+  begin
+    PtrCheck(Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_TRANSACTION));
+  end;
+  for i := 0 to 10 do
+  begin
+    PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'Line ' + IntToStr(i) + CRLF));
+  end;
+  PtrCheck(Printer.PrintBarCode(PTR_S_RECEIPT, Barcode, PTR_BCS_DATAMATRIX, 200, 200,
+    PTR_BC_CENTER, PTR_BC_TEXT_NONE));
+
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, CRLF));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, CRLF));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, CRLF));
+
+  PtrCheck(Printer.CutPaper(90));
+  if Printer.CapTransaction then
+  begin
+    Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_NORMAL);
+  end;
+end;
+
+procedure TPOSPrinterTest.TestPrintBarCode2;
+const
+  Barcode = 'http://dev.kofd.kz/consumer?i=925871425876&f=211030200207&s=15443.72&t=20220826T210014';
+  CRLF = #13#10;
+begin
+  OpenClaimEnable;
+  PtrCheck(Printer.PrintBarCode(PTR_S_RECEIPT, Barcode + CRLF, PTR_BCS_DATAMATRIX, 200, 200,
+    PTR_BC_CENTER, PTR_BC_TEXT_NONE));
 end;
 
 initialization

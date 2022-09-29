@@ -44,6 +44,8 @@ type
     procedure TestReadReceipt;
     procedure TestReadReceiptText;
     procedure TestSendReceipt2;
+
+    procedure TestSumInCashbox;
   end;
 
 implementation
@@ -182,7 +184,8 @@ begin
     Command.Request.Token := FClient.Token;
     Command.Request.CashboxUniqueNumber := FClient.CashboxNumber;
     FClient.XReport(Command);
-    WriteFileData(GetModulePath + 'XReport.txt', FClient.AnswerJson);
+    WriteFileData(GetModulePath + 'XReportAnswer.txt', FClient.AnswerJson);
+
   finally
     Command.Free;
   end;
@@ -581,6 +584,52 @@ begin
   end;
 end;
 
+procedure TWebkassaTest.TestSumInCashbox;
+var
+  SumInCashbox: Currency;
+  XReport: TZXReportCommand;
+  CashCommand: TMoneyOperationCommand;
+begin
+  XReport := TZXReportCommand.Create;
+  CashCommand := TMoneyOperationCommand.Create;
+  try
+    FClient.Connect;
+    XReport.Request.Token := FClient.Token;
+    XReport.Request.CashboxUniqueNumber := FClient.CashboxNumber;
+    FClient.XReport(XReport);
+
+    SumInCashbox := XReport.Data.SumInCashbox;
+    // Cashin
+    CashCommand.Request.token := FClient.Token;
+	  CashCommand.Request.CashboxUniqueNumber := FClient.CashboxNumber;
+	  CashCommand.Request.OperationType := OperationTypeCashIn;
+	  CashCommand.Request.Sum := 12345.67;
+	  CashCommand.Request.ExternalCheckNumber := '';
+    FClient.MoneyOperation(CashCommand);
+    SumInCashbox := SumInCashbox + 12345.67;
+
+    XReport.Request.Token := FClient.Token;
+    XReport.Request.CashboxUniqueNumber := FClient.CashboxNumber;
+    FClient.XReport(XReport);
+    CheckEquals(SumInCashbox, XReport.Data.SumInCashbox, 'SumInCashbox 1');
+    // Cashout
+    CashCommand.Request.token := FClient.Token;
+	  CashCommand.Request.CashboxUniqueNumber := FClient.CashboxNumber;
+	  CashCommand.Request.OperationType := OperationTypeCashOut;
+	  CashCommand.Request.Sum := 12345.67;
+	  CashCommand.Request.ExternalCheckNumber := '';
+    FClient.MoneyOperation(CashCommand);
+    SumInCashbox := SumInCashbox - 12345.67;
+
+    XReport.Request.Token := FClient.Token;
+    XReport.Request.CashboxUniqueNumber := FClient.CashboxNumber;
+    FClient.XReport(XReport);
+    CheckEquals(SumInCashbox, XReport.Data.SumInCashbox, 'SumInCashbox 2');
+  finally
+    XReport.Free;
+    CashCommand.Free;
+  end;
+end;
 
 initialization
   FReceipt := TSendReceiptCommand.Create;

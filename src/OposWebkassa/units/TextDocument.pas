@@ -42,8 +42,10 @@ type
     procedure AddLines(const Line1, Line2: string); overload;
     procedure AddLines(const Line1, Line2: string; Style: Integer); overload;
     procedure Add(const Line: string; Style: Integer); overload;
-    procedure AddCurrency(const Line: string; Value: Currency);
     function AlignCenter(const Line: WideString): WideString;
+    function ConcatLines(const Line1, Line2: string; LineChars: Integer): WideString;
+
+    procedure Assign(Source: TTextDocument);
 
     property Items: TTextItems read FItems;
     property LineChars: Integer read FLineChars write FLineChars;
@@ -68,6 +70,7 @@ type
   public
     property Style: Integer read FStyle;
     property Text: WideString read FText;
+    procedure Assign(Source: TPersistent); override;
   end;
 
 function AlignCenter2(const Line: WideString; LineWidth: Integer): WideString;
@@ -124,26 +127,22 @@ begin
   Item.FStyle := STYLE_NORMAL;
 end;
 
+function TTextDocument.ConcatLines(const Line1, Line2: string; LineChars: Integer): WideString;
+begin
+  Result := Line1 + StringOfChar(' ', LineChars-Length(Line1)-Length(Line2)) + Line2;
+end;
+
 procedure TTextDocument.AddLines(const Line1, Line2: string; Style: Integer);
 var
   Text: string;
 begin
-  Text := Line1 + StringOfChar(' ', LineChars-Length(Line1)-Length(Line2)) + Line2;
+  Text := ConcatLines(Line1, Line2, LineChars);
   Add(Text, Style);
 end;
 
 procedure TTextDocument.AddLines(const Line1, Line2: string);
 begin
   AddLines(Line1, Line2, STYLE_NORMAL);
-end;
-
-procedure TTextDocument.AddCurrency(const Line: string; Value: Currency);
-var
-  Text: string;
-begin
-  Text := '=' + CurrencyToStr(Value);
-  Text := Line + StringOfChar(' ', LineChars-Length(Line)-Length(Text)) + Text;
-  Add(Text, STYLE_BOLD);
 end;
 
 procedure TTextDocument.AddText(const Text: string);
@@ -200,6 +199,12 @@ begin
   Result := AlignCenter2(Line, LineChars);
 end;
 
+procedure TTextDocument.Assign(Source: TTextDocument);
+begin
+  FItems.Assign(Source.Items);
+  FLineChars := Source.LineChars;
+end;
+
 { TTextItems }
 
 function TTextItems.Add: TTextItem;
@@ -210,6 +215,21 @@ end;
 function TTextItems.GetItem(Index: Integer): TTextItem;
 begin
   Result := inherited Items[Index] as TTextItem;
+end;
+
+{ TTextItem }
+
+procedure TTextItem.Assign(Source: TPersistent);
+var
+  Src: TTextItem;
+begin
+  if Source is TTextItem then
+  begin
+    Src := Source as TTextItem;
+    FStyle := Src.Style;
+    FText := Src.Text;
+  end else
+    inherited Assign(Source);
 end;
 
 end.

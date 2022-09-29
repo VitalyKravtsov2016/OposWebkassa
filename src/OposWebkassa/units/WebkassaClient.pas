@@ -527,7 +527,7 @@ type
     FControlSum: Currency;
     FOfflineMode: Boolean;
     FCashboxOfflineMode: Boolean;
-    FSumlnCashbox: Currency;
+    FSumInCashbox: Currency;
     FSell: TOperationTypeSummary;
     FBuy: TOperationTypeSummary;
     FReturnSell: TOperationTypeSummary;
@@ -567,7 +567,7 @@ type
     property ControlSum: Currency read FControlSum write FControlSum;
     property OfflineMode: Boolean read FOfflineMode write FOfflineMode;
     property CashboxOfflineMode: Boolean read FCashboxOfflineMode write FCashboxOfflineMode;
-    property SumlnCashbox: Currency read FSumlnCashbox write FSumlnCashbox;
+    property SumInCashbox: Currency read FSumInCashbox write FSumInCashbox;
     property Sell: TOperationTypeSummary read FSell write SetSell;
     property Buy: TOperationTypeSummary read FBuy write SetBuy;
     property ReturnSell: TOperationTypeSummary read FReturnSell write SetReturnSell;
@@ -1823,7 +1823,7 @@ POST https://devkkm.webkassa.kz/api/ZReport
     "ControlSum": 757292213,
     "OfflineMode": false,
     "CashboxOfflineMode": false,
-    "SumlnCashbox": 17500,
+    "SumInCashbox": 17500,
     "Sell": {
     " PaymentsByTypesApiModel" :	[
       {

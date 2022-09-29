@@ -60,6 +60,7 @@ type
     FTrailer: TPrinterLines;
     FClient: TWebkassaClient;
     FDocument: TTextDocument;
+    FDuplicate: TTextDocument;
     FReceipt: TCustomReceipt;
     FPrinter: IOPOSPOSPrinter;
     FPrinterLog: TPOSPrinterLog;
@@ -73,6 +74,7 @@ type
     procedure CheckCanPrint;
     function GetVatRate(Code: Integer): TVatRate;
     function AmountToStr(Value: Currency): AnsiString;
+    function AmountToStrEq(Value: Currency): AnsiString;
     procedure SetPrinter(const Value: IOPOSPOSPrinter);
   public
     procedure Initialize;
@@ -112,6 +114,7 @@ type
 
     property Receipt: TCustomReceipt read FReceipt;
     property Document: TTextDocument read FDocument;
+    property Duplicate: TTextDocument read FDuplicate;
     property Printer: IOPOSPOSPrinter read GetPrinter write SetPrinter;
     property PrinterState: Integer read GetPrinterState write SetPrinterState;
   private
@@ -361,19 +364,6 @@ begin
   end;
 end;
 
-function CurrencyToStr(Value: Currency): WideString;
-var
-  SaveDecimalSeparator: Char;
-begin
-  SaveDecimalSeparator := DecimalSeparator;
-  try
-    DecimalSeparator := '.';
-    Result := Tnt_WideFormat('%.2f', [Value]);
-  finally
-    DecimalSeparator := SaveDecimalSeparator;
-  end;
-end;
-
 { TWebkassaImpl }
 
 constructor TWebkassaImpl.Create(AOwner: TComponent);
@@ -382,6 +372,7 @@ begin
   inherited Create(AOwner);
   FLogger := TLogFile.Create;
   FDocument := TTextDocument.Create;
+  FDuplicate := TTextDocument.Create;
   FReceipt := TCustomReceipt.Create;
   FClient := TWebkassaClient.Create(FLogger);
   FParams := TPrinterParameters.Create(FLogger);
@@ -406,6 +397,7 @@ begin
   FParams.Free;
   FUnits.Free;
   FDocument.Free;
+  FDuplicate.Free;
   FOposDevice.Free;
   FPrinterState.Free;
   FHeader.Free;
@@ -429,6 +421,11 @@ begin
   begin
     Result := Format('%.*f', [FAmountDecimalPlaces, Value]);
   end;
+end;
+
+function TWebkassaImpl.AmountToStrEq(Value: Currency): AnsiString;
+begin
+  Result := '=' + AmountToStr(Value);
 end;
 
 function TWebkassaImpl.GetQuantity(Value: Integer): Double;
@@ -814,6 +811,11 @@ begin
     FPrinterState.CheckState(FPTR_PS_FISCAL_RECEIPT_ENDING);
     FReceipt.EndFiscalReceipt;
     FReceipt.Print(Self);
+    if FDuplicateReceipt then
+    begin
+      FDuplicateReceipt := False;
+      FDuplicate.Assign(Document);
+    end;
     SetPrinterState(FPTR_PS_MONITOR);
     Result := ClearResult;
   except
@@ -842,6 +844,8 @@ begin
   try
     CheckEnabled;
     CheckState(FPTR_PS_NONFISCAL);
+    Document.AddText(0, Params.Header);
+    Document.AddText(Params.Trailer);
     PrintDocument(Document);
     SetPrinterState(FPTR_PS_MONITOR);
     Result := ClearResult;
@@ -880,14 +884,14 @@ begin
     case DataItem of
       FPTR_GD_FIRMWARE:;
       FPTR_GD_PRINTER_ID: Data := Params.CashboxNumber;
-      FPTR_GD_CURRENT_TOTAL: Data := CurrencyToStr(Receipt.GetTotal());
-      FPTR_GD_DAILY_TOTAL: Data := CurrencyToStr(0);
-      FPTR_GD_GRAND_TOTAL: Data := CurrencyToStr(0);
-      FPTR_GD_MID_VOID: Data := CurrencyToStr(0);
-      FPTR_GD_NOT_PAID: Data := CurrencyToStr(0);
+      FPTR_GD_CURRENT_TOTAL: Data := AmountToStr(Receipt.GetTotal());
+      FPTR_GD_DAILY_TOTAL: Data := AmountToStr(0);
+      FPTR_GD_GRAND_TOTAL: Data := AmountToStr(0);
+      FPTR_GD_MID_VOID: Data := AmountToStr(0);
+      FPTR_GD_NOT_PAID: Data := AmountToStr(0);
       FPTR_GD_RECEIPT_NUMBER: Data := FCheckNumber;
-      FPTR_GD_REFUND: Data := CurrencyToStr(0);
-      FPTR_GD_REFUND_VOID: Data := CurrencyToStr(0);
+      FPTR_GD_REFUND: Data := AmountToStr(0);
+      FPTR_GD_REFUND_VOID: Data := AmountToStr(0);
 
       FPTR_GD_FISCAL_DOC,
       FPTR_GD_FISCAL_DOC_VOID,
@@ -901,7 +905,7 @@ begin
       FPTR_GD_Z_REPORT,
       FPTR_GD_TENDER,
       FPTR_GD_LINECOUNT:
-        Data := CurrencyToStr(0);
+        Data := AmountToStr(0);
       FPTR_GD_DESCRIPTION_LENGTH: Data := IntToStr(Printer.RecLineChars);
     else
       InvalidParameterValue('DataItem', IntToStr(DataItem));
@@ -1117,7 +1121,18 @@ end;
 
 function TWebkassaImpl.PrintDuplicateReceipt: Integer;
 begin
-  Result := IllegalError;
+  try
+    CheckEnabled;
+    CheckState(FPTR_PS_MONITOR);
+    if FDuplicate.Items.Count > 0 then
+    begin
+      PrintDocument(FDuplicate);
+    end;
+    Result := ClearResult;
+  except
+    on E: Exception do
+      Result := HandleException(E);
+  end;
 end;
 
 function TWebkassaImpl.PrintFiscalDocumentLine(
@@ -1591,35 +1606,35 @@ begin
       Document.Add(Document.AlignCenter('ÎÒ×ÅÒ ÁÅÇ ÃÀØÅÍÈß'));
     Document.Add(Separator);
     Document.Add('ÍÅÎÁÍÓË. ÑÓÌÌÛ ÍÀ ÍÀ×ÀËÎ ÑÌÅÍÛ');
-    Document.AddLines('ÏĞÎÄÀÆ', CurrencyToStr(Command.Data.StartNonNullable.Sell));
-    Document.AddLines('ÏÎÊÓÏÎÊ', CurrencyToStr(Command.Data.StartNonNullable.Buy));
-    Document.AddLines('ÂÎÇÂĞÀÒÎÂ ÏĞÎÄÀÆ', CurrencyToStr(Command.Data.StartNonNullable.ReturnSell));
-    Document.AddLines('ÂÎÇÂĞÀÒÎÂ ÏÎÊÓÏÎÊ', CurrencyToStr(Command.Data.StartNonNullable.ReturnBuy));
+    Document.AddLines('ÏĞÎÄÀÆ', AmountToStr(Command.Data.StartNonNullable.Sell));
+    Document.AddLines('ÏÎÊÓÏÎÊ', AmountToStr(Command.Data.StartNonNullable.Buy));
+    Document.AddLines('ÂÎÇÂĞÀÒÎÂ ÏĞÎÄÀÆ', AmountToStr(Command.Data.StartNonNullable.ReturnSell));
+    Document.AddLines('ÂÎÇÂĞÀÒÎÂ ÏÎÊÓÏÎÊ', AmountToStr(Command.Data.StartNonNullable.ReturnBuy));
 
     Document.Add('×ÅÊÎÂ ÏĞÎÄÀÆ');
     Line1 := Format('%.4d', [Command.Data.Sell.Count]);
-    Line2 := CurrencyToStr(Total);
+    Line2 := AmountToStr(Total);
     Text := Line1 + StringOfChar(' ', (Document.LineChars div 2)-Length(Line1)-Length(Line2)) + Line2;
     Document.Add(Text, STYLE_DWIDTH_HEIGHT);
     AddPayments(Document, Command.Data.Sell.PaymentsByTypesApiModel);
 
     Document.Add('×ÅÊÎÂ ÏÎÊÓÏÎÊ');
     Line1 := Format('%.4d', [Command.Data.Buy.Count]);
-    Line2 := CurrencyToStr(Command.Data.Buy.Taken);
+    Line2 := AmountToStr(Command.Data.Buy.Taken);
     Text := Line1 + StringOfChar(' ', (Document.LineChars div 2)-Length(Line1)-Length(Line2)) + Line2;
     Document.Add(Text, STYLE_DWIDTH_HEIGHT);
     AddPayments(Document, Command.Data.Buy.PaymentsByTypesApiModel);
 
     Document.Add('×ÅÊÎÂ ÂÎÇÂĞÀÒÎÂ ÏĞÎÄÀÆ');
     Line1 := Format('%.4d', [Command.Data.ReturnSell.Count]);
-    Line2 := CurrencyToStr(Command.Data.ReturnSell.Taken);
+    Line2 := AmountToStr(Command.Data.ReturnSell.Taken);
     Text := Line1 + StringOfChar(' ', (Document.LineChars div 2)-Length(Line1)-Length(Line2)) + Line2;
     Document.Add(Text, STYLE_DWIDTH_HEIGHT);
     AddPayments(Document, Command.Data.ReturnSell.PaymentsByTypesApiModel);
 
     Document.Add('×ÅÊÎÂ ÂÎÇÂĞÀÒÎÂ ÏÎÊÓÏÎÊ');
     Line1 := Format('%.4d', [Command.Data.ReturnBuy.Count]);
-    Line2 := CurrencyToStr(Command.Data.ReturnBuy.Taken);
+    Line2 := AmountToStr(Command.Data.ReturnBuy.Taken);
     Text := Line1 + StringOfChar(' ', (Document.LineChars div 2)-Length(Line1)-Length(Line2)) + Line2;
     Document.Add(Text, STYLE_DWIDTH_HEIGHT);
     AddPayments(Document, Command.Data.ReturnBuy.PaymentsByTypesApiModel);
@@ -1628,20 +1643,20 @@ begin
     Node := Doc.Field['Data'].Field['MoneyPlacementOperations'].Field['Deposit'];
     Count := Node.Field['Count'].Value;
     Amount := Node.Field['Amount'].Value;
-    Document.AddLines(Format('%.4d', [Count]), CurrencyToStr(Amount));
+    Document.AddLines(Format('%.4d', [Count]), AmountToStr(Amount));
     Document.Add('ÈÇÚßÒÈÉ');
     Node := Doc.Field['Data'].Field['MoneyPlacementOperations'].Field['WithDrawal'];
     Count := Node.Field['Count'].Value;
     Amount := Node.Field['Amount'].Value;
-    Document.AddLines(Format('%.4d', [Count]), CurrencyToStr(Amount));
+    Document.AddLines(Format('%.4d', [Count]), AmountToStr(Amount));
 
-    Document.AddLines('ÍÀËÈ×ÍÛÕ Â ÊÀÑÑÅ', CurrencyToStr(Command.Data.SumlnCashbox));
-    Document.AddLines('ÂÛĞÓ×ÊÀ', CurrencyToStr(Total));
+    Document.AddLines('ÍÀËÈ×ÍÛÕ Â ÊÀÑÑÅ', AmountToStr(Command.Data.SumInCashbox));
+    Document.AddLines('ÂÛĞÓ×ÊÀ', AmountToStr(Total));
     Document.Add('ÍÅÎÁÍÓË. ÑÓÌÌÛ ÍÀ ÊÎÍÅÖ ÑÌÅÍÛ');
-    Document.AddLines('ÏĞÎÄÀÆ', CurrencyToStr(Command.Data.EndNonNullable.Sell));
-    Document.AddLines('ÏÎÊÓÏÎÊ', CurrencyToStr(Command.Data.EndNonNullable.Buy));
-    Document.AddLines('ÂÎÇÂĞÀÒÎÂ ÏĞÎÄÀÆ', CurrencyToStr(Command.Data.EndNonNullable.ReturnSell));
-    Document.AddLines('ÂÎÇÂĞÀÒÎÂ ÏÎÊÓÏÎÊ', CurrencyToStr(Command.Data.EndNonNullable.ReturnBuy));
+    Document.AddLines('ÏĞÎÄÀÆ', AmountToStr(Command.Data.EndNonNullable.Sell));
+    Document.AddLines('ÏÎÊÓÏÎÊ', AmountToStr(Command.Data.EndNonNullable.Buy));
+    Document.AddLines('ÂÎÇÂĞÀÒÎÂ ÏĞÎÄÀÆ', AmountToStr(Command.Data.EndNonNullable.ReturnSell));
+    Document.AddLines('ÂÎÇÂĞÀÒÎÂ ÏÎÊÓÏÎÊ', AmountToStr(Command.Data.EndNonNullable.ReturnBuy));
     Document.AddLines('ÑÔîğìèğîâàíî ÎÔÄ: ', Command.Data.Ofd.Name);
     PrintDocumentSafe(Document);
   finally
@@ -1659,7 +1674,7 @@ begin
   for i := 0 to Payments.Count-1 do
   begin
     Payment := Payments[i];
-    Document.AddLines(GetPaymentName(Payment._Type), CurrencyToStr(Payment.Sum));
+    Document.AddLines(GetPaymentName(Payment._Type), AmountToStr(Payment.Sum));
   end;
 end;
 
@@ -2138,8 +2153,8 @@ begin
       Command.Data.Cashbox.IdentityNumber]));
     Document.Add(Command.Data.DateTime);
     Document.AddText(Receipt.Lines.Text);
-    Document.AddCurrency('ÂÍÅÑÅÍÈÅ ÄÅÍÅÃ Â ÊÀÑÑÓ', Receipt.GetTotal);
-    Document.AddCurrency('ÍÀËÈ×ÍÛÕ Â ÊÀÑÑÅ', Command.Data.Sum);
+    Document.AddLines('ÂÍÅÑÅÍÈÅ ÄÅÍÅÃ Â ÊÀÑÑÓ', AmountToStrEq(Receipt.GetTotal));
+    Document.AddLines('ÍÀËÈ×ÍÛÕ Â ÊÀÑÑÅ', AmountToStrEq(Command.Data.Sum));
     Document.Add('Îïåğàòîğ: ' + FCashier.FullName);
     Document.AddText(Receipt.Trailer.Text);
     // Print
@@ -2171,8 +2186,8 @@ begin
       Command.Data.Cashbox.IdentityNumber]));
     Document.Add(Command.Data.DateTime);
     Document.AddText(Receipt.Lines.Text);
-    Document.AddCurrency('ÈÇÚßÒÈÅ ÄÅÍÅÃ ÈÇ ÊÀÑÑÛ', Receipt.GetTotal);
-    Document.AddCurrency('ÍÀËÈ×ÍÛÕ Â ÊÀÑÑÅ', Command.Data.Sum);
+    Document.AddLines('ÈÇÚßÒÈÅ ÄÅÍÅÃ ÈÇ ÊÀÑÑÛ', AmountToStrEq(Receipt.GetTotal));
+    Document.AddLines('ÍÀËÈ×ÍÛÕ Â ÊÀÑÑÅ', AmountToStrEq(Command.Data.Sum));
     Document.Add('Îïåğàòîğ: ' + FCashier.FullName);
     Document.AddText(Receipt.Trailer.Text);
     // print
@@ -2452,6 +2467,7 @@ procedure TWebkassaImpl.PrintReceipt(Receipt: TSalesReceipt;
   Command: TSendReceiptCommand);
 var
   i: Integer;
+  Text: WideString;
   VatRate: TVatRate;
   Amount: Currency;
   TextItem: TRecTexItem;
@@ -2492,22 +2508,22 @@ begin
         UnitPrice := RecItem.UnitPrice;
       end;
       Document.Add(Format('   %.3f %s x %s', [ItemQuantity,
-        RecItem.UnitName, CurrencyToStr(UnitPrice)]));
+        RecItem.UnitName, AmountToStr(UnitPrice)]));
       // Ñêèäêà
       Amount := RecItem.GetDiscount;
       if Amount <> 0 then
       begin
         Document.AddLines('   Ñêèäêà ' + AdjustmentName,
-          '-' + CurrencyToStr(Amount));
+          '-' + AmountToStr(Amount));
       end;
       // Íàöåíêà
       Amount := RecItem.GetCharge;
       if Amount <> 0 then
       begin
         Document.AddLines('   Íàöåíêà ' + AdjustmentName,
-          '+' + CurrencyToStr(Amount));
+          '+' + AmountToStr(Amount));
       end;
-      Document.AddLines('   Ñòîèìîñòü', CurrencyToStr(RecItem.GetTotalWithDiscount));
+      Document.AddLines('   Ñòîèìîñòü', AmountToStr(RecItem.GetTotalWithDiscount));
     end;
     // Text
     if ReceiptItem is TRecTexItem then
@@ -2517,31 +2533,33 @@ begin
     end;
   end;
   Document.AddSeparator;
+  // Ñêèäêà íà ÷åê
+  Amount := Receipt.GetDiscount;
+  if Amount <> 0 then
+  begin
+    Document.AddLines('Ñêèäêà:', AmountToStr(Amount));
+  end;
+  // Íàöåíêà íà ÷åê
+  Amount := Receipt.GetCharge;
+  if Amount <> 0 then
+  begin
+    Document.AddLines('Íàöåíêà:', AmountToStr(Amount));
+  end;
+  // ÈÒÎÃ
+  Text := Document.ConcatLines('ÈÒÎÃ', AmountToStrEq(Receipt.GetTotal), Document.LineChars div 2);
+  Document.Add(Text, STYLE_DWIDTH_HEIGHT);
   // Payments
   for i := Low(Receipt.Payments) to High(Receipt.Payments) do
   begin
     Amount := Receipt.Payments[i];
     if Amount <> 0 then
     begin
-      Document.AddLines(GetPaymentName(i) + ':', CurrencyToStr(Amount));
+      Document.AddLines(GetPaymentName(i) + ':', AmountToStrEq(Amount));
     end;
   end;
-  // Ñêèäêà íà ÷åê
-  Amount := Receipt.GetDiscount;
-  if Amount <> 0 then
-  begin
-    Document.AddLines('Ñêèäêà:', CurrencyToStr(Amount));
-  end;
-  // Íàöåíêà íà ÷åê
-  Amount := Receipt.GetCharge;
-  if Amount <> 0 then
-  begin
-    Document.AddLines('Íàöåíêà:', CurrencyToStr(Amount));
-  end;
-  Document.AddLines('ÈÒÎÃÎ:', CurrencyToStr(Receipt.GetTotal));
   if Receipt.Change <> 0 then
   begin
-    Document.AddLines('  ÑÄÀ×À:', CurrencyToStr(Receipt.Change));
+    Document.AddLines('  ÑÄÀ×À', AmountToStrEq(Receipt.Change));
   end;
 
   // VAT amounts
@@ -2553,18 +2571,21 @@ begin
     begin
       Amount := Receipt.RoundAmount(Amount * VATRate.Rate / (100 + VATRate.Rate));
       Document.AddLines(Format('â ò.÷. %s', [VATRate.Name]),
-        CurrencyToStr(Amount));
+        AmountToStrEq(Amount));
     end;
   end;
   Document.AddSeparator;
-  Document.AddLines('Ôèñêàëüíûé ïğèçíàê:',  Receipt.FiscalSign);
-  Document.AddLines('Âğåìÿ:',  Command.Data.DateTime);
-  Document.AddLines('Îïåğàòîğ ôèñêàëüíûõ äàííûõ:',  Command.Data.Cashbox.Ofd.Name);
+  if Receipt.FiscalSign <> '' then
+  begin
+    Document.Add('Ôèñêàëüíûé ïğèçíàê: ' + Receipt.FiscalSign);
+  end;
+  Document.Add('Âğåìÿ: ' + Command.Data.DateTime);
+  Document.Add('Îïåğàòîğ ôèñêàëüíûõ äàííûõ: ' + Command.Data.Cashbox.Ofd.Name);
   Document.Add('Äëÿ ïğîâåğêè ÷åêà çàéäèòå íà ñàéò: ');
   Document.Add(Command.Data.Cashbox.Ofd.Host);
   Document.AddSeparator;
   Document.Add(Document.AlignCenter('ÔÈÑÊÀËÜÍÛÉ ×ÅK'));
-  Document.Add(Command.Data.TicketUrl);
+  Document.Add(Command.Data.TicketUrl, STYLE_QR_CODE);
   Document.Add(Document.AlignCenter('ÈÍÊ ÎÔÄ: ' + Command.Data.Cashbox.IdentityNumber));
   Document.Add(Document.AlignCenter('Êîä ÊÊÌ ÊÃÄ (ĞÍÌ): ' + Command.Data.Cashbox.RegistrationNumber));
   Document.Add(Document.AlignCenter('ÇÍÌ: ' + Command.Data.Cashbox.UniqueNumber));
@@ -2585,6 +2606,8 @@ procedure TWebkassaImpl.PrintDocumentSafe(Document: TTextDocument);
 begin
   CheckCanPrint;
   try
+    Document.AddText(0, Params.Header);
+    Document.AddText(Params.Trailer);
     PrintDocument(Document);
   except
     on E: Exception do
@@ -2608,10 +2631,6 @@ const
   ESC = #$1B;
   CRLF = #13#10;
 begin
-  // Add header and trailer
-  Document.AddText(0, Params.Header);
-  Document.AddText(Params.Trailer);
-
   CheckCanPrint;
   CapRecDwideDhigh := Printer.CapRecDwideDhigh;
   CapRecBold := Printer.CapRecBold;
@@ -2626,8 +2645,8 @@ begin
     case Item.Style of
       STYLE_QR_CODE:
       begin
-        Printer.PrintBarCode(PTR_S_RECEIPT, Item.Text, PTR_BCS_DATAMATRIX, 200, 200,
-          PTR_BC_CENTER, PTR_BC_TEXT_NONE);
+        Printer.PrintBarCode(PTR_S_RECEIPT, Item.Text + CRLF,
+          PTR_BCS_DATAMATRIX, 200, 200, PTR_BC_CENTER, PTR_BC_TEXT_NONE);
       end;
     else
       Text := Copy(Item.Text, 1, RecLineChars);
