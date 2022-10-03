@@ -61,7 +61,9 @@ uses
   OposPtrhi in '..\..\src\Opos\OposPtrhi.pas',
   RCSEvents in 'units\RCSEvents.pas',
   RCSEvents_TLB in 'units\RCSEvents_TLB.pas',
-  POSPrinterLog in '..\..\src\Opos\POSPrinterLog.pas';
+  POSPrinterLog in '..\..\src\Opos\POSPrinterLog.pas',
+  uZintBarcode in '..\..\src\Shared\uZintBarcode.pas',
+  uZintInterface in '..\..\src\Shared\uZintInterface.pas';
 
 {$R *.RES}
 

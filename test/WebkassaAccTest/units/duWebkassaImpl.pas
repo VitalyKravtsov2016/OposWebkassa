@@ -46,6 +46,7 @@ type
     procedure TestFiscalReceipt3;
     procedure TestFiscalReceiptWithVAT;
     procedure TestFiscalReceiptWithAdjustments;
+    procedure TestPrintBarcode; 
   end;
 
 implementation
@@ -87,7 +88,7 @@ begin
   //FDriver.Printer := Printer;
 
   FDriver.TestMode := True;
-  FDriver.Params.LogFileEnabled := False;
+  FDriver.Params.LogFileEnabled := True;
   FDriver.Params.LogMaxCount := 10;
   FDriver.Params.LogFilePath := 'Logs';
   FDriver.Params.Login := 'webkassa4@softit.kz';
@@ -357,6 +358,14 @@ end;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+
+procedure TWebkassaImplTest.TestPrintBarcode;
+const
+  Barcode = 'http://dev.kofd.kz/consumer?i=925871425876&f=211030200207&s=15443.72&t=20220826T210014';
+begin
+  OpenClaimEnable;
+  Driver.PrintQRCode(Barcode);
+end;
 
 initialization
   RegisterTest('', TWebkassaImplTest.Suite);

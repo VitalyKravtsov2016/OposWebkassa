@@ -456,9 +456,10 @@ var
   NewFileName: AnsiString;
 begin
   ODS(Data);
+  if not Enabled then Exit;
+
   Lock;
   try
-    if not Enabled then Exit;
     S := Data;
 
     if GetDefaultFileName <> FFileName then
@@ -487,7 +488,6 @@ begin
       begin
         CloseFile;
       end;
-      FlushFileBuffers(FHandle); // !!!
     end;
   finally
     Unlock;

@@ -60,7 +60,9 @@ uses
   OposPtrhi in '..\..\src\Opos\OposPtrhi.pas',
   duWebkassaImpl in 'units\duWebkassaImpl.pas',
   MockPosPrinter in '..\OposWebkassaTest\units\MockPosPrinter.pas',
-  POSPrinterLog in '..\..\src\Opos\POSPrinterLog.pas';
+  POSPrinterLog in '..\..\src\Opos\POSPrinterLog.pas',
+  uZintBarcode in '..\..\src\Shared\uZintBarcode.pas',
+  uZintInterface in '..\..\src\Shared\uZintInterface.pas';
 
 {$R *.RES}
 

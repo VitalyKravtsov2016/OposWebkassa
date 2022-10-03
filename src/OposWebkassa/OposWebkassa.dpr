@@ -54,7 +54,9 @@ uses
   OposPtrUtils in '..\Opos\OposPtrUtils.pas',
   OposPtrhi in '..\Opos\OposPtrhi.pas',
   OposFiscalPrinter_CCO_TLB in '..\Opos\OposFiscalPrinter_CCO_TLB.pas',
-  POSPrinterLog in '..\Opos\POSPrinterLog.pas';
+  POSPrinterLog in '..\Opos\POSPrinterLog.pas',
+  uZintBarcode in '..\Shared\uZintBarcode.pas',
+  uZintInterface in '..\Shared\uZintInterface.pas';
 
 exports
   DllGetClassObject,

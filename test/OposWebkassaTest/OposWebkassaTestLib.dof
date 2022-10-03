@@ -180,10 +180,19 @@ C:\Program Files (x86)\Borland\Delphi7\Projects\Bpl\JvControlsDesign70.bpl=JVCL 
 c:\program files (x86)\borland\delphi7\Bin\dclsoap70.bpl=Borland SOAP Components
 c:\program files (x86)\borland\delphi7\Bin\dclwbm70.bpl=Borland InternetExpress Components
 c:\program files (x86)\borland\delphi7\Bin\dclwebsnap70.bpl=Borland WebSnap Components
+[HistoryLists\hlConditionals]
+Count=1
+Item0=DEBUG
 [HistoryLists\hlUnitAliases]
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
+[HistoryLists\hlSearchPath]
+Count=1
+Item0=Barcode
 [HistoryLists\hlUnitOutputDirectory]
 Count=2
 Item0=DCU
 Item1=..\..\DCU
+[HistoryLists\hlOutputDirectorry]
+Count=1
+Item0=Bin

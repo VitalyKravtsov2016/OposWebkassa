@@ -85,7 +85,7 @@ begin
   if Length(Result) < LineWidth then
   begin
     L := (LineWidth - Length(Result)) div 2;
-    Result := StringOfChar(' ', L) + Result + StringOfChar(' ', LineWidth - Length(Result) - L);
+    Result := StringOfChar(' ', L) + Result;
   end;
 end;
 

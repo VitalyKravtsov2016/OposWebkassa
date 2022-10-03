@@ -55,7 +55,9 @@ uses
   VatRate in '..\..\src\Shared\VatRate.pas',
   OposPtrUtils in '..\..\src\Opos\OposPtrUtils.pas',
   OposPtrhi in '..\..\src\Opos\OposPtrhi.pas',
-  POSPrinterLog in '..\..\src\Opos\POSPrinterLog.pas';
+  POSPrinterLog in '..\..\src\Opos\POSPrinterLog.pas',
+  uZintBarcode in '..\..\src\Shared\uZintBarcode.pas',
+  uZintInterface in '..\..\src\Shared\uZintInterface.pas';
 
 {$R *.RES}
 

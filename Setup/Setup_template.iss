@@ -24,6 +24,10 @@ OutputBaseFilename=Setup
 [Components]
 Name: "main"; Description: "Driver files"; Types: full compact custom; Flags: fixed
 [Files]
+; Libraries
+Source: "Setup\zint.dll"; DestDir: "{app}\Bin"; Flags: ignoreversion; components: main;
+Source: "Setup\zlib1.dll"; DestDir: "{app}\Bin"; Flags: ignoreversion; components: main;
+Source: "Setup\libpng15.dll"; DestDir: "{app}\Bin"; Flags: ignoreversion; components: main;
 ; Version history
 Source: "History.txt"; DestDir: "{app}"; Flags: ignoreversion; components: main;
 ; Drivers

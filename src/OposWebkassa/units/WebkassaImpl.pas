@@ -4,9 +4,9 @@ interface
 
 uses
   // VCL
-  Classes, SysUtils, Windows, DateUtils, ActiveX, ComObj, Math,
+  Classes, SysUtils, Windows, DateUtils, ActiveX, ComObj, Math, Graphics,
   // Tnt
-  TntSysUtils,
+  TntSysUtils, TntClasses,
   // Opos
   Opos, OposPtr, OposPtrUtils, Oposhi, OposFptr, OposFptrHi, OposEvents,
   OposEventsRCS, OposException, OposFptrUtils, OposServiceDevice19,
@@ -20,7 +20,8 @@ uses
   WebkassaClient, FiscalPrinterState, CustomReceipt, NonFiscalDoc, ServiceVersion,
   PrinterParameters, PrinterParametersX, CashInReceipt, CashOutReceipt,
   SalesReceipt, TextDocument, ReceiptItem, StringUtils, PrinterLines,
-  DebugUtils, VatRate, PosPrinterLog;
+  DebugUtils, VatRate, PosPrinterLog, uZintBarcode, uZintInterface,
+  FileUtils;
 
 const
   FPTR_DEVICE_DESCRIPTION = 'WebKassa OPOS driver';
@@ -308,9 +309,9 @@ type
                                         Amount: Currency; VatInfo: Integer): Integer; safecall;
     function PrintRecItemVoid(const Description: WideString; Price: Currency; Quantity: Integer; 
                               VatInfo: Integer; UnitPrice: Currency; const UnitName: WideString): Integer; safecall;
-    function PrintRecItemRefund(const Description: WideString; Amount: Currency; Quantity: Integer; 
+    function PrintRecItemRefund(const Description: WideString; Amount: Currency; Quantity: Integer;
                                 VatInfo: Integer; UnitAmount: Currency; const UnitName: WideString): Integer; safecall;
-    function PrintRecItemRefundVoid(const Description: WideString; Amount: Currency; 
+    function PrintRecItemRefundVoid(const Description: WideString; Amount: Currency;
                                     Quantity: Integer; VatInfo: Integer; UnitAmount: Currency;
                                     const UnitName: WideString): Integer; safecall;
     property OpenResult: Integer read Get_OpenResult;
@@ -320,6 +321,7 @@ type
 
     function DecodeString(const Text: WideString): WideString;
     function EncodeString(const S: WideString): WideString;
+    procedure PrintQRCode(const BarcodeData: WideString);
 
     property Logger: ILogFile read FLogger;
     property CashBox: TCashBox read FCashBox;
@@ -2628,14 +2630,16 @@ var
   CapRecDwideDhigh: Boolean;
   RecLineChars: Integer;
   Item: TTextItem;
-const
-  ESC = #$1B;
-  CRLF = #13#10;
+  TickCount: DWORD;
 begin
+  Logger.Debug('PrintDocument');
+  TickCount := GetTickCount;
+
   CheckCanPrint;
   CapRecDwideDhigh := Printer.CapRecDwideDhigh;
   CapRecBold := Printer.CapRecBold;
   RecLineChars := Printer.RecLineChars;
+
   if Printer.CapTransaction then
   begin
     CheckPtr(Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_TRANSACTION));
@@ -2646,8 +2650,14 @@ begin
     case Item.Style of
       STYLE_QR_CODE:
       begin
-        Printer.PrintBarCode(PTR_S_RECEIPT, Item.Text + CRLF,
-          PTR_BCS_DATAMATRIX, 0, 4, PTR_BC_CENTER, PTR_BC_TEXT_NONE);
+        if Printer.CapRecBitmap then
+        begin
+          PrintQRCode(Item.Text);
+        end else
+        begin
+          Printer.PrintBarCode(PTR_S_RECEIPT, Item.Text, PTR_BCS_DATAMATRIX, 0, 4,
+            PTR_BC_CENTER, PTR_BC_TEXT_NONE);
+        end;
       end;
     else
       Text := Copy(Item.Text, 1, RecLineChars);
@@ -2684,6 +2694,7 @@ begin
   begin
     CheckPtr(Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_NORMAL));
   end;
+  Logger.Debug(Format('PrintDocument, time=%d ms', [GetTickCount-TickCount]));
 end;
 
 function TWebkassaImpl.GetPrinterStation(Station: Integer): Integer;
@@ -2710,5 +2721,114 @@ begin
 
   Result := Station;
 end;
+
+procedure RenderBarcode(Bitmap: TBitmap; Symbol: PZSymbol; Is1D: Boolean);
+var
+  B: Byte;
+  X, Y: Integer;
+begin
+  Bitmap.Monochrome := True;
+  Bitmap.PixelFormat := pf1Bit;
+  Bitmap.Width := Symbol.width;
+  if Is1D then
+    Bitmap.Height := Symbol.Height
+  else
+    Bitmap.Height := Symbol.rows;
+
+  for X := 0 to Symbol.width-1 do
+  for Y := 0 to Symbol.Height-1 do
+  begin
+    Bitmap.Canvas.Pixels[X, Y] := clWhite;
+    if Is1D then
+      B := Byte(Symbol.encoded_data[0][X div 7])
+    else
+      B := Byte(Symbol.encoded_data[Y][X div 7]);
+
+    if (B and (1 shl (X mod 7))) <> 0 then
+      Bitmap.Canvas.Pixels[X, Y] := clBlack;
+  end;
+end;
+
+procedure ScaleBitmap(Bitmap: TBitmap; Scale: Integer);
+var
+  P: TPoint;
+  DstBitmap: TBitmap;
+begin
+  DstBitmap := TBitmap.Create;
+  try
+    DstBitmap.Monochrome := True;
+    DstBitmap.PixelFormat := pf1Bit;
+    P.X := Bitmap.Width * Scale;
+    P.Y := Bitmap.Height * Scale;
+    DstBitmap.Width := P.X;
+    DstBitmap.Height := P.Y;
+    DstBitmap.Canvas.StretchDraw(Rect(0, 0, P.X, P.Y), Bitmap);
+    Bitmap.Assign(DstBitmap);
+  finally
+    DstBitmap.Free;
+  end;
+end;
+
+function OposStrToNibble(const Data: string): WIdeString;
+var
+  B: Byte;
+  i: Integer;
+begin
+  Result := '';
+  for i := 1 to Length(Data) do
+  begin
+    B := Ord(Data[i]);
+    Result := Result + WideChar($30 + ((B shr 4) and $0F));
+    Result := Result + WideChar($30 + (B and $0F));
+  end;
+end;
+
+procedure TWebkassaImpl.PrintQRCode(const BarcodeData: WideString);
+var
+  Data: string;
+  Bitmap: TBitmap;
+  Render: TZintBarcode;
+  Stream: TMemoryStream;
+  BitmapData: WideString;
+begin
+  Bitmap := TBitmap.Create;
+  Render := TZintBarcode.Create;
+  Stream := TMemoryStream.Create;
+  try
+    Render.BorderWidth := 0;
+    Render.FGColor := clBlack;
+    Render.BGColor := clWhite;
+    Render.Scale := 1;
+    Render.Height := 200;
+    Render.BarcodeType := tBARCODE_QRCODE;
+    Render.Data := BarcodeData;
+    Render.ShowHumanReadableText := False;
+    Render.EncodeNow;
+    RenderBarcode(Bitmap, Render.Symbol, False);
+    ScaleBitmap(Bitmap, 2);
+    Bitmap.SaveToStream(Stream);
+
+    Stream.Position := 0;
+    if Stream.Size > 0 then
+    begin
+      SetLength(Data, Stream.Size);
+      Stream.ReadBuffer(Data[1], Stream.Size);
+
+      Printer.BinaryConversion := OPOS_BC_NIBBLE;
+      try
+        BitmapData := OposStrToNibble(Data);
+        CheckPtr(Printer.PrintMemoryBitmap(PTR_S_RECEIPT, BitmapData,
+          PTR_BMT_BMP, PTR_BM_ASIS, PTR_BM_CENTER));
+      finally
+        Printer.BinaryConversion := OPOS_BC_NONE;
+      end;
+    end;
+  finally
+    Render.Free;
+    Bitmap.Free;
+    Stream.Free;
+  end;
+end;
+
 
 end.

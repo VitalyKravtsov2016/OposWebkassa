@@ -115,7 +115,7 @@ AutoIncBuild=1
 MajorVer=1
 MinorVer=13
 Release=0
-Build=651
+Build=654
 Debug=0
 PreRelease=0
 Special=0
@@ -126,7 +126,7 @@ CodePage=1252
 [Version Info Keys]
 CompanyName=SHTRIH-M
 FileDescription=OPOS setup utility
-FileVersion=1.13.0.651
+FileVersion=1.13.0.654
 InternalName=OPOS setup
 LegalCopyright=SHTRIH-M © 2013
 LegalTrademarks=
@@ -136,10 +136,19 @@ ProductVersion=1.13
 Comments=http://www.shtrih-m.ru
 [Excluded Packages]
 C:\Program Files (x86)\Borland\Delphi7\Projects\Bpl\PngComponentsD7.bpl=Png components
+[HistoryLists\hlConditionals]
+Count=1
+Item0=DEBUG
 [HistoryLists\hlUnitAliases]
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
+[HistoryLists\hlSearchPath]
+Count=1
+Item0=Barcode
 [HistoryLists\hlUnitOutputDirectory]
 Count=2
 Item0=DCU
 Item1=..\..\DCU
+[HistoryLists\hlOutputDirectorry]
+Count=1
+Item0=Bin
