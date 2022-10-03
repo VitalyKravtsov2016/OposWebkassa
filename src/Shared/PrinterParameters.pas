@@ -58,6 +58,15 @@ const
   MinTrailerLines = 0;
   MaxTrailerLines = 100;
 
+  /////////////////////////////////////////////////////////////////////////////
+  // QR code size
+
+  QRSizeSmall     = 0;
+  QRSizeMedium    = 1;
+  QRSizeLarge     = 2;
+  QRSizeXLarge    = 3;
+  QRSizeXXLarge   = 4;
+
 type
   { TPrinterParameters }
 
@@ -123,7 +132,21 @@ type
     property VATNumber: WideString read FVATNumber write FVATNumber;
   end;
 
+function QRSizeToWidth(QRSize: Integer): Integer;
+
 implementation
+
+function QRSizeToWidth(QRSize: Integer): Integer;
+begin
+  Result := 0;
+  case QRSize of
+    QRSizeSmall     : Result := 102;
+    QRSizeMedium    : Result := 153;
+    QRSizeLarge     : Result := 204;
+    QRSizeXLarge    : Result := 256;
+    QRSizeXXLarge   : Result := 512;
+  end;
+end;
 
 { TPrinterParameters }
 

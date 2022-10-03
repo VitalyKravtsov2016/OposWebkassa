@@ -2580,8 +2580,9 @@ begin
     Document.Add('Фискальный признак: ' + Receipt.FiscalSign);
   end;
   Document.Add('Время: ' + Command.Data.DateTime);
-  Document.Add('Оператор фискальных данных: ' + Command.Data.Cashbox.Ofd.Name);
-  Document.Add('Для проверки чека зайдите на сайт: ');
+  Document.Add('Оператор фискальных данных:');
+  Document.Add(Command.Data.Cashbox.Ofd.Name);
+  Document.Add('Для проверки чека зайдите на сайт:');
   Document.Add(Command.Data.Cashbox.Ofd.Host);
   Document.AddSeparator;
   Document.Add(Document.AlignCenter('ФИСКАЛЬНЫЙ ЧЕK'));
@@ -2646,7 +2647,7 @@ begin
       STYLE_QR_CODE:
       begin
         Printer.PrintBarCode(PTR_S_RECEIPT, Item.Text + CRLF,
-          PTR_BCS_DATAMATRIX, 200, 200, PTR_BC_CENTER, PTR_BC_TEXT_NONE);
+          PTR_BCS_DATAMATRIX, 0, 4, PTR_BC_CENTER, PTR_BC_TEXT_NONE);
       end;
     else
       Text := Copy(Item.Text, 1, RecLineChars);
