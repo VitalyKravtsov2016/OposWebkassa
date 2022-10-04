@@ -5,11 +5,11 @@
 		"Organization": "ТОО SOFT IT KAZAKHSTAN",
 		"Xin": "131240010479",
 		"CurrentState": {
-			"ContinuousDocumentNumber": 1336,
-			"LastOperationDate": "26.08.2022 00:00:00",
-			"ShiftNumber": 177,
-			"ShiftOpenedAt": "26.08.2022 20:20:54",
-			"ShiftClosedAt": "26.08.2022 21:00:05",
+			"ContinuousDocumentNumber": 1486,
+			"LastOperationDate": "04.10.2022 00:00:00",
+			"ShiftNumber": 196,
+			"ShiftOpenedAt": "04.10.2022 00:39:54",
+			"ShiftClosedAt": "04.10.2022 14:27:18",
 			"XReport": {
 				"Sections": [
 					{
@@ -17,8 +17,8 @@
 						"Name": "Ломбард",
 						"Operations": {
 							"Sell": {
-								"Amount": 6030.0,
-								"Count": 10
+								"Amount": 1774.3,
+								"Count": 15
 							}
 						}
 					}
@@ -26,59 +26,40 @@
 				"Taxes": [],
 				"MoneyPlacementOperations": {
 					"Deposit": {
-						"TotalCount": 70,
+						"TotalCount": 85,
 						"Count": 0,
 						"Amount": 0.0
 					},
 					"WithDrawal": {
-						"TotalCount": 48,
+						"TotalCount": 58,
 						"Count": 0,
 						"Amount": 0.0
 					}
 				},
 				"Revenue": 0.0,
 				"Type": 1,
-				"Modificators": [
-					{
-						"Type": 1,
-						"Operations": {
-							"Sell": {
-								"Amount": 107.0,
-								"Count": 2
-							}
-						}
-					},
-					{
-						"Type": 2,
-						"Operations": {
-							"Sell": {
-								"Amount": 49.0,
-								"Count": 2
-							}
-						}
-					}
-				],
+				"Modificators": [],
 				"TaxPayerName": "ТОО SOFT IT KAZAKHSTAN",
 				"TaxPayerIN": "131240010479",
 				"TaxPayerVAT": true,
 				"TaxPayerVATSeria": "00000",
 				"TaxPayerVATNumber": "0000000",
-				"ReportNumber": 5,
+				"ReportNumber": 16,
 				"CashboxSN": "SWK00032685",
 				"CashboxIN": 270,
 				"CashboxRN": "211030200207",
-				"StartOn": "26.08.2022 20:20:54",
-				"ReportOn": "26.08.2022 21:00:09",
-				"CloseOn": "26.08.2022 21:00:05",
+				"StartOn": "04.10.2022 00:39:54",
+				"ReportOn": "04.10.2022 15:19:49",
+				"CloseOn": "04.10.2022 14:27:18",
 				"CashierCode": 1,
-				"ShiftNumber": 177,
-				"DocumentCount": 5,
+				"ShiftNumber": 196,
+				"DocumentCount": 16,
 				"PutMoneySum": 0.0,
 				"TakeMoneySum": 0.0,
-				"ControlSum": 24057980,
+				"ControlSum": 401053222,
 				"OfflineMode": false,
 				"CashboxOfflineMode": false,
-				"SumInCashbox": 3722789.06,
+				"SumInCashbox": 30244.73,
 				"Sell": {
 					"PaymentsByTypesApiModel": [],
 					"Discount": 0.0,
@@ -86,7 +67,7 @@
 					"Taken": 0.0,
 					"Change": 0.0,
 					"Count": 0,
-					"TotalCount": 876,
+					"TotalCount": 959,
 					"VAT": 0.0
 				},
 				"Buy": {
@@ -106,7 +87,7 @@
 					"Taken": 0.0,
 					"Change": 0.0,
 					"Count": 0,
-					"TotalCount": 61,
+					"TotalCount": 63,
 					"VAT": 0.0
 				},
 				"ReturnBuy": {
@@ -120,15 +101,15 @@
 					"VAT": 0.0
 				},
 				"EndNonNullable": {
-					"Sell": 12403297.78,
+					"Sell": 12515281.84,
 					"Buy": 0.0,
-					"ReturnSell": 365387.47,
+					"ReturnSell": 367407.47,
 					"ReturnBuy": 0.0
 				},
 				"StartNonNullable": {
-					"Sell": 12403297.78,
+					"Sell": 12515281.84,
 					"Buy": 0.0,
-					"ReturnSell": 365387.47,
+					"ReturnSell": 367407.47,
 					"ReturnBuy": 0.0
 				},
 				"Ofd": {

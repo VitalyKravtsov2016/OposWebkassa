@@ -46,7 +46,9 @@ type
     procedure TestFiscalReceipt3;
     procedure TestFiscalReceiptWithVAT;
     procedure TestFiscalReceiptWithAdjustments;
-    procedure TestPrintBarcode; 
+    procedure TestPrintBarcode;
+    procedure TestReadGrandTotal;
+    procedure TestReadDailyTotal;
   end;
 
 implementation
@@ -365,6 +367,30 @@ const
 begin
   OpenClaimEnable;
   Driver.PrintQRCode(Barcode);
+end;
+
+procedure TWebkassaImplTest.TestReadGrandTotal;
+var
+  OptArgs: Integer;
+  Data: WideString;
+begin
+  OpenClaimEnable;
+  OptArgs := 0;
+  Data := '';
+  FptrCheck(Driver.GetData(FPTR_GD_GRAND_TOTAL, OptArgs, Data));
+  CheckNotEquals('0.00', Data, 'FPTR_GD_GRAND_TOTAL');
+end;
+
+procedure TWebkassaImplTest.TestReadDailyTotal;
+var
+  OptArgs: Integer;
+  Data: WideString;
+begin
+  OpenClaimEnable;
+  OptArgs := 0;
+  Data := '';
+  FptrCheck(Driver.GetData(FPTR_GD_DAILY_TOTAL, OptArgs, Data));
+  CheckNotEquals('0.00', Data, 'FPTR_GD_DAILY_TOTAL');
 end;
 
 initialization

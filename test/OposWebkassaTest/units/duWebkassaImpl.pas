@@ -479,7 +479,6 @@ const
 
 procedure TWebkassaImplTest.TestFiscalReceipt3;
 var
-  i: Integer;
   Json: TlkJSON;
   Text: WideString;
   Doc: TlkJSONbase;
@@ -555,8 +554,6 @@ begin
 end;
 
 procedure TWebkassaImplTest.TestDuplicateReceipt;
-var
-  i: Integer;
 begin
   OpenClaimEnable;
   CheckEquals(1, Driver.GetPropertyNumber(PIDXFptr_CapDuplicateReceipt), 'CapDuplicateReceipt');

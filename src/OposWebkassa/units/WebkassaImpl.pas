@@ -48,6 +48,7 @@ type
 
   TWebkassaImpl = class(TComponent, IFiscalPrinterService_1_12)
   private
+    FStateJson: TlkJSON;
     FTestMode: Boolean;
     FPOSID: WideString;
     FCashierID: WideString;
@@ -77,9 +78,12 @@ type
     function AmountToStr(Value: Currency): AnsiString;
     function AmountToStrEq(Value: Currency): AnsiString;
     procedure SetPrinter(const Value: IOPOSPOSPrinter);
+    function ReadCurrentStateJson: TlkJSONbase;
+    function ReadDailyTotal: Currency;
   public
     procedure Initialize;
     procedure CheckEnabled;
+    function ReadGrandTotal: Currency;
     function IllegalError: Integer;
     procedure CheckState(AState: Integer);
     procedure SetPrinterState(Value: Integer);
@@ -389,12 +393,14 @@ begin
   FClient.RaiseErrors := True;
   FHeader := TPrinterLines.Create(TPrinterLine);
   FTrailer := TPrinterLines.Create(TPrinterLine);
+  FStateJson := TlkJSON.Create;
   ODS('TWebkassaImpl.Create: OK');
 end;
 
 destructor TWebkassaImpl.Destroy;
 begin
   Close;
+  FStateJson.Free;
   FClient.Free;
   FParams.Free;
   FUnits.Free;
@@ -877,16 +883,51 @@ begin
   Result := FOposDevice.OpenResult;
 end;
 
+function TWebkassaImpl.ReadCurrentStateJson: TlkJSONbase;
+var
+  Request: TCashboxRequest;
+begin
+  Request := TCashboxRequest.Create;
+  try
+    Request.Token := Client.Token;
+    Request.CashboxUniqueNumber := Params.CashboxNumber;
+    Client.ReadCashboxStatus(Request);
+    Result := FStateJson.ParseText(FClient.AnswerJson);
+  finally
+    Request.Free;
+  end;
+end;
+
+function TWebkassaImpl.ReadDailyTotal: Currency;
+begin
+  Result := ReadCurrentStateJson.Field['Data'].Field['CurrentState'].Field[
+    'XReport'].Field['SumInCashbox'].Value;
+end;
+
+function TWebkassaImpl.ReadGrandTotal: Currency;
+var
+  Doc: TlkJSONbase;
+begin
+  Doc := ReadCurrentStateJson.Field['Data'].Field['CurrentState'].Field[
+    'XReport'].Field['StartNonNullable'];
+
+  Result :=
+    Currency(Doc.Field['Sell'].Value) -
+    Currency(Doc.Field['Buy'].Value) -
+    Currency(Doc.Field['ReturnSell'].Value) +
+    Currency(Doc.Field['ReturnBuy'].Value);
+end;
+
 function TWebkassaImpl.GetData(DataItem: Integer; out OptArgs: Integer;
   out Data: WideString): Integer;
 begin
   try
     case DataItem of
-      FPTR_GD_FIRMWARE:;
+      FPTR_GD_FIRMWARE: ;
       FPTR_GD_PRINTER_ID: Data := Params.CashboxNumber;
       FPTR_GD_CURRENT_TOTAL: Data := AmountToStr(Receipt.GetTotal());
-      FPTR_GD_DAILY_TOTAL: Data := AmountToStr(0);
-      FPTR_GD_GRAND_TOTAL: Data := AmountToStr(0);
+      FPTR_GD_DAILY_TOTAL: Data := AmountToStr(ReadDailyTotal);
+      FPTR_GD_GRAND_TOTAL: Data := AmountToStr(ReadGrandTotal);
       FPTR_GD_MID_VOID: Data := AmountToStr(0);
       FPTR_GD_NOT_PAID: Data := AmountToStr(0);
       FPTR_GD_RECEIPT_NUMBER: Data := FCheckNumber;
@@ -915,6 +956,8 @@ begin
     on E: Exception do
       Result := HandleException(E);
   end;
+  Printer.CapStatisticsReporting
+
 end;
 
 function TWebkassaImpl.GetDate(out Date: WideString): Integer;
