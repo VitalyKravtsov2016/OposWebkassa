@@ -145,8 +145,8 @@ type
     FStyle: Integer;
     FText: WideString;
   public
-    property Style: Integer read FStyle;
-    property Text: WideString read FText;
+    property Style: Integer read FStyle write FStyle;
+    property Text: WideString read FText write FText;
   end;
 
 implementation

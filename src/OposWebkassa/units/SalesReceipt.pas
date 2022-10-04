@@ -10,7 +10,7 @@ uses
   // Tnt
   TntClasses,
   // This
-  CustomReceipt, ReceiptItem, gnugettext, WException, MathUtils;
+  CustomReceipt, ReceiptItem, gnugettext, WException, MathUtils, TextDocument;
 
 type
   TPayments = array [0..4] of Currency;
@@ -116,6 +116,8 @@ type
     procedure Print(AVisitor: TObject); override;
 
     procedure DirectIO(Command: Integer; var pData: Integer; var pString: WideString); override;
+
+    procedure PrintRecMessage(const Message: WideString); override;
 
     property Barcode: string read FBarcode;
     property Change: Currency read FChange;
@@ -581,6 +583,21 @@ begin
       DriverParameterExternalCheckNumber: FExternalCheckNumber := pString;
       DriverParameterFiscalSign: FFiscalSign := pString;
     end;
+  end;
+end;
+
+procedure TSalesReceipt.PrintRecMessage(const Message: WideString);
+var
+  Item: TRecTexItem;
+begin
+  if FAfterTotal then
+  begin
+    FTrailer.Add(Message);
+  end else
+  begin
+    Item := TRecTexItem.Create(FItems);
+    Item.Text := Message;
+    Item.Style := STYLE_NORMAL;
   end;
 end;
 

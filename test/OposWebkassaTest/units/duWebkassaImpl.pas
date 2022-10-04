@@ -32,6 +32,7 @@ type
     FWaitEvent: TEvent;
     procedure WaitForEventsCount(Count: Integer);
     procedure PrintReceipt3;
+    procedure CheckLines;
   protected
     procedure CheckNoEvent;
     procedure WaitForEvent;
@@ -64,12 +65,13 @@ type
     procedure TearDown; override;
   public
     // !!!
-    procedure TestCashIn;
-    procedure TestCashOut;
     procedure TestZReport;
     procedure TestXReport;
-    procedure TestNonFiscal;
   published
+    procedure TestCashIn;
+    procedure TestCashOut;
+    procedure TestNonFiscal;
+
     procedure OpenClaimEnable;
     procedure TestFiscalReceipt;
     procedure TestFiscalReceipt3;
@@ -243,7 +245,37 @@ begin
   EnableDevice;
 end;
 
+procedure TWebkassaImplTest.CheckLines;
+var
+  i: Integer;
+begin
+  CheckEquals(FLines.Count, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
+  for i := 0 to FLines.Count-1 do
+  begin
+    CheckEquals(Trim(FLines[i]), Trim(FPrinter.Lines[i]), IntToStr(i));
+  end;
+end;
+
 procedure TWebkassaImplTest.TestCashIn;
+const
+  CashInReceiptText: string =
+    '                                          ' + CRLF +
+    '   Восточно-Казастанская область, город   ' + CRLF +
+    '    Усть-Каменогорск, ул. Грейдерная, 1/10' + CRLF +
+    '            ТОО PetroRetail               ' + CRLF +
+    'БИН                                       ' + CRLF +
+    'ЗНМ  ИНК ОФД                              ' + CRLF +
+    '                                          ' + CRLF +
+    'Message 1                                 ' + CRLF +
+    'Message 2                                 ' + CRLF +
+    'ВНЕСЕНИЕ ДЕНЕГ В КАССУ              =60.00' + CRLF +
+    'НАЛИЧНЫХ В КАССЕ                     =0.00' + CRLF +
+    'Message 3                                 ' + CRLF +
+    'Message 4                                 ' + CRLF +
+    '           Callцентр 039458039850         ' + CRLF +
+    '          Горячая линия 20948802934       ' + CRLF +
+    '            СПАСИБО ЗА ПОКУПКУ            ' + CRLF +
+    '                                          ';
 begin
   OpenClaimEnable;
   CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
@@ -251,21 +283,47 @@ begin
   Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_CASH_IN);
   CheckEquals(FPTR_RT_CASH_IN, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
   FptrCheck(Driver.BeginFiscalReceipt(False));
+  FptrCheck(Driver.PrintRecMessage('Message 1'));
   CheckEquals(FPTR_PS_FISCAL_RECEIPT, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   FptrCheck(Driver.PrintRecCash(10));
   FptrCheck(Driver.PrintRecCash(20));
+  FptrCheck(Driver.PrintRecMessage('Message 2'));
   FptrCheck(Driver.PrintRecCash(30));
   FptrCheck(Driver.PrintRecTotal(0, 10, ''));
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_TOTAL, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   FptrCheck(Driver.PrintRecTotal(0, 20, ''));
+  FptrCheck(Driver.PrintRecMessage('Message 3'));
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_TOTAL, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   FptrCheck(Driver.PrintRecTotal(0, 30, ''));
+  FptrCheck(Driver.PrintRecMessage('Message 4'));
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   FptrCheck(Driver.EndFiscalReceipt(False));
   CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+
+  FLines.Text := CashInReceiptText;
+  CheckLines;
 end;
 
 procedure TWebkassaImplTest.TestCashOut;
+const
+  CashOutReceiptText: string =
+    '                                          ' + CRLF +
+    '   Восточно-Казастанская область, город   ' + CRLF +
+    '    Усть-Каменогорск, ул. Грейдерная, 1/10' + CRLF +
+    '            ТОО PetroRetail               ' + CRLF +
+    'БИН                                       ' + CRLF +
+    'ЗНМ  ИНК ОФД                              ' + CRLF +
+    '                                          ' + CRLF +
+    'Message 1                                 ' + CRLF +
+    'Message 2                                 ' + CRLF +
+    'ИЗЪЯТИЕ ДЕНЕГ ИЗ КАССЫ              =60.00' + CRLF +
+    'НАЛИЧНЫХ В КАССЕ                     =0.00' + CRLF +
+    'Message 3                                 ' + CRLF +
+    'Message 4                                 ' + CRLF +
+    '           Callцентр 039458039850         ' + CRLF +
+    '          Горячая линия 20948802934       ' + CRLF +
+    '            СПАСИБО ЗА ПОКУПКУ            ' + CRLF +
+    '                                          ';
 begin
   OpenClaimEnable;
   CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
@@ -273,18 +331,25 @@ begin
   Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_CASH_OUT);
   CheckEquals(FPTR_RT_CASH_OUT, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
   FptrCheck(Driver.BeginFiscalReceipt(False));
+  FptrCheck(Driver.PrintRecMessage('Message 1'));
   CheckEquals(FPTR_PS_FISCAL_RECEIPT, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   FptrCheck(Driver.PrintRecCash(10));
   FptrCheck(Driver.PrintRecCash(20));
+  FptrCheck(Driver.PrintRecMessage('Message 2'));
   FptrCheck(Driver.PrintRecCash(30));
   FptrCheck(Driver.PrintRecTotal(0, 10, ''));
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_TOTAL, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   FptrCheck(Driver.PrintRecTotal(0, 20, ''));
+  FptrCheck(Driver.PrintRecMessage('Message 3'));
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_TOTAL, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   FptrCheck(Driver.PrintRecTotal(0, 30, ''));
+  FptrCheck(Driver.PrintRecMessage('Message 4'));
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   FptrCheck(Driver.EndFiscalReceipt(False));
   CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+
+  FLines.Text := CashOutReceiptText;
+  CheckLines;
 end;
 
 procedure TWebkassaImplTest.TestZReport;
@@ -300,6 +365,12 @@ begin
 end;
 
 procedure TWebkassaImplTest.TestNonFiscal;
+const
+  NonFiscalText: string =
+    'Строка для печати 1                       ' + CRLF +
+    'Строка для печати 2                       ' + CRLF +
+    'Строка для печати 3                       ' + CRLF +
+    '                                          ';
 begin
   OpenClaimEnable;
   CheckEquals(0, Driver.ResetPrinter, 'ResetPrinter');
@@ -308,6 +379,9 @@ begin
   CheckEquals(0, Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 2'));
   CheckEquals(0, Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 3'));
   CheckEquals(0, Driver.EndNonFiscal, 'EndNonFiscal');
+
+  FLines.Text := NonFiscalText;
+  CheckLines;
 end;
 
 procedure TWebkassaImplTest.TestFiscalReceipt;
@@ -363,17 +437,19 @@ const
     '               CashBox.Name               ' + CRLF +
     '                Смена 149                 ' + CRLF +
     'Чек №923956785162                         ' + CRLF +
-    'Кассир webkassa4@softit.kz                ' + CRLF +
     '------------------------------------------' + CRLF +
+    'Message 1                                 ' + CRLF +
     '  1. Item 1                               ' + CRLF +
     '   1.000 кг x 123.45                      ' + CRLF +
     '   Скидка                           -22.35' + CRLF +
     '   Наценка                          +11.17' + CRLF +
     '   Стоимость                        112.27' + CRLF +
+    'Message 2                                 ' + CRLF +
     '  2. Item 2                               ' + CRLF +
     '   1.000 кг x 1.45                        ' + CRLF +
     '   Скидка                            -0.45' + CRLF +
     '   Стоимость                          1.00' + CRLF +
+    'Message 3                                 ' + CRLF +
     '------------------------------------------' + CRLF +
     'Скидка:                              10.00' + CRLF +
     'Наценка:                              5.00' + CRLF +
@@ -389,10 +465,10 @@ const
     'dev.kofd.kz/consumer                      ' + CRLF +
     '------------------------------------------' + CRLF +
     '              ФИСКАЛЬНЫЙ ЧЕK              ' + CRLF +
-    'http://dev.kofd.kz/consumer?i=923956785162&f=211030200207&s=15240.64&t=20220804T170935' + CRLF +
     '               ИНК ОФД: 270               ' + CRLF +
     '     Код ККМ КГД (РНМ): 211030200207      ' + CRLF +
     '             ЗНМ: SWK00032685             ' + CRLF +
+    'Message 4                                 ' + CRLF +
     '           Callцентр 039458039850         ' + CRLF +
     '          Горячая линия 20948802934       ' + CRLF +
     '            СПАСИБО ЗА ПОКУПКУ            ' + CRLF +
@@ -421,11 +497,7 @@ begin
   end;
 
   FLines.Text := Receipt3Text;
-  CheckEquals(FLines.Count, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
-  for i := 0 to FLines.Count-1 do
-  begin
-    CheckEquals(Trim(FLines[i]), Trim(FPrinter.Lines[i]), IntToStr(i));
-  end;
+  CheckLines;
 end;
 
 procedure TWebkassaImplTest.PrintReceipt3;
@@ -456,6 +528,8 @@ begin
   FptrCheck(Driver.BeginFiscalReceipt(False));
   CheckEquals(FPTR_PS_FISCAL_RECEIPT, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   // Item 1
+  FptrCheck(Driver.PrintRecMessage('Message 1'));
+
   pData := DriverParameterBarcode;
   pString := ItemBarcode;
   FptrCheck(Driver.DirectIO(DIO_SET_DRIVER_PARAMETER, pData, pString));
@@ -465,13 +539,17 @@ begin
   FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_PERCENTAGE_DISCOUNT, 'Скидка 10%', 10, 1));
   FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_PERCENTAGE_SURCHARGE, 'Скидка 5%', 5, 1));
   // Item 2
+  FptrCheck(Driver.PrintRecMessage('Message 2'));
   FptrCheck(Driver.PrintRecItem('Item 2', 1.45, 1000, 1, 1.45, 'кг'));
   FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка 0.45', 0.45, 1));
   // Total adjustment
   FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка 10', 10));
   FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_AMOUNT_SURCHARGE, 'Надбавка 5', 5));
   // Total
+  FptrCheck(Driver.PrintRecMessage('Message 3'));
   FptrCheck(Driver.PrintRecTotal(123.45, 123.45, '1'));
+  FptrCheck(Driver.PrintRecMessage('Message 4'));
+
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   CheckEquals(OPOS_SUCCESS, Driver.EndFiscalReceipt(False));
 end;
@@ -487,11 +565,7 @@ begin
   FLines.Assign(FPrinter.Lines);
   FPrinter.Lines.Clear;
   CheckEquals(OPOS_SUCCESS, Driver.PrintDuplicateReceipt, 'PrintDuplicateReceipt');
-  CheckEquals(FLines.Count, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
-  for i := 0 to FLines.Count-1 do
-  begin
-    CheckEquals(TrimRight(FLines[i]), TrimRight(FPrinter.Lines[i]), IntToStr(i));
-  end;
+  CheckLines;
 end;
 
 procedure TWebkassaImplTest.TestCoverError;

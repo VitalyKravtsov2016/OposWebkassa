@@ -226,7 +226,7 @@ begin
   Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
   CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
 
-  FptrCheck(Driver.BeginFiscalReceipt(False));
+  FptrCheck(Driver.BeginFiscalReceipt(True));
   CheckEquals(FPTR_PS_FISCAL_RECEIPT, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
 
   FptrCheck(Driver.PrintRecItem('Item 1', 123.45, 1000, 0, 123.45, 'Í„'));

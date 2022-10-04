@@ -846,8 +846,6 @@ begin
   try
     CheckEnabled;
     CheckState(FPTR_PS_NONFISCAL);
-    Document.AddText(0, Params.Header);
-    Document.AddText(Params.Trailer);
     PrintDocument(Document);
     SetPrinterState(FPTR_PS_MONITOR);
     Result := ClearResult;
@@ -2157,7 +2155,6 @@ begin
     Document.AddText(Receipt.Lines.Text);
     Document.AddLines('ВНЕСЕНИЕ ДЕНЕГ В КАССУ', AmountToStrEq(Receipt.GetTotal));
     Document.AddLines('НАЛИЧНЫХ В КАССЕ', AmountToStrEq(Command.Data.Sum));
-    Document.Add('Оператор: ' + FCashier.FullName);
     Document.AddText(Receipt.Trailer.Text);
     // Print
     PrintDocumentSafe(Document);
@@ -2190,7 +2187,6 @@ begin
     Document.AddText(Receipt.Lines.Text);
     Document.AddLines('ИЗЪЯТИЕ ДЕНЕГ ИЗ КАССЫ', AmountToStrEq(Receipt.GetTotal));
     Document.AddLines('НАЛИЧНЫХ В КАССЕ', AmountToStrEq(Command.Data.Sum));
-    Document.Add('Оператор: ' + FCashier.FullName);
     Document.AddText(Receipt.Trailer.Text);
     // print
     PrintDocumentSafe(Document);
@@ -2489,7 +2485,7 @@ begin
   Document.Add(Document.AlignCenter(Format('Смена %d', [Command.Data.ShiftNumber])));
   //Document.Add(AlignCenter(Format('Порядковый номер чека №%d', [Command.Data.DocumentNumber])));
   Document.Add(Format('Чек №%s', [Command.Data.CheckNumber]));
-  Document.Add(Format('Кассир %s', [Command.Data.EmployeeName]));
+  //Document.Add(Format('Кассир %s', [Command.Data.EmployeeName]));
   //Document.Add(UpperCase(Command.Data.OperationTypeText));
   Document.AddSeparator;
 
@@ -2592,6 +2588,8 @@ begin
   Document.Add(Document.AlignCenter('ИНК ОФД: ' + Command.Data.Cashbox.IdentityNumber));
   Document.Add(Document.AlignCenter('Код ККМ КГД (РНМ): ' + Command.Data.Cashbox.RegistrationNumber));
   Document.Add(Document.AlignCenter('ЗНМ: ' + Command.Data.Cashbox.UniqueNumber));
+  Document.AddText(Receipt.Trailer.Text);
+
   PrintDocumentSafe(Document);
   Printer.RecLineChars := FRecLineChars;
 end;
