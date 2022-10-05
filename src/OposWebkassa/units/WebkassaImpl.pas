@@ -75,9 +75,9 @@ type
     procedure CheckCanPrint;
     function GetVatRate(Code: Integer): TVatRate;
     function AmountToStr(Value: Currency): AnsiString;
+    function AmountToOutStr(Value: Currency): AnsiString;
     function AmountToStrEq(Value: Currency): AnsiString;
     procedure SetPrinter(const Value: IOPOSPOSPrinter);
-    function ReadCurrentStateJson: TlkJSONbase;
     function ReadDailyTotal: Currency;
     function ReadRefundTotal: Currency;
     function ReadSellTotal: Currency;
@@ -85,7 +85,7 @@ type
   public
     procedure Initialize;
     procedure CheckEnabled;
-    function ReadCashboxTotal: Currency;
+    function ReadGrossTotal: Currency;
     function ReadGrandTotal: Currency;
     function IllegalError: Integer;
     procedure CheckState(AState: Integer);
@@ -119,7 +119,9 @@ type
       var pData: Integer; var pString: WideString);
     procedure PrinterOutputCompleteEvent(ASender: TObject;
       OutputID: Integer);
+    function ReadCurrentStateJson: TlkJSONbase;
 
+    property StateDoc: TlkJSONbase read FStateDoc;
     property Receipt: TCustomReceipt read FReceipt;
     property Document: TTextDocument read FDocument;
     property Duplicate: TTextDocument read FDuplicate;
@@ -130,7 +132,6 @@ type
     FPreLine: WideString;
 
     FDeviceEnabled: Boolean;
-    FAmountDecimalPlaces: Integer;
     FCheckTotal: Boolean;
     // boolean
     FDayOpened: Boolean;
@@ -421,13 +422,21 @@ end;
 
 function TWebkassaImpl.AmountToStr(Value: Currency): AnsiString;
 begin
-  if FAmountDecimalPlaces = 0 then
+  if Params.AmountDecimalPlaces = 0 then
   begin
     Result := IntToStr(Round(Value));
   end else
   begin
-    Result := Format('%.*f', [FAmountDecimalPlaces, Value]);
+    Result := Format('%.*f', [Params.AmountDecimalPlaces, Value]);
   end;
+end;
+
+function TWebkassaImpl.AmountToOutStr(Value: Currency): AnsiString;
+var
+  L: Int64;
+begin
+  L := Trunc(Value * Math.Power(10, Params.AmountDecimalPlaces));
+  Result := IntToStr(L);
 end;
 
 function TWebkassaImpl.AmountToStrEq(Value: Currency): AnsiString;
@@ -464,10 +473,10 @@ begin
     FPTR_RT_GENERIC,
     FPTR_RT_SERVICE,
     FPTR_RT_SIMPLE_INVOICE:
-      Result := TSalesReceipt.CreateReceipt(False, FAmountDecimalPlaces);
+      Result := TSalesReceipt.CreateReceipt(False, Params.AmountDecimalPlaces);
 
     FPTR_RT_REFUND:
-      Result := TSalesReceipt.CreateReceipt(True, FAmountDecimalPlaces);
+      Result := TSalesReceipt.CreateReceipt(True, Params.AmountDecimalPlaces);
   else
     Result := nil;
     InvalidPropertyValue('FiscalReceiptType', IntToStr(FiscalReceiptType));
@@ -574,7 +583,6 @@ begin
   FErrorStation := FPTR_S_RECEIPT;
   SetPrinterState(FPTR_PS_MONITOR);
   FQuantityDecimalPlaces := 3;
-  FAmountDecimalPlaces := 2;
   FQuantityLength := 10;
   FSlipSelection := FPTR_SS_FULL_LENGTH;
   FActualCurrency := FPTR_AC_RUR;
@@ -914,7 +922,7 @@ begin
     'XReport'].Field['SumInCashbox'].Value;
 end;
 
-function TWebkassaImpl.ReadCashboxTotal: Currency;
+function TWebkassaImpl.ReadGrossTotal: Currency;
 var
   Doc: TlkJSONbase;
 begin
@@ -991,17 +999,17 @@ begin
     case DataItem of
       FPTR_GD_FIRMWARE: ;
       FPTR_GD_PRINTER_ID: Data := Params.CashboxNumber;
-      FPTR_GD_CURRENT_TOTAL: Data := AmountToStr(Receipt.GetTotal());
-      FPTR_GD_DAILY_TOTAL: Data := AmountToStr(ReadDailyTotal);
-      FPTR_GD_GRAND_TOTAL: Data := AmountToStr(ReadGrandTotal);
-      FPTR_GD_MID_VOID: Data := AmountToStr(0);
-      FPTR_GD_NOT_PAID: Data := AmountToStr(0);
+      FPTR_GD_CURRENT_TOTAL: Data := AmountToOutStr(Receipt.GetTotal());
+      FPTR_GD_DAILY_TOTAL: Data := AmountToOutStr(ReadDailyTotal);
+      FPTR_GD_GRAND_TOTAL: Data := AmountToOutStr(ReadGrandTotal);
+      FPTR_GD_MID_VOID: Data := AmountToOutStr(0);
+      FPTR_GD_NOT_PAID: Data := AmountToOutStr(0);
       FPTR_GD_RECEIPT_NUMBER: Data := FCheckNumber;
-      FPTR_GD_REFUND: Data := AmountToStr(ReadRefundTotal);
-      FPTR_GD_REFUND_VOID: Data := AmountToStr(0);
+      FPTR_GD_REFUND: Data := AmountToOutStr(ReadRefundTotal);
+      FPTR_GD_REFUND_VOID: Data := AmountToOutStr(0);
       FPTR_GD_Z_REPORT: Data := ReadCurrentStateJson.Field['Data'].Field[
         'CurrentState'].Field['ShiftNumber'].Value;
-      FPTR_GD_FISCAL_REC: Data := AmountToStr(ReadSellTotal);
+      FPTR_GD_FISCAL_REC: Data := AmountToOutStr(ReadSellTotal);
       FPTR_GD_FISCAL_DOC,
       FPTR_GD_FISCAL_DOC_VOID,
       FPTR_GD_FISCAL_REC_VOID,
@@ -1077,7 +1085,7 @@ begin
       PIDX_CapCompareFirmwareVersion  : Result := BoolToInt[FOposDevice.CapCompareFirmwareVersion];
       PIDX_CapUpdateFirmware          : Result := BoolToInt[FOposDevice.CapUpdateFirmware];
       // specific
-      PIDXFptr_AmountDecimalPlaces    : Result := FAmountDecimalPlaces;
+      PIDXFptr_AmountDecimalPlaces    : Result := Params.AmountDecimalPlaces;
       PIDXFptr_AsyncMode              : Result := BoolToInt[FAsyncMode];
       PIDXFptr_CheckTotal             : Result := BoolToInt[FCheckTotal];
       PIDXFptr_CountryCode            : Result := FCountryCode;
@@ -1205,9 +1213,49 @@ end;
 
 function TWebkassaImpl.GetTotalizer(VatID, OptArgs: Integer;
   out Data: WideString): Integer;
+
+  function ReadGrossTotalizer(OptArgs: Integer): Currency;
+  begin
+    Result := 0;
+    case OptArgs of
+      FPTR_TT_DOCUMENT: Result := 0;
+      FPTR_TT_DAY: Result := ReadDailyTotal;
+      FPTR_TT_RECEIPT: Result := Receipt.GetTotal;
+      FPTR_TT_GRAND: Result := ReadGrandTotal;
+    else
+      RaiseIllegalError;
+    end;
+  end;
+
 begin
-  FOposDevice.ErrorString := _('Счетчик не поддерживается');
-  Result := FOposDevice.SetResultCode(OPOS_E_ILLEGAL);
+  try
+    case VatID of
+      FPTR_GT_GROSS: Data := AmountToOutStr(ReadGrossTotalizer(OptArgs));
+      (*
+      FPTR_GT_NET                      =  2;
+      FPTR_GT_DISCOUNT                 =  3;
+      FPTR_GT_DISCOUNT_VOID            =  4;
+      FPTR_GT_ITEM                     =  5;
+      FPTR_GT_ITEM_VOID                =  6;
+      FPTR_GT_NOT_PAID                 =  7;
+      FPTR_GT_REFUND                   =  8;
+      FPTR_GT_REFUND_VOID              =  9;
+      FPTR_GT_SUBTOTAL_DISCOUNT        =  10;
+      FPTR_GT_SUBTOTAL_DISCOUNT_VOID   =  11;
+      FPTR_GT_SUBTOTAL_SURCHARGES      =  12;
+      FPTR_GT_SUBTOTAL_SURCHARGES_VOID =  13;
+      FPTR_GT_SURCHARGE                =  14;
+      FPTR_GT_SURCHARGE_VOID           =  15;
+      FPTR_GT_VAT                      =  16;
+      FPTR_GT_VAT_CATEGORY             =  17;
+      *)
+    end;
+
+    Result := ClearResult;
+  except
+    on E: Exception do
+      Result := HandleException(E);
+  end;
 end;
 
 function TWebkassaImpl.GetVatEntry(VatID, OptArgs: Integer;

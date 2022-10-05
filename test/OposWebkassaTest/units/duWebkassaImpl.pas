@@ -272,8 +272,8 @@ const
     '                                          ' + CRLF +
     'Message 1                                 ' + CRLF +
     'Message 2                                 ' + CRLF +
-    'ÂÍÅÑÅÍÈÅ ÄÅÍÅÃ Â ÊÀÑÑÓ              =60.00' + CRLF +
-    'ÍÀËÈ×ÍÛÕ Â ÊÀÑÑÅ                     =0.00' + CRLF +
+    EscBold + 'ÂÍÅÑÅÍÈÅ ÄÅÍÅÃ Â ÊÀÑÑÓ              =60.00' + CRLF +
+    EscBold + 'ÍÀËÈ×ÍÛÕ Â ÊÀÑÑÅ                     =0.00' + CRLF +
     'Message 3                                 ' + CRLF +
     'Message 4                                 ' + CRLF +
     '           Callöåíòğ 039458039850         ' + CRLF +
@@ -320,8 +320,8 @@ const
     '                                          ' + CRLF +
     'Message 1                                 ' + CRLF +
     'Message 2                                 ' + CRLF +
-    'ÈÇÚßÒÈÅ ÄÅÍÅÃ ÈÇ ÊÀÑÑÛ              =60.00' + CRLF +
-    'ÍÀËÈ×ÍÛÕ Â ÊÀÑÑÅ                     =0.00' + CRLF +
+    EscBold + 'ÈÇÚßÒÈÅ ÄÅÍÅÃ ÈÇ ÊÀÑÑÛ              =60.00' + CRLF +
+    EscBold + 'ÍÀËÈ×ÍÛÕ Â ÊÀÑÑÅ                     =0.00' + CRLF +
     'Message 3                                 ' + CRLF +
     'Message 4                                 ' + CRLF +
     '           Callöåíòğ 039458039850         ' + CRLF +
@@ -669,9 +669,9 @@ begin
   Driver.Close;
 
   OpenClaimEnable;
-  CheckEquals(ESC_DoubleHighAndWide + 'Header line 1', Driver.Params.Header[0]);
+  CheckEquals(ESC_DoubleWide + 'Header line 1', Driver.Params.Header[0]);
   CheckEquals('Header line 2', Driver.Params.Header[1]);
-  CheckEquals(ESC_DoubleHighAndWide + 'Header line 3', Driver.Params.Header[2]);
+  CheckEquals(ESC_DoubleWide + 'Header line 3', Driver.Params.Header[2]);
   CheckEquals('Header line 4', Driver.Params.Header[3]);
 end;
 
@@ -684,7 +684,7 @@ begin
   Driver.Close;
 
   OpenClaimEnable;
-  CheckEquals(ESC_DoubleHighAndWide + 'Trailer line 1', Driver.Params.Trailer[0]);
+  CheckEquals(ESC_DoubleWide + 'Trailer line 1', Driver.Params.Trailer[0]);
   CheckEquals('Trailer line 2', Driver.Params.Trailer[1]);
   CheckEquals('Trailer line 3', Driver.Params.Trailer[2]);
 end;

@@ -49,6 +49,7 @@ const
   DefRoundType = 2; // Округление позиций
   DefVATNumber = '00000';
   DefVATSeries = '00000';
+  DefAmountDecimalPlaces = 2;
 
   /////////////////////////////////////////////////////////////////////////////
   // Header and trailer parameters
@@ -95,6 +96,7 @@ type
     FRoundType: Integer;
     FVATNumber: WideString;
     FVATSeries: WideString;
+    FAmountDecimalPlaces: Integer;
 
     procedure LogText(const Caption, Text: WideString);
     procedure SetHeaderText(const Text: WideString);
@@ -103,6 +105,7 @@ type
     procedure SetNumTrailerLines(const Value: Integer);
     function GetHeaderText: WideString;
     function GetTrailerText: WideString;
+    procedure SetAmountDecimalPlaces(const Value: Integer);
   public
     constructor Create(ALogger: ILogFile);
     destructor Destroy; override;
@@ -136,6 +139,7 @@ type
     property VATNumber: WideString read FVATNumber write FVATNumber;
     property HeaderText: WideString read GetHeaderText write SetHeaderText;
     property TrailerText: WideString read GetTrailerText write SetTrailerText;
+    property AmountDecimalPlaces: Integer read FAmountDecimalPlaces write SetAmountDecimalPlaces;
   end;
 
 function QRSizeToWidth(QRSize: Integer): Integer;
@@ -201,6 +205,7 @@ begin
   RoundType := DefRoundType;
   VATNumber := DefVATNumber;
   VATSeries := DefVATSeries;
+  AmountDecimalPlaces := DefAmountDecimalPlaces;
 
   // VatRates
   VatRates.Clear;
@@ -258,6 +263,8 @@ begin
   Logger.Debug('RoundType: ' + IntToStr(RoundType));
   Logger.Debug('VATSeries: ' + VATSeries);
   Logger.Debug('VATNumber: ' + VATNumber);
+  Logger.Debug('AmountDecimalPlaces: ' + IntToStr(AmountDecimalPlaces));
+
   // VatRates
   for i := 0 to VatRates.Count-1 do
   begin
@@ -358,6 +365,12 @@ end;
 function TPrinterParameters.GetTrailerText: WideString;
 begin
   Result := Trailer.Text;
+end;
+
+procedure TPrinterParameters.SetAmountDecimalPlaces(const Value: Integer);
+begin
+  if Value in [0, 2] then
+    FAmountDecimalPlaces := Value;
 end;
 
 end.

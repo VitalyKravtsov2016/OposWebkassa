@@ -213,6 +213,9 @@ begin
       if Reg.ValueExists('VATSeries') then
         Parameters.VATSeries := Reg.ReadString('VATSeries');
 
+      if Reg.ValueExists('AmountDecimalPlaces') then
+        Parameters.AmountDecimalPlaces := Reg.ReadInteger('AmountDecimalPlaces');
+
       Reg.CloseKey;
     end;
     // VatRates
@@ -282,7 +285,7 @@ begin
     Reg.WriteInteger('RoundType', FParameters.RoundType);
     Reg.WriteString('VATNumber', FParameters.VATNumber);
     Reg.WriteString('VATSeries', FParameters.VATSeries);
-
+    Reg.WriteInteger('AmountDecimalPlaces', FParameters.AmountDecimalPlaces);
     Reg.CloseKey;
     // VatRates
     Reg.DeleteKey(KeyName + '\' + REG_KEY_VatRateS);

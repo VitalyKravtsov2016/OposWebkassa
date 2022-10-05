@@ -387,12 +387,15 @@ procedure TWebkassaImplTest.TestGetData;
 var
   OptArgs: Integer;
   Data: WideString;
+  DataExpected: WideString;
 begin
   OpenClaimEnable;
   OptArgs := 0;
   Data := '';
   FptrCheck(Driver.GetData(FPTR_GD_GRAND_TOTAL, OptArgs, Data));
-  CheckNotEquals('0.00', Data, 'FPTR_GD_GRAND_TOTAL');
+  DataExpected := Driver.ReadCurrentStateJson.Field['Data'].Field[
+    'CurrentState'].Field['XReport'].Field['SumInCashbox'].Value;
+  CheckEquals(DataExpected, Data, 'FPTR_GD_GRAND_TOTAL');
   FptrCheck(Driver.GetData(FPTR_GD_DAILY_TOTAL, OptArgs, Data));
 end;
 

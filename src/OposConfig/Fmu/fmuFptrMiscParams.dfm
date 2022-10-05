@@ -4,8 +4,8 @@ object fmFptrMiscParams: TfmFptrMiscParams
   AutoScroll = False
   BorderIcons = [biSystemMenu]
   Caption = #1055#1088#1086#1095#1077#1077
-  ClientHeight = 182
-  ClientWidth = 271
+  ClientHeight = 181
+  ClientWidth = 536
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,8 +15,8 @@ object fmFptrMiscParams: TfmFptrMiscParams
   OldCreateOrder = False
   Position = poScreenCenter
   DesignSize = (
-    271
-    182)
+    536
+    181)
   PixelsPerInch = 96
   TextHeight = 13
   object lblRoundType: TTntLabel
@@ -40,10 +40,17 @@ object fmFptrMiscParams: TfmFptrMiscParams
     Height = 13
     Caption = #1053#1086#1084#1077#1088' '#1053#1044#1057':'
   end
+  object lblAmountDecimalPlaces: TTntLabel
+    Left = 8
+    Top = 112
+    Width = 248
+    Height = 13
+    Caption = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1079#1085#1072#1082#1086#1074' '#1087#1086#1089#1083#1077' '#1079#1072#1087#1103#1090#1086#1081' '#1074' '#1082#1086#1083#1080#1095#1077#1089#1090#1074#1077':'
+  end
   object cbRoundType: TComboBox
     Left = 96
     Top = 16
-    Width = 169
+    Width = 434
     Height = 21
     Style = csDropDownList
     Anchors = [akLeft, akTop, akRight]
@@ -57,19 +64,32 @@ object fmFptrMiscParams: TfmFptrMiscParams
   object edtVATSeries: TEdit
     Left = 96
     Top = 48
-    Width = 169
+    Width = 434
     Height = 21
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 1
     Text = 'edtVATSeries'
   end
   object edtVATNumber: TEdit
-    Left = 94
+    Left = 96
     Top = 80
-    Width = 169
+    Width = 434
     Height = 21
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 2
     Text = 'edtVATNumber'
+  end
+  object cbAmountDecimalPlaces: TComboBox
+    Left = 264
+    Top = 112
+    Width = 266
+    Height = 21
+    Style = csDropDownList
+    Anchors = [akLeft, akTop, akRight]
+    ItemHeight = 13
+    TabOrder = 3
+    Items.Strings = (
+      '0'
+      '2')
   end
 end
