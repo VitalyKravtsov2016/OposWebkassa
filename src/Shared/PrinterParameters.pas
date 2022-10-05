@@ -73,8 +73,8 @@ type
   TPrinterParameters = class(TPersistent)
   private
     FLogger: ILogFile;
-    FHeader: WideString;
-    FTrailer: WideString;
+    FHeader: TTntStringList;
+    FTrailer: TTntStringList;
     FLogMaxCount: Integer;
     FLogFileEnabled: Boolean;
     FLogFilePath: WideString;
@@ -97,8 +97,12 @@ type
     FVATSeries: WideString;
 
     procedure LogText(const Caption, Text: WideString);
+    procedure SetHeaderText(const Text: WideString);
+    procedure SetTrailerText(const Text: WideString);
     procedure SetNumHeaderLines(const Value: Integer);
     procedure SetNumTrailerLines(const Value: Integer);
+    function GetHeaderText: WideString;
+    function GetTrailerText: WideString;
   public
     constructor Create(ALogger: ILogFile);
     destructor Destroy; override;
@@ -108,12 +112,12 @@ type
     procedure WriteLogParameters;
 
     property Logger: ILogFile read FLogger;
+    property Header: TTntStringList read FHeader;
+    property Trailer: TTntStringList read FTrailer;
     property Login: WideString read FLogin write FLogin;
     property Password: WideString read FPassword write FPassword;
     property ConnectTimeout: Integer read FConnectTimeout write FConnectTimeout;
     property WebkassaAddress: WideString read FWebkassaAddress write FWebkassaAddress;
-    property Header: WideString read FHeader write FHeader;
-    property Trailer: WideString read FTrailer write FTrailer;
     property LogMaxCount: Integer read FLogMaxCount write FLogMaxCount;
     property LogFilePath: WideString read FLogFilePath write FLogFilePath;
     property LogFileEnabled: Boolean read FLogFileEnabled write FLogFileEnabled;
@@ -130,6 +134,8 @@ type
     property RoundType: Integer read FRoundType write FRoundType;
     property VATSeries: WideString read FVATSeries write FVATSeries;
     property VATNumber: WideString read FVATNumber write FVATNumber;
+    property HeaderText: WideString read GetHeaderText write SetHeaderText;
+    property TrailerText: WideString read GetTrailerText write SetTrailerText;
   end;
 
 function QRSizeToWidth(QRSize: Integer): Integer;
@@ -155,11 +161,15 @@ begin
   inherited Create;
   FLogger := ALogger;
   FVatRates := TVatRates.Create;
+  FHeader := TTntStringList.Create;
+  FTrailer := TTntStringList.Create;
   SetDefaults;
 end;
 
 destructor TPrinterParameters.Destroy;
 begin
+  FHeader.Free;
+  FTrailer.Free;
   FVatRates.Free;
   inherited Destroy;
 end;
@@ -168,19 +178,20 @@ procedure TPrinterParameters.SetDefaults;
 begin
   Logger.Debug('TPrinterParameters.SetDefaults');
 
+  SetNumHeaderLines(DefNumHeaderLines);
+  SetNumTrailerLines(DefNumTrailerLines);
+
   FLogin := DefLogin;
   FPassword := DefPassword;
   ConnectTimeout := DefConnectTimeout;
   WebkassaAddress := DefWebkassaAddress;
   CashboxNumber := DefCashboxNumber;
 
-  FHeader := DefHeader;
-  FTrailer := DefTrailer;
+  SetHeaderText(DefHeader);
+  SetTrailerText(DefTrailer);
   FLogMaxCount := DefLogMaxCount;
   FLogFilePath := GetModulePath + 'Logs';
   FLogFileEnabled := DefLogFileEnabled;
-  FNumHeaderLines := DefNumHeaderLines;
-  FNumTrailerLines := DefNumTrailerLines;
   VatRateEnabled := DefVatRateEnabled;
   PaymentType2 := 1;
   PaymentType3 := 2;
@@ -238,8 +249,8 @@ begin
   Logger.Debug('CashboxNumber: ' + CashboxNumber);
   Logger.Debug('NumHeaderLines: ' + IntToStr(NumHeaderLines));
   Logger.Debug('NumTrailerLines: ' + IntToStr(NumTrailerLines));
-  LogText('Header', Header);
-  LogText('Trailer', Trailer);
+  LogText('Header', Header.Text);
+  LogText('Trailer', Trailer.Text);
   Logger.Debug('PaymentType2: ' + IntToStr(PaymentType2));
   Logger.Debug('PaymentType3: ' + IntToStr(PaymentType3));
   Logger.Debug('PaymentType4: ' + IntToStr(PaymentType4));
@@ -258,15 +269,31 @@ begin
 end;
 
 procedure TPrinterParameters.SetNumHeaderLines(const Value: Integer);
+var
+  i: Integer;
 begin
   if Value in [MinHeaderLines..MaxHeaderLines] then
+  begin
     FNumHeaderLines := Value;
+
+    FHeader.Clear;
+    for i := 1 to FNumHeaderLines do
+      FHeader.Add('');
+  end;
 end;
 
 procedure TPrinterParameters.SetNumTrailerLines(const Value: Integer);
+var
+  i: Integer;
 begin
   if Value in [MinTrailerLines..MaxTrailerLines] then
+  begin
     FNumTrailerLines := Value;
+
+    FTrailer.Clear;
+    for i := 1 to FNumTrailerLines do
+      FTrailer.Add('');
+  end;
 end;
 
 procedure TPrinterParameters.CheckPrameters;
@@ -285,6 +312,52 @@ begin
 
   if PrinterName = '' then
     RaiseOposException(OPOS_ORS_CONFIG, 'WebKassa printer name not defined');
+end;
+
+procedure TPrinterParameters.SetHeaderText(const Text: WideString);
+var
+  i: Integer;
+  Lines: TTntStringList;
+begin
+  Lines := TTntStringList.Create;
+  try
+    Lines.Text := Text;
+    for i := 0 to Lines.Count-1 do
+    begin
+      if i >= NumHeaderLines then Break;
+      FHeader[i] := Lines[i];
+    end;
+  finally
+    Lines.Free;
+  end;
+end;
+
+procedure TPrinterParameters.SetTrailerText(const Text: WideString);
+var
+  i: Integer;
+  Lines: TTntStringList;
+begin
+  Lines := TTntStringList.Create;
+  try
+    Lines.Text := Text;
+    for i := 0 to Lines.Count-1 do
+    begin
+      if i >= NumTrailerLines then Break;
+      FTrailer[i] := Lines[i];
+    end;
+  finally
+    Lines.Free;
+  end;
+end;
+
+function TPrinterParameters.GetHeaderText: WideString;
+begin
+  Result := Header.Text;
+end;
+
+function TPrinterParameters.GetTrailerText: WideString;
+begin
+  Result := Trailer.Text;
 end;
 
 end.

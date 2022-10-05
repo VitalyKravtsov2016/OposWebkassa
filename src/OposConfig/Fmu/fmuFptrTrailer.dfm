@@ -61,5 +61,6 @@ object fmFptrTrailer: TfmFptrTrailer
     Gutter.ShowLineNumbers = True
     ScrollBars = ssVertical
     OnChange = PageChange
+    FontSmoothing = fsmNone
   end
 end

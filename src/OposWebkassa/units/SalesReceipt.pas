@@ -19,7 +19,6 @@ type
 
   TSalesReceipt = class(TCustomReceipt)
   private
-    FBarcode: string;
     FChange: Currency;
     FIsRefund: Boolean;
     FRecItems: TList;
@@ -27,8 +26,6 @@ type
     FItems: TReceiptItems;
     FAdjustments: TAdjustments;
     FAmountDecimalPlaces: Integer;
-    FExternalCheckNumber: WideString;
-    FFiscalSign: WideString;
 
     function AddItem: TSalesReceiptItem;
   protected
@@ -96,7 +93,7 @@ type
 
     procedure BeginFiscalReceipt(PrintHeader: Boolean); override;
 
-    procedure EndFiscalReceipt;  override;
+    procedure EndFiscalReceipt(APrintHeader: Boolean); override;
 
     procedure PrintRecSubtotalAdjustVoid(AdjustmentType: Integer;
       Amount: Currency); override;
@@ -115,11 +112,8 @@ type
 
     procedure Print(AVisitor: TObject); override;
 
-    procedure DirectIO(Command: Integer; var pData: Integer; var pString: WideString); override;
-
     procedure PrintRecMessage(const Message: WideString); override;
 
-    property Barcode: string read FBarcode;
     property Change: Currency read FChange;
     property Items: TReceiptItems read FItems;
     property IsRefund: Boolean read FIsRefund;
@@ -128,8 +122,6 @@ type
     property Payments: TPayments read FPayments;
     property Adjustments: TAdjustments read FAdjustments;
     property AmountDecimalPlaces: Integer read FAmountDecimalPlaces;
-    property ExternalCheckNumber: WideString read FExternalCheckNumber;
-    property FiscalSign: WideString read FFiscalSign;
   end;
 
 implementation
@@ -243,9 +235,9 @@ procedure TSalesReceipt.BeginFiscalReceipt(PrintHeader: Boolean);
 begin
 end;
 
-
-procedure TSalesReceipt.EndFiscalReceipt;
+procedure TSalesReceipt.EndFiscalReceipt(APrintHeader: Boolean);
 begin
+  FPrintHeader := APrintHeader;
 end;
 
 function TSalesReceipt.AddItem: TSalesReceiptItem;
@@ -567,22 +559,6 @@ begin
   if GetPayment >= GetTotal then
   begin
     FChange := GetPayment - GetTotal;
-  end;
-end;
-
-procedure TSalesReceipt.DirectIO(Command: Integer; var pData: Integer;
-  var pString: WideString);
-const
-  DIO_SET_DRIVER_PARAMETER        = 30; // write internal driver parameter
-  DriverParameterBarcode          = 80;
-begin
-  if Command = DIO_SET_DRIVER_PARAMETER then
-  begin
-    case pData of
-      DriverParameterBarcode: FBarcode := pString;
-      DriverParameterExternalCheckNumber: FExternalCheckNumber := pString;
-      DriverParameterFiscalSign: FFiscalSign := pString;
-    end;
   end;
 end;
 

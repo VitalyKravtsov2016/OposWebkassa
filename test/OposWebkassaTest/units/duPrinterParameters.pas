@@ -8,7 +8,8 @@ uses
   // DUnit
   TestFramework,
   // This
-  PrinterParameters, PrinterParametersX, PrinterParametersReg, LogFile;
+  PrinterParameters, PrinterParametersX, PrinterParametersReg, LogFile,
+  StringUtils;
 
 type
   { TPrinterParametersTest }
@@ -49,8 +50,8 @@ procedure TPrinterParametersTest.SetNonDefaultParams;
 begin
   FParams.NumHeaderLines := 2;
   FParams.NumTrailerLines := 1;
-  FParams.Header := 'wjyert84r6';
-  FParams.Trailer := '2i34r6827346';
+  FParams.HeaderText := 'wjyert84r6';
+  FParams.TrailerText := '2i34r6827346';
   FParams.LogMaxCount := 123;
   FParams.LogFileEnabled := False;
   FParams.LogFilePath := '97898798';
@@ -76,8 +77,8 @@ procedure TPrinterParametersTest.CheckNonDefaultParams;
 begin
   CheckEquals(2, FParams.NumHeaderLines, 'NumHeaderLines');
   CheckEquals(1, FParams.NumTrailerLines, 'NumTrailerLines');
-  CheckEquals('wjyert84r6', FParams.Header, 'Header');
-  CheckEquals('2i34r6827346', FParams.Trailer, 'Trailer');
+  CheckEquals('wjyert84r6', FParams.Header[0], 'FParams.Header[0]');
+  CheckEquals('2i34r6827346', FParams.Trailer[0], 'FParams.Trailer[0]');
   CheckEquals(123, FParams.LogMaxCount, 'LogMaxCount');
   CheckEquals(False, FParams.LogFileEnabled, 'LogFileEnabled');
   CheckEquals('97898798', FParams.LogFilePath, 'LogFilePath');
@@ -103,8 +104,8 @@ end;
 
 procedure TPrinterParametersTest.CheckDefaultParams;
 begin
-  CheckEquals(DefHeader, FParams.Header, 'Params.Header');
-  CheckEquals(DefTrailer, FParams.Trailer, 'Params.Trailer');
+  CheckEquals(Trim(DefHeader), Trim(FParams.HeaderText), 'Params.HeaderText');
+  CheckEquals(Trim(DefTrailer), Trim(FParams.TrailerText), 'Params.TrailerText');
   CheckEquals(DefNumHeaderLines, FParams.NumHeaderLines, 'NumHeaderLines');
   CheckEquals(DefNumTrailerLines, FParams.NumTrailerLines, 'NumTrailerLines');
   CheckEquals(DefLogMaxCount, FParams.LogMaxCount, 'LogMaxCount');

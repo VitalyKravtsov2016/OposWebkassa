@@ -38,12 +38,12 @@ end;
 procedure TfmFptrHeader.UpdatePage;
 begin
   cbNumHeaderLines.ItemIndex := Parameters.NumHeaderLines-MinHeaderLines;
-  symHeader.Text := Parameters.Header;
+  symHeader.Text := Parameters.HeaderText;
 end;
 
 procedure TfmFptrHeader.UpdateObject;
 begin
-  Parameters.Header := symHeader.Text;
+  Parameters.HeaderText := symHeader.Text;
   Parameters.NumHeaderLines := cbNumHeaderLines.ItemIndex + MinHeaderLines;
 end;
 

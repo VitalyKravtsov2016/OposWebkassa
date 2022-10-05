@@ -8,7 +8,7 @@ uses
   // Tnt
   TntClasses,
   // This
-  gnugettext;
+  gnugettext, StringUtils;
 
 const
   DIO_SET_DRIVER_PARAMETER        = 30; // write internal driver parameter
@@ -29,6 +29,10 @@ type
     FLines: TTntStrings;
     FTrailer: TTntStrings;
     FAfterTotal: Boolean;
+    FBarcode: string;
+    FExternalCheckNumber: WideString;
+    FFiscalSign: WideString;
+    FPrintHeader: Boolean;
   public
     procedure CheckNotVoided;
     function GetTotal: Currency; virtual;
@@ -40,7 +44,7 @@ type
 
     procedure BeginFiscalReceipt(PrintHeader: Boolean); virtual;
 
-    procedure EndFiscalReceipt; virtual;
+    procedure EndFiscalReceipt(APrintHeader: Boolean); virtual;
 
     procedure PrintRecCash(Amount: Currency); virtual;
 
@@ -125,6 +129,10 @@ type
     property Lines: TTntStrings read FLines;
     property Trailer: TTntStrings read FTrailer;
     property AfterTotal: Boolean read FAfterTotal;
+    property Barcode: string read FBarcode;
+    property ExternalCheckNumber: WideString read FExternalCheckNumber;
+    property FiscalSign: WideString read FFiscalSign;
+    property PrintHeader: Boolean read FPrintHeader;
   end;
 
 function CurrencyToInt64(Value: Currency): Int64;
@@ -148,6 +156,7 @@ begin
   inherited Create;
   FLines := TTntStringList.Create;
   FTrailer := TTntStringList.Create;
+  FExternalCheckNumber := CreateGUIDStr;
 end;
 
 destructor TCustomReceipt.Destroy;
@@ -161,7 +170,7 @@ procedure TCustomReceipt.BeginFiscalReceipt(PrintHeader: Boolean);
 begin
 end;
 
-procedure TCustomReceipt.EndFiscalReceipt;
+procedure TCustomReceipt.EndFiscalReceipt(APrintHeader: Boolean);
 begin
   RaiseIllegalError;
 end;
@@ -337,8 +346,22 @@ end;
 
 procedure TCustomReceipt.DirectIO(Command: Integer; var pData: Integer;
   var pString: WideString);
+const
+  DIO_SET_DRIVER_PARAMETER        = 30; // write internal driver parameter
+  DriverParameterBarcode          = 80;
 begin
-
+  if Command = DIO_SET_DRIVER_PARAMETER then
+  begin
+    case pData of
+      DriverParameterBarcode: FBarcode := pString;
+      DriverParameterExternalCheckNumber:
+      begin
+        if pString <> '' then
+          FExternalCheckNumber := pString;
+      end;
+      DriverParameterFiscalSign: FFiscalSign := pString;
+    end;
+  end;
 end;
 
 end.

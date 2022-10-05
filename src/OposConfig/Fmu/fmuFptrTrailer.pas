@@ -33,12 +33,12 @@ implementation
 procedure TfmFptrTrailer.UpdatePage;
 begin
   cbNumTrailerLines.ItemIndex := Parameters.NumTrailerLines;
-  symTrailer.Text := Parameters.Trailer;
+  symTrailer.Text := Parameters.TrailerText;
 end;
 
 procedure TfmFptrTrailer.UpdateObject;
 begin
-  Parameters.Trailer := symTrailer.Text;
+  Parameters.TrailerText := symTrailer.Text;
   Parameters.NumTrailerLines := cbNumTrailerLines.ItemIndex;
 end;
 

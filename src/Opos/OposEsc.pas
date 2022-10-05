@@ -6,7 +6,11 @@ const
   GS     = #$1D;
   ESC     = #$1B;
   EscBold = ESC + '|bC';
-  EscDWDH = ESC + '|4C';
+
+  ESC_SingleHighAndWide = ESC + '|1C'; // Prints normal size.
+  ESC_DoubleWide        = ESC + '|2C'; // Prints double-wide characters.
+  ESC_DoubleHigh        = ESC + '|3C'; // Prints double-high characters.
+  ESC_DoubleHighAndWide = ESC + '|4C'; // Prints double-high/double-wide characters.
 
   // Cuts receipt paper. The character ‘#’ is replaced by an
   // ASCII decimal string telling the percentage cut desired. If

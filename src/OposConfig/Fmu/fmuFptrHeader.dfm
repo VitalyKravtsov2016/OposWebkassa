@@ -50,6 +50,7 @@ object fmFptrHeader: TfmFptrHeader
     Gutter.ShowLineNumbers = True
     ScrollBars = ssVertical
     OnChange = PageChange
+    FontSmoothing = fsmNone
   end
   object cbNumHeaderLines: TTntComboBox
     Left = 128

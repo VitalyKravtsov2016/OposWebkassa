@@ -19,9 +19,8 @@ uses
   OPOSWebkassaLib_TLB, LogFile, WException, VersionInfo, DriverError,
   WebkassaClient, FiscalPrinterState, CustomReceipt, NonFiscalDoc, ServiceVersion,
   PrinterParameters, PrinterParametersX, CashInReceipt, CashOutReceipt,
-  SalesReceipt, TextDocument, ReceiptItem, StringUtils, PrinterLines,
-  DebugUtils, VatRate, PosPrinterLog, uZintBarcode, uZintInterface,
-  FileUtils;
+  SalesReceipt, TextDocument, ReceiptItem, StringUtils, DebugUtils, VatRate,
+  PosPrinterLog, uZintBarcode, uZintInterface, FileUtils;
 
 const
   FPTR_DEVICE_DESCRIPTION = 'WebKassa OPOS driver';
@@ -49,6 +48,7 @@ type
   TWebkassaImpl = class(TComponent, IFiscalPrinterService_1_12)
   private
     FStateJson: TlkJSON;
+    FStateDoc: TlkJSONbase;
     FTestMode: Boolean;
     FPOSID: WideString;
     FCashierID: WideString;
@@ -58,8 +58,6 @@ type
     FCashier: TCashier;
     FCashiers: TCashiers;
     FCashBoxes: TCashBoxes;
-    FHeader: TPrinterLines;
-    FTrailer: TPrinterLines;
     FClient: TWebkassaClient;
     FDocument: TTextDocument;
     FDuplicate: TTextDocument;
@@ -71,6 +69,7 @@ type
     FPrinterState: TFiscalPrinterState;
     FVatValues: array [MinVatID..MaxVatID] of Integer;
     FRecLineChars: Integer;
+    FHeaderPrinted: Boolean;
 
     procedure PrintDocumentSafe(Document: TTextDocument);
     procedure CheckCanPrint;
@@ -80,9 +79,13 @@ type
     procedure SetPrinter(const Value: IOPOSPOSPrinter);
     function ReadCurrentStateJson: TlkJSONbase;
     function ReadDailyTotal: Currency;
+    function ReadRefundTotal: Currency;
+    function ReadSellTotal: Currency;
+    procedure PrintHeaderAndCut;
   public
     procedure Initialize;
     procedure CheckEnabled;
+    function ReadCashboxTotal: Currency;
     function ReadGrandTotal: Currency;
     function IllegalError: Integer;
     procedure CheckState(AState: Integer);
@@ -391,8 +394,6 @@ begin
   FCashBox := TCashBox.Create(nil);
   FCashier := TCashier.Create(nil);
   FClient.RaiseErrors := True;
-  FHeader := TPrinterLines.Create(TPrinterLine);
-  FTrailer := TPrinterLines.Create(TPrinterLine);
   FStateJson := TlkJSON.Create;
   ODS('TWebkassaImpl.Create: OK');
 end;
@@ -408,8 +409,6 @@ begin
   FDuplicate.Free;
   FOposDevice.Free;
   FPrinterState.Free;
-  FHeader.Free;
-  FTrailer.Free;
   FReceipt.Free;
   FPrinter := nil;
   FPrinterLog.Free;
@@ -651,7 +650,11 @@ begin
     FReceipt.Free;
     FReceipt := CreateReceipt(FFiscalReceiptType);
     FReceipt.BeginFiscalReceipt(PrintHeader);
-
+    Document.Clear;
+    if PrintHeader then
+    begin
+      Document.AddText(Params.HeaderText);
+    end;
     Result := ClearResult;
   except
     on E: Exception do
@@ -817,13 +820,14 @@ function TWebkassaImpl.EndFiscalReceipt(PrintHeader: WordBool): Integer;
 begin
   try
     FPrinterState.CheckState(FPTR_PS_FISCAL_RECEIPT_ENDING);
-    FReceipt.EndFiscalReceipt;
+    FReceipt.EndFiscalReceipt(PrintHeader);
     FReceipt.Print(Self);
     if FDuplicateReceipt then
     begin
       FDuplicateReceipt := False;
       FDuplicate.Assign(Document);
     end;
+    FStateDoc := nil;
     SetPrinterState(FPTR_PS_MONITOR);
     Result := ClearResult;
   except
@@ -852,7 +856,9 @@ begin
   try
     CheckEnabled;
     CheckState(FPTR_PS_NONFISCAL);
+
     PrintDocument(Document);
+
     SetPrinterState(FPTR_PS_MONITOR);
     Result := ClearResult;
   except
@@ -887,24 +893,28 @@ function TWebkassaImpl.ReadCurrentStateJson: TlkJSONbase;
 var
   Request: TCashboxRequest;
 begin
-  Request := TCashboxRequest.Create;
-  try
-    Request.Token := Client.Token;
-    Request.CashboxUniqueNumber := Params.CashboxNumber;
-    Client.ReadCashboxStatus(Request);
-    Result := FStateJson.ParseText(FClient.AnswerJson);
-  finally
-    Request.Free;
+  if FStateDoc = nil then
+  begin
+    Request := TCashboxRequest.Create;
+    try
+      Request.Token := Client.Token;
+      Request.CashboxUniqueNumber := Params.CashboxNumber;
+      Client.ReadCashboxStatus(Request);
+      FStateDoc := FStateJson.ParseText(FClient.AnswerJson);
+    finally
+      Request.Free;
+    end;
   end;
+  Result := FStateDoc;
 end;
 
-function TWebkassaImpl.ReadDailyTotal: Currency;
+function TWebkassaImpl.ReadGrandTotal: Currency;
 begin
   Result := ReadCurrentStateJson.Field['Data'].Field['CurrentState'].Field[
     'XReport'].Field['SumInCashbox'].Value;
 end;
 
-function TWebkassaImpl.ReadGrandTotal: Currency;
+function TWebkassaImpl.ReadCashboxTotal: Currency;
 var
   Doc: TlkJSONbase;
 begin
@@ -916,6 +926,62 @@ begin
     Currency(Doc.Field['Buy'].Value) -
     Currency(Doc.Field['ReturnSell'].Value) +
     Currency(Doc.Field['ReturnBuy'].Value);
+end;
+
+function TWebkassaImpl.ReadDailyTotal: Currency;
+var
+  Doc: TlkJSONbase;
+begin
+  Result := 0;
+  Doc := ReadCurrentStateJson.Field['Data'].Field['CurrentState'].Field['XReport'];
+  // Sell
+  Result :=  Result +
+    (Doc.Field['Sell'].Field['Taken'].Value -
+    Doc.Field['Sell'].Field['Change'].Value);
+  // Buy
+  Result :=  Result -
+    (Doc.Field['Buy'].Field['Taken'].Value -
+    Doc.Field['Buy'].Field['Change'].Value);
+  // ReturnSell
+  Result :=  Result -
+    (Doc.Field['ReturnSell'].Field['Taken'].Value -
+    Doc.Field['ReturnSell'].Field['Change'].Value);
+  // ReturnBuy
+  Result :=  Result +
+    (Doc.Field['ReturnBuy'].Field['Taken'].Value -
+    Doc.Field['ReturnBuy'].Field['Change'].Value);
+end;
+
+function TWebkassaImpl.ReadSellTotal: Currency;
+var
+  Doc: TlkJSONbase;
+begin
+  Result := 0;
+  Doc := ReadCurrentStateJson.Field['Data'].Field['CurrentState'].Field['XReport'];
+  // Sell
+  Result :=  Result +
+    (Doc.Field['Sell'].Field['Taken'].Value -
+    Doc.Field['Sell'].Field['Change'].Value);
+  // ReturnBuy
+  Result :=  Result +
+    (Doc.Field['ReturnBuy'].Field['Taken'].Value -
+    Doc.Field['ReturnBuy'].Field['Change'].Value);
+end;
+
+function TWebkassaImpl.ReadRefundTotal: Currency;
+var
+  Doc: TlkJSONbase;
+begin
+  Result := 0;
+  Doc := ReadCurrentStateJson.Field['Data'].Field['CurrentState'].Field['XReport'];
+  // Buy
+  Result :=  Result +
+    (Doc.Field['Buy'].Field['Taken'].Value -
+    Doc.Field['Buy'].Field['Change'].Value);
+  // ReturnSell
+  Result :=  Result +
+    (Doc.Field['ReturnSell'].Field['Taken'].Value -
+    Doc.Field['ReturnSell'].Field['Change'].Value);
 end;
 
 function TWebkassaImpl.GetData(DataItem: Integer; out OptArgs: Integer;
@@ -931,19 +997,19 @@ begin
       FPTR_GD_MID_VOID: Data := AmountToStr(0);
       FPTR_GD_NOT_PAID: Data := AmountToStr(0);
       FPTR_GD_RECEIPT_NUMBER: Data := FCheckNumber;
-      FPTR_GD_REFUND: Data := AmountToStr(0);
+      FPTR_GD_REFUND: Data := AmountToStr(ReadRefundTotal);
       FPTR_GD_REFUND_VOID: Data := AmountToStr(0);
-
+      FPTR_GD_Z_REPORT: Data := ReadCurrentStateJson.Field['Data'].Field[
+        'CurrentState'].Field['ShiftNumber'].Value;
+      FPTR_GD_FISCAL_REC: Data := AmountToStr(ReadSellTotal);
       FPTR_GD_FISCAL_DOC,
       FPTR_GD_FISCAL_DOC_VOID,
-      FPTR_GD_FISCAL_REC,
       FPTR_GD_FISCAL_REC_VOID,
       FPTR_GD_NONFISCAL_DOC,
       FPTR_GD_NONFISCAL_DOC_VOID,
       FPTR_GD_NONFISCAL_REC,
       FPTR_GD_RESTART,
       FPTR_GD_SIMP_INVOICE,
-      FPTR_GD_Z_REPORT,
       FPTR_GD_TENDER,
       FPTR_GD_LINECOUNT:
         Data := AmountToStr(0);
@@ -1586,7 +1652,6 @@ var
   Text: string;
   Total: Currency;
   Separator: string;
-  Document: TTextDocument;
   Command: TZXReportCommand;
 
   Json: TlkJSON;
@@ -1598,7 +1663,6 @@ begin
   CheckCanPrint;
 
   Json := TlkJSON.Create;
-  Document := TTextDocument.Create;
   Command := TZXReportCommand.Create;
   try
     Command.Request.Token := FClient.Token;
@@ -1616,6 +1680,12 @@ begin
       (Command.Data.EndNonNullable.ReturnSell - Command.Data.StartNonNullable.ReturnSell) +
       (Command.Data.EndNonNullable.ReturnBuy - Command.Data.StartNonNullable.ReturnBuy);
 
+    Document.Clear;
+    if not FHeaderPrinted then
+    begin
+      Document.AddText(Params.HeaderText);
+    end;
+    Document.PrintHeader := False;
     Document.LineChars := Printer.RecLineChars;
     Separator := StringOfChar('-', Document.LineChars);
     Document.AddLines('»ÕÕ/¡»Õ', Command.Data.CashboxRN);
@@ -1703,7 +1773,6 @@ begin
     Document.AddLines('—‘ÓÏËÓ‚‡ÌÓ Œ‘ƒ: ', Command.Data.Ofd.Name);
     PrintDocumentSafe(Document);
   finally
-    Document.Free;
     Command.Free;
     Json.Free;
   end;
@@ -1798,10 +1867,22 @@ end;
 
 function TWebkassaImpl.SetHeaderLine(LineNumber: Integer;
   const Text: WideString; DoubleWidth: WordBool): Integer;
+var
+  LineText: WideString;
 begin
   try
     CheckEnabled;
-    FHeader.SetLine(LineNumber, Text, DoubleWidth);
+
+    if (LineNumber <= 0)or(LineNumber > Params.NumHeaderLines) then
+      raiseIllegalError('Invalid line number');
+
+    LineText := Text;
+    if DoubleWidth then
+      LineText := ESC_DoubleWide + LineText;
+
+    FParams.Header[LineNumber-1] := LineText;
+    SaveUsrParameters(FParams, FOposDevice.DeviceName, FLogger);
+
     Result := ClearResult;
   except
     on E: Exception do
@@ -1884,10 +1965,21 @@ end;
 
 function TWebkassaImpl.SetTrailerLine(LineNumber: Integer;
   const Text: WideString; DoubleWidth: WordBool): Integer;
+var
+  LineText: WideString;
 begin
   try
     CheckEnabled;
-    FTrailer.SetLine(LineNumber, Text, DoubleWidth);
+    if (LineNumber <= 0)or(LineNumber > Params.NumTrailerLines) then
+      raiseIllegalError('Invalid line number');
+
+    LineText := Text;
+    if DoubleWidth then
+      LineText := ESC_DoubleWide + LineText;
+
+    Params.Trailer[LineNumber-1] := LineText;
+    SaveUsrParameters(FParams, FOposDevice.DeviceName, FLogger);
+
     Result := ClearResult;
   except
     on E: Exception do
@@ -2022,11 +2114,6 @@ begin
     Logger.Enabled := FParams.LogFileEnabled;
     Logger.FilePath := FParams.LogFilePath;
     Logger.DeviceName := DeviceName;
-
-    FHeader.Init(FParams.NumHeaderLines);
-    FTrailer.Init(FParams.NumTrailerLines);
-    FHeader.SetText(FParams.Header);
-    FTrailer.SetText(FParams.Trailer);
 
     FClient.Login := FParams.Login;
     FClient.Password := FParams.Password;
@@ -2177,64 +2264,60 @@ end;
 
 procedure TWebkassaImpl.Print(Receipt: TCashInReceipt);
 var
-  Document: TTextDocument;
   Command: TMoneyOperationCommand;
 begin
-  Document := TTextDocument.Create;
   Command := TMoneyOperationCommand.Create;
   try
     Command.Request.Token := FClient.Token;
     Command.Request.CashboxUniqueNumber := Params.CashboxNumber;
     Command.Request.OperationType := OperationTypeCashIn;
     Command.Request.Sum := Receipt.GetTotal;
-    Command.Request.ExternalCheckNumber := CreateGUIDStr;
+    Command.Request.ExternalCheckNumber := Receipt.ExternalCheckNumber;
     FClient.Execute(Command);
     // Create Document
+    Document.PrintHeader := Receipt.PrintHeader;
     Document.LineChars := Printer.RecLineChars;
     Document.Add('¡»Õ ' + Command.Data.Cashbox.RegistrationNumber);
     Document.Add(Format('«ÕÃ %s »Õ  Œ‘ƒ %s', [Command.Data.Cashbox.UniqueNumber,
       Command.Data.Cashbox.IdentityNumber]));
     Document.Add(Command.Data.DateTime);
     Document.AddText(Receipt.Lines.Text);
-    Document.AddLines('¬Õ≈—≈Õ»≈ ƒ≈Õ≈√ ¬  ¿——”', AmountToStrEq(Receipt.GetTotal));
-    Document.AddLines('Õ¿À»◊Õ€’ ¬  ¿——≈', AmountToStrEq(Command.Data.Sum));
+    Document.AddLines('¬Õ≈—≈Õ»≈ ƒ≈Õ≈√ ¬  ¿——”', AmountToStrEq(Receipt.GetTotal), STYLE_BOLD);
+    Document.AddLines('Õ¿À»◊Õ€’ ¬  ¿——≈', AmountToStrEq(Command.Data.Sum), STYLE_BOLD);
     Document.AddText(Receipt.Trailer.Text);
     // Print
     PrintDocumentSafe(Document);
   finally
     Command.Free;
-    Document.Free;
   end;
 end;
 
 procedure TWebkassaImpl.Print(Receipt: TCashOutReceipt);
 var
-  Document: TTextDocument;
   Command: TMoneyOperationCommand;
 begin
-  Document := TTextDocument.Create;
   Command := TMoneyOperationCommand.Create;
   try
     Command.Request.Token := FClient.Token;
     Command.Request.CashboxUniqueNumber := Params.CashboxNumber;
     Command.Request.OperationType := OperationTypeCashOut;
     Command.Request.Sum := Receipt.GetTotal;
-    Command.Request.ExternalCheckNumber := CreateGUIDStr;
+    Command.Request.ExternalCheckNumber := Receipt.ExternalCheckNumber;
     FClient.Execute(Command);
     //
+    Document.PrintHeader := Receipt.PrintHeader;
     Document.LineChars := Printer.RecLineChars;
     Document.Add('¡»Õ ' + Command.Data.Cashbox.RegistrationNumber);
     Document.Add(Format('«ÕÃ %s »Õ  Œ‘ƒ %s', [Command.Data.Cashbox.UniqueNumber,
       Command.Data.Cashbox.IdentityNumber]));
     Document.Add(Command.Data.DateTime);
     Document.AddText(Receipt.Lines.Text);
-    Document.AddLines('»«⁄ﬂ“»≈ ƒ≈Õ≈√ »«  ¿——€', AmountToStrEq(Receipt.GetTotal));
-    Document.AddLines('Õ¿À»◊Õ€’ ¬  ¿——≈', AmountToStrEq(Command.Data.Sum));
+    Document.AddLines('»«⁄ﬂ“»≈ ƒ≈Õ≈√ »«  ¿——€', AmountToStrEq(Receipt.GetTotal), STYLE_BOLD);
+    Document.AddLines('Õ¿À»◊Õ€’ ¬  ¿——≈', AmountToStrEq(Command.Data.Sum), STYLE_BOLD);
     Document.AddText(Receipt.Trailer.Text);
     // print
     PrintDocumentSafe(Document);
   finally
-    Document.Free;
     Command.Free;
   end;
 end;
@@ -2362,7 +2445,7 @@ begin
     Command.Request.OperationType := OperationType;
     Command.Request.Change := Receipt.Change;
     Command.Request.RoundType := FParams.RoundType;
-    Command.Request.ExternalCheckNumber := CreateGUIDStr;
+    Command.Request.ExternalCheckNumber := Receipt.ExternalCheckNumber;
     Command.Request.CustomerEmail := '';
     Command.Request.CustomerPhone := '';
     Command.Request.CustomerXin := '';
@@ -2518,7 +2601,7 @@ var
   UnitPrice: Currency;
   AdjustmentName: WideString;
 begin
-  Document.Clear;
+  Document.PrintHeader := Receipt.PrintHeader;
   Document.LineChars := Printer.RecLineChars;
 
   Document.Addlines(Format('Õƒ— —ÂËˇ %s', [Params.VATSeries]),
@@ -2650,8 +2733,7 @@ procedure TWebkassaImpl.PrintDocumentSafe(Document: TTextDocument);
 begin
   CheckCanPrint;
   try
-    Document.AddText(0, Params.Header);
-    Document.AddText(Params.Trailer);
+    Document.AddText(Params.TrailerText);
     PrintDocument(Document);
   except
     on E: Exception do
@@ -2665,7 +2747,6 @@ end;
 procedure TWebkassaImpl.PrintDocument(Document: TTextDocument);
 var
   i: Integer;
-  Count: Integer;
   Text: WideString;
   CapRecBold: Boolean;
   CapRecDwideDhigh: Boolean;
@@ -2707,7 +2788,7 @@ begin
       begin
         Text := Copy(Item.Text, 1, RecLineChars div 2);
         if CapRecDwideDhigh then
-          Text := ESCDWDH + Text;
+          Text := ESC_DoubleHighAndWide + Text;
       end;
       // BOLD
       if Item.Style = STYLE_BOLD then
@@ -2718,24 +2799,59 @@ begin
       CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, Text));
     end;
   end;
-  if Printer.CapRecPapercut then
-  begin
-    Count := Printer.RecLinesToPaperCut - FParams.NumHeaderLines + 1;
-    if Count > 0 then
-    begin
-      for i := 1 to Count do
-      begin
-        Printer.PrintNormal(PTR_S_RECEIPT, CRLF);
-      end;
-    end;
-    Printer.CutPaper(90);
-  end;
-
+  PrintHeaderAndCut;
   if Printer.CapTransaction then
   begin
     CheckPtr(Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_NORMAL));
   end;
   Logger.Debug(Format('PrintDocument, time=%d ms', [GetTickCount-TickCount]));
+end;
+
+procedure TWebkassaImpl.PrintHeaderAndCut;
+var
+  i: Integer;
+  Count: Integer;
+  Text: WideString;
+  RecLinesToPaperCut: Integer;
+begin
+  if Printer.CapRecPapercut then
+  begin
+    RecLinesToPaperCut := Printer.RecLinesToPaperCut-3;
+    if Document.PrintHeader then
+    begin
+      if FParams.NumHeaderLines < RecLinesToPaperCut then
+      begin
+        for i := 0 to Params.Header.Count-1 do
+        begin
+          Text := TrimRight(Params.Header[i]) + CRLF;
+          CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, Text));
+        end;
+        Count := RecLinesToPaperCut - FParams.NumHeaderLines;
+        for i := 0 to Count-1 do
+        begin
+          CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, CRLF));
+        end;
+        Printer.CutPaper(90);
+      end else
+      begin
+        CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, CRLF));
+        Printer.CutPaper(90);
+        for i := 0 to Params.Header.Count-1 do
+        begin
+          Text := TrimRight(Params.Header[i]) + CRLF;
+          CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, Text));
+        end;
+      end;
+    end else
+    begin
+      for i := 1 to Printer.RecLinesToPaperCut-3 do
+      begin
+        Printer.PrintNormal(PTR_S_RECEIPT, CRLF);
+      end;
+      Printer.CutPaper(90);
+    end;
+  end;
+  FHeaderPrinted := Document.PrintHeader;
 end;
 
 function TWebkassaImpl.GetPrinterStation(Station: Integer): Integer;
@@ -2871,5 +2987,8 @@ begin
   end;
 end;
 
+(*
+
+*)
 
 end.

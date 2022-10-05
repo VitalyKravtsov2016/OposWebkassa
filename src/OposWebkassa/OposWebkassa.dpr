@@ -47,7 +47,6 @@ uses
   OposEsc in '..\Opos\OposEsc.pas',
   TextDocument in 'units\TextDocument.pas',
   PrinterParametersReg in '..\Shared\PrinterParametersReg.pas',
-  PrinterLines in 'units\PrinterLines.pas',
   ComServ in '..\Common\ComServ.pas',
   uLkJSON in '..\Shared\uLkJSON.pas',
   VatRate in '..\Shared\VatRate.pas',

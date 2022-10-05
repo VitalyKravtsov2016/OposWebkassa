@@ -53,7 +53,6 @@ uses
   StorePointIO_TLB in 'units\StorePointIO_TLB.pas',
   duWebkassaTest in 'units\duWebkassaTest.pas',
   PrinterParametersReg in '..\..\src\Shared\PrinterParametersReg.pas',
-  PrinterLines in '..\..\src\OposWebkassa\units\PrinterLines.pas',
   uLkJSON in '..\..\src\Shared\uLkJSON.pas',
   VatRate in '..\..\src\Shared\VatRate.pas',
   OposPtrUtils in '..\..\src\Opos\OposPtrUtils.pas',

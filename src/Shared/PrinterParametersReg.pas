@@ -323,10 +323,10 @@ begin
     if Reg.OpenKey(REGSTR_KEY_IBT, False) then
     begin
       if Reg.ValueExists('IBTHeader') then
-        Parameters.Header := Reg.ReadString('IBTHeader');
+        Parameters.HeaderText := Reg.ReadString('IBTHeader');
 
       if Reg.ValueExists('IBTTrailer') then
-        Parameters.Trailer := Reg.ReadString('IBTTrailer');
+        Parameters.TrailerText := Reg.ReadString('IBTTrailer');
     end;
   finally
     Reg.Free;
@@ -344,8 +344,8 @@ begin
     Reg.RootKey := HKEY_LOCAL_MACHINE;
     if Reg.OpenKey(REGSTR_KEY_IBT, True) then
     begin
-      Reg.WriteString('IBTHeader', Parameters.Header);
-      Reg.WriteString('IBTTrailer', Parameters.Trailer);
+      Reg.WriteString('IBTHeader', Parameters.HeaderText);
+      Reg.WriteString('IBTTrailer', Parameters.TrailerText);
     end else
     begin
       raiseException(_('Registry key open error'));

@@ -117,7 +117,7 @@ begin
   CheckEquals(123.45, FReceipt.GetTotal, 'FReceipt.Total');
 
   FReceipt.PrintRecTotal(123.44, 130, 'Наличными');
-  FReceipt.EndFiscalReceipt;
+  FReceipt.EndFiscalReceipt(False);
 end;
 
 procedure TSalesReceiptTest.TestSubtotalAdjustment;
@@ -156,7 +156,7 @@ begin
   CheckEquals(121.95, FReceipt.GetTotal, 'FReceipt.Total');
 
   FReceipt.PrintRecTotal(121.95, 130, 'Наличными');
-  FReceipt.EndFiscalReceipt;
+  FReceipt.EndFiscalReceipt(False);
 end;
 
 procedure TSalesReceiptTest.TestReceiptWithChange;
@@ -166,7 +166,7 @@ begin
   CheckEquals(578, FReceipt.GetTotal, 'FReceipt.Total');
   FReceipt.PrintRecTotal(578, 578, '1');
   CheckEquals(0, FReceipt.Change, 'Receipt.Change');
-  FReceipt.EndFiscalReceipt;
+  FReceipt.EndFiscalReceipt(False);
 end;
 
 initialization

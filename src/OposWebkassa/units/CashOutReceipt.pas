@@ -23,7 +23,7 @@ type
     function GetPayment: Currency; override;
     procedure PrintRecCash(Amount: Currency); override;
     procedure PrintRecVoid(const Description: WideString); override;
-    procedure EndFiscalReceipt; override;
+    procedure EndFiscalReceipt(APrintHeader: Boolean); override;
     procedure PrintRecTotal(Total, Payment: Currency;
       const Description: WideString); override;
 
@@ -66,9 +66,9 @@ begin
   FPayment := FPayment + Payment;
 end;
 
-procedure TCashOutReceipt.EndFiscalReceipt;
+procedure TCashOutReceipt.EndFiscalReceipt(APrintHeader: Boolean);
 begin
-
+  FPrintHeader := APrintHeader;
 end;
 
 procedure TCashOutReceipt.Print(AVisitor: TObject);

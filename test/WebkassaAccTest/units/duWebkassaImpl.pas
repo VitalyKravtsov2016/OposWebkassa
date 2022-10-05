@@ -24,9 +24,11 @@ type
   TWebkassaImplTest = class(TTestCase)
   private
     FDriver: TWebkassaImpl;
+    FPrintHeader: Boolean;
     procedure ClaimDevice;
     procedure EnableDevice;
     procedure OpenService;
+    procedure TestCashIn;
     procedure FptrCheck(Code: Integer);
 
     property Driver: TWebkassaImpl read FDriver;
@@ -36,7 +38,7 @@ type
     procedure TearDown; override;
   published
     procedure OpenClaimEnable;
-    procedure TestCashIn;
+    procedure TestCashIn2;
     procedure TestCashOut;
     procedure TestZReport;
     procedure TestXReport;
@@ -47,8 +49,7 @@ type
     procedure TestFiscalReceiptWithVAT;
     procedure TestFiscalReceiptWithAdjustments;
     procedure TestPrintBarcode;
-    procedure TestReadGrandTotal;
-    procedure TestReadDailyTotal;
+    procedure TestGetData;
   end;
 
 implementation
@@ -102,12 +103,12 @@ begin
   FDriver.Params.NumHeaderLines := 4;
   FDriver.Params.NumTrailerLines := 3;
   FDriver.Params.RoundType := RoundTypeNo;
-  FDriver.Params.Header :=
+  FDriver.Params.HeaderText :=
     ' ' + CRLF +
-    '   Восточно-Казастанская область, город' + CRLF +
+    '  Восточно-Казастанская область, город' + CRLF +
     '    Усть-Каменогорск, ул. Грейдерная, 1/10' + CRLF +
     '            ТОО PetroRetail';
-  FDriver.Params.Trailer :=
+  FDriver.Params.TrailerText :=
     '           Callцентр 039458039850 ' + CRLF +
     '          Горячая линия 20948802934' + CRLF +
     '            СПАСИБО ЗА ПОКУПКУ';
@@ -157,10 +158,15 @@ procedure TWebkassaImplTest.TestCashIn;
 begin
   OpenClaimEnable;
   CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
+  Driver.SetHeaderLine(1, ' ', False);
+  Driver.SetHeaderLine(2, '  Восточно-Казастанская область, город', False);
+  Driver.SetHeaderLine(3, '    Усть-Каменогорск, ул. Грейдерная, 1/10', False);
+  Driver.SetHeaderLine(4, '    ТОО PetroRetail', True);
+
   CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_CASH_IN);
   CheckEquals(FPTR_RT_CASH_IN, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
-  FptrCheck(Driver.BeginFiscalReceipt(False));
+  FptrCheck(Driver.BeginFiscalReceipt(FPrintHeader));
   CheckEquals(FPTR_PS_FISCAL_RECEIPT, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   FptrCheck(Driver.PrintRecCash(10));
   FptrCheck(Driver.PrintRecCash(20));
@@ -171,8 +177,15 @@ begin
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_TOTAL, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   FptrCheck(Driver.PrintRecTotal(0, 30, ''));
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
-  FptrCheck(Driver.EndFiscalReceipt(False));
+  FptrCheck(Driver.EndFiscalReceipt(not FPrintHeader));
   CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+end;
+
+procedure TWebkassaImplTest.TestCashIn2;
+begin
+  FPrintHeader := True;
+  //FPrintHeader := False;
+  TestCashIn;
 end;
 
 procedure TWebkassaImplTest.TestCashOut;
@@ -235,6 +248,7 @@ begin
   FptrCheck(Driver.PrintRecTotal(123.45, 123.45, '1'));
 
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+
   FptrCheck(Driver.EndFiscalReceipt(False));
   CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
 end;
@@ -369,7 +383,7 @@ begin
   Driver.PrintQRCode(Barcode);
 end;
 
-procedure TWebkassaImplTest.TestReadGrandTotal;
+procedure TWebkassaImplTest.TestGetData;
 var
   OptArgs: Integer;
   Data: WideString;
@@ -379,19 +393,9 @@ begin
   Data := '';
   FptrCheck(Driver.GetData(FPTR_GD_GRAND_TOTAL, OptArgs, Data));
   CheckNotEquals('0.00', Data, 'FPTR_GD_GRAND_TOTAL');
+  FptrCheck(Driver.GetData(FPTR_GD_DAILY_TOTAL, OptArgs, Data));
 end;
 
-procedure TWebkassaImplTest.TestReadDailyTotal;
-var
-  OptArgs: Integer;
-  Data: WideString;
-begin
-  OpenClaimEnable;
-  OptArgs := 0;
-  Data := '';
-  FptrCheck(Driver.GetData(FPTR_GD_DAILY_TOTAL, OptArgs, Data));
-  CheckNotEquals('0.00', Data, 'FPTR_GD_DAILY_TOTAL');
-end;
 
 initialization
   RegisterTest('', TWebkassaImplTest.Suite);
