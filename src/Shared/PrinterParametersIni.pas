@@ -167,6 +167,7 @@ begin
       FParameters.CashboxNumber := IniFile.ReadString(Section, 'CashboxNumber', '');
       FParameters.PrinterName := IniFile.ReadString(Section, 'PrinterName', '');
       FParameters.PrinterType := IniFile.ReadInteger(Section, 'PrinterType', PrinterTypePosPrinter);
+      FParameters.FontName := IniFile.ReadString(Section, 'FontName', DefFontName);
       FParameters.AmountDecimalPlaces := IniFile.ReadInteger(Section, 'AmountDecimalPlaces', DefAmountDecimalPlaces);
     end;
   finally
@@ -194,6 +195,7 @@ begin
     IniFile.WriteString(Section, 'CashboxNumber', FParameters.CashboxNumber);
     IniFile.WriteString(Section, 'PrinterName', FParameters.PrinterName);
     IniFile.WriteInteger(Section, 'PrinterType', FParameters.PrinterType);
+    IniFile.WriteString(Section, 'FontName', FParameters.FontName);
     IniFile.WriteInteger(Section, 'AmountDecimalPlaces', FParameters.AmountDecimalPlaces);
   finally
     IniFile.Free;

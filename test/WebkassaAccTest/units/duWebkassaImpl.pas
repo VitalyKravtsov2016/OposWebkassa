@@ -13,7 +13,7 @@ uses
   // Tnt
   TntClasses, TntSysUtils,
   // This
-  LogFile, WebkassaImpl, WebkassaClient, MockPosPrinter;
+  LogFile, WebkassaImpl, WebkassaClient, MockPosPrinter, PrinterParameters;
 
 const
   CRLF = #13#10;
@@ -112,6 +112,15 @@ begin
     '           Callöåíòğ 039458039850 ' + CRLF +
     '          Ãîğÿ÷àÿ ëèíèÿ 20948802934' + CRLF +
     '            ÑÏÀÑÈÁÎ ÇÀ ÏÎÊÓÏÊÓ';
+
+(*
+  FDriver.Params.PrinterType := PrinterTypePosPrinter;
+  FDriver.Params.PrinterName := 'ThermalU';
+  FDriver.Params.FontName := '42';
+*)
+  FDriver.Params.PrinterType := PrinterTypeWinPrinter;
+  FDriver.Params.PrinterName := 'SLK-TE122';
+  FDriver.Params.FontName := 'FontA11';
 end;
 
 procedure TWebkassaImplTest.TearDown;

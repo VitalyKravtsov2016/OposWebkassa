@@ -46,6 +46,7 @@ const
   DefCashboxNumber = 'SWK00032685';
   DefPrinterName = '';
   DefPrinterType = 0;
+  DefFontName = '';
   DefRoundType = 2; // Округление позиций
   DefVATNumber = '00000';
   DefVATSeries = '00000';
@@ -88,6 +89,7 @@ type
     FCashboxNumber: WideString;
     FPrinterName: WideString;
     FPrinterType: Integer;
+    FFontName: WideString;
     FVatRates: TVatRates;
     FVatRateEnabled: Boolean;
     FPaymentType2: Integer;
@@ -128,6 +130,7 @@ type
     property NumTrailerLines: Integer read FNumTrailerLines write SetNumTrailerLines;
     property PrinterName: WideString read FPrinterName write FPrinterName;
     property PrinterType: Integer read FPrinterType write FPrinterType;
+    property FontName: WideString read FFontName write FFontName;
     property CashboxNumber: WideString read FCashboxNumber write FCashboxNumber;
     property VatRates: TVatRates read FVatRates;
     property VatRateEnabled: Boolean read FVatRateEnabled write FVatRateEnabled;
@@ -202,6 +205,7 @@ begin
   PaymentType4 := 3;
   PrinterName := DefPrinterName;
   PrinterType := DefPrinterType;
+  FontName := DefFontName;
   RoundType := DefRoundType;
   VATNumber := DefVATNumber;
   VATSeries := DefVATSeries;

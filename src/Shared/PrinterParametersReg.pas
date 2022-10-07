@@ -216,6 +216,9 @@ begin
       if Reg.ValueExists('AmountDecimalPlaces') then
         Parameters.AmountDecimalPlaces := Reg.ReadInteger('AmountDecimalPlaces');
 
+      if Reg.ValueExists('FontName') then
+        Parameters.FontName := Reg.ReadString('FontName');
+
       Reg.CloseKey;
     end;
     // VatRates
@@ -278,6 +281,7 @@ begin
     Reg.WriteString('CashboxNumber', FParameters.CashboxNumber);
     Reg.WriteString('PrinterName', FParameters.PrinterName);
     Reg.WriteInteger('PrinterType', FParameters.PrinterType);
+    Reg.WriteString('FontName', FParameters.FontName);
     Reg.WriteInteger('PaymentType2', FParameters.PaymentType2);
     Reg.WriteInteger('PaymentType3', FParameters.PaymentType3);
     Reg.WriteInteger('PaymentType4', FParameters.PaymentType4);

@@ -10,7 +10,7 @@ uses
   // Opos
   Opos, OposPtr, OposPtrUtils, Oposhi, OposFptr, OposFptrHi, OposEvents,
   OposEventsRCS, OposException, OposFptrUtils, OposServiceDevice19,
-  OposUtils, OposEsc, OposPOSPrinter_CCO_TLB,
+  OposUtils, OposEsc, OposPOSPrinter_CCO_TLB, PosPrinterLog,
   // Json
   uLkJSON,
   // gnugettext
@@ -20,7 +20,7 @@ uses
   WebkassaClient, FiscalPrinterState, CustomReceipt, NonFiscalDoc, ServiceVersion,
   PrinterParameters, PrinterParametersX, CashInReceipt, CashOutReceipt,
   SalesReceipt, TextDocument, ReceiptItem, StringUtils, DebugUtils, VatRate,
-  PosPrinterLog, uZintBarcode, uZintInterface, FileUtils;
+  uZintBarcode, uZintInterface, FileUtils, PosWinPrinter;
 
 const
   FPTR_DEVICE_DESCRIPTION = 'WebKassa OPOS driver';
@@ -2149,6 +2149,7 @@ function TWebkassaImpl.DoOpen(const DeviceClass, DeviceName: WideString;
   const pDispatch: IDispatch): Integer;
 var
   POSPrinter: TOPOSPOSPrinter;
+  PosWinPrinter: TPosWinPrinter;
 begin
   try
     Initialize;
@@ -2171,13 +2172,24 @@ begin
 
     if FPrinter = nil then
     begin
-      PosPrinter := TOPOSPOSPrinter.Create(nil);
-      PosPrinter.OnStatusUpdateEvent := PrinterStatusUpdateEvent;
-      PosPrinter.OnErrorEvent := PrinterErrorEvent;
-      PosPrinter.OnDirectIOEvent := PrinterDirectIOEvent;
-      PosPrinter.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
-      FPrinterLog := TPosPrinterLog.Create2(nil, PosPrinter.ControlInterface, Logger);
-      FPrinter := FPrinterLog;
+      if Params.PrinterType = PrinterTypePosPrinter then
+      begin
+        PosPrinter := TOPOSPOSPrinter.Create(nil);
+        PosPrinter.OnStatusUpdateEvent := PrinterStatusUpdateEvent;
+        PosPrinter.OnErrorEvent := PrinterErrorEvent;
+        PosPrinter.OnDirectIOEvent := PrinterDirectIOEvent;
+        PosPrinter.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
+        FPrinterLog := TPosPrinterLog.Create2(nil, PosPrinter.ControlInterface, Logger);
+        FPrinter := FPrinterLog;
+
+        FRecLineChars := StrToInt(Params.FontName);
+      end else
+      begin
+        PosWinPrinter := TPosWinPrinter.Create2(nil, Logger);
+        PosWinPrinter.FontName := Params.FontName;
+        FPrinter := PosWinPrinter;
+        FRecLineChars := FPrinter.RecLineChars;
+      end;
     end;
     CheckPtr(Printer.Open(FParams.PrinterName));
 
@@ -2293,7 +2305,7 @@ begin
     FCashBoxesUpdated := False;
     FOposDevice.DeviceEnabled := Value;
     Printer.DeviceEnabled := Value;
-    FRecLineChars := Printer.RecLineChars;
+    Printer.RecLineChars := FRecLineChars;
   end;
 end;
 
@@ -2837,6 +2849,7 @@ begin
         Text := Copy(Item.Text, 1, RecLineChars div 2);
         if CapRecDwideDhigh then
           Text := ESC_DoubleHighAndWide + Text;
+
       end;
       // BOLD
       if Item.Style = STYLE_BOLD then
@@ -2974,20 +2987,6 @@ begin
   end;
 end;
 
-function OposStrToNibble(const Data: string): WIdeString;
-var
-  B: Byte;
-  i: Integer;
-begin
-  Result := '';
-  for i := 1 to Length(Data) do
-  begin
-    B := Ord(Data[i]);
-    Result := Result + WideChar($30 + ((B shr 4) and $0F));
-    Result := Result + WideChar($30 + (B and $0F));
-  end;
-end;
-
 procedure TWebkassaImpl.PrintQRCode(const BarcodeData: WideString);
 var
   Data: string;
@@ -3034,9 +3033,5 @@ begin
     Stream.Free;
   end;
 end;
-
-(*
-
-*)
 
 end.

@@ -4,11 +4,12 @@ interface
 
 uses
   // VCL
-  Windows, Classes, SysUtils, ComObj, ActiveX,
+  Windows, Classes, SysUtils, ComObj, ActiveX, Printers,
   // Tnt
   TntClasses, TntSysUtils,
   // Opos
-  Opos, Oposhi, OposUtils, OposDevice, OposPOSPrinter_CCO_TLB;
+  Opos, OposPtr, Oposhi, OposException, OposEsc, OposUtils, OposDevice,
+  OposPOSPrinter_CCO_TLB;
 
 type
   { IRecPrinter }
@@ -18,8 +19,33 @@ type
     function PrintTestReceipt: WideString;
     function ReadDeviceList: WideString;
     function GetDeviceName: WideString;
+    function GetFontName: WideString;
+    function GetFontNames: WideString;
+    procedure SetDeviceName(const Value: WideString);
+    procedure SetFontName(const Value: WideString);
+
+    property FontName: WideString read GetFontName write SetFontName;
+    property DeviceName: WideString read GetDeviceName write SetDeviceName;
+  end;
+
+  { TWinPrinter }
+
+  TWinPrinter = class(TInterfacedObject, IRecPrinter)
+  private
+    FFontName: WideString;
+    FDeviceName: WideString;
+  public
+    function TestConnection: WideString;
+    function PrintTestReceipt: WideString;
+
+    function ReadDeviceList: WideString;
+    function GetFontNames: WideString;
+    function GetFontName: WideString;
+    procedure SetFontName(const Value: WideString);
+    function GetDeviceName: WideString;
     procedure SetDeviceName(const Value: WideString);
 
+    property FontName: WideString read GetFontName write SetFontName;
     property DeviceName: WideString read GetDeviceName write SetDeviceName;
   end;
 
@@ -28,6 +54,7 @@ type
   TPosPrinter = class(TInterfacedObject, IRecPrinter)
   private
     FLines: TTntStrings;
+    FFontName: WideString;
     FDeviceName: WideString;
     FPrinter: TOPOSPOSPrinter;
 
@@ -35,11 +62,14 @@ type
     function GetPrinter: TOPOSPOSPrinter;
     function GetPropVal(const PropertyName: WideString): WideString;
     procedure AddProp(const PropName: WideString; PropText: WideString = '');
-
-    property Printer: TOPOSPOSPrinter read GetPrinter;
+    procedure AddProps;
+    function GetFontName: WideString;
+    function GetFontNames: WideString;
+    procedure SetFontName(const Value: WideString);
     function GetDeviceName: WideString;
     procedure SetDeviceName(const Value: WideString);
-    procedure AddProps;
+
+    property Printer: TOPOSPOSPrinter read GetPrinter;
   public
     constructor Create;
     destructor Destroy; override;
@@ -47,10 +77,27 @@ type
     function TestConnection: WideString;
     function ReadDeviceList: WideString;
     function PrintTestReceipt: WideString;
+
+    property FontName: WideString read GetFontName write SetFontName;
     property DeviceName: WideString read GetDeviceName write SetDeviceName;
   end;
 
 implementation
+
+const
+  CashOutReceiptText: string =
+    '                                          ' + CRLF +
+    '   Восточно-Казастанская область, город   ' + CRLF +
+    '    Усть-Каменогорск, ул. Грейдерная, 1/10' + CRLF +
+    '            ТОО PetroRetail               ' + CRLF +
+    'БИН                                       ' + CRLF +
+    'ЗНМ  ИНК ОФД                              ' + CRLF +
+    'ИЗЪЯТИЕ ДЕНЕГ ИЗ КАССЫ              =60.00' + CRLF +
+    'НАЛИЧНЫХ В КАССЕ                     =0.00' + CRLF +
+    '           Callцентр 039458039850         ' + CRLF +
+    '          Горячая линия 20948802934       ' + CRLF +
+    '            СПАСИБО ЗА ПОКУПКУ            ' + CRLF +
+    '                                          ';
 
 { TPosPrinter }
 
@@ -93,7 +140,6 @@ procedure TPosPrinter.SetDeviceName(const Value: WideString);
 begin
   FDeviceName := Value;
 end;
-
 
 function TPosPrinter.ReadDeviceList: WideString;
 var
@@ -309,15 +355,149 @@ begin
 end;
 
 function TPosPrinter.PrintTestReceipt: WideString;
+
+  procedure CheckPtr(AResultCode: Integer);
+  begin
+    if AResultCode <> OPOS_SUCCESS then
+    begin
+      raise EOPOSException.Create(Printer.ErrorString,
+        Printer.ResultCode, Printer.ResultCodeExtended);
+    end;
+  end;
+
+var
+  i: Integer;
+  Lines: TStrings;
+begin
+  Check(Printer.Open(DeviceName));
+  Lines := TStringList.Create;
+  try
+    Lines.Text := CashOutReceiptText;
+    Check(Printer.ClaimDevice(0));
+    Printer.DeviceEnabled := True;
+    if Pos(FontName, Printer.RecLineCharsList) <> 0 then
+      Printer.RecLineChars := StrToInt(FontName);
+
+    if Printer.CapTransaction then
+    begin
+      CheckPtr(Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_TRANSACTION));
+    end;
+    for i := 0 to Lines.Count-1 do
+    begin
+      CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, TrimRight(Lines[i]) + CRLF));
+    end;
+    CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, CRLF));
+    CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, CRLF));
+    CheckPtr(Printer.CutPaper(90));
+    if Printer.CapTransaction then
+    begin
+      CheckPtr(Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_NORMAL));
+    end;
+  finally
+    Lines.Free;
+    Printer.Close;
+  end;
+end;
+
+function TPosPrinter.GetFontName: WideString;
+begin
+  Result := FFontName;
+end;
+
+procedure TPosPrinter.SetFontName(const Value: WideString);
+begin
+  FFontName := Value;
+end;
+
+function TPosPrinter.GetFontNames: WideString;
 begin
   Check(Printer.Open(DeviceName));
   try
-    Check(Printer.ClaimDevice(0));
-    Printer.DeviceEnabled := True;
-    Check(Printer.CheckHealth(OPOS_CH_INTERACTIVE));
+    Result := Printer.RecLineCharsList;
+    Result := StringReplace(Result, ',', CRLF, [rfReplaceAll, rfIgnoreCase]);
   finally
     Printer.Close;
   end;
+end;
+
+{ TWinPrinter }
+
+function TWinPrinter.ReadDeviceList: WideString;
+begin
+  Result := Printer.Printers.Text;
+end;
+
+function TWinPrinter.GetDeviceName: WideString;
+begin
+  Result := FDeviceName;
+end;
+
+procedure TWinPrinter.SetDeviceName(const Value: WideString);
+begin
+  FDeviceName := Value;
+end;
+
+function TWinPrinter.TestConnection: WideString;
+var
+  Lines: TStrings;
+const
+  OrientationText: array [TPrinterOrientation] of string = ('Портретная', 'Альбомная');
+begin
+  Lines := TStringList.Create;
+  try
+    Printer.PrinterIndex := Printer.Printers.IndexOf(DeviceName);
+    Lines.Add(Format('Ширина страницы     : %d', [Printer.PageWidth]));
+    Lines.Add(Format('Высота страницы     : %d', [Printer.PageHeight]));
+    Lines.Add(Format('Ориентация страницы : %s', [OrientationText[Printer.Orientation]]));
+    Lines.Add('Шрифты:');
+    Lines.AddStrings(Printer.Fonts);
+    Result := Lines.Text;
+  finally
+    Lines.Free;
+  end;
+end;
+
+function TWinPrinter.PrintTestReceipt: WideString;
+var
+  i: Integer;
+  Y: Integer;
+  Lines: TStrings;
+  Metrics: TTextMetric;
+begin
+  Printer.PrinterIndex := Printer.Printers.IndexOf(DeviceName);
+  Printer.BeginDoc;
+  Lines := TStringList.Create;
+  try
+    Lines.Text := CashOutReceiptText;
+    Printer.Canvas.Font.Name := FontName;
+    GetTextMetrics(Printer.Canvas.Handle, Metrics);
+
+    Y := 0;
+    for i := 0 to Lines.Count-1 do
+    begin
+      Printer.Canvas.TextOut(0, Y, Lines[i]);
+      Inc(Y, Metrics.tmHeight);
+    end;
+  finally
+    Lines.Free;
+    Printer.EndDoc;
+  end;
+end;
+
+function TWinPrinter.GetFontName: WideString;
+begin
+  Result := FFontName;
+end;
+
+procedure TWinPrinter.SetFontName(const Value: WideString);
+begin
+  FFontName := Value;
+end;
+
+function TWinPrinter.GetFontNames: WideString;
+begin
+  Printer.PrinterIndex := Printer.Printers.IndexOf(DeviceName);
+  Result := Printer.Fonts.Text;
 end;
 
 end.

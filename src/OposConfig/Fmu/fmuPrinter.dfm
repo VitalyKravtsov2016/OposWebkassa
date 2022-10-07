@@ -13,10 +13,10 @@ object fmPrinter: TfmPrinter
   OldCreateOrder = False
   DesignSize = (
     455
-    239)
+    240)
   PixelsPerInch = 96
   TextHeight = 13
-  object lblDeviceName: TTntLabel
+  object lblPrinterName: TTntLabel
     Left = 8
     Top = 40
     Width = 103
@@ -25,32 +25,41 @@ object fmPrinter: TfmPrinter
   end
   object lblResultCode: TTntLabel
     Left = 8
-    Top = 72
-    Width = 56
+    Top = 104
+    Width = 55
     Height = 13
-    Caption = #1056#1077#1079#1082#1083#1100#1090#1072#1090':'
+    Caption = #1056#1077#1079#1091#1083#1100#1090#1072#1090':'
   end
-  object lblDeviceType: TTntLabel
+  object lblPrinterType: TTntLabel
     Left = 8
     Top = 8
     Width = 72
     Height = 13
     Caption = #1058#1080#1087' '#1087#1088#1080#1085#1090#1077#1088#1072':'
   end
-  object cbDeviceName: TTntComboBox
+  object lblFontName: TTntLabel
+    Left = 8
+    Top = 72
+    Width = 87
+    Height = 13
+    Caption = #1064#1088#1080#1092#1090' '#1087#1088#1080#1085#1090#1077#1088#1072':'
+  end
+  object cbPrinterName: TTntComboBox
     Left = 120
     Top = 40
     Width = 329
     Height = 21
+    Style = csDropDownList
     Anchors = [akLeft, akTop, akRight]
     ItemHeight = 13
-    TabOrder = 0
+    TabOrder = 1
+    OnChange = cbPrinterNameChange
   end
   object memResult: TMemo
     Left = 120
-    Top = 72
+    Top = 104
     Width = 329
-    Height = 129
+    Height = 97
     Anchors = [akLeft, akTop, akRight, akBottom]
     Color = clBtnFace
     Font.Charset = RUSSIAN_CHARSET
@@ -60,7 +69,7 @@ object fmPrinter: TfmPrinter
     Font.Style = []
     ParentFont = False
     ScrollBars = ssVertical
-    TabOrder = 1
+    TabOrder = 3
   end
   object btnTestConnection: TButton
     Left = 200
@@ -69,7 +78,7 @@ object fmPrinter: TfmPrinter
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1055#1088#1086#1074#1077#1088#1082#1072' '#1089#1074#1103#1079#1080
-    TabOrder = 2
+    TabOrder = 4
     OnClick = btnTestConnectionClick
   end
   object btnPrintReceipt: TButton
@@ -79,21 +88,31 @@ object fmPrinter: TfmPrinter
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1058#1077#1089#1090#1086#1074#1099#1081' '#1095#1077#1082
-    TabOrder = 3
+    TabOrder = 5
     OnClick = btnPrintReceiptClick
   end
-  object cbDeviceType: TTntComboBox
-    Left = 118
+  object cbPrinterType: TTntComboBox
+    Left = 120
     Top = 8
     Width = 329
     Height = 21
     Style = csDropDownList
     Anchors = [akLeft, akTop, akRight]
     ItemHeight = 13
-    TabOrder = 4
-    OnChange = cbDeviceTypeChange
+    TabOrder = 0
+    OnChange = cbPrinterTypeChange
     Items.Strings = (
       'POS '#1087#1088#1080#1085#1090#1077#1088
       'Windows '#1087#1088#1080#1085#1090#1077#1088)
+  end
+  object cbFontName: TTntComboBox
+    Left = 120
+    Top = 72
+    Width = 329
+    Height = 21
+    Style = csDropDownList
+    Anchors = [akLeft, akTop, akRight]
+    ItemHeight = 13
+    TabOrder = 2
   end
 end

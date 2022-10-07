@@ -18,19 +18,23 @@ type
   { TfmPrinter }
 
   TfmPrinter = class(TFptrPage)
-    lblDeviceName: TTntLabel;
-    cbDeviceName: TTntComboBox;
+    lblPrinterName: TTntLabel;
+    cbPrinterName: TTntComboBox;
     memResult: TMemo;
     lblResultCode: TTntLabel;
     btnTestConnection: TButton;
     btnPrintReceipt: TButton;
-    lblDeviceType: TTntLabel;
-    cbDeviceType: TTntComboBox;
+    lblPrinterType: TTntLabel;
+    cbPrinterType: TTntComboBox;
+    lblFontName: TTntLabel;
+    cbFontName: TTntComboBox;
     procedure btnTestConnectionClick(Sender: TObject);
     procedure btnPrintReceiptClick(Sender: TObject);
-    procedure cbDeviceTypeChange(Sender: TObject);
+    procedure cbPrinterTypeChange(Sender: TObject);
+    procedure cbPrinterNameChange(Sender: TObject);
   private
     FPrinter: IRecPrinter;
+    procedure UpdateFontNames;
     procedure UpdateDeviceNames;
     function GetPrinter: IRecPrinter;
     property Printer: IRecPrinter read GetPrinter;
@@ -58,23 +62,28 @@ end;
 
 procedure TfmPrinter.UpdatePage;
 begin
+  cbPrinterType.ItemIndex := Parameters.PrinterType;
+  cbPrinterName.Text := Parameters.PrinterName;
+  cbFontName.Text := Parameters.FontName;
   UpdateDeviceNames;
-  cbDeviceType.ItemIndex := Parameters.PrinterType;
-  cbDeviceName.Text := Parameters.PrinterName;
+  UpdateFontNames;
 end;
 
 procedure TfmPrinter.UpdateObject;
 begin
-  Parameters.PrinterType := cbDeviceType.ItemIndex;
-  Parameters.PrinterName := cbDeviceName.Text;
+  Parameters.PrinterType := cbPrinterType.ItemIndex;
+  Parameters.PrinterName := cbPrinterName.Text;
+  Parameters.FontName := cbFontName.Text;
 end;
 
 function TfmPrinter.GetPrinter: IRecPrinter;
 begin
   if FPrinter = nil then
   begin
-    //if Parameters.PrinterType = PrinterTypePosPrinter then
-      FPrinter := TPosPrinter.Create;
+    if cbPrinterType.ItemIndex = PrinterTypePosPrinter then
+      FPrinter := TPosPrinter.Create
+    else
+      FPrinter := TWinPrinter.Create;
   end;
   Result := FPrinter;
 end;
@@ -86,6 +95,7 @@ begin
   try
     UpdateObject;
     Printer.DeviceName := Parameters.PrinterName;
+    Printer.FontName := Parameters.FontName;
     memResult.Text := Printer.TestConnection;
   except
     on E: Exception do
@@ -103,6 +113,7 @@ begin
   try
     UpdateObject;
     Printer.DeviceName := Parameters.PrinterName;
+    Printer.FontName := Parameters.FontName;
     memResult.Text := Printer.PrintTestReceipt;
   except
     on E: Exception do
@@ -113,20 +124,50 @@ begin
   EnableButtons(True);
 end;
 
-procedure TfmPrinter.cbDeviceTypeChange(Sender: TObject);
+procedure TfmPrinter.cbPrinterTypeChange(Sender: TObject);
 begin
+  FPrinter := nil;
   UpdateDeviceNames;
+  UpdateFontNames;
 end;
 
 procedure TfmPrinter.UpdateDeviceNames;
+var
+  Index: Integer;
 begin
-  cbDeviceName.Items.BeginUpdate;
+  cbPrinterName.Items.BeginUpdate;
   try
-    cbDeviceName.Items.Text := Printer.ReadDeviceList;
-    cbDeviceName.Text := Parameters.PrinterName;
+    cbPrinterName.Items.Text := Printer.ReadDeviceList;
+    Index := cbPrinterName.Items.IndexOf(Parameters.PrinterName);
+    if Index = -1 then
+      Index := 0;
+    cbPrinterName.ItemIndex := Index;
   finally
-    cbDeviceName.Items.EndUpdate;
+    cbPrinterName.Items.EndUpdate;
   end;
+end;
+
+procedure TfmPrinter.UpdateFontNames;
+var
+  Index: Integer;
+begin
+  Printer.DeviceName := cbPrinterName.Text;
+  cbFontName.Items.BeginUpdate;
+  try
+    cbFontName.Items.Text := Printer.GetFontNames;
+    Index := cbFontName.Items.IndexOf(Parameters.FontName);
+    if Index = -1 then
+      Index := 0;
+    cbFontName.ItemIndex := Index;
+  except
+    // !!!
+  end;
+  cbFontName.Items.EndUpdate;
+end;
+
+procedure TfmPrinter.cbPrinterNameChange(Sender: TObject);
+begin
+  UpdateFontNames;
 end;
 
 end.

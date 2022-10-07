@@ -54,15 +54,17 @@ uses
   uLkJSON in '..\..\src\Shared\uLkJSON.pas',
   VatRate in '..\..\src\Shared\VatRate.pas',
   duPrinterParameters in 'units\duPrinterParameters.pas',
-  duWebkassaImpl in 'units\duWebkassaImpl.pas',
+  duOposUtils in 'units\duOposUtils.pas',
   MockPosPrinter in 'units\MockPosPrinter.pas',
   OposPtrUtils in '..\..\src\Opos\OposPtrUtils.pas',
   OposPtrhi in '..\..\src\Opos\OposPtrhi.pas',
   RCSEvents in 'units\RCSEvents.pas',
   RCSEvents_TLB in 'units\RCSEvents_TLB.pas',
-  POSPrinterLog in '..\..\src\Opos\POSPrinterLog.pas',
+  POSWinPrinter in '..\..\src\Opos\POSWinPrinter.pas',
   uZintBarcode in '..\..\src\Shared\uZintBarcode.pas',
-  uZintInterface in '..\..\src\Shared\uZintInterface.pas';
+  uZintInterface in '..\..\src\Shared\uZintInterface.pas',
+  POSPrinterLog in '..\..\src\Opos\POSPrinterLog.pas',
+  duWebkassaImpl in 'units\duWebkassaImpl.pas';
 
 {$R *.RES}
 

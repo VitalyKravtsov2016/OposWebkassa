@@ -56,7 +56,8 @@ uses
   fmuFptrVatRate in 'Fmu\fmuFptrVatRate.pas' {fmFptrVatRate},
   VatRate in '..\Shared\VatRate.pas',
   uLkJSON in '..\Shared\uLkJSON.pas',
-  fmuFptrPayType in 'Fmu\fmuFptrPayType.pas' {fmFptrPayType};
+  fmuFptrPayType in 'Fmu\fmuFptrPayType.pas' {fmFptrPayType},
+  OposEsc in '..\Opos\OposEsc.pas';
 
 {$R *.RES}
 {$R WindowsXP.RES}

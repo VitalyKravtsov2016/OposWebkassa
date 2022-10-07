@@ -80,7 +80,7 @@ type
 
     procedure FireEvent(Event: TOposEvent);
     procedure StatusUpdateEvent(Data: Integer);
-    function ConvertBinary(const Data: WideString): WideString;
+    function TextToBinary(const Data: string): string;
     function ClearResult: Integer;
     function SetResultCode(Value: Integer): Integer;
     function HandleException(const OPOSError: TOPOSError): Integer;
@@ -385,7 +385,7 @@ begin
   end;
 end;
 
-function TOposServiceDevice19.ConvertBinary(const Data: WideString): WideString;
+function TOposServiceDevice19.TextToBinary(const Data: string): string;
 
   // First character = 0x30 + bits 7-4 of the data byte.
   // Second character = 0x30 + bits 3-0 of the data byte.

@@ -32,6 +32,8 @@ function BinaryConversionToStr(Value: Integer): WideString;
 function StateToStr(Value: Integer): WideString;
 function PowerReportingToStr(Value: Integer): WideString;
 function PowerNotifyToStr(Value: Integer): WideString;
+function OposStrToNibble(const Data: string): string;
+function OposNibbleToStr(const Data: string): string;
 
 const
   CRLF = #13#10;
@@ -240,6 +242,36 @@ begin
     OPOS_PN_ENABLED: Result := 'OPOS_PN_ENABLED';
   else
     Result := IntToStr(Value);
+  end;
+end;
+
+function OposStrToNibble(const Data: string): string;
+var
+  B: Byte;
+  i: Integer;
+begin
+  Result := '';
+  for i := 1 to Length(Data) do
+  begin
+    B := Ord(Data[i]);
+    Result := Result + WideChar($30 + ((B shr 4) and $0F));
+    Result := Result + WideChar($30 + (B and $0F));
+  end;
+end;
+
+function OposNibbleToStr(const Data: string): string;
+var
+  B: Byte;
+  i: Integer;
+  L: Integer;
+begin
+  Result := '';
+  L := Length(Data) div 2;
+  for i := 1 to L do
+  begin
+    B := (Ord(Data[i*2-1])-$30) shl 4;
+    B := B + (Ord(Data[i*2])-$30);
+    Result := Result + Chr(B);
   end;
 end;
 
