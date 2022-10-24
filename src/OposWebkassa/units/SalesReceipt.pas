@@ -287,6 +287,8 @@ begin
   Item.VatInfo := VatInfo;
   Item.Description := Description;
   Item.UnitName := UnitName;
+  Item.MarkCode := FBarcode;
+  FBarcode := '';
 end;
 
 procedure TSalesReceipt.PrintRecItemRefund(const ADescription: WideString;
@@ -309,6 +311,8 @@ begin
   Item.VatInfo := VatInfo;
   Item.Description := ADescription;
   Item.UnitName := AUnitName;
+  Item.MarkCode := FBarcode;
+  FBarcode := '';
 end;
 
 procedure TSalesReceipt.PrintRecItemRefundVoid(
@@ -337,6 +341,8 @@ begin
   Item.Description := Description;
   Item.UnitName := '';
   Item.UnitPrice := 0;
+  Item.MarkCode := FBarcode;
+  FBarcode := '';
 end;
 
 procedure TSalesReceipt.PrintRecItemAdjustment(
@@ -432,6 +438,8 @@ begin
   Item.VatInfo := VatInfo;
   Item.Description := Description;
   Item.UnitName := '';
+  Item.MarkCode := FBarcode;
+  FBarcode := '';
 end;
 
 procedure TSalesReceipt.PrintRecRefundVoid(
@@ -451,6 +459,8 @@ begin
   Item.VatInfo := VatInfo;
   Item.Description := Description;
   Item.UnitName := '';
+  Item.MarkCode := FBarcode;
+  FBarcode := '';
 end;
 
 procedure TSalesReceipt.PrintRecSubtotal(Amount: Currency);
