@@ -41,8 +41,8 @@ end;
 procedure TfmFptrPayType.UpdateObject;
 begin
   Parameters.PaymentType2 := cbPaymentType2.ItemIndex;
-  Parameters.PaymentType2 := cbPaymentType2.ItemIndex;
-  Parameters.PaymentType2 := cbPaymentType2.ItemIndex;
+  Parameters.PaymentType3 := cbPaymentType3.ItemIndex;
+  Parameters.PaymentType4 := cbPaymentType4.ItemIndex;
 end;
 
 end.

@@ -82,13 +82,10 @@ end;
 
 
 procedure TWebkassaImplTest.SetUp;
-var
-  Printer: TMockPOSPrinter;
 begin
   inherited SetUp;
   FDriver := TWebkassaImpl.Create(nil);
-  Printer := TMockPOSPrinter.Create(nil);
-  //FDriver.Printer := Printer;
+  //FDriver.Printer := TMockPOSPrinter.Create(nil);
 
   FDriver.TestMode := True;
   FDriver.Params.LogFileEnabled := True;
