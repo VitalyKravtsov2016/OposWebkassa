@@ -26,6 +26,7 @@ type
 
     procedure TestZReportRequest;
     procedure TestZReportAnswer;
+    procedure TestZReportAnswer2;
     procedure TestZReport;
     procedure TestXReport;
     procedure TestJournalReport;
@@ -183,6 +184,22 @@ begin
       WriteFileData(GetModulePath + 'ZXReportAnswerError.txt', JsonText);
 
     CheckEquals(ExpectedJsonText, JsonText, 'JsonText <> ExpectedJsonText');
+  finally
+    Command.Free;
+  end;
+end;
+
+procedure TWebkassaClientTest.TestZReportAnswer2;
+var
+  ExpectedJsonText: string;
+  Command: TZXReportCommand;
+begin
+  Command := TZXReportCommand.Create;
+  try
+    ExpectedJsonText := ReadFileData(GetModulePath + 'ZXReportAnswer2.txt');
+    JsonToObject(ExpectedJsonText, Command);
+
+    CheckEquals(17, Command.Data.ReportNumber, 'Command.Data.ReportNumber');
   finally
     Command.Free;
   end;

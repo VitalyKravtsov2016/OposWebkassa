@@ -65,9 +65,9 @@ type
     procedure TearDown; override;
   public
     // !!!
-    procedure TestZReport;
     procedure TestXReport;
   published
+    procedure TestZReport;
     procedure TestCashIn;
     procedure TestCashOut;
     procedure TestNonFiscal;
@@ -103,6 +103,7 @@ begin
   FDriver.TestMode := True;
   FDriver.Client.TestMode := True;
   FDriver.Printer := FPrinter;
+  FDriver.Params.FontName := '42';
   FDriver.Params.LogFileEnabled := False;
   FDriver.Params.LogMaxCount := 10;
   FDriver.Params.LogFilePath := 'Logs';
@@ -252,8 +253,7 @@ procedure TWebkassaImplTest.CheckLines;
 var
   i: Integer;
 begin
-  // !!!
-  //CheckEquals(FLines.Count, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
+  CheckEquals(FLines.Count, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
   for i := 0 to FLines.Count-1 do
   begin
     CheckEquals(Trim(FLines[i]), Trim(FPrinter.Lines[i]), IntToStr(i));
@@ -359,6 +359,7 @@ end;
 procedure TWebkassaImplTest.TestZReport;
 begin
   OpenClaimEnable;
+  FDriver.Client.AnswerJson := ReadFileData(GetModulePath + 'ZXReportAnswer2.txt');
   CheckEquals(0, Driver.PrintZReport, 'Driver.PrintZReport');
 end;
 

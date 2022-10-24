@@ -200,6 +200,7 @@ type
     function GetCount: Integer; virtual;
     function GetField(AName: Variant):TlkJSONbase; virtual;
   public
+    function Get(AName: Variant):TlkJSONbase;
     property Field[AName: Variant]: TlkJSONbase read GetField;
     property Count: Integer read GetCount;
     property Child[idx: Integer]: TlkJSONbase read GetChild write SetChild;
@@ -612,6 +613,13 @@ end;
 function TlkJSONbase.GetField(AName: Variant):TlkJSONbase;
 begin
   result := self;
+end;
+
+function TlkJSONbase.Get(AName: Variant):TlkJSONbase;
+begin
+  Result := GetField(AName);
+  if Result = nil then
+    raise Exception.CreateFmt('Field "%s" not found', [AName]);
 end;
 
 function TlkJSONbase.GetValue: variant;

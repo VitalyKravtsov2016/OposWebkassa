@@ -923,22 +923,20 @@ end;
 
 function TWebkassaImpl.ReadGrandTotal: Currency;
 begin
-  Result := ReadCashboxStatus.Field['Data'].Field['CurrentState'].Field[
-    'XReport'].Field['SumInCashbox'].Value;
+  Result := ReadCashboxStatus.Get('Data').Get('CurrentState').Get(
+    'XReport').Get('SumInCashbox').Value;
 end;
 
 function TWebkassaImpl.ReadGrossTotal: Currency;
 var
-  Doc: TlkJSONbase;
+  Node: TlkJSONbase;
 begin
-  Doc := ReadCashboxStatus.Field['Data'].Field['CurrentState'].Field[
-    'XReport'].Field['StartNonNullable'];
-
+  Node := ReadCashboxStatus.Get('Data').Get('CurrentState').Get('XReport').Get('StartNonNullable');
   Result :=
-    Currency(Doc.Field['Sell'].Value) -
-    Currency(Doc.Field['Buy'].Value) -
-    Currency(Doc.Field['ReturnSell'].Value) +
-    Currency(Doc.Field['ReturnBuy'].Value);
+    Currency(Node.Get('Sell').Value) -
+    Currency(Node.Get('Buy').Value) -
+    Currency(Node.Get('ReturnSell').Value) +
+    Currency(Node.Get('ReturnBuy').Value);
 end;
 
 function TWebkassaImpl.ReadDailyTotal: Currency;
@@ -946,23 +944,23 @@ var
   Doc: TlkJSONbase;
 begin
   Result := 0;
-  Doc := ReadCashboxStatus.Field['Data'].Field['CurrentState'].Field['XReport'];
+  Doc := ReadCashboxStatus.Get('Data').Get('CurrentState').Get('XReport');
   // Sell
   Result :=  Result +
-    (Doc.Field['Sell'].Field['Taken'].Value -
-    Doc.Field['Sell'].Field['Change'].Value);
+    (Doc.Get('Sell').Get('Taken').Value -
+    Doc.Get('Sell').Get('Change').Value);
   // Buy
   Result :=  Result -
-    (Doc.Field['Buy'].Field['Taken'].Value -
-    Doc.Field['Buy'].Field['Change'].Value);
+    (Doc.Get('Buy').Get('Taken').Value -
+    Doc.Get('Buy').Get('Change').Value);
   // ReturnSell
   Result :=  Result -
-    (Doc.Field['ReturnSell'].Field['Taken'].Value -
-    Doc.Field['ReturnSell'].Field['Change'].Value);
+    (Doc.Get('ReturnSell').Get('Taken').Value -
+    Doc.Get('ReturnSell').Get('Change').Value);
   // ReturnBuy
   Result :=  Result +
-    (Doc.Field['ReturnBuy'].Field['Taken'].Value -
-    Doc.Field['ReturnBuy'].Field['Change'].Value);
+    (Doc.Get('ReturnBuy').Get('Taken').Value -
+    Doc.Get('ReturnBuy').Get('Change').Value);
 end;
 
 function TWebkassaImpl.ReadSellTotal: Currency;
@@ -970,15 +968,15 @@ var
   Doc: TlkJSONbase;
 begin
   Result := 0;
-  Doc := ReadCashboxStatus.Field['Data'].Field['CurrentState'].Field['XReport'];
+  Doc := ReadCashboxStatus.Get('Data').Get('CurrentState').Get('XReport');
   // Sell
   Result :=  Result +
-    (Doc.Field['Sell'].Field['Taken'].Value -
-    Doc.Field['Sell'].Field['Change'].Value);
+    (Doc.Get('Sell').Get('Taken').Value -
+    Doc.Get('Sell').Get('Change').Value);
   // ReturnBuy
   Result :=  Result +
-    (Doc.Field['ReturnBuy'].Field['Taken'].Value -
-    Doc.Field['ReturnBuy'].Field['Change'].Value);
+    (Doc.Get('ReturnBuy').Get('Taken').Value -
+    Doc.Get('ReturnBuy').Get('Change').Value);
 end;
 
 function TWebkassaImpl.ReadRefundTotal: Currency;
@@ -986,15 +984,15 @@ var
   Doc: TlkJSONbase;
 begin
   Result := 0;
-  Doc := ReadCashboxStatus.Field['Data'].Field['CurrentState'].Field['XReport'];
+  Doc := ReadCashboxStatus.Get('Data').Get('CurrentState').Get('XReport');
   // Buy
   Result :=  Result +
-    (Doc.Field['Buy'].Field['Taken'].Value -
-    Doc.Field['Buy'].Field['Change'].Value);
+    (Doc.Get('Buy').Get('Taken').Value -
+    Doc.Get('Buy').Get('Change').Value);
   // ReturnSell
   Result :=  Result +
-    (Doc.Field['ReturnSell'].Field['Taken'].Value -
-    Doc.Field['ReturnSell'].Field['Change'].Value);
+    (Doc.Get('ReturnSell').Get('Taken').Value -
+    Doc.Get('ReturnSell').Get('Change').Value);
 end;
 
 function TWebkassaImpl.GetData(DataItem: Integer; out OptArgs: Integer;
@@ -1009,12 +1007,12 @@ begin
       FPTR_GD_GRAND_TOTAL: Data := AmountToOutStr(ReadGrandTotal);
       FPTR_GD_MID_VOID: Data := AmountToOutStr(0);
       FPTR_GD_NOT_PAID: Data := AmountToOutStr(0);
-      FPTR_GD_RECEIPT_NUMBER: Data := ReadCashboxStatus.Field['Data'].Field[
-        'CurrentState'].Field['ContinuousDocumentNumber'].Value;
+      FPTR_GD_RECEIPT_NUMBER: Data := ReadCashboxStatus.Get('Data').Get(
+        'CurrentState').Get('ContinuousDocumentNumber').Value;
       FPTR_GD_REFUND: Data := AmountToOutStr(ReadRefundTotal);
       FPTR_GD_REFUND_VOID: Data := AmountToOutStr(0);
-      FPTR_GD_Z_REPORT: Data := ReadCashboxStatus.Field['Data'].Field[
-        'CurrentState'].Field['ShiftNumber'].Value;
+      FPTR_GD_Z_REPORT: Data := ReadCashboxStatus.Get('Data').Get(
+        'CurrentState').Get('ShiftNumber').Value;
       FPTR_GD_FISCAL_REC: Data := AmountToOutStr(ReadSellTotal);
       FPTR_GD_FISCAL_DOC,
       FPTR_GD_FISCAL_DOC_VOID,
@@ -1713,6 +1711,8 @@ var
   Node: TlkJSONbase;
   Count: Integer;
   Amount: Currency;
+  SellNode: TlkJSONbase;
+  OperationsNode: TlkJSONbase;
 begin
   CheckCanPrint;
 
@@ -1752,7 +1752,7 @@ begin
       Document.Add(Document.AlignCenter('X-Œ“◊≈“'));
     Document.Add(Document.AlignCenter(Format('—Ã≈Õ¿ π%d', [Command.Data.ShiftNumber])));
     Document.Add(Document.AlignCenter(Format('%s-%s', [Command.Data.StartOn, Command.Data.ReportOn])));
-    Node := Doc.Field['Data'].Field['Sections'];
+    Node := Doc.Get('Data').Get('Sections');
     if Node.Count > 0 then
     begin
       Document.Add(Separator);
@@ -1760,11 +1760,19 @@ begin
       Document.Add(Separator);
       for i := 0 to Node.Count-1 do
       begin
-        Count := Node.Child[i].Field['Code'].Value;
+        Count := Node.Child[i].Get('Code').Value;
         Document.AddLines('—≈ ÷»ﬂ', IntToStr(Count + 1));
-        Count := Node.Child[i].Field['Operations'].Field['Sell'].Field['Count'].Value;
-        Amount := Node.Child[i].Field['Operations'].Field['Sell'].Field['Amount'].Value;
-        Document.AddLines(Format('%.4d œ–Œƒ¿∆', [Count]), AmountToStr(Amount));
+        OperationsNode := Node.Child[i].Get('Operations');
+        if OperationsNode <> nil then
+        begin
+          SellNode := OperationsNode.Get('Sell');
+          if SellNode <> nil then
+          begin
+            Count := SellNode.Get('Count').Value;
+            Amount := SellNode.Get('Amount').Value;
+            Document.AddLines(Format('%.4d œ–Œƒ¿∆', [Count]), AmountToStr(Amount));
+          end;
+        end;
       end;
     end;
     Document.Add(Separator);
@@ -1808,14 +1816,14 @@ begin
     AddPayments(Document, Command.Data.ReturnBuy.PaymentsByTypesApiModel);
 
     Document.Add('¬Õ≈—≈Õ»…');
-    Node := Doc.Field['Data'].Field['MoneyPlacementOperations'].Field['Deposit'];
-    Count := Node.Field['Count'].Value;
-    Amount := Node.Field['Amount'].Value;
+    Node := Doc.Get('Data').Get('MoneyPlacementOperations').Get('Deposit');
+    Count := Node.Get('Count').Value;
+    Amount := Node.Get('Amount').Value;
     Document.AddLines(Format('%.4d', [Count]), AmountToStr(Amount));
     Document.Add('»«⁄ﬂ“»…');
-    Node := Doc.Field['Data'].Field['MoneyPlacementOperations'].Field['WithDrawal'];
-    Count := Node.Field['Count'].Value;
-    Amount := Node.Field['Amount'].Value;
+    Node := Doc.Get('Data').Get('MoneyPlacementOperations').Get('WithDrawal');
+    Count := Node.Get('Count').Value;
+    Amount := Node.Get('Amount').Value;
     Document.AddLines(Format('%.4d', [Count]), AmountToStr(Amount));
 
     Document.AddLines('Õ¿À»◊Õ€’ ¬  ¿——≈', AmountToStr(Command.Data.SumInCashbox));
@@ -2197,7 +2205,11 @@ begin
         FPrinter := PosWinPrinter;
         FRecLineChars := FPrinter.RecLineChars;
       end;
+    end else
+    begin
+      FRecLineChars := FPrinter.RecLineChars;
     end;
+
     CheckPtr(Printer.Open(FParams.PrinterName));
 
     Logger.Debug(Logger.Separator);

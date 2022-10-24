@@ -399,7 +399,7 @@ begin
   OptArgs := 0;
   Data := '';
   FptrCheck(Driver.GetData(FPTR_GD_GRAND_TOTAL, OptArgs, Data));
-  DataExpected := Driver.ReadCurrentStateJson.Field['Data'].Field[
+  DataExpected := Driver.ReadCashboxStatus.Field['Data'].Field[
     'CurrentState'].Field['XReport'].Field['SumInCashbox'].Value;
   CheckEquals(DataExpected, Data, 'FPTR_GD_GRAND_TOTAL');
   FptrCheck(Driver.GetData(FPTR_GD_DAILY_TOTAL, OptArgs, Data));
