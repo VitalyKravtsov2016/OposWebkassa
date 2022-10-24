@@ -47,8 +47,8 @@ type
 
   TWebkassaImpl = class(TComponent, IFiscalPrinterService_1_12)
   private
-    FStateJson: TlkJSON;
-    FStateDoc: TlkJSONbase;
+    FCashboxStatusJson: TlkJSON;
+    FCashboxStatus: TlkJSONbase;
     FTestMode: Boolean;
     FPOSID: WideString;
     FCashierID: WideString;
@@ -82,6 +82,7 @@ type
     function ReadRefundTotal: Currency;
     function ReadSellTotal: Currency;
     procedure PrintHeaderAndCut;
+    procedure ClearCashboxStatus;
   public
     procedure Initialize;
     procedure CheckEnabled;
@@ -119,9 +120,9 @@ type
       var pData: Integer; var pString: WideString);
     procedure PrinterOutputCompleteEvent(ASender: TObject;
       OutputID: Integer);
-    function ReadCurrentStateJson: TlkJSONbase;
+    function ReadCashboxStatus: TlkJSONbase;
 
-    property StateDoc: TlkJSONbase read FStateDoc;
+    property StateDoc: TlkJSONbase read FCashboxStatus;
     property Receipt: TCustomReceipt read FReceipt;
     property Document: TTextDocument read FDocument;
     property Duplicate: TTextDocument read FDuplicate;
@@ -208,7 +209,6 @@ type
     FReservedWord: WideString;
     FChangeDue: WideString;
     FRemainingFiscalMemory: Integer;
-    FCheckNumber: WideString;
     FUnitsUpdated: Boolean;
     FCashiersUpdated: Boolean;
     FCashBoxesUpdated: Boolean;
@@ -395,14 +395,14 @@ begin
   FCashBox := TCashBox.Create(nil);
   FCashier := TCashier.Create(nil);
   FClient.RaiseErrors := True;
-  FStateJson := TlkJSON.Create;
+  FCashboxStatusJson := TlkJSON.Create;
   ODS('TWebkassaImpl.Create: OK');
 end;
 
 destructor TWebkassaImpl.Destroy;
 begin
   Close;
-  FStateJson.Free;
+  FCashboxStatusJson.Free;
   FClient.Free;
   FParams.Free;
   FUnits.Free;
@@ -835,7 +835,7 @@ begin
       FDuplicateReceipt := False;
       FDuplicate.Assign(Document);
     end;
-    FStateDoc := nil;
+    ClearCashboxStatus;
     SetPrinterState(FPTR_PS_MONITOR);
     Result := ClearResult;
   except
@@ -897,28 +897,33 @@ begin
   Result := FOposDevice.OpenResult;
 end;
 
-function TWebkassaImpl.ReadCurrentStateJson: TlkJSONbase;
+procedure TWebkassaImpl.ClearCashboxStatus;
+begin
+  FCashboxStatus := nil;
+end;
+
+function TWebkassaImpl.ReadCashboxStatus: TlkJSONbase;
 var
   Request: TCashboxRequest;
 begin
-  if FStateDoc = nil then
+  if FCashboxStatus = nil then
   begin
     Request := TCashboxRequest.Create;
     try
       Request.Token := Client.Token;
       Request.CashboxUniqueNumber := Params.CashboxNumber;
       Client.ReadCashboxStatus(Request);
-      FStateDoc := FStateJson.ParseText(FClient.AnswerJson);
+      FCashboxStatus := FCashboxStatusJson.ParseText(FClient.AnswerJson);
     finally
       Request.Free;
     end;
   end;
-  Result := FStateDoc;
+  Result := FCashboxStatus;
 end;
 
 function TWebkassaImpl.ReadGrandTotal: Currency;
 begin
-  Result := ReadCurrentStateJson.Field['Data'].Field['CurrentState'].Field[
+  Result := ReadCashboxStatus.Field['Data'].Field['CurrentState'].Field[
     'XReport'].Field['SumInCashbox'].Value;
 end;
 
@@ -926,7 +931,7 @@ function TWebkassaImpl.ReadGrossTotal: Currency;
 var
   Doc: TlkJSONbase;
 begin
-  Doc := ReadCurrentStateJson.Field['Data'].Field['CurrentState'].Field[
+  Doc := ReadCashboxStatus.Field['Data'].Field['CurrentState'].Field[
     'XReport'].Field['StartNonNullable'];
 
   Result :=
@@ -941,7 +946,7 @@ var
   Doc: TlkJSONbase;
 begin
   Result := 0;
-  Doc := ReadCurrentStateJson.Field['Data'].Field['CurrentState'].Field['XReport'];
+  Doc := ReadCashboxStatus.Field['Data'].Field['CurrentState'].Field['XReport'];
   // Sell
   Result :=  Result +
     (Doc.Field['Sell'].Field['Taken'].Value -
@@ -965,7 +970,7 @@ var
   Doc: TlkJSONbase;
 begin
   Result := 0;
-  Doc := ReadCurrentStateJson.Field['Data'].Field['CurrentState'].Field['XReport'];
+  Doc := ReadCashboxStatus.Field['Data'].Field['CurrentState'].Field['XReport'];
   // Sell
   Result :=  Result +
     (Doc.Field['Sell'].Field['Taken'].Value -
@@ -981,7 +986,7 @@ var
   Doc: TlkJSONbase;
 begin
   Result := 0;
-  Doc := ReadCurrentStateJson.Field['Data'].Field['CurrentState'].Field['XReport'];
+  Doc := ReadCashboxStatus.Field['Data'].Field['CurrentState'].Field['XReport'];
   // Buy
   Result :=  Result +
     (Doc.Field['Buy'].Field['Taken'].Value -
@@ -1004,10 +1009,11 @@ begin
       FPTR_GD_GRAND_TOTAL: Data := AmountToOutStr(ReadGrandTotal);
       FPTR_GD_MID_VOID: Data := AmountToOutStr(0);
       FPTR_GD_NOT_PAID: Data := AmountToOutStr(0);
-      FPTR_GD_RECEIPT_NUMBER: Data := FCheckNumber;
+      FPTR_GD_RECEIPT_NUMBER: Data := ReadCashboxStatus.Field['Data'].Field[
+        'CurrentState'].Field['ContinuousDocumentNumber'].Value;
       FPTR_GD_REFUND: Data := AmountToOutStr(ReadRefundTotal);
       FPTR_GD_REFUND_VOID: Data := AmountToOutStr(0);
-      FPTR_GD_Z_REPORT: Data := ReadCurrentStateJson.Field['Data'].Field[
+      FPTR_GD_Z_REPORT: Data := ReadCashboxStatus.Field['Data'].Field[
         'CurrentState'].Field['ShiftNumber'].Value;
       FPTR_GD_FISCAL_REC: Data := AmountToOutStr(ReadSellTotal);
       FPTR_GD_FISCAL_DOC,
@@ -1720,6 +1726,7 @@ begin
     else
       FClient.XReport(Command);
 
+    ClearCashboxStatus;
     Doc := Json.ParseText(FClient.AnswerJson);
 
     Total :=
@@ -2581,8 +2588,6 @@ begin
       end;
     end;
     FClient.SendReceipt(Command);
-    FCheckNumber := Command.Data.CheckNumber;
-
     PrintReceipt(Receipt, Command);
   finally
     Command.Free;

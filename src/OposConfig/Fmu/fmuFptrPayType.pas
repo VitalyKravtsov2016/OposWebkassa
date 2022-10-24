@@ -20,6 +20,7 @@ type
     lblPaymentType3: TTntLabel;
     cbPaymentType4: TComboBox;
     lblPaymentType4: TTntLabel;
+    Label1: TLabel;
   public
     procedure UpdatePage; override;
     procedure UpdateObject; override;

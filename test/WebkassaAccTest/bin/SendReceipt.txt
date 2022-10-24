@@ -1,1 +1,24 @@
-{"Data":{"CheckNumber":"929167798269","DateTime":"04.10.2022 00:39:54","OfflineMode":false,"CashboxOfflineMode":false,"Cashbox":{"UniqueNumber":"SWK00032685","RegistrationNumber":"211030200207","IdentityNumber":"270","Address":"тест","Ofd":{"Name":"АО \"КазТранском\"","Host":"dev.kofd.kz/consumer","Code":3}},"CheckOrderNumber":1,"ShiftNumber":196,"EmployeeName":"webkassa4@softit.kz","TicketUrl":"http://dev.kofd.kz/consumer?i=929167798269&f=211030200207&s=46.00&t=20221004T003954","TicketPrintUrl":"https://devkkm.webkassa.kz/Ticket?chb=SWK00032685&extnum=DB868C8B-F169-4825-B78B-DEAFC0B81C0B"}}
+{
+	"Data": {
+		"CheckNumber": "929167798269",
+		"DateTime": "04.10.2022 00:39:54",
+		"OfflineMode": false,
+		"CashboxOfflineMode": false,
+		"Cashbox": {
+			"UniqueNumber": "SWK00032685",
+			"RegistrationNumber": "211030200207",
+			"IdentityNumber": "270",
+			"Address": "тест",
+			"Ofd": {
+				"Name": "АО \"КазТранском\"",
+				"Host": "dev.kofd.kz/consumer",
+				"Code": 3
+			}
+		},
+		"CheckOrderNumber": 1,
+		"ShiftNumber": 196,
+		"EmployeeName": "webkassa4@softit.kz",
+		"TicketUrl": "http://dev.kofd.kz/consumer?i=929167798269&f=211030200207&s=46.00&t=20221004T003954",
+		"TicketPrintUrl": "https://devkkm.webkassa.kz/Ticket?chb=SWK00032685&extnum=DB868C8B-F169-4825-B78B-DEAFC0B81C0B"
+	}
+}
