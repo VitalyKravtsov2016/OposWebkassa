@@ -53,12 +53,14 @@ uses
   OposPtrUtils in '..\Opos\OposPtrUtils.pas',
   OposPtrhi in '..\Opos\OposPtrhi.pas',
   OposFiscalPrinter_CCO_TLB in '..\Opos\OposFiscalPrinter_CCO_TLB.pas',
-  POSWinPrinter in '..\Opos\POSWinPrinter.pas',
   uZintBarcode in '..\Shared\uZintBarcode.pas',
   uZintInterface in '..\Shared\uZintInterface.pas',
   RecPrinter in 'units\RecPrinter.pas',
   OposDevice in '..\Opos\OposDevice.pas',
-  POSPrinterLog in '..\Opos\POSPrinterLog.pas';
+  POSPrinterLog in '..\Opos\POSPrinterLog.pas',
+  EscPrinter in '..\Shared\EscPrinter.pas',
+  ByteUtils in '..\Shared\ByteUtils.pas',
+  PosWinPrinter in '..\Shared\PosWinPrinter.pas';
 
 exports
   DllGetClassObject,

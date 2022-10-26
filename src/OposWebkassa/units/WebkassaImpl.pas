@@ -83,6 +83,9 @@ type
     function ReadSellTotal: Currency;
     procedure PrintHeaderAndCut;
     procedure ClearCashboxStatus;
+    procedure PrintText(Prefix, Text: WideString; RecLineChars: Integer);
+    procedure PrintTextLine(Prefix, Text: WideString;
+      RecLineChars: Integer);
   public
     procedure Initialize;
     procedure CheckEnabled;
@@ -1762,10 +1765,10 @@ begin
       begin
         Count := Node.Child[i].Get('Code').Value;
         Document.AddLines('—≈ ÷»ﬂ', IntToStr(Count + 1));
-        OperationsNode := Node.Child[i].Get('Operations');
+        OperationsNode := Node.Child[i].Field['Operations'];
         if OperationsNode <> nil then
         begin
-          SellNode := OperationsNode.Get('Sell');
+          SellNode := OperationsNode.Field['Sell'];
           if SellNode <> nil then
           begin
             Count := SellNode.Get('Count').Value;
@@ -2699,7 +2702,8 @@ begin
     if ReceiptItem is TSalesReceiptItem then
     begin
       RecItem := ReceiptItem as TSalesReceiptItem;
-      Document.Add(Format('%3d. %s', [RecItem.Number, RecItem.Description]));
+      //Document.Add(Format('%3d. %s', [RecItem.Number, RecItem.Description]));
+      Document.Add(RecItem.Description);
 
       ItemQuantity := 1;
       UnitPrice := RecItem.Price;
@@ -2830,6 +2834,7 @@ var
   RecLineChars: Integer;
   Item: TTextItem;
   TickCount: DWORD;
+  Prefix: string;
 begin
   Logger.Debug('PrintDocument');
   TickCount := GetTickCount;
@@ -2837,7 +2842,6 @@ begin
   CheckCanPrint;
   CapRecDwideDhigh := Printer.CapRecDwideDhigh;
   CapRecBold := Printer.CapRecBold;
-  RecLineChars := Printer.RecLineChars;
 
   if Printer.CapTransaction then
   begin
@@ -2845,6 +2849,7 @@ begin
   end;
   for i := 0 to Document.Items.Count-1 do
   begin
+    RecLineChars := Printer.RecLineChars;
     Item := Document.Items[i] as TTextItem;
     case Item.Style of
       STYLE_QR_CODE:
@@ -2859,22 +2864,22 @@ begin
         end;
       end;
     else
-      Text := Copy(Item.Text, 1, RecLineChars);
+      Text := Item.Text;
+      Prefix := '';
       // DWDH
       if Item.Style = STYLE_DWIDTH_HEIGHT then
       begin
-        Text := Copy(Item.Text, 1, RecLineChars div 2);
+        RecLineChars := RecLineChars div 2;
         if CapRecDwideDhigh then
-          Text := ESC_DoubleHighAndWide + Text;
-
+          Prefix := ESC_DoubleHighAndWide;
       end;
       // BOLD
       if Item.Style = STYLE_BOLD then
       begin
         if CapRecBold then
-          Text := ESCBold + Text;
+          Prefix := ESCBold;
       end;
-      CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, Text));
+      PrintText(Prefix, Text, RecLineChars);
     end;
   end;
   PrintHeaderAndCut;
@@ -2883,6 +2888,35 @@ begin
     CheckPtr(Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_NORMAL));
   end;
   Logger.Debug(Format('PrintDocument, time=%d ms', [GetTickCount-TickCount]));
+end;
+
+procedure TWebkassaImpl.PrintText(Prefix, Text: WideString; RecLineChars: Integer);
+var
+  i: Integer;
+  Lines: TTntStrings;
+begin
+  Lines := TTntStringList.Create;
+  try
+    Lines.Text := Text;
+    for i := 0 to Lines.Count-1 do
+    begin
+      PrintTextLine(Prefix, Lines[i], RecLineChars);
+    end;
+  finally
+    Lines.Free;
+  end;
+end;
+
+procedure TWebkassaImpl.PrintTextLine(Prefix, Text: WideString; RecLineChars: Integer);
+var
+  Line: WideString;
+begin
+  while Length(Text) > 0 do
+  begin
+    Line := Prefix + TrimRight(Copy(Text, 1, RecLineChars));
+    CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, Line + CRLF));
+    Text := Copy(Text, RecLineChars + 1, Length(Text));
+  end;
 end;
 
 procedure TWebkassaImpl.PrintHeaderAndCut;

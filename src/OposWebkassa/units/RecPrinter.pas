@@ -450,7 +450,7 @@ begin
     Lines.Add(Format('Высота страницы     : %d', [Printer.PageHeight]));
     Lines.Add(Format('Ориентация страницы : %s', [OrientationText[Printer.Orientation]]));
     Lines.Add('Шрифты:');
-    Lines.AddStrings(Printer.Fonts);
+    Lines.Add(GetFontNames);
     Result := Lines.Text;
   finally
     Lines.Free;
@@ -475,7 +475,7 @@ begin
     Y := 0;
     for i := 0 to Lines.Count-1 do
     begin
-      Printer.Canvas.TextOut(0, Y, Lines[i]);
+      Printer.Canvas.TextOut(10, Y, Lines[i]);
       Inc(Y, Metrics.tmHeight);
     end;
   finally
@@ -494,10 +494,30 @@ begin
   FFontName := Value;
 end;
 
+function EnumFontsProc(var LogFont: TLogFont; var TextMetric: TTextMetric;
+  FontType: Integer; Data: Pointer): Integer; stdcall;
+begin
+  if FontType = (RASTER_FONTTYPE + DEVICE_FONTTYPE) then
+  begin
+    TStrings(Data).Add(LogFont.lfFaceName);
+  end;
+  Result := 1;
+end;
+
 function TWinPrinter.GetFontNames: WideString;
+var
+  Fonts: TStringList;
 begin
   Printer.PrinterIndex := Printer.Printers.IndexOf(DeviceName);
-  Result := Printer.Fonts.Text;
+
+  Fonts := TStringList.Create;
+  try
+    EnumFonts(Printer.Handle, nil, @EnumFontsProc, Pointer(Fonts));
+    Result := Fonts.Text;
+  except
+    Fonts.Free;
+    raise;
+  end;
 end;
 
 end.

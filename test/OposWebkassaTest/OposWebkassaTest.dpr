@@ -60,11 +60,14 @@ uses
   OposPtrhi in '..\..\src\Opos\OposPtrhi.pas',
   RCSEvents in 'units\RCSEvents.pas',
   RCSEvents_TLB in 'units\RCSEvents_TLB.pas',
-  POSWinPrinter in '..\..\src\Opos\POSWinPrinter.pas',
+  PosEscPrinter in '..\..\src\Shared\PosEscPrinter.pas',
   uZintBarcode in '..\..\src\Shared\uZintBarcode.pas',
   uZintInterface in '..\..\src\Shared\uZintInterface.pas',
   POSPrinterLog in '..\..\src\Opos\POSPrinterLog.pas',
-  duWebkassaImpl in 'units\duWebkassaImpl.pas';
+  duWebkassaImpl in 'units\duWebkassaImpl.pas',
+  EscPrinter in '..\..\src\Shared\EscPrinter.pas',
+  ByteUtils in '..\..\src\Shared\ByteUtils.pas',
+  PosWinPrinter in '..\..\src\Shared\PosWinPrinter.pas';
 
 {$R *.RES}
 

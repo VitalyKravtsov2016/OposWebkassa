@@ -116,7 +116,7 @@ var
   Item: TTextItem;
 begin
   Item := FItems.Add;
-  Item.FText := Line + CRLF;
+  Item.FText := Line;
   Item.FStyle := Style;
 end;
 
@@ -125,7 +125,7 @@ var
   Item: TTextItem;
 begin
   Item := FItems.Insert(Index) as TTextItem;
-  Item.FText := Line + CRLF;
+  Item.FText := Line;
   Item.FStyle := STYLE_NORMAL;
 end;
 
