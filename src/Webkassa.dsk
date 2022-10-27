@@ -1,13 +1,14 @@
 [Closed Files]
-File_0=SourceModule,'C:\projects\WebKassa\src\Shared\PosEscPrinter.pas',0,1,1721,32,1729,0,0
-File_1=SourceModule,'C:\projects\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas',0,1,12,45,23,0,0
-File_2=SourceModule,'C:\projects\WebKassa\src\Shared\PosWinPrinter.pas',0,1,1,1,1,0,0
-File_3=SourceModule,'C:\projects\WebKassa\src\Shared\ByteUtils.pas',0,1,1,1,1,0,0
-File_4=SourceModule,'C:\projects\WebKassa\src\Opos\PosWinPrinter.pas',0,1,2037,5,2054,0,0
-File_5=SourceModule,'C:\projects\WebKassa\src\Opos\PosEscPrinter.pas',0,1,1,32,14,0,0
-File_6=SourceModule,'C:\projects\WebKassa\test\OposWebkassaTest\units\duWebkassaImpl.pas',0,1,426,132,433,0,0
-File_7=SourceModule,'C:\projects\WebKassa\src\Opos\POSPrinterLog.pas',0,1,563,1,586,0,0
-File_8=SourceModule,'C:\projects\WebKassa\test\OposWebkassaTest\units\MockPosPrinter.pas',0,1,1479,1,1501,0,0
+File_0=SourceModule,'C:\projects\WebKassa\src\Shared\ByteUtils.pas',0,1,19,1,36,0,0
+File_1=SourceModule,'c:\program files (x86)\borland\delphi7\source\vcl\Graphics.pas',0,1,521,37,528,0,0
+File_2=SourceModule,'C:\projects\WebKassa\src\Shared\PosEscPrinter.pas',0,1,1721,32,1729,0,0
+File_3=SourceModule,'C:\projects\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas',0,1,12,45,23,0,0
+File_4=SourceModule,'C:\projects\WebKassa\src\Shared\PosWinPrinter.pas',0,1,1,1,1,0,0
+File_5=SourceModule,'C:\projects\WebKassa\src\Opos\PosWinPrinter.pas',0,1,2037,5,2054,0,0
+File_6=SourceModule,'C:\projects\WebKassa\src\Opos\PosEscPrinter.pas',0,1,1,32,14,0,0
+File_7=SourceModule,'C:\projects\WebKassa\test\OposWebkassaTest\units\duWebkassaImpl.pas',0,1,426,132,433,0,0
+File_8=SourceModule,'C:\projects\WebKassa\src\Opos\POSPrinterLog.pas',0,1,563,1,586,0,0
+File_9=SourceModule,'C:\projects\WebKassa\test\OposWebkassaTest\units\MockPosPrinter.pas',0,1,1479,1,1501,0,0
 
 [Modules]
 Module0=C:\projects\WebKassa\src\Shared\EscPrinter.pas
@@ -17,18 +18,6 @@ TypeLibWindowCount=1
 
 [C:\projects\WebKassa\src\Shared\EscPrinter.pas]
 ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\projects\WebKassa\test\WebkassaAccTest\WebkassaAccTest.dpr]
-FormState=0
-FormOnTop=0
-
-[C:\projects\WebKassa\test\OposWebkassaTest\OposWebkassaTestLib.dpr]
-FormState=0
-FormOnTop=0
-
-[C:\projects\WebKassa\test\OposWebkassaTest\OposWebkassaTest.dpr]
 FormState=0
 FormOnTop=0
 
@@ -52,6 +41,18 @@ FormOnTop=0
 FormState=0
 FormOnTop=0
 
+[C:\projects\WebKassa\test\OposWebkassaTest\OposWebkassaTest.dpr]
+FormState=0
+FormOnTop=0
+
+[C:\projects\WebKassa\test\OposWebkassaTest\OposWebkassaTestLib.dpr]
+FormState=0
+FormOnTop=0
+
+[C:\projects\WebKassa\test\WebkassaAccTest\WebkassaAccTest.dpr]
+FormState=0
+FormOnTop=0
+
 [EditWindow0]
 ViewCount=1
 CurrentView=0
@@ -63,7 +64,7 @@ Visible=1
 State=2
 Left=498
 Top=138
-Width=1302
+Width=1422
 Height=682
 MaxLeft=-8
 MaxTop=106
@@ -81,9 +82,9 @@ BottomPanelData=0000040000000000000000000000000000000000000000000001000000000000
 
 [View0]
 Module=C:\projects\WebKassa\src\Shared\EscPrinter.pas
-CursorX=37
-CursorY=108
-TopLine=103
+CursorX=71
+CursorY=791
+TopLine=780
 LeftCol=1
 
 [TypeLibEditWindow0]
@@ -141,8 +142,8 @@ Left=651
 Top=0
 Width=1269
 Height=122
-MaxLeft=-8
-MaxTop=-8
+MaxLeft=-1
+MaxTop=-1
 MaxWidth=1936
 MaxHeight=122
 ClientWidth=1920

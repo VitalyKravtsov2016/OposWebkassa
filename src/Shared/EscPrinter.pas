@@ -4,7 +4,7 @@ interface
 
 uses
   // VCL
-  Graphics,
+  Types, Graphics,
   // This
   ByteUtils;
 
@@ -115,15 +115,38 @@ const
   /////////////////////////////////////////////////////////////////////////////
   // Barcode constants
 
-  BARCODE_UPC_A   = 0;
-  BARCODE_UPC_E   = 1;
-  BARCODE_JAN13   = 2;
-  BARCODE_EAN8    = 3;
-  BARCODE_CODE39  = 4;
-  BARCODE_ITF     = 5;
-  BARCODE_CODABAR = 6;
-  BARCODE_CODE93  = 72;
-  BARCODE_CODE128 = 73;
+  BARCODE_UPC_A     = 0;
+  BARCODE_UPC_E     = 1;
+  BARCODE_EAN13     = 2;
+  BARCODE_EAN8      = 3;
+  BARCODE_CODE39    = 4;
+  BARCODE_ITF       = 5;
+  BARCODE_CODABAR   = 6;
+
+  BARCODE2_UPC_A    = 65;
+  BARCODE2_UPC_E    = 66;
+  BARCODE2_EAN13    = 67;
+  BARCODE2_EAN8     = 68;
+  BARCODE2_CODE39   = 69;
+  BARCODE2_ITF      = 70;
+  BARCODE2_CODABAR  = 71;
+  BARCODE2_CODE93   = 72;
+  BARCODE2_CODE128  = 73;
+
+  /////////////////////////////////////////////////////////////////////////////
+  // Page mode direction constants
+
+  PM_DIRECTION_LEFT_TO_RIGHT  = 0;
+  PM_DIRECTION_BOTTOM_TO_TOP  = 1;
+  PM_DIRECTION_RIGHT_TO_LEFT  = 2;
+  PM_DIRECTION_TOP_TO_BOTTOM  = 3;
+
+  /////////////////////////////////////////////////////////////////////////////
+  // Underline mode constants
+
+  UNDERLINE_MODE_NONE         = 0;
+  UNDERLINE_MODE_1DOT         = 1;
+  UNDERLINE_MODE_2DOT         = 2;
 
 type
   { TPrinterStatus }
@@ -154,6 +177,12 @@ type
     PaperPresent: Boolean; // 5.6
   end;
 
+  { TPaperRollStatus }
+
+  TPaperRollStatus = record
+    PaperNearEnd: Boolean;
+  end;
+
   { TPrintMode }
 
   TPrintMode = record
@@ -172,13 +201,32 @@ type
     Data: string;
   end;
 
-  { TUnderlineMode }
+  { TPDF417 }
 
-  TUnderlineMode = (umNone, um1Dot, um2Dot);
+  TPDF417 = record
+    ColumnNumber: Byte; // 1..30
+    SecurityLevel: Byte; // 0..8
+    HVRatio: Byte; // 2..5
+    data: string;
+  end;
+
+  { TQRCode }
+
+  TQRCode = record
+    SymbolVersion: Byte; // 1~40, 0:auto size
+    ECLevel: Byte; // 1..19
+    ModuleSize: Byte; // 1..8
+    data: string;
+  end;
 
   { TEscPrinter }
 
   TEscPrinter = class
+  private
+    function GetImageData(Image: TGraphic): string;
+    function GetBitmapData(Bitmap: TBitmap): string;
+    function GetRasterBitmapData(Bitmap: TBitmap): string;
+    function GetRasterImageData(Image: TGraphic): string;
   public
     function ReadByte: Byte;
     function ReadString: string;
@@ -192,16 +240,17 @@ type
     function ReadErrorStatus: TErrorStatus;
     function ReadPaperStatus: TPaperStatus;
     procedure RecoverError(ClearBuffer: Boolean);
-    procedure SetRightSideCharacterSpacing(SpacingInMm: Double);
+    procedure GeneratePulse(n, m, t: Byte);
+    procedure SetRightSideCharacterSpacing(n: Byte);
     procedure SelectPrintMode(Mode: TPrintMode);
-    procedure SetAbsolutePrintPosition(P: Double);
-    procedure SelectUserCharacter(C: Byte);
+    procedure SetAbsolutePrintPosition(n: Word);
+    procedure SelectUserCharacter(n: Byte);
     procedure DefineUserCharacter(C: TUserChar);
-    procedure SelectBitImageMode(Mode: Integer; Image: TBitmap);
-    procedure SetUnderlineMode(Mode: TUnderlineMode);
+    procedure SelectBitImageMode(Mode: Integer; Image: TGraphic);
+    procedure SetUnderlineMode(n: Byte);
     procedure SetDefaultLineSpacing;
-    procedure SetLineSpacing(B: Byte);
-    procedure CancelUserCharacter(B: Byte);
+    procedure SetLineSpacing(n: Byte);
+    procedure CancelUserCharacter(n: Byte);
     procedure Initialize;
     procedure SetBeepParams(N: Byte; T: Byte);
     procedure SetHorizontalTabPositions(Tabs: string);
@@ -211,7 +260,7 @@ type
     procedure SetCharacterFont(N: Byte);
     procedure SetCharacterSet(N: Byte);
     procedure Set90ClockwiseRotation(Value: Boolean);
-    procedure SetRelativePrintPosition(N: Integer);
+    procedure SetRelativePrintPosition(n: Word);
     procedure SetJustification(N: Byte);
     procedure EnableButtons(Value: Boolean);
     procedure PrintAndFeedLines(N: Byte);
@@ -221,22 +270,56 @@ type
     procedure PartialCut2;
     procedure SelectChineseCode(N: Byte);
     procedure PrintNVBitImage(N, M: Byte);
-    procedure DefineNVBitImage(Image: TBitmap);
+    procedure DefineNVBitImage(n: Byte; Image: TGraphic);
     procedure SetCharacterSize(N: Byte);
-    procedure DownloadBitImage(Image: TBitmap);
+    procedure DownloadBitImage(Image: TGraphic);
     procedure PrintBmp(Mode: Byte);
     procedure SetWhiteBlackReverse(Value: Boolean);
     function ReadPrinterID(N: Byte): string;
     procedure SetHRIPosition(N: Byte);
     procedure SetLeftMargin(N: Word);
     procedure SetCutModeAndCutPaper(M: Byte);
-    procedure SetPrintAreaWidth(M: Byte);
+    procedure SetCutModeAndCutPaper2(n: Byte);
+    procedure SetPrintAreaWidth(n: Byte);
     procedure StartEndMacroDefinition;
     procedure ExecuteMacro(r, t, m: Byte);
     procedure EnableAutomaticStatusBack(N: Byte);
     procedure SetHRIFont(N: Byte);
     procedure SetBarcodeHeight(N: Byte);
     procedure PrintBarcode(BCType: Byte; const Data: string);
+    procedure PrintBarcode2(BCType: Byte; const Data: string);
+    function ReadPaperRollStatus: TPaperRollStatus;
+    procedure PrintRasterBMP(Mode: Byte; Image: TGraphic);
+    procedure SetBarcodeWidth(N: Integer);
+    procedure SetBarcodeLeft(N: Integer);
+    procedure SetMotionUnits(x, y: Integer);
+    procedure PrintTestPage;
+    procedure SetKanjiMode(m: Byte);
+    procedure SelectKanjiCharacter;
+    procedure SetKanjiUnderline(Value: Boolean);
+    procedure CancelKanjiCharacter;
+    procedure DefineKanjiCharacters(c1, c2: Byte; const data: string);
+    procedure SetPeripheralDevice(m: Byte);
+    procedure SetKanjiSpacing(n1, n2: Byte);
+    procedure PrintAndReturnStandardMode;
+    procedure PrintDataInMode;
+    procedure SetPageMode;
+    procedure SetStandardMode;
+    procedure SetPageModeDirection(n: Byte);
+    procedure SetPageModeArea(R: TRect);
+    procedure printBarcode2D(m, n, k: Byte; const data: string);
+    procedure printPDF417(const Barcode: TPDF417);
+    procedure printQRCode(const Barcode: TQRCode);
+    procedure SetKanjiQuadSizeMode(Value: Boolean);
+    procedure FeedMarkedPaper;
+    procedure SetPMAbsoluteVerticalPosition(n: Integer);
+    procedure ExecuteTestPrint(p: Integer; n, m: Byte);
+    procedure SelectCounterPrintMode(n, m: Byte);
+    procedure SelectCountMode(a, b: Word; n, r: Byte);
+    procedure SetCounter(n: Word);
+    procedure Select2DBarcode(n: Byte);
+    procedure SetPMRelativeVerticalPosition(n: Word);
+    procedure PrintCounter;
   end;
 
 implementation
@@ -326,15 +409,14 @@ begin
     Send(#$10#$05#$01);
 end;
 
-procedure TEscPrinter.SetRightSideCharacterSpacing(SpacingInMm: Double);
-var
-  B: Integer;
+procedure TEscPrinter.GeneratePulse(n, m, t: Byte);
 begin
-  B := Round(SpacingInMm / 0.125);
-  if (B >= 0)and(B <= 255) then
-  begin
-    Send(#$1B#$20 + Chr(B));
-  end;
+  Send(#$10#$14 + Chr(n) + Chr(m) + Chr(t));
+end;
+
+procedure TEscPrinter.SetRightSideCharacterSpacing(n: Byte);
+begin
+  Send(#$1B#$20 + Chr(n));
 end;
 
 procedure TEscPrinter.SelectPrintMode(Mode: TPrintMode);
@@ -350,17 +432,14 @@ begin
   Send(#$1B#$21 + Chr(B));
 end;
 
-procedure TEscPrinter.SetAbsolutePrintPosition(P: Double);
-var
-  B: Word;
+procedure TEscPrinter.SetAbsolutePrintPosition(n: Word);
 begin
-  B := Round(P / 0.125);
-  Send(#$1B#$24 + Chr(Lo(B)) + Chr(Hi(B)));
+  Send(#$1B#$24 + Chr(Lo(n)) + Chr(Hi(n)));
 end;
 
-procedure TEscPrinter.SelectUserCharacter(C: Byte);
+procedure TEscPrinter.SelectUserCharacter(n: Byte);
 begin
-  Send(#$1B#$25 + Chr(C));
+  Send(#$1B#$25 + Chr(n));
 end;
 
 
@@ -377,16 +456,108 @@ begin
   Send(#$1B#$26#$03 + Chr(C.c1) + Chr(C.c2) + C.Data);
 end;
 
-procedure TEscPrinter.SelectBitImageMode(Mode: Integer; Image: TBitmap);
+
+function TEscPrinter.GetBitmapData(Bitmap: TBitmap): string;
 var
-  Data: string;
+  B: Byte;
+  Bit: Byte;
+  x, y: Integer;
 begin
-  Send(#$1B#$2A + Chr(Mode) + Data);
+  Result := '';
+  for x := 1 to Bitmap.Width do
+  begin
+    B := 0;
+    y := 1;
+    while y <= Bitmap.Height do
+    begin
+      for Bit := 0 to 7 do
+      begin
+        if y > Bitmap.Height then Break;
+        if Bitmap.Canvas.Pixels[x, y] = clBlack then
+        begin
+          SetBit(B, Bit);
+        end;
+        Inc(y);
+      end;
+      Result := Result + Chr(B);
+    end;
+  end;
 end;
 
-procedure TEscPrinter.SetUnderlineMode(Mode: TUnderlineMode);
+function TEscPrinter.GetRasterBitmapData(Bitmap: TBitmap): string;
+var
+  B: Byte;
+  Bit: Byte;
+  x, y: Integer;
 begin
-  Send(#$1B#$2D + Chr(Ord(Mode)));
+  Result := '';
+  for y := 1 to Bitmap.Height do
+  begin
+    B := 0;
+    x := 1;
+    while x <= Bitmap.Width do
+    begin
+      for Bit := 0 to 7 do
+      begin
+        if x > Bitmap.Width then Break;
+        if Bitmap.Canvas.Pixels[x, y] = clBlack then
+        begin
+          SetBit(B, Bit);
+        end;
+        Inc(x);
+      end;
+      Result := Result + Chr(B);
+    end;
+  end;
+end;
+
+function TEscPrinter.GetImageData(Image: TGraphic): string;
+var
+  Bitmap: TBitmap;
+begin
+  Bitmap := TBitmap.Create;
+  try
+    Bitmap.Monochrome := True;
+    Bitmap.PixelFormat := pf1Bit;
+    Bitmap.Width := Image.Width;
+    Bitmap.Height := Image.Height;
+    Bitmap.Canvas.Draw(0, 0, Image);
+    Result := GetBitmapData(Bitmap);
+  finally
+    Bitmap.Free;
+  end;
+end;
+
+function TEscPrinter.GetRasterImageData(Image: TGraphic): string;
+var
+  Bitmap: TBitmap;
+begin
+  Bitmap := TBitmap.Create;
+  try
+    Bitmap.Monochrome := True;
+    Bitmap.PixelFormat := pf1Bit;
+    Bitmap.Width := Image.Width;
+    Bitmap.Height := Image.Height;
+    Bitmap.Canvas.Draw(0, 0, Image);
+    Result := GetRasterBitmapData(Bitmap);
+  finally
+    Bitmap.Free;
+  end;
+end;
+
+procedure TEscPrinter.SelectBitImageMode(mode: Integer; Image: TGraphic);
+var
+  n: Word;
+  data: string;
+begin
+  n := Image.Width;
+  data := GetImageData(Image);
+  Send(#$1B#$2A + Chr(Mode) + Chr(Lo(n)) + Chr(Hi(n)) + data);
+end;
+
+procedure TEscPrinter.SetUnderlineMode(n: Byte);
+begin
+  Send(#$1B#$2D + Chr(n));
 end;
 
 procedure TEscPrinter.SetDefaultLineSpacing;
@@ -394,14 +565,14 @@ begin
   Send(#$1B#$32);
 end;
 
-procedure TEscPrinter.SetLineSpacing(B: Byte);
+procedure TEscPrinter.SetLineSpacing(n: Byte);
 begin
-  Send(#$1B#$33 + Chr(B));
+  Send(#$1B#$33 + Chr(n));
 end;
 
-procedure TEscPrinter.CancelUserCharacter(B: Byte);
+procedure TEscPrinter.CancelUserCharacter(n: Byte);
 begin
-  Send(#$1B#$3F + Chr(B));
+  Send(#$1B#$3F + Chr(n));
 end;
 
 procedure TEscPrinter.Initialize;
@@ -429,14 +600,14 @@ begin
   Send(#$1B#$47 + Chr(BoolToInt[Value]));
 end;
 
-procedure TEscPrinter.PrintAndFeed(N: Byte);
+procedure TEscPrinter.PrintAndFeed(n: Byte);
 begin
-  Send(#$1B#$4A + Chr(N));
+  Send(#$1B#$4A + Chr(n));
 end;
 
-procedure TEscPrinter.SetCharacterFont(N: Byte);
+procedure TEscPrinter.SetCharacterFont(n: Byte);
 begin
-  Send(#$1B#$4D + Chr(N));
+  Send(#$1B#$4D + Chr(n));
 end;
 
 procedure TEscPrinter.SetCharacterSet(N: Byte);
@@ -449,9 +620,9 @@ begin
   Send(#$1B#$56 + Chr(BoolToInt[Value]));
 end;
 
-procedure TEscPrinter.SetRelativePrintPosition(N: Integer);
+procedure TEscPrinter.SetRelativePrintPosition(n: Word);
 begin
-  Send(#$1B#$5C + Chr(Lo(N)) + Chr(Hi(N)));
+  Send(#$1B#$5C + Chr(Lo(n)) + Chr(Hi(n)));
 end;
 
 procedure TEscPrinter.SetJustification(N: Byte);
@@ -499,9 +670,9 @@ begin
   Send(#$1C#$70 + Chr(N) + Chr(M));
 end;
 
-procedure TEscPrinter.DefineNVBitImage(Image: TBitmap);
+procedure TEscPrinter.DefineNVBitImage(n: Byte; Image: TGraphic);
 begin
-  { !!! }
+  Send(#$1C#$71 + Chr(N) + GetImageData(Image));
 end;
 
 procedure TEscPrinter.SetCharacterSize(N: Byte);
@@ -509,9 +680,13 @@ begin
   Send(#$1D#$21 + Chr(N));
 end;
 
-procedure TEscPrinter.DownloadBitImage(Image: TBitmap);
+procedure TEscPrinter.DownloadBitImage(Image: TGraphic);
+var
+  x, y: Byte;
 begin
-  { !!! }
+  x := (Image.Width + 7) div 8;
+  y := (Image.Height + 7) div 8;
+  Send(#$1D#$2A + Chr(x) + Chr(y) + GetImageData(Image));
 end;
 
 procedure TEscPrinter.PrintBmp(Mode: Byte);
@@ -526,7 +701,7 @@ end;
 
 function TEscPrinter.ReadPrinterID(N: Byte): string;
 begin
-  Send(#$1D#$42 + Chr(N));
+  Send(#$1D#$49 + Chr(N));
   Result := ReadString;
 end;
 
@@ -545,9 +720,14 @@ begin
   Send(#$1D#$56 + Chr(M));
 end;
 
-procedure TEscPrinter.SetPrintAreaWidth(M: Byte);
+procedure TEscPrinter.SetCutModeAndCutPaper2(n: Byte);
 begin
-  Send(#$1D#$57 + Chr(Lo(M)) + Chr(Hi(M)));
+  Send(#$1D#$56#$66 + Chr(n));
+end;
+
+procedure TEscPrinter.SetPrintAreaWidth(n: Byte);
+begin
+  Send(#$1D#$57 + Chr(Lo(n)) + Chr(Hi(n)));
 end;
 
 procedure TEscPrinter.StartEndMacroDefinition;
@@ -578,6 +758,194 @@ end;
 procedure TEscPrinter.PrintBarcode(BCType: Byte; const Data: string);
 begin
   Send(#$1D#$6B + Chr(BCType) + Data + #0);
+end;
+
+procedure TEscPrinter.PrintBarcode2(BCType: Byte; const Data: string);
+begin
+  Send(#$1D#$6B + Chr(BCType) + Chr(Length(Data)) + Data);
+end;
+
+function TEscPrinter.ReadPaperRollStatus: TPaperRollStatus;
+begin
+  Send(#$1D#$72#$01);
+  Result.PaperNearEnd := TestBit(ReadByte, 2);
+end;
+
+// Print raster bit image
+procedure TEscPrinter.PrintRasterBMP(Mode: Byte; Image: TGraphic);
+var
+  x, y: Byte;
+begin
+  x := (Image.Width + 7) div 8;
+  y := (Image.Height + 7) div 8;
+  Send(#$1D#$76#$30 + Chr(Mode) + Chr(Lo(x)) + Chr(Hi(x)) +
+    Chr(Lo(y)) + Chr(Hi(y)) + GetRasterImageData(Image));
+end;
+
+procedure TEscPrinter.SetBarcodeWidth(N: Integer);
+begin
+  Send(#$1D#$77 + Chr(N));
+end;
+
+procedure TEscPrinter.SetBarcodeLeft(N: Integer);
+begin
+  Send(#$1D#$78 + Chr(N));
+end;
+
+procedure TEscPrinter.SetMotionUnits(x, y: Integer);
+begin
+  Send(#$1D#$50 + Chr(x) + Chr(y));
+end;
+
+procedure TEscPrinter.PrintTestPage;
+begin
+  Send(#$12#$54);
+end;
+
+procedure TEscPrinter.SetKanjiMode(m: Byte);
+begin
+  Send(#$1C#$21 + Chr(m));
+end;
+
+procedure TEscPrinter.SelectKanjiCharacter;
+begin
+  Send(#$1C#$26);
+end;
+
+procedure TEscPrinter.SetKanjiUnderline(Value: Boolean);
+begin
+  Send(#$1C#$2D + Chr(BoolToInt[Value]));
+end;
+
+procedure TEscPrinter.CancelKanjiCharacter;
+begin
+  Send(#$1C#$2E);
+end;
+
+procedure TEscPrinter.DefineKanjiCharacters(c1, c2: Byte;
+  const data: string);
+begin
+  Send(#$1C#$32 + Chr(c1) + Chr(c2) + data);
+end;
+
+procedure TEscPrinter.SetPeripheralDevice(m: Byte);
+begin
+  Send(#$1B#$3D + Chr(m));
+end;
+
+procedure TEscPrinter.SetKanjiSpacing(n1, n2: Byte);
+begin
+  Send(#$1C#$53 + Chr(n1) + Chr(n2));
+end;
+
+procedure TEscPrinter.PrintAndReturnStandardMode;
+begin
+  Send(#$0C);
+end;
+
+procedure TEscPrinter.PrintDataInMode;
+begin
+  Send(#$1B#$0C);
+end;
+
+procedure TEscPrinter.SetPageMode;
+begin
+  Send(#$1B#$4C);
+end;
+
+procedure TEscPrinter.SetStandardMode;
+begin
+  Send(#$1B#$53);
+end;
+
+procedure TEscPrinter.SetPageModeDirection(n: Byte);
+begin
+  Send(#$1B#$54 + Chr(n));
+end;
+
+procedure TEscPrinter.SetPageModeArea(R: TRect);
+begin
+  Send(#$1B#$57 +
+    Chr(Lo(R.Left)) + Chr(Hi(R.Left)) +
+    Chr(Lo(R.Top)) + Chr(Hi(R.Top)) +
+    Chr(Lo(R.Right)) + Chr(Hi(R.Right)) +
+    Chr(Lo(R.Bottom)) + Chr(Hi(R.Bottom)));
+end;
+
+procedure TEscPrinter.printBarcode2D(m, n, k: Byte; const data: string);
+begin
+  Send(#$1B#$5A + Chr(m) + Chr(n) + Chr(k) +
+    Chr(Lo(Length(data))) + Chr(Hi(Length(data))) + data);
+end;
+
+(*
+PDF417:barcode type0
+m specifies column number of 2D barcode.(1.m.30)
+n specifies security level to restore when barcode image
+is damaged.(0.n.8)
+k is used for define horizontal and vertical ratio.( 2.k.5)
+d is the length of data
+*)
+
+procedure TEscPrinter.printPDF417(const Barcode: TPDF417);
+begin
+  printBarcode2D(Barcode.ColumnNumber, Barcode.SecurityLevel, Barcode.HVRatio, Barcode.data);
+end;
+
+procedure TEscPrinter.printQRCode(const Barcode: TQRCode);
+begin
+  printBarcode2D(Barcode.SymbolVersion, Barcode.ECLevel, Barcode.ModuleSize, Barcode.data);
+end;
+
+procedure TEscPrinter.SetKanjiQuadSizeMode(Value: Boolean);
+begin
+  Send(#$1C#$57 + Chr(BoolToInt[Value]));
+end;
+
+procedure TEscPrinter.FeedMarkedPaper;
+begin
+  Send(#$1D#$0C);
+end;
+
+procedure TEscPrinter.SetPMAbsoluteVerticalPosition(n: Integer);
+begin
+  Send(#$1D#$24 + Chr(Lo(n)) + Chr(Hi(n)));
+end;
+
+procedure TEscPrinter.ExecuteTestPrint(p: Integer; n, m: Byte);
+begin
+  Send(#$1D#$28#$41 + Chr(Lo(p)) + Chr(Hi(p)) + Chr(n) + Chr(m));
+end;
+
+procedure TEscPrinter.SelectCounterPrintMode(n, m: Byte);
+begin
+  Send(#$1D#$43#$30 + Chr(n) + Chr(m));
+end;
+
+procedure TEscPrinter.SelectCountMode(a, b: Word; n, r: Byte);
+begin
+  Send(#$1D#$43#$31 + Chr(Lo(a)) + Chr(Hi(a)) +
+    Chr(Lo(b)) + Chr(Hi(b)) + Chr(n) + Chr(r));
+end;
+
+procedure TEscPrinter.SetCounter(n: Word);
+begin
+  Send(#$1D#$43#$32 + Chr(Lo(n)) + Chr(Hi(n)));
+end;
+
+procedure TEscPrinter.Select2DBarcode(n: Byte);
+begin
+  Send(#$1D#$5A + Chr(n));
+end;
+
+procedure TEscPrinter.SetPMRelativeVerticalPosition(n: Word);
+begin
+  Send(#$1D#$5C + Chr(Lo(n)) + Chr(Hi(n)));
+end;
+
+procedure TEscPrinter.PrintCounter;
+begin
+  Send(#$1D#$63);
 end;
 
 end.
