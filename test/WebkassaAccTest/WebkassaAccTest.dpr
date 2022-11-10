@@ -43,7 +43,7 @@ uses
   StringUtils in '..\..\src\Shared\StringUtils.pas',
   RegExpr in '..\..\src\Shared\RegExpr.pas',
   MathUtils in '..\..\src\OposWebkassa\units\MathUtils.pas',
-  duPOSPrinter in 'units\duPOSPrinter.pas',
+  duESCPrinter in 'units\duESCPrinter.pas',
   WebkassaImpl in '..\..\src\OposWebkassa\units\WebkassaImpl.pas',
   SalesReceipt in '..\..\src\OposWebkassa\units\SalesReceipt.pas',
   ReceiptItem in '..\..\src\OposWebkassa\units\ReceiptItem.pas',
@@ -65,7 +65,15 @@ uses
   POSPrinterLog in '..\..\src\Opos\POSPrinterLog.pas',
   PosWinPrinter in '..\..\src\Shared\PosWinPrinter.pas',
   EscPrinter in '..\..\src\Shared\EscPrinter.pas',
-  ByteUtils in '..\..\src\Shared\ByteUtils.pas';
+  ByteUtils in '..\..\src\Shared\ByteUtils.pas',
+  duPosEscPrinter in 'units\duPosEscPrinter.pas',
+  PrinterPort in '..\..\src\Shared\PrinterPort.pas',
+  SerialPort in '..\..\src\Shared\SerialPort.pas',
+  DeviceNotification in '..\..\src\Shared\DeviceNotification.pas',
+  PortUtil in '..\..\src\Shared\PortUtil.pas',
+  TextReport in '..\..\src\Shared\TextReport.pas',
+  SocketPort in '..\..\src\Shared\SocketPort.pas',
+  duPOSPrinter in 'units\duPOSPrinter.pas';
 
 {$R *.RES}
 

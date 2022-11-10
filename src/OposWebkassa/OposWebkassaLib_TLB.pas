@@ -12,7 +12,7 @@ unit OposWebkassaLib_TLB;
 // ************************************************************************ //
 
 // PASTLWTR : 1.2
-// File generated on 26.10.2022 19:43:08 from Type Library described below.
+// File generated on 08.11.2022 17:48:03 from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: C:\projects\WebKassa\src\OposWebkassa\OposWebkassa.tlb (1)

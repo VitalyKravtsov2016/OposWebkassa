@@ -8,19 +8,34 @@ uses
   // Tnt
   TntClasses,
   // Opos
-  Opos, OposEsc, OposPtr, OposException, OposServiceDevice19,
+  Opos, OposEsc, OposPtr, OposException, OposServiceDevice19, OposEvents,
   OposPOSPrinter_CCO_TLB, WException,
   // This
-  LogFile, DriverError, EscPrinter;
+  LogFile, DriverError, EscPrinter, PrinterPort, NotifyThread, RegExpr;
 
 type
+  TPrintMode = (pmBold, pmDoubleWide, pmDoubleHigh, pmUnderlined);
+  TPrintModes = set of TPrintMode;
+
+  { TEscToken }
+
+  TEscToken = record
+    IsEsc: Boolean;
+    Text: string;
+  end;
+
   { TPosEscPrinter }
 
-  TPosEscPrinter = class(TComponent, IOPOSPOSPrinter)
+  TPosEscPrinter = class(TComponent, IOPOSPOSPrinter, IOposEvents)
   private
     FLogger: ILogFile;
+    FPort: IPrinterPort;
     FPrinter: TEscPrinter;
+    FThread: TNotifyThread;
     FDevice: TOposServiceDevice19;
+    FPrintMode: TPrintModes;
+    FLastPrintMode: TPrintModes;
+
     FPositionY: Integer;
     FTransaction: Boolean;
     FFontName: WideString;
@@ -100,7 +115,7 @@ type
     FCheckHealthText: WideString;
     FControlObjectDescription: WideString;
     FControlObjectVersion: Integer;
-    FCoverOpen: Boolean;
+    FCoverOpened: Boolean;
     FDeviceDescription: WideString;
     FErrorLevel: Integer;
     FErrorStation: Integer;
@@ -160,16 +175,32 @@ type
     FSlpSidewaysMaxChars: Integer;
     FSlpSidewaysMaxLines: Integer;
 
+    FOnDirectIOEvent: TOPOSPOSPrinterDirectIOEvent;
+    FOnErrorEvent: TOPOSPOSPrinterErrorEvent;
+    FOnOutputCompleteEvent: TOPOSPOSPrinterOutputCompleteEvent;
+    FOnStatusUpdateEvent: TOPOSPOSPrinterStatusUpdateEvent;
+
     function ClearResult: Integer;
     function HandleException(E: Exception): Integer;
     procedure CheckEnabled;
     function IllegalError: Integer;
     procedure Initialize;
     procedure CheckRecStation(Station: Integer);
-    procedure PrintText(const Data: WideString);
     procedure PrintGraphics(Graphic: TGraphic; Width, Alignment: Integer);
+    procedure DeviceProc(Sender: TObject);
+    procedure UpdatePrinterStatus;
+    procedure SetCoverState(CoverOpened: Boolean);
+
+    property Logger: ILogFile read FLogger;
+    procedure SetRecEmpty(ARecEmpty: Boolean);
+    procedure SetRecNearEnd(ARecNearEnd: Boolean);
+    procedure StartDeviceThread;
+    procedure StopDeviceThread;
+
+    function GetToken(var Text: string; var Token: TEscToken): Boolean;
+    procedure PrintText(Text: string);
   public
-    constructor Create2(AOwner: TComponent; ALogger: ILogFile);
+    constructor Create2(AOwner: TComponent; APort: IPrinterPort; ALogger: ILogFile);
     destructor Destroy; override;
   public
     function Get_OpenResult: Integer; safecall;
@@ -542,14 +573,30 @@ type
     property PageModeStation: Integer read Get_PageModeStation write Set_PageModeStation;
     property PageModeVerticalPosition: Integer read Get_PageModeVerticalPosition write Set_PageModeVerticalPosition;
   public
+    // IOposEvents
+    procedure DataEvent(Status: Integer);
+    procedure StatusUpdateEvent(Data: Integer);
+    procedure OutputCompleteEvent(OutputID: Integer);
+    procedure DirectIOEvent(EventNumber: Integer; var pData: Integer;
+      var pString: WideString);
+    procedure ErrorEvent(ResultCode: Integer; ResultCodeExtended: Integer;
+      ErrorLocus: Integer; var pErrorResponse: Integer);
+
     property FontName: WideString read FFontName write FFontName;
+    property OnDirectIOEvent: TOPOSPOSPrinterDirectIOEvent read FOnDirectIOEvent write FOnDirectIOEvent;
+    property OnErrorEvent: TOPOSPOSPrinterErrorEvent read FOnErrorEvent write FOnErrorEvent;
+    property OnOutputCompleteEvent: TOPOSPOSPrinterOutputCompleteEvent read FOnOutputCompleteEvent write FOnOutputCompleteEvent;
+    property OnStatusUpdateEvent: TOPOSPOSPrinterStatusUpdateEvent read FOnStatusUpdateEvent write FOnStatusUpdateEvent;
   end;
 
 implementation
 
-constructor TPosEscPrinter.Create2(AOwner: TComponent; ALogger: ILogFile);
+constructor TPosEscPrinter.Create2(AOwner: TComponent; APort: IPrinterPort;
+  ALogger: ILogFile);
 begin
   inherited Create(AOwner);
+  FPort := APort;
+  FPrinter := TEscPrinter.Create(APort);
   FLogger := ALogger;
   FDevice := TOposServiceDevice19.Create(FLogger);
   FDevice.ErrorEventEnabled := False;
@@ -559,6 +606,7 @@ end;
 destructor TPosEscPrinter.Destroy;
 begin
   FDevice.Free;
+  FThread.Free;
   inherited Destroy;
 end;
 
@@ -640,7 +688,7 @@ begin
   FCheckHealthText := '';
   FControlObjectDescription := 'OPOS Windows Printer';
   FControlObjectVersion := 1014001;
-  FCoverOpen := False;
+  FCoverOpened := False;
   FDeviceDescription := 'OPOS Windows Printer';
   FErrorLevel := PTR_EL_NONE;
   FErrorStation := PTR_S_RECEIPT;
@@ -671,7 +719,7 @@ begin
   FRecCurrentCartridge := 0;
   FRecEmpty := False;
   FRecLetterQuality := False;
-  FRecLineChars := 42;
+  FRecLineChars := 48;
   FRecLineCharsList := '42,56';
   FRecLineHeight := 24;
   FRecLineSpacing := 30;
@@ -698,6 +746,9 @@ begin
   FSlpPrintSide := 0;
   FSlpSidewaysMaxChars := 0;
   FSlpSidewaysMaxLines := 0;
+
+  FPrintMode := [];
+  FLastPrintMode := [];
 end;
 
 function TPosEscPrinter.ClearResult: Integer;
@@ -814,7 +865,13 @@ end;
 
 function TPosEscPrinter.CutPaper(Percentage: Integer): Integer;
 begin
-  Result := ClearResult;
+  try
+    FPrinter.PartialCut;
+    Result := ClearResult;
+  except
+    on E: Exception do
+      Result := HandleException(E);
+  end;
 end;
 
 function TPosEscPrinter.DirectIO(Command: Integer; var pData: Integer;
@@ -1227,7 +1284,7 @@ end;
 
 function TPosEscPrinter.Get_CoverOpen: WordBool;
 begin
-  Result := FCoverOpen;
+  Result := FCoverOpened;
 end;
 
 function TPosEscPrinter.Get_DeviceDescription: WideString;
@@ -1589,7 +1646,6 @@ function TPosEscPrinter.Open(const DeviceName: WideString): Integer;
 begin
   try
     FDevice.Open('POSPrinter', DeviceName, nil);
-    FPrinter.ReadPaperStatus;
     Result := ClearResult;
   except
     on E: Exception do
@@ -1633,7 +1689,14 @@ end;
 function TPosEscPrinter.PrintImmediate(Station: Integer;
   const Data: WideString): Integer;
 begin
-  Result := ClearResult;
+  try
+    CheckRecStation(Station);
+    PrintText(Data);
+    Result := ClearResult;
+  except
+    on E: Exception do
+      Result := HandleException(E);
+  end;
 end;
 
 procedure ScaleGraphic(Graphic: TGraphic; Scale: Integer);
@@ -1659,19 +1722,19 @@ end;
 procedure TPosEscPrinter.PrintGraphics(Graphic: TGraphic;
   Width, Alignment: Integer);
 var
-  PositionX: Integer;
+  Justification: Integer;
 begin
-  PositionX := 0;
-  ScaleGraphic(Graphic, 2);
-  if Graphic.Width < RecLineWidth then
-  begin
-    if Alignment = PTR_BM_RIGHT then
-      PositionX := RecLineWidth - Graphic.Width;
-    if Alignment = PTR_BM_CENTER then
-      PositionX := (RecLineWidth - Graphic.Width) div 2;
+  //ScaleGraphic(Graphic, 2); !!!
+  case Alignment of
+    PTR_BM_LEFT: Justification := JUSTIFICATION_LEFT;
+    PTR_BM_CENTER: Justification := JUSTIFICATION_CENTERING;
+    PTR_BM_RIGHT: Justification := JUSTIFICATION_RIGHT;
+  else
+    Justification := JUSTIFICATION_LEFT;
   end;
-  //Printer.Canvas.Draw(PositionX, FPositionY, Graphic); { !!! }
-  Inc(FPositionY, Graphic.Height + RecLineSpacing);
+
+  FPrinter.DownloadBMP(Justification, Graphic);
+  FPrinter.PrintBmp(BMP_MODE_NORMAL);
 end;
 
 function TPosEscPrinter.PrintMemoryBitmap(Station: Integer;
@@ -1711,41 +1774,6 @@ procedure TPosEscPrinter.CheckRecStation(Station: Integer);
 begin
   if Station <> PTR_S_RECEIPT then
     raiseIllegalError('Station not supported');
-end;
-
-procedure TPosEscPrinter.PrintText(const Data: WideString);
-var
-  i: Integer;
-  Text: WideString;
-  Lines: TTntStringList;
-  IsDoubleHighAndWide: Boolean;
-begin
-  { !!! }
-(*
-  Lines := TTntStringList.Create;
-  try
-    Lines.Text := Data;
-    for i := 0 to Lines.Count-1 do
-    begin
-      Text := Lines[i];
-      IsDoubleHighAndWide := Pos(ESC_DoubleHighAndWide, Text) <> 0;
-      if IsDoubleHighAndWide then
-      begin
-        Text := StringReplace(Text, ESC_DoubleHighAndWide, '', []);
-        Printer.Canvas.Font.Name := 'FontA22';
-      end;
-      Printer.Canvas.TextOut(0, FPositionY, Text);
-      Inc(FPositionY, RecLineSpacing);
-      if IsDoubleHighAndWide then
-      begin
-        Printer.Canvas.Font.Name := 'FontA11';
-        Inc(FPositionY, RecLineSpacing);
-      end;
-    end;
-  finally
-    Lines.Free;
-  end;
-*)
 end;
 
 function TPosEscPrinter.PrintNormal(Station: Integer;
@@ -1817,9 +1845,154 @@ begin
   FCharacterSet := pCharacterSet;
 end;
 
+procedure TPosEscPrinter.StartDeviceThread;
+begin
+  if FThread = nil then
+  begin
+    FThread := TNotifyThread.Create(True);
+    FThread.OnExecute := DeviceProc;
+    FThread.Resume;
+  end;
+end;
+
+procedure TPosEscPrinter.StopDeviceThread;
+begin
+  if FThread <> nil then
+  begin
+    FThread.Terminate;
+    FThread.Free;
+    FThread := nil;
+  end;
+end;
+
 procedure TPosEscPrinter.Set_DeviceEnabled(pDeviceEnabled: WordBool);
 begin
-  FDevice.DeviceEnabled := pDeviceEnabled;
+  try
+    if pDeviceEnabled <> FDevice.DeviceEnabled then
+    begin
+      if pDeviceEnabled then
+      begin
+        FPort.Open;
+        FPrinter.SetCodeTable(CODEPAGE_WCP1251);
+        UpdatePrinterStatus;
+        StartDeviceThread;
+      end else
+      begin
+        StopDeviceThread;
+        FPort.Close;
+      end;
+      FDevice.DeviceEnabled := pDeviceEnabled;
+    end;
+  except
+    on E: Exception do
+      HandleException(E);
+  end;
+end;
+
+procedure TPosEscPrinter.SetCoverState(CoverOpened: Boolean);
+begin
+  if FCapCoverSensor then
+  begin
+    if CoverOpened <> FCoverOpened then
+    begin
+      if CoverOpened then
+      begin
+        FDevice.StatusUpdateEvent(PTR_SUE_COVER_OPEN);
+      end else
+      begin
+        FDevice.StatusUpdateEvent(PTR_SUE_COVER_OK);
+      end;
+      FCoverOpened := CoverOpened;
+    end;
+  end;
+end;
+
+procedure TPosEscPrinter.SetRecEmpty(ARecEmpty: Boolean);
+begin
+  if not FCapRecPresent then Exit;
+  if not FCapRecEmptySensor then Exit;
+
+  if ARecEmpty <> FRecEmpty then
+  begin
+    FRecEmpty := ARecEmpty;
+    if FRecEmpty then
+    begin
+      FDevice.StatusUpdateEvent(PTR_SUE_REC_EMPTY)
+    end else
+    begin
+      if FRecNearEnd then
+        FDevice.StatusUpdateEvent(PTR_SUE_REC_NEAREMPTY)
+      else
+        FDevice.StatusUpdateEvent(PTR_SUE_REC_PAPEROK);
+    end;
+  end;
+end;
+
+procedure TPosEscPrinter.SetRecNearEnd(ARecNearEnd: Boolean);
+begin
+  if not FCapRecPresent then Exit;
+  if not FCapRecNearEndSensor then Exit;
+  if FRecEmpty then Exit;
+
+  if ARecNearEnd <> FRecNearEnd then
+  begin
+    FRecNearEnd := ARecNearEnd;
+    if FRecNearEnd then
+      FDevice.StatusUpdateEvent(PTR_SUE_REC_NEAREMPTY)
+    else
+      FDevice.StatusUpdateEvent(PTR_SUE_REC_PAPEROK);
+  end;
+end;
+
+procedure TPosEscPrinter.UpdatePrinterStatus;
+var
+  ErrorStatus: TErrorStatus;
+  OfflineStatus: TOfflineStatus;
+begin
+  try
+    OfflineStatus := FPrinter.ReadOfflineStatus;
+    SetCoverState(OfflineStatus.CoverOpened);
+    SetRecEmpty(not FPrinter.ReadPaperStatus.PaperPresent);
+    SetRecNearEnd(FPrinter.ReadPaperRollStatus.PaperNearEnd);
+  (*
+    ErrorStatus := FPrinter.ReadErrorStatus;
+    if ErrorStatus.CutterError and ErrorStatus.UnrecoverableError then
+      FDevice.ErrorEvent(OPOS_E_EXTENDED, ,OPOS_EL_OUTPUT);
+      Result.CutterError := TestBit(B, 3);
+      Result.UnrecoverableError := TestBit(B, 5);
+      Result.AutoRecoverableError := TestBit(B, 6);
+  *)
+    FDevice.PowerState := OPOS_PS_ONLINE;
+  except
+    on E: Exception do
+    begin
+      FLogger.Error(E.Message);
+      FDevice.PowerState := OPOS_PS_OFF_OFFLINE;
+    end;
+  end;
+end;
+
+procedure TPosEscPrinter.DeviceProc(Sender: TObject);
+var
+  TickCount: DWORD;
+begin
+  try
+    while not FThread.Terminated do
+    begin
+      UpdatePrinterStatus;
+      // wait
+      TickCount := GetTickCount;
+      repeat
+        if FThread.Terminated then Break;
+        Sleep(20);
+      until (GetTickCount-TickCount) > 3000;
+    end;
+  except
+    on E: Exception do
+    begin
+      Logger.Error(E.Message);
+    end;
+  end;
 end;
 
 procedure TPosEscPrinter.Set_FlagWhenIdle(pFlagWhenIdle: WordBool);
@@ -1962,6 +2135,7 @@ end;
 function TPosEscPrinter.SetBitmap(BitmapNumber, Station: Integer;
   const FileName: WideString; Width, Alignment: Integer): Integer;
 begin
+
   Result := ClearResult;
 end;
 
@@ -1969,6 +2143,74 @@ function TPosEscPrinter.SetLogo(Location: Integer;
   const Data: WideString): Integer;
 begin
   Result := ClearResult;
+end;
+
+function TPosEscPrinter.TransactionPrint(Station,
+  Control: Integer): Integer;
+begin
+  try
+    if Control = PTR_TP_TRANSACTION then
+    begin
+      StopDeviceThread;
+    end;
+    if Control = PTR_TP_NORMAL then
+    begin
+      StartDeviceThread;
+    end;
+    Result := ClearResult;
+  except
+    on E: Exception do
+      Result := HandleException(E);
+  end;
+end;
+
+function TPosEscPrinter.UpdateFirmware(
+  const FirmwareFileName: WideString): Integer;
+begin
+  Result := ClearResult;
+end;
+
+function TPosEscPrinter.UpdateStatistics(
+  const StatisticsBuffer: WideString): Integer;
+begin
+  Result := ClearResult;
+end;
+
+function TPosEscPrinter.ValidateData(Station: Integer;
+  const Data: WideString): Integer;
+begin
+  Result := ClearResult;
+end;
+
+procedure TPosEscPrinter.DataEvent(Status: Integer);
+begin
+
+end;
+
+procedure TPosEscPrinter.DirectIOEvent(EventNumber: Integer;
+  var pData: Integer; var pString: WideString);
+begin
+  if Assigned(FOnDirectIOEvent) then
+    FOnDirectIOEvent(Self, EventNumber, pData, pString);
+end;
+
+procedure TPosEscPrinter.ErrorEvent(ResultCode, ResultCodeExtended,
+  ErrorLocus: Integer; var pErrorResponse: Integer);
+begin
+  if Assigned(FOnErrorEvent) then
+    FOnErrorEvent(Self, ResultCode, ResultCodeExtended, ErrorLocus, pErrorResponse);
+end;
+
+procedure TPosEscPrinter.OutputCompleteEvent(OutputID: Integer);
+begin
+  if Assigned(FOnOutputCompleteEvent) then
+    FOnOutputCompleteEvent(Self, OutputID);
+end;
+
+procedure TPosEscPrinter.StatusUpdateEvent(Data: Integer);
+begin
+  if Assigned(FOnStatusUpdateEvent) then
+    FOnStatusUpdateEvent(Self, Data);
 end;
 
 procedure TPosEscPrinter.SODataDummy(Status: Integer);
@@ -2003,56 +2245,71 @@ begin
 
 end;
 
-function TPosEscPrinter.TransactionPrint(Station,
-  Control: Integer): Integer;
+function TPosEscPrinter.GetToken(var Text: string; var Token: TEscToken): Boolean;
+var
+  P: Integer;
 begin
-(*
-  try
-    CheckRecStation(Station);
-    case Control of
-      PTR_TP_NORMAL:
-      begin
-        if FTransaction then
-        begin
-          Printer.EndDoc;
-          FPositionY := 0;
-          FTransaction := False;
-        end;
-      end;
-      PTR_TP_TRANSACTION:
-      begin
-        if not FTransaction then
-        begin
-          Printer.BeginDoc;
-          FTransaction := True;
-          FPositionY := 0;
-        end;
-      end;
+  Result := False;
+  if Length(Text) = 0 then Exit;
+
+  Result := True;
+  P := Pos(ESC + '|', Text);
+  Token.IsEsc := P = 1;
+  if P = 0 then
+  begin
+    Token.Text := Text;
+  end else
+  begin
+    if P = 1 then
+    begin
+      Token.Text := Copy(Text, 1, 4);
+    end else
+    begin
+      Token.Text := Copy(Text, 1, P-1);
+      Text := Copy(Text, P, Length(Text));
     end;
-    Result := ClearResult;
-  except
-    on E: Exception do
-      Result := HandleException(E);
   end;
-*)
 end;
 
-function TPosEscPrinter.UpdateFirmware(
-  const FirmwareFileName: WideString): Integer;
+procedure TPosEscPrinter.PrintText(Text: string);
+var
+  Token: TEscToken;
+  Mode: EscPrinter.TPrintMode;
 begin
-  Result := ClearResult;
-end;
+  Text := ReplaceRegExpr('\' + ESC + '\|[0-9]{0,3}\P', Text, #$1B#$69);
+  while GetToken(Text, Token) do
+  begin
+    if Token.IsEsc then
+    begin
+      if Token.Text = ESC + '|bC' then
+        FPrintMode := FPrintMode + [pmBold];
+      if Token.Text = ESC + '|!bC' then
+        FPrintMode := FPrintMode + [pmBold];
+      if Token.Text = ESC + '|1C' then
+        FPrintMode := [];
+      if Token.Text = ESC + '|2C' then
+        FPrintMode := FPrintMode + [pmDoubleWide];
+      if Token.Text = ESC + '|3C' then
+        FPrintMode := FPrintMode + [pmDoubleHigh];
+      if Token.Text = ESC + '|4C' then
+        FPrintMode := FPrintMode + [pmDoubleWide, pmDoubleHigh];
+    end else
+    begin
+      // Select print mode is needed
+      if FPrintMode <> FLastPrintMode then
+      begin
+        Mode.CharacterFontB := False;
+        Mode.Emphasized := pmBold in FPrintMode;
+        Mode.DoubleHeight := pmDoubleHigh in FPrintMode;
+        Mode.DoubleWidth := pmDoubleWide in FPrintMode;
+        Mode.Underlined := pmUnderlined in FPrintMode;
 
-function TPosEscPrinter.UpdateStatistics(
-  const StatisticsBuffer: WideString): Integer;
-begin
-  Result := ClearResult;
-end;
-
-function TPosEscPrinter.ValidateData(Station: Integer;
-  const Data: WideString): Integer;
-begin
-  Result := ClearResult;
+        FPrinter.SelectPrintMode(Mode);
+        FLastPrintMode := FPrintMode;
+      end;
+      FPrinter.PrintText(Token.Text);
+    end;
+  end;
 end;
 
 end.

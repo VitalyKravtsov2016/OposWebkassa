@@ -1453,6 +1453,21 @@ begin
   inherited Destroy;
 end;
 
+(*
+Error connecting with SSL.
+error:14077438:SSL routines:SSL23_GET_SERVER_HELLO:tlsv1 alert internal error
+Error connecting with SSL.
+error:1409442E:SSL routines:SSL3_READ_BYTES:tlsv1 alert protocol version
+Error connecting with SSL.
+error:14094410:SSL routines:SSL3_READ_BYTES:sslv3 alert handshake failure
+Error connecting with SSL.
+error:00000006:lib(0):func(0):EVP lib
+
+TIdSSLVersion = (sslvSSLv2, sslvSSLv23, sslvSSLv3, sslvTLSv1);
+TIdSSLVersion = (sslvSSLv2, sslvSSLv23, sslvSSLv3, sslvTLSv1,sslvTLSv1_1,sslvTLSv1_2);
+
+*)
+
 function TWebkassaClient.GetTransport: TIdHTTP;
 var
   HandlerSocket: TIdSSLIOHandlerSocketOpenSSL;
@@ -1469,7 +1484,7 @@ begin
 
     HandlerSocket := TIdSSLIOHandlerSocketOpenSSL.Create(FTransport);
     HandlerSocket.SSLOptions.Mode := sslmClient;
-    HandlerSocket.SSLOptions.Method := sslvSSLv23;
+    HandlerSocket.SSLOptions.Method := sslvTLSv1_2;
     FTransport.IOHandler := HandlerSocket;
   end;
   Result := FTransport;

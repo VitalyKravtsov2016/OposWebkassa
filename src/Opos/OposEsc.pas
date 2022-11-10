@@ -12,6 +12,7 @@ const
   ESC_DoubleHigh        = ESC + '|3C'; // Prints double-high characters.
   ESC_DoubleHighAndWide = ESC + '|4C'; // Prints double-high/double-wide characters.
 
+
   // Cuts receipt paper. The character ‘#’ is replaced by an
   // ASCII decimal string telling the percentage cut desired. If
   // ‘#’ is omitted, then a full cut is performed. For example:

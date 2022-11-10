@@ -219,6 +219,15 @@ begin
       if Reg.ValueExists('FontName') then
         Parameters.FontName := Reg.ReadString('FontName');
 
+      if Reg.ValueExists('RemoteHost') then
+        Parameters.RemoteHost := Reg.ReadString('RemoteHost');
+
+      if Reg.ValueExists('RemotePort') then
+        Parameters.RemotePort := Reg.ReadInteger('RemotePort');
+
+      if Reg.ValueExists('ByteTimeout') then
+        Parameters.ByteTimeout := Reg.ReadInteger('ByteTimeout');
+
       Reg.CloseKey;
     end;
     // VatRates
@@ -290,6 +299,10 @@ begin
     Reg.WriteString('VATNumber', FParameters.VATNumber);
     Reg.WriteString('VATSeries', FParameters.VATSeries);
     Reg.WriteInteger('AmountDecimalPlaces', FParameters.AmountDecimalPlaces);
+    Reg.WriteString('RemoteHost', FParameters.RemoteHost);
+    Reg.WriteInteger('RemotePort', FParameters.RemotePort);
+    Reg.WriteInteger('ByteTimeout', FParameters.ByteTimeout);
+
     Reg.CloseKey;
     // VatRates
     Reg.DeleteKey(KeyName + '\' + REG_KEY_VatRateS);

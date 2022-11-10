@@ -16,8 +16,11 @@ const
   FiscalPrinterProgID = 'OposWebkassa.FiscalPrinter';
 
   // PrinterType constants
-  PrinterTypePosPrinter = 0;
-  PrinterTypeWinPrinter = 1;
+  PrinterTypePosPrinter         = 0;
+  PrinterTypeWinPrinter         = 1;
+  PrinterTypeEscPrinterSerial   = 2;
+  PrinterTypeEscPrinterNetwork  = 3;
+
 
   DefLogMaxCount = 10;
   DefLogFileEnabled = True;
@@ -51,6 +54,9 @@ const
   DefVATNumber = '00000';
   DefVATSeries = '00000';
   DefAmountDecimalPlaces = 2;
+  DefRemoteHost = '192.168.1.87';
+  DefRemotePort = 9100;
+  DefByteTimeout = 1000;
 
   /////////////////////////////////////////////////////////////////////////////
   // Header and trailer parameters
@@ -99,6 +105,9 @@ type
     FVATNumber: WideString;
     FVATSeries: WideString;
     FAmountDecimalPlaces: Integer;
+    FRemoteHost: string;
+    FRemotePort: Integer;
+    FByteTimeout: Integer;
 
     procedure LogText(const Caption, Text: WideString);
     procedure SetHeaderText(const Text: WideString);
@@ -143,6 +152,9 @@ type
     property HeaderText: WideString read GetHeaderText write SetHeaderText;
     property TrailerText: WideString read GetTrailerText write SetTrailerText;
     property AmountDecimalPlaces: Integer read FAmountDecimalPlaces write SetAmountDecimalPlaces;
+    property RemoteHost: string read FRemoteHost write FRemoteHost;
+    property RemotePort: Integer read FRemotePort write FRemotePort;
+    property ByteTimeout: Integer read FByteTimeout write FByteTimeout;
   end;
 
 function QRSizeToWidth(QRSize: Integer): Integer;
@@ -210,10 +222,13 @@ begin
   VATNumber := DefVATNumber;
   VATSeries := DefVATSeries;
   AmountDecimalPlaces := DefAmountDecimalPlaces;
-
   // VatRates
   VatRates.Clear;
   VatRates.Add(1, 12, 'ÍÄÑ 12%'); // ÍÄÑ 12%
+
+  FRemoteHost := DefRemoteHost;
+  FRemotePort := DefRemotePort;
+  FByteTimeout := DefByteTimeout;
 end;
 
 procedure TPrinterParameters.LogText(const Caption, Text: WideString);
@@ -268,6 +283,10 @@ begin
   Logger.Debug('VATSeries: ' + VATSeries);
   Logger.Debug('VATNumber: ' + VATNumber);
   Logger.Debug('AmountDecimalPlaces: ' + IntToStr(AmountDecimalPlaces));
+
+  Logger.Debug('RemoteHost: ' + RemoteHost);
+  Logger.Debug('RemotePort: ' + IntToStr(RemotePort));
+  Logger.Debug('ByteTimeout: ' + IntToStr(ByteTimeout));
 
   // VatRates
   for i := 0 to VatRates.Count-1 do

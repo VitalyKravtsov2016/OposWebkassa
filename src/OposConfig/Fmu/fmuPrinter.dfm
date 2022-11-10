@@ -2,7 +2,7 @@ object fmPrinter: TfmPrinter
   Left = 544
   Top = 218
   Width = 471
-  Height = 278
+  Height = 555
   Caption = #1055#1088#1080#1085#1090#1077#1088
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -13,7 +13,7 @@ object fmPrinter: TfmPrinter
   OldCreateOrder = False
   DesignSize = (
     455
-    240)
+    517)
   PixelsPerInch = 96
   TextHeight = 13
   object lblPrinterName: TTntLabel
@@ -24,8 +24,8 @@ object fmPrinter: TfmPrinter
     Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1087#1088#1080#1085#1090#1077#1088#1072':'
   end
   object lblResultCode: TTntLabel
-    Left = 8
-    Top = 104
+    Left = 16
+    Top = 440
     Width = 55
     Height = 13
     Caption = #1056#1077#1079#1091#1083#1100#1090#1072#1090':'
@@ -57,9 +57,9 @@ object fmPrinter: TfmPrinter
   end
   object memResult: TMemo
     Left = 120
-    Top = 104
+    Top = 440
     Width = 329
-    Height = 97
+    Height = 38
     Anchors = [akLeft, akTop, akRight, akBottom]
     Color = clBtnFace
     Font.Charset = RUSSIAN_CHARSET
@@ -72,9 +72,9 @@ object fmPrinter: TfmPrinter
     TabOrder = 3
   end
   object btnTestConnection: TButton
-    Left = 200
-    Top = 208
-    Width = 121
+    Left = 240
+    Top = 485
+    Width = 105
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1055#1088#1086#1074#1077#1088#1082#1072' '#1089#1074#1103#1079#1080
@@ -82,9 +82,9 @@ object fmPrinter: TfmPrinter
     OnClick = btnTestConnectionClick
   end
   object btnPrintReceipt: TButton
-    Left = 328
-    Top = 208
-    Width = 121
+    Left = 352
+    Top = 485
+    Width = 97
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1058#1077#1089#1090#1086#1074#1099#1081' '#1095#1077#1082
@@ -102,8 +102,10 @@ object fmPrinter: TfmPrinter
     TabOrder = 0
     OnChange = cbPrinterTypeChange
     Items.Strings = (
-      'POS '#1087#1088#1080#1085#1090#1077#1088
-      'Windows '#1087#1088#1080#1085#1090#1077#1088)
+      'OPOS '#1087#1088#1080#1085#1090#1077#1088
+      'Windows '#1087#1088#1080#1085#1090#1077#1088
+      'ESC POS '#1087#1088#1080#1085#1090#1077#1088', COM '#1087#1086#1088#1090
+      'ESC POS '#1087#1088#1080#1085#1090#1077#1088', '#1089#1077#1090#1077#1074#1086#1077' '#1087#1086#1076#1082#1083#1102#1095#1077#1085#1080#1077)
   end
   object cbFontName: TTntComboBox
     Left = 120
@@ -114,5 +116,69 @@ object fmPrinter: TfmPrinter
     Anchors = [akLeft, akTop, akRight]
     ItemHeight = 13
     TabOrder = 2
+  end
+  object pnlNetworkConnection: TPanel
+    Left = 8
+    Top = 101
+    Width = 441
+    Height = 100
+    BevelOuter = bvNone
+    TabOrder = 6
+    Visible = False
+    DesignSize = (
+      441
+      100)
+    object lblRemoteHost: TLabel
+      Left = 0
+      Top = 0
+      Width = 97
+      Height = 13
+      Caption = #1061#1086#1089#1090':'
+    end
+    object lblRemotePort: TLabel
+      Left = 0
+      Top = 32
+      Width = 28
+      Height = 13
+      Caption = #1055#1086#1088#1090':'
+    end
+    object lblByteTimeout: TLabel
+      Left = 0
+      Top = 56
+      Width = 110
+      Height = 13
+      Caption = #1058#1072#1081#1084#1072#1091#1090' '#1087#1088#1080#1077#1084#1072', '#1084#1089'.:'
+    end
+    object edtRemoteHost: TEdit
+      Left = 144
+      Top = 0
+      Width = 297
+      Height = 21
+      Anchors = [akLeft, akTop, akRight]
+      TabOrder = 0
+      Text = '10.11.7.176'
+    end
+    object seRemotePort: TSpinEdit
+      Left = 144
+      Top = 32
+      Width = 297
+      Height = 22
+      Anchors = [akLeft, akTop, akRight]
+      MaxValue = 0
+      MinValue = 0
+      TabOrder = 1
+      Value = 0
+    end
+    object seByteTimeout: TSpinEdit
+      Left = 144
+      Top = 64
+      Width = 297
+      Height = 22
+      Anchors = [akLeft, akTop, akRight]
+      MaxValue = 0
+      MinValue = 0
+      TabOrder = 2
+      Value = 0
+    end
   end
 end

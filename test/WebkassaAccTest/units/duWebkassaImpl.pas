@@ -114,9 +114,14 @@ begin
   FDriver.Params.PrinterType := PrinterTypePosPrinter;
   FDriver.Params.PrinterName := 'ThermalU';
   FDriver.Params.FontName := '42';
-*)
   FDriver.Params.PrinterType := PrinterTypeWinPrinter;
   FDriver.Params.PrinterName := 'SLK-TE122';
+  FDriver.Params.FontName := 'FontA11';
+*)
+  FDriver.Params.PrinterType := PrinterTypeEscPrinterNetwork;
+  FDriver.Params.RemoteHost := '10.11.7.176';
+  FDriver.Params.RemotePort := 9100;
+  FDriver.Params.ByteTimeout := 1000;
   FDriver.Params.FontName := 'FontA11';
 end;
 
@@ -149,6 +154,8 @@ var
 begin
   Driver.SetPropertyNumber(PIDX_DeviceEnabled, 1);
   ResultCode := Driver.GetPropertyNumber(PIDX_ResultCode);
+  FptrCheck(ResultCode);
+
   CheckEquals(OPOS_SUCCESS, ResultCode, 'OPOS_SUCCESS');
   CheckEquals(1, Driver.GetPropertyNumber(PIDX_DeviceEnabled), 'DeviceEnabled');
 end;

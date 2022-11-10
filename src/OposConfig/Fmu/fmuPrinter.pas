@@ -12,7 +12,7 @@ uses
   Opos, OposPtr, Oposhi, OposUtils, OposDevice,
   // This
   untUtil, PrinterParameters, FptrTypes, FiscalPrinterDevice, FileUtils,
-  RecPrinter;
+  RecPrinter, ExtCtrls;
 
 type
   { TfmPrinter }
@@ -28,6 +28,13 @@ type
     cbPrinterType: TTntComboBox;
     lblFontName: TTntLabel;
     cbFontName: TTntComboBox;
+    pnlNetworkConnection: TPanel;
+    lblRemoteHost: TLabel;
+    edtRemoteHost: TEdit;
+    lblRemotePort: TLabel;
+    seRemotePort: TSpinEdit;
+    seByteTimeout: TSpinEdit;
+    lblByteTimeout: TLabel;
     procedure btnTestConnectionClick(Sender: TObject);
     procedure btnPrintReceiptClick(Sender: TObject);
     procedure cbPrinterTypeChange(Sender: TObject);
@@ -38,6 +45,7 @@ type
     procedure UpdateDeviceNames;
     function GetPrinter: IRecPrinter;
     property Printer: IRecPrinter read GetPrinter;
+    procedure UpdateNetworkParams;
   public
     destructor Destroy; override;
 
@@ -65,8 +73,22 @@ begin
   cbPrinterType.ItemIndex := Parameters.PrinterType;
   cbPrinterName.Text := Parameters.PrinterName;
   cbFontName.Text := Parameters.FontName;
+
+  UpdateNetworkParams;
   UpdateDeviceNames;
   UpdateFontNames;
+end;
+
+procedure TfmPrinter.UpdateNetworkParams;
+var
+  IsNetwork: Boolean;
+begin
+  IsNetwork := Parameters.PrinterType = PrinterTypeEscPrinterNetwork;
+  pnlNetworkConnection.Enabled := IsNetwork;
+  pnlNetworkConnection.Visible := IsNetwork;
+  edtRemoteHost.Text := Parameters.RemoteHost;
+  seRemotePort.Value := Parameters.RemotePort;
+  seByteTimeout.Value := Parameters.ByteTimeout;
 end;
 
 procedure TfmPrinter.UpdateObject;
@@ -129,6 +151,7 @@ begin
   FPrinter := nil;
   UpdateDeviceNames;
   UpdateFontNames;
+  UpdateNetworkParams;
 end;
 
 procedure TfmPrinter.UpdateDeviceNames;

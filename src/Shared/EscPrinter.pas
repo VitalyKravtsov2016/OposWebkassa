@@ -4,11 +4,14 @@ interface
 
 uses
   // VCL
-  Types, Graphics,
+  Types, SysUtils, Graphics,
   // This
-  ByteUtils;
+  ByteUtils, PrinterPort, RegExpr;
 
 const
+  ESC   = #$1B;
+  CRLF  = #13#10;
+  
   /////////////////////////////////////////////////////////////////////////////
   // Charset constants
 
@@ -149,6 +152,12 @@ const
   UNDERLINE_MODE_2DOT         = 2;
 
 type
+  { TDeviceMetrics }
+
+  TDeviceMetrics = record
+    PrintWidth: Integer;
+  end;
+
   { TPrinterStatus }
 
   TPrinterStatus = record
@@ -187,10 +196,10 @@ type
 
   TPrintMode = record
     CharacterFontB: Boolean;
-    EmphasizedMode: Boolean;
-    DoubleHeightMode: Boolean;
-    DoubleWidthMode: Boolean;
-    UnderlineMode: Boolean;
+    Emphasized: Boolean;
+    DoubleHeight: Boolean;
+    DoubleWidth: Boolean;
+    Underlined: Boolean;
   end;
 
   { TUserChar }
@@ -223,14 +232,22 @@ type
 
   TEscPrinter = class
   private
+    FPort: IPrinterPort;
+    FDeviceMetrics: TDeviceMetrics;
     function GetImageData(Image: TGraphic): string;
     function GetBitmapData(Bitmap: TBitmap): string;
     function GetRasterBitmapData(Bitmap: TBitmap): string;
     function GetRasterImageData(Image: TGraphic): string;
-  public
+    function GetImageData2(Justification: Integer;
+      Image: TGraphic): string;
+    procedure DrawImage(Justification: Integer; Image: TGraphic;
+      Bitmap: TBitmap);
+  private
     function ReadByte: Byte;
     function ReadString: string;
     procedure Send(const Data: string);
+  public
+    constructor Create(APort: IPrinterPort);
 
     procedure HorizontalTab;
     procedure LineFeed;
@@ -272,7 +289,7 @@ type
     procedure PrintNVBitImage(N, M: Byte);
     procedure DefineNVBitImage(n: Byte; Image: TGraphic);
     procedure SetCharacterSize(N: Byte);
-    procedure DownloadBitImage(Image: TGraphic);
+    procedure DownloadBMP(Justification: Integer; Image: TGraphic);
     procedure PrintBmp(Mode: Byte);
     procedure SetWhiteBlackReverse(Value: Boolean);
     function ReadPrinterID(N: Byte): string;
@@ -320,6 +337,10 @@ type
     procedure Select2DBarcode(n: Byte);
     procedure SetPMRelativeVerticalPosition(n: Word);
     procedure PrintCounter;
+    procedure PrintText(Text: string);
+    procedure SetNormalPrintMode;
+
+    property DeviceMetrics: TDeviceMetrics read FDeviceMetrics write FDeviceMetrics;
   end;
 
 implementation
@@ -334,19 +355,38 @@ const
 
 { TEscPrinter }
 
+constructor TEscPrinter.Create(APort: IPrinterPort);
+begin
+  inherited Create;
+  FPort := APort;
+  FDeviceMetrics.PrintWidth := 576;
+end;
+
 procedure TEscPrinter.Send(const Data: string);
 begin
-  { !!! }
+  FPort.Lock;
+  try
+    FPort.Write(Data);
+  finally
+    FPort.Unlock;
+  end;
 end;
 
 function TEscPrinter.ReadByte: Byte;
 begin
-
+  Result := Ord(FPort.Read(1)[1]);
 end;
 
 function TEscPrinter.ReadString: string;
+var
+  C: Char;
 begin
   Result := '';
+  repeat
+    C := FPort.Read(1)[1];
+    if C <> #0 then
+      Result := Result + C;
+  until C = #0;
 end;
 
 procedure TEscPrinter.CarriageReturn;
@@ -366,39 +406,59 @@ end;
 
 function TEscPrinter.ReadPrinterStatus: TPrinterStatus;
 begin
-  Send(#$10#$04#$01);
-  Result.DrawerOpened := TestBit(ReadByte, 2);
+  FPort.Lock;
+  try
+    Send(#$10#$04#$01);
+    Result.DrawerOpened := TestBit(ReadByte, 2);
+  finally
+    FPort.Unlock;
+  end;
 end;
 
 function TEscPrinter.ReadOfflineStatus: TOfflineStatus;
 var
   B: Byte;
 begin
-  Send(#$10#$04#$02);
-  B := ReadByte;
-  Result.CoverOpened := TestBit(B, 2);
-  Result.FeedButton := TestBit(B, 3);
-  Result.ErrorOccurred := TestBit(B, 6);
+  FPort.Lock;
+  try
+    Send(#$10#$04#$02);
+    B := ReadByte;
+    Result.CoverOpened := TestBit(B, 2);
+    Result.FeedButton := TestBit(B, 3);
+    Result.ErrorOccurred := TestBit(B, 6);
+  finally
+    FPort.Unlock;
+  end;
 end;
 
 function TEscPrinter.ReadErrorStatus: TErrorStatus;
 var
   B: Byte;
 begin
-  Send(#$10#$04#$03);
-  B := ReadByte;
-  Result.CutterError := TestBit(B, 3);
-  Result.UnrecoverableError := TestBit(B, 5);
-  Result.AutoRecoverableError := TestBit(B, 6);
+  FPort.Lock;
+  try
+    Send(#$10#$04#$03);
+    B := ReadByte;
+    Result.CutterError := TestBit(B, 3);
+    Result.UnrecoverableError := TestBit(B, 5);
+    Result.AutoRecoverableError := TestBit(B, 6);
+  finally
+    FPort.Unlock;
+  end;
 end;
 
 function TEscPrinter.ReadPaperStatus: TPaperStatus;
 var
   B: Byte;
 begin
-  Send(#$10#$04#$04);
-  B := ReadByte;
-  Result.PaperPresent := TestBit(B, 5);
+  FPort.Lock;
+  try
+    Send(#$10#$04#$04);
+    B := ReadByte;
+    Result.PaperPresent := not TestBit(B, 5);
+  finally
+    FPort.Unlock;
+  end;
 end;
 
 procedure TEscPrinter.RecoverError(ClearBuffer: Boolean);
@@ -425,10 +485,10 @@ var
 begin
   B := 0;
   if Mode.CharacterFontB then SetBit(B, 0);
-  if Mode.EmphasizedMode then SetBit(B, 3);
-  if Mode.DoubleHeightMode then SetBit(B, 4);
-  if Mode.DoubleWidthMode then SetBit(B, 5);
-  if Mode.UnderlineMode then SetBit(B, 7);
+  if Mode.Emphasized then SetBit(B, 3);
+  if Mode.DoubleHeight then SetBit(B, 4);
+  if Mode.DoubleWidth then SetBit(B, 5);
+  if Mode.Underlined then SetBit(B, 7);
   Send(#$1B#$21 + Chr(B));
 end;
 
@@ -456,26 +516,30 @@ begin
   Send(#$1B#$26#$03 + Chr(C.c1) + Chr(C.c2) + C.Data);
 end;
 
-
 function TEscPrinter.GetBitmapData(Bitmap: TBitmap): string;
 var
   B: Byte;
   Bit: Byte;
-  x, y: Integer;
+  x, y, k: Integer;
+  mx, my: Integer;
 begin
   Result := '';
-  for x := 1 to Bitmap.Width do
+  mx := (Bitmap.Width + 7) div 8;
+  my := (Bitmap.Height + 7) div 8;
+  for x := 1 to mx * 8 do
   begin
-    B := 0;
     y := 1;
-    while y <= Bitmap.Height do
+    for k := 1 to my do
     begin
+      B := 0;
       for Bit := 0 to 7 do
       begin
+        if x > Bitmap.Width then Break;
         if y > Bitmap.Height then Break;
+
         if Bitmap.Canvas.Pixels[x, y] = clBlack then
         begin
-          SetBit(B, Bit);
+          SetBit(B, 7-Bit);
         end;
         Inc(y);
       end;
@@ -511,20 +575,50 @@ begin
   end;
 end;
 
+
 function TEscPrinter.GetImageData(Image: TGraphic): string;
+begin
+  Result := GetImageData2(JUSTIFICATION_CENTERING, Image);
+end;
+
+function TEscPrinter.GetImageData2(Justification: Integer; Image: TGraphic): string;
 var
+  x: Integer;
   Bitmap: TBitmap;
 begin
   Bitmap := TBitmap.Create;
   try
-    Bitmap.Monochrome := True;
-    Bitmap.PixelFormat := pf1Bit;
-    Bitmap.Width := Image.Width;
-    Bitmap.Height := Image.Height;
-    Bitmap.Canvas.Draw(0, 0, Image);
+    DrawImage(Justification, Image, Bitmap);
     Result := GetBitmapData(Bitmap);
   finally
     Bitmap.Free;
+  end;
+end;
+
+procedure TEscPrinter.DrawImage(Justification: Integer; Image: TGraphic; Bitmap: TBitmap);
+var
+  x: Integer;
+begin
+  Bitmap.Monochrome := True;
+  Bitmap.PixelFormat := pf1Bit;
+  if Justification = JUSTIFICATION_LEFT then
+  begin
+    Bitmap.Width := Image.Width;
+    Bitmap.Height := Image.Height;
+    Bitmap.Canvas.Draw(0, 0, Image);
+  end;
+  if Justification = JUSTIFICATION_CENTERING then
+  begin
+    Bitmap.Width := (DeviceMetrics.PrintWidth + Image.Width) div 2;
+    Bitmap.Height := Image.Height;
+    x := (DeviceMetrics.PrintWidth - Image.Width) div 2;
+    Bitmap.Canvas.Draw(x, 0, Image);
+  end;
+  if Justification = JUSTIFICATION_RIGHT then
+  begin
+    Bitmap.Width := DeviceMetrics.PrintWidth;
+    Bitmap.Height := Image.Height;
+    Bitmap.Canvas.Draw(DeviceMetrics.PrintWidth - Image.Width, 0, Image);
   end;
 end;
 
@@ -680,13 +774,21 @@ begin
   Send(#$1D#$21 + Chr(N));
 end;
 
-procedure TEscPrinter.DownloadBitImage(Image: TGraphic);
+procedure TEscPrinter.DownloadBMP(Justification: Integer; Image: TGraphic);
 var
   x, y: Byte;
+  Bitmap: TBitmap;
 begin
-  x := (Image.Width + 7) div 8;
-  y := (Image.Height + 7) div 8;
-  Send(#$1D#$2A + Chr(x) + Chr(y) + GetImageData(Image));
+  Bitmap := TBitmap.Create;
+  try
+    DrawImage(Justification, Image, Bitmap);
+
+    x := (Bitmap.Width + 7) div 8;
+    y := (Bitmap.Height + 7) div 8;
+    Send(#$1D#$2A + Chr(x) + Chr(y) + GetBitmapData(Bitmap));
+  finally
+    Bitmap.Free;
+  end;
 end;
 
 procedure TEscPrinter.PrintBmp(Mode: Byte);
@@ -701,8 +803,13 @@ end;
 
 function TEscPrinter.ReadPrinterID(N: Byte): string;
 begin
-  Send(#$1D#$49 + Chr(N));
-  Result := ReadString;
+  FPort.Lock;
+  try
+    Send(#$1D#$49 + Chr(N));
+    Result := ReadString;
+  finally
+    FPort.Unlock;
+  end;
 end;
 
 procedure TEscPrinter.SetHRIPosition(N: Byte);
@@ -767,8 +874,13 @@ end;
 
 function TEscPrinter.ReadPaperRollStatus: TPaperRollStatus;
 begin
-  Send(#$1D#$72#$01);
-  Result.PaperNearEnd := TestBit(ReadByte, 2);
+  FPort.Lock;
+  try
+    Send(#$1D#$72#$01);
+    Result.PaperNearEnd := TestBit(ReadByte, 2);
+  finally
+    FPort.Unlock;
+  end;
 end;
 
 // Print raster bit image
@@ -947,5 +1059,23 @@ procedure TEscPrinter.PrintCounter;
 begin
   Send(#$1D#$63);
 end;
+
+procedure TEscPrinter.SetNormalPrintMode;
+var
+  PrintMode: TPrintMode;
+begin
+  PrintMode.CharacterFontB := False;
+  PrintMode.Emphasized := False;
+  PrintMode.DoubleHeight := False;
+  PrintMode.DoubleWidth := False;
+  PrintMode.Underlined := False;
+  SelectPrintMode(PrintMode);
+end;
+
+procedure TEscPrinter.PrintText(Text: string);
+begin
+  Send(Text);
+end;
+
 
 end.

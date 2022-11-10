@@ -60,7 +60,14 @@ uses
   POSPrinterLog in '..\Opos\POSPrinterLog.pas',
   EscPrinter in '..\Shared\EscPrinter.pas',
   ByteUtils in '..\Shared\ByteUtils.pas',
-  PosWinPrinter in '..\Shared\PosWinPrinter.pas';
+  PosWinPrinter in '..\Shared\PosWinPrinter.pas',
+  PrinterPort in '..\Shared\PrinterPort.pas',
+  PosEscPrinter in '..\Shared\PosEscPrinter.pas',
+  SerialPort in '..\Shared\SerialPort.pas',
+  DeviceNotification in '..\Shared\DeviceNotification.pas',
+  PortUtil in '..\Shared\PortUtil.pas',
+  TextReport in '..\Shared\TextReport.pas',
+  SocketPort in '..\Shared\SocketPort.pas';
 
 exports
   DllGetClassObject,

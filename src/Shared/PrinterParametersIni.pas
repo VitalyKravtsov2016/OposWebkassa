@@ -169,6 +169,9 @@ begin
       FParameters.PrinterType := IniFile.ReadInteger(Section, 'PrinterType', PrinterTypePosPrinter);
       FParameters.FontName := IniFile.ReadString(Section, 'FontName', DefFontName);
       FParameters.AmountDecimalPlaces := IniFile.ReadInteger(Section, 'AmountDecimalPlaces', DefAmountDecimalPlaces);
+      FParameters.RemoteHost := IniFile.ReadString(Section, 'RemoteHost', DefRemoteHost);
+      FParameters.RemotePort := IniFile.ReadInteger(Section, 'RemotePort', DefRemotePort);
+      FParameters.ByteTimeout := IniFile.ReadInteger(Section, 'ByteTimeout', DefByteTimeout);
     end;
   finally
     IniFile.Free;
@@ -197,6 +200,9 @@ begin
     IniFile.WriteInteger(Section, 'PrinterType', FParameters.PrinterType);
     IniFile.WriteString(Section, 'FontName', FParameters.FontName);
     IniFile.WriteInteger(Section, 'AmountDecimalPlaces', FParameters.AmountDecimalPlaces);
+    IniFile.WriteString(Section, 'RemoteHost', FParameters.RemoteHost);
+    IniFile.WriteInteger(Section, 'RemotePort', FParameters.RemotePort);
+    IniFile.WriteInteger(Section, 'ByteTimeout', FParameters.ByteTimeout);
   finally
     IniFile.Free;
   end;

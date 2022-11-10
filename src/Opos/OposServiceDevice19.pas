@@ -59,8 +59,6 @@ type
     property Logger: ILogFile read FLogger;
     property Events: TOposEvents read FEvents;
     function GetFreezeEvents: Boolean;
-    procedure ErrorEvent(ResultCode, ResultCodeExtended,
-      ErrorLocus: Integer);
   public
     constructor Create(ALogger: ILogFile);
     destructor Destroy; override;
@@ -79,8 +77,9 @@ type
     procedure CheckEnabled;
 
     procedure FireEvent(Event: TOposEvent);
-    procedure StatusUpdateEvent(Data: Integer);
     function TextToBinary(const Data: string): string;
+    procedure StatusUpdateEvent(Data: Integer);
+    procedure ErrorEvent(ResultCode, ResultCodeExtended, ErrorLocus: Integer);
     function ClearResult: Integer;
     function SetResultCode(Value: Integer): Integer;
     function HandleException(const OPOSError: TOPOSError): Integer;

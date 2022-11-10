@@ -20,7 +20,8 @@ uses
   WebkassaClient, FiscalPrinterState, CustomReceipt, NonFiscalDoc, ServiceVersion,
   PrinterParameters, PrinterParametersX, CashInReceipt, CashOutReceipt,
   SalesReceipt, TextDocument, ReceiptItem, StringUtils, DebugUtils, VatRate,
-  uZintBarcode, uZintInterface, FileUtils, PosWinPrinter;
+  uZintBarcode, uZintInterface, FileUtils, PosWinPrinter, PosEscPrinter,
+  SerialPort, PrinterPort, SocketPort;
 
 const
   FPTR_DEVICE_DESCRIPTION = 'WebKassa OPOS driver';
@@ -86,6 +87,7 @@ type
     procedure PrintText(Prefix, Text: WideString; RecLineChars: Integer);
     procedure PrintTextLine(Prefix, Text: WideString;
       RecLineChars: Integer);
+    function CreatePrinter: IOPOSPOSPrinter;
   public
     procedure Initialize;
     procedure CheckEnabled;
@@ -2165,9 +2167,6 @@ end;
 
 function TWebkassaImpl.DoOpen(const DeviceClass, DeviceName: WideString;
   const pDispatch: IDispatch): Integer;
-var
-  POSPrinter: TOPOSPOSPrinter;
-  PosWinPrinter: TPosWinPrinter;
 begin
   try
     Initialize;
@@ -2190,28 +2189,10 @@ begin
 
     if FPrinter = nil then
     begin
-      if Params.PrinterType = PrinterTypePosPrinter then
-      begin
-        PosPrinter := TOPOSPOSPrinter.Create(nil);
-        PosPrinter.OnStatusUpdateEvent := PrinterStatusUpdateEvent;
-        PosPrinter.OnErrorEvent := PrinterErrorEvent;
-        PosPrinter.OnDirectIOEvent := PrinterDirectIOEvent;
-        PosPrinter.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
-        FPrinterLog := TPosPrinterLog.Create2(nil, PosPrinter.ControlInterface, Logger);
-        FPrinter := FPrinterLog;
-
-        FRecLineChars := StrToInt(Params.FontName);
-      end else
-      begin
-        PosWinPrinter := TPosWinPrinter.Create2(nil, Logger);
-        PosWinPrinter.FontName := Params.FontName;
-        FPrinter := PosWinPrinter;
-        FRecLineChars := FPrinter.RecLineChars;
-      end;
-    end else
-    begin
-      FRecLineChars := FPrinter.RecLineChars;
+      FPrinter := CreatePrinter;
     end;
+    //FRecLineChars := StrToInt(Params.FontName); !!!
+    FRecLineChars := FPrinter.RecLineChars;
 
     CheckPtr(Printer.Open(FParams.PrinterName));
 
@@ -2232,6 +2213,69 @@ begin
     begin
       DoCloseDevice;
       Result := HandleException(E);
+    end;
+  end;
+end;
+
+function TWebkassaImpl.CreatePrinter: IOPOSPOSPrinter;
+var
+  POSPrinter: TOPOSPOSPrinter;
+  PosWinPrinter: TPosWinPrinter;
+  PosEscPrinter: TPosEscPrinter;
+  SerialParams: TSerialParams;
+  PrinterPort: IPrinterPort;
+  SocketParams: TSocketParams;
+begin
+  case Params.PrinterType of
+    PrinterTypePosPrinter:
+    begin
+      PosPrinter := TOPOSPOSPrinter.Create(nil);
+      PosPrinter.OnStatusUpdateEvent := PrinterStatusUpdateEvent;
+      PosPrinter.OnErrorEvent := PrinterErrorEvent;
+      PosPrinter.OnDirectIOEvent := PrinterDirectIOEvent;
+      PosPrinter.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
+      FPrinterLog := TPosPrinterLog.Create2(nil, PosPrinter.ControlInterface, Logger);
+      Result := FPrinterLog;
+    end;
+    PrinterTypeWinPrinter:
+    begin
+      PosWinPrinter := TPosWinPrinter.Create2(nil, Logger);
+      PosWinPrinter.FontName := Params.FontName;
+      Result := PosWinPrinter;
+    end;
+    PrinterTypeEscPrinterSerial:
+    begin
+      (*
+      SerialParams.PortNumber := Params.PortNumber;
+      SerialParams.BaudRate := Params.BaudRate;
+      SerialParams.DataBits := Params.DataBits;
+      SerialParams.StopBits := Params.StopBits;
+      SerialParams.Parity := Params.Parity;
+      SerialParams.FlowControl := Params.FlowControl;
+      *)
+      PrinterPort := TSerialPort.Create(SerialParams, Logger);
+      PosEscPrinter := TPosEscPrinter.Create2(nil, PrinterPort, Logger);
+      PosEscPrinter.OnStatusUpdateEvent := PrinterStatusUpdateEvent;
+      PosEscPrinter.OnErrorEvent := PrinterErrorEvent;
+      PosEscPrinter.OnDirectIOEvent := PrinterDirectIOEvent;
+      PosEscPrinter.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
+      PosEscPrinter.FontName := Params.FontName;
+      Result := PosEscPrinter;
+    end;
+    PrinterTypeEscPrinterNetwork:
+    begin
+      SocketParams.RemoteHost := Params.RemoteHost;
+      SocketParams.RemotePort := Params.RemotePort;
+      SocketParams.ByteTimeout := Params.ByteTimeout;
+      SocketParams.MaxRetryCount := 1;
+      PrinterPort := TSocketPort.Create(SocketParams, Logger);
+      PosEscPrinter := TPosEscPrinter.Create2(nil, PrinterPort, Logger);
+      PosEscPrinter.OnStatusUpdateEvent := PrinterStatusUpdateEvent;
+      PosEscPrinter.OnErrorEvent := PrinterErrorEvent;
+      PosEscPrinter.OnDirectIOEvent := PrinterDirectIOEvent;
+      PosEscPrinter.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
+      PosEscPrinter.FontName := Params.FontName;
+      Result := PosEscPrinter;
     end;
   end;
 end;
@@ -2928,7 +2972,8 @@ var
 begin
   if Printer.CapRecPapercut then
   begin
-    RecLinesToPaperCut := Printer.RecLinesToPaperCut-3;
+    //RecLinesToPaperCut := Printer.RecLinesToPaperCut-3; !!!
+    RecLinesToPaperCut := Printer.RecLinesToPaperCut;
     if Document.PrintHeader then
     begin
       if FParams.NumHeaderLines < RecLinesToPaperCut then
