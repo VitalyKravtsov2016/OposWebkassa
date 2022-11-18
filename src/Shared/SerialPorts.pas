@@ -37,7 +37,7 @@ var
 begin
   Ports.Clear;
   for i := 1 to Count do
-    Ports.AddObject('COM '+ IntToStr(i), TObject(i));
+    Ports.AddObject('COM'+ IntToStr(i), TObject(i));
 end;
 
 { Compare by port numbers  }

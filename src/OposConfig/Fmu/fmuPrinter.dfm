@@ -13,7 +13,7 @@ object fmPrinter: TfmPrinter
   OldCreateOrder = False
   DesignSize = (
     455
-    327)
+    328)
   PixelsPerInch = 96
   TextHeight = 13
   object lblResultCode: TTntLabel
@@ -236,7 +236,7 @@ object fmPrinter: TfmPrinter
         Width = 113
         Height = 21
         Style = csDropDownList
-        ItemHeight = 0
+        ItemHeight = 13
         TabOrder = 0
         OnChange = cbPrinterTypeChange
       end
@@ -293,7 +293,7 @@ object fmPrinter: TfmPrinter
         Width = 113
         Height = 21
         Style = csDropDownList
-        ItemHeight = 0
+        ItemHeight = 13
         TabOrder = 4
         OnChange = cbPrinterTypeChange
       end
@@ -303,9 +303,13 @@ object fmPrinter: TfmPrinter
         Width = 113
         Height = 21
         Style = csDropDownList
-        ItemHeight = 0
+        ItemHeight = 13
         TabOrder = 5
         OnChange = cbPrinterTypeChange
+        Items.Strings = (
+          'XON / XOFF'
+          #1040#1087#1087#1072#1088#1072#1090#1085#1086#1077
+          #1053#1077#1090)
       end
       object seSerialTimeout: TSpinEdit
         Left = 88

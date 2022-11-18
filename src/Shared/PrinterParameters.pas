@@ -10,7 +10,7 @@ uses
   // Opos
   Opos, Oposhi, OposException,
   // This
-  WException, LogFile, FileUtils, VatRate, SerialPorts;
+  WException, LogFile, FileUtils, VatRate, SerialPort, SerialPorts;
 
 const
   /////////////////////////////////////////////////////////////////////////////
@@ -79,7 +79,7 @@ const
   DefDataBits = DATABITS_8;
   DefStopBits = STOPBITS_10;
   DefParity = PARITY_NONE;
-  DefFlowControl = 0;
+  DefFlowControl = FLOW_CONTROL_NONE;
   DefReconnectPort = false;
   DefSerialTimeout = 100;
 
@@ -477,6 +477,7 @@ var
 begin
   if Source is TPrinterParameters then
   begin
+    Src := Source as TPrinterParameters;
     Header.Assign(Src.Header);
     Trailer.Assign(Src.Trailer);
     LogMaxCount := Src.LogMaxCount;

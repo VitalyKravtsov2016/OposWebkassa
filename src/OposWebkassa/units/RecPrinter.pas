@@ -11,9 +11,9 @@ uses
   Opos, OposPtr, Oposhi, OposException, OposEsc, OposUtils, OposDevice,
   OposPOSPrinter_CCO_TLB,
   // This
-  PosWinPrinter, PosEscPrinter, LogFile, PrinterParameters;
+  PosWinPrinter, PosEscPrinter, LogFile, PrinterParameters, SerialPort;
 
-  
+
 type
   { TRecPrinter }
 
@@ -25,13 +25,14 @@ type
     FParams: TPrinterParameters;
 
     procedure Check(AResultCode: Integer);
-    function GetPropVal(const PropertyName: WideString): WideString;
-    procedure AddProp(const PropName: WideString; PropText: WideString = '');
+    procedure AddProp(const PropName: WideString; PropVal: Variant;
+      PropText: WideString = '');
     procedure AddProps;
 
     property Printer: IOPOSPOSPrinter read FPrinter;
+    property Params: TPrinterParameters read FParams;
   public
-    constructor Create;
+    constructor Create(AParams: TPrinterParameters);
     destructor Destroy; override;
 
     function GetFontNames: WideString;
@@ -59,6 +60,8 @@ type
   { TSerialEscPrinter }
 
   TSerialEscPrinter = class(TRecPrinter)
+  private
+    function CreateSerialPort: TSerialPort;
   public
     constructor Create(AParams: TPrinterParameters);
     function ReadDeviceList: WideString; override;
@@ -83,9 +86,10 @@ const
 
 { TRecPrinter }
 
-constructor TRecPrinter.Create;
+constructor TRecPrinter.Create(AParams: TPrinterParameters);
 begin
   inherited Create;
+  FParams := AParams;
   FLogger := TLogFile.Create;
   FLines := TTntStringList.Create;
 end;
@@ -117,6 +121,8 @@ begin
   try
     Check(Printer.ClaimDevice(0));
     Printer.DeviceEnabled := True;
+    Check(Printer.ResultCode);
+
     AddProps;
   finally
     Printer.Close;
@@ -124,35 +130,12 @@ begin
   Result := FLines.Text;
 end;
 
-function TRecPrinter.GetPropVal(const PropertyName: WideString): WideString;
-var
-  Value: Variant;
-  Intf: IDispatch;
-  PName: PWideChar;
-  PropID: Integer;
-  DispParams: TDispParams;
-begin
-  Intf := Printer;
-  PName := PWideChar(PropertyName);
-  try
-    OleCheck(Intf.GetIDsOfNames(GUID_NULL, @PName, 1, GetThreadLocale, @PropID));
-    VarClear(Value);
-    FillChar(DispParams, SizeOf(DispParams), 0);
-    OleCheck(Intf.Invoke(PropID, GUID_NULL, 0, DISPATCH_PROPERTYGET,
-      DispParams, @Value, nil, nil));
-
-    Result := Value;
-  except
-    on E: Exception do Result := E.Message;
-  end;
-end;
-
-procedure TRecPrinter.AddProp(const PropName: WideString; PropText: WideString);
+procedure TRecPrinter.AddProp(const PropName: WideString; PropVal: Variant;
+  PropText: WideString);
 var
   Line: WideString;
 begin
-  Line := GetPropVal(PropName);
-  Line := Tnt_WideFormat('%-30s: %s', [PropName, Line]);
+  Line := Tnt_WideFormat('%-30s: %s', [PropName, PropVal]);
   if PropText <> '' then
     Line := Line + ', ' + PropText;
   FLines.Add(Line);
@@ -160,148 +143,149 @@ end;
 
 procedure TRecPrinter.AddProps;
 begin
-  AddProp('ControlObjectDescription');
-  AddProp('ControlObjectVersion');
-  AddProp('ServiceObjectDescription');
-  AddProp('ServiceObjectVersion');
-  AddProp('DeviceDescription');
-  AddProp('DeviceName');
-  AddProp('CapConcurrentJrnRec');
-  AddProp('CapConcurrentJrnSlp');
-  AddProp('CapConcurrentRecSlp');
-  AddProp('CapCoverSensor');
-  AddProp('CapJrn2Color');
-  AddProp('CapJrnBold');
-  AddProp('CapJrnDhigh');
-  AddProp('CapJrnDwide');
-  AddProp('CapJrnDwideDhigh');
-  AddProp('CapJrnEmptySensor');
-  AddProp('CapJrnItalic');
-  AddProp('CapJrnNearEndSensor');
-  AddProp('CapJrnPresent');
-  AddProp('CapJrnUnderline');
-  AddProp('CapRec2Color');
-  AddProp('CapRecBarCode');
-  AddProp('CapRecBitmap');
-  AddProp('CapRecBold');
-  AddProp('CapRecDhigh');
-  AddProp('CapRecDwide');
-  AddProp('CapRecDwideDhigh');
-  AddProp('CapRecEmptySensor');
-  AddProp('CapRecItalic');
-  AddProp('CapRecLeft90');
-  AddProp('CapRecNearEndSensor');
-  AddProp('CapRecPapercut');
-  AddProp('CapRecPresent');
-  AddProp('CapRecRight90');
-  AddProp('CapRecRotate180');
-  AddProp('CapRecStamp');
-  AddProp('CapRecUnderline');
-  AddProp('CapSlp2Color');
-  AddProp('CapSlpBarCode');
-  AddProp('CapSlpBitmap');
-  AddProp('CapSlpBold');
-  AddProp('CapSlpDhigh');
-  AddProp('CapSlpDwide');
-  AddProp('CapSlpDwideDhigh');
-  AddProp('CapSlpEmptySensor');
-  AddProp('CapSlpFullslip');
-  AddProp('CapSlpItalic');
-  AddProp('CapSlpLeft90');
-  AddProp('CapSlpNearEndSensor');
-  AddProp('CapSlpPresent');
-  AddProp('CapSlpRight90');
-  AddProp('CapSlpRotate180');
-  AddProp('CapSlpUnderline');
+  AddProp('ControlObjectDescription', Printer.ControlObjectDescription);
+  AddProp('ControlObjectVersion', Printer.ControlObjectVersion);
+  AddProp('ServiceObjectDescription', Printer.ServiceObjectDescription);
+  AddProp('ServiceObjectVersion', Printer.ServiceObjectVersion);
+  AddProp('DeviceDescription', Printer.DeviceDescription);
+  AddProp('DeviceName', Printer.DeviceName);
+  AddProp('CapConcurrentJrnRec', Printer.CapConcurrentJrnRec);
+  AddProp('CapConcurrentJrnSlp', Printer.CapConcurrentJrnSlp);
+  AddProp('CapConcurrentRecSlp', Printer.CapConcurrentRecSlp);
+  AddProp('CapCoverSensor', Printer.CapCoverSensor);
+  AddProp('CapJrn2Color', Printer.CapJrn2Color);
+  AddProp('CapJrnBold', Printer.CapJrnBold);
+  AddProp('CapJrnDhigh', Printer.CapJrnDhigh);
+  AddProp('CapJrnDwide', Printer.CapJrnDwide);
+  AddProp('CapJrnDwideDhigh', Printer.CapJrnDwideDhigh);
+  AddProp('CapJrnEmptySensor', Printer.CapJrnEmptySensor);
+  AddProp('CapJrnItalic', Printer.CapJrnItalic);
+  AddProp('CapJrnNearEndSensor', Printer.CapJrnNearEndSensor);
+  AddProp('CapJrnPresent', Printer.CapJrnPresent);
+  AddProp('CapJrnUnderline', Printer.CapJrnUnderline);
+  AddProp('CapRec2Color', Printer.CapRec2Color);
+  AddProp('CapRecBarCode', Printer.CapRecBarCode);
+  AddProp('CapRecBitmap', Printer.CapRecBitmap);
+  AddProp('CapRecBold', Printer.CapRecBold);
+  AddProp('CapRecDhigh', Printer.CapRecDhigh);
+  AddProp('CapRecDwide', Printer.CapRecDwide);
+  AddProp('CapRecDwideDhigh', Printer.CapRecDwideDhigh);
+  AddProp('CapRecEmptySensor', Printer.CapRecEmptySensor);
+  AddProp('CapRecItalic', Printer.CapRecItalic);
+  AddProp('CapRecLeft90', Printer.CapRecLeft90);
+  AddProp('CapRecNearEndSensor', Printer.CapRecNearEndSensor);
+  AddProp('CapRecPapercut', Printer.CapRecPapercut);
+  AddProp('CapRecPresent', Printer.CapRecPresent);
+  AddProp('CapRecRight90', Printer.CapRecRight90);
+  AddProp('CapRecRotate180', Printer.CapRecRotate180);
+  AddProp('CapRecStamp', Printer.CapRecStamp);
+  AddProp('CapRecUnderline', Printer.CapRecUnderline);
+  AddProp('CapSlp2Color', Printer.CapSlp2Color);
+  AddProp('CapSlpBarCode', Printer.CapSlpBarCode);
+  AddProp('CapSlpBitmap', Printer.CapSlpBitmap);
+  AddProp('CapSlpBold', Printer.CapSlpBold);
+  AddProp('CapSlpDhigh', Printer.CapSlpDhigh);
+  AddProp('CapSlpDwide', Printer.CapSlpDwide);
+  AddProp('CapSlpDwideDhigh', Printer.CapSlpDwideDhigh);
+  AddProp('CapSlpEmptySensor', Printer.CapSlpEmptySensor);
+  AddProp('CapSlpFullslip', Printer.CapSlpFullslip);
+  AddProp('CapSlpItalic', Printer.CapSlpItalic);
+  AddProp('CapSlpLeft90', Printer.CapSlpLeft90);
+  AddProp('CapSlpNearEndSensor', Printer.CapSlpNearEndSensor);
+  AddProp('CapSlpPresent', Printer.CapSlpPresent);
+  AddProp('CapSlpRight90', Printer.CapSlpRight90);
+  AddProp('CapSlpRotate180', Printer.CapSlpRotate180);
+  AddProp('CapSlpUnderline', Printer.CapSlpUnderline);
 
-  AddProp('CharacterSetList');
-  AddProp('CoverOpen');
-  AddProp('ErrorStation');
-  AddProp('JrnEmpty');
-  AddProp('JrnLineCharsList');
-  AddProp('JrnLineWidth');
-  AddProp('JrnNearEnd');
-  AddProp('RecEmpty');
-  AddProp('RecLineCharsList');
-  AddProp('RecLinesToPaperCut');
-  AddProp('RecLineWidth');
-  AddProp('RecNearEnd');
-  AddProp('RecSidewaysMaxChars');
-  AddProp('RecSidewaysMaxLines');
-  AddProp('SlpEmpty');
-  AddProp('SlpLineCharsList');
-  AddProp('SlpLinesNearEndToEnd');
-  AddProp('SlpLineWidth');
-  AddProp('SlpMaxLines');
-  AddProp('SlpNearEnd');
-  AddProp('SlpSidewaysMaxChars');
-  AddProp('SlpSidewaysMaxLines');
-  AddProp('CapCharacterSet');
-  AddProp('CapTransaction');
-  AddProp('ErrorLevel');
-  AddProp('ErrorString');
-  AddProp('FontTypefaceList');
-  AddProp('RecBarCodeRotationList');
-  AddProp('SlpBarCodeRotationList');
-  AddProp('CapPowerReporting');
-  AddProp('PowerState');
-  AddProp('CapJrnCartridgeSensor');
-  AddProp('CapJrnColor');
-  AddProp('CapRecCartridgeSensor');
-  AddProp('CapRecColor');
-  AddProp('CapRecMarkFeed');
-  AddProp('CapSlpBothSidesPrint');
-  AddProp('CapSlpCartridgeSensor');
-  AddProp('CapSlpColor');
-  AddProp('JrnCartridgeState');
-  AddProp('RecCartridgeState');
-  AddProp('SlpCartridgeState');
-  AddProp('SlpPrintSide');
-  AddProp('CapMapCharacterSet');
-  AddProp('RecBitmapRotationList');
-  AddProp('SlpBitmapRotationList');
-  AddProp('CapStatisticsReporting');
-  AddProp('CapUpdateStatistics');
-  AddProp('CapCompareFirmwareVersion');
-  AddProp('CapUpdateFirmware');
-  AddProp('CapConcurrentPageMode');
-  AddProp('CapRecPageMode');
-  AddProp('CapSlpPageMode');
-  AddProp('PageModeArea');
-  AddProp('PageModeDescriptor');
-  AddProp('CapRecRuledLine');
-  AddProp('CapSlpRuledLine');
-  AddProp('FreezeEvents');
-  AddProp('AsyncMode');
-  AddProp('CharacterSet');
-  AddProp('FlagWhenIdle');
-  AddProp('JrnLetterQuality');
-  AddProp('JrnLineChars');
-  AddProp('JrnLineHeight');
-  AddProp('JrnLineSpacing');
-  AddProp('MapMode');
-  AddProp('RecLetterQuality');
-  AddProp('RecLineChars');
-  AddProp('RecLineHeight');
-  AddProp('RecLineSpacing');
-  AddProp('SlpLetterQuality');
-  AddProp('SlpLineChars');
-  AddProp('SlpLineHeight');
-  AddProp('SlpLineSpacing');
-  AddProp('RotateSpecial');
-  AddProp('BinaryConversion');
-  AddProp('PowerNotify');
-  AddProp('CartridgeNotify');
-  AddProp('JrnCurrentCartridge');
-  AddProp('RecCurrentCartridge');
-  AddProp('SlpCurrentCartridge');
-  AddProp('MapCharacterSet');
-  AddProp('PageModeHorizontalPosition');
-  AddProp('PageModePrintArea');
-  AddProp('PageModePrintDirection');
-  AddProp('PageModeStation');
-  AddProp('PageModeVerticalPosition');
-  AddProp('CheckHealthText');
+  AddProp('CharacterSetList', Printer.CharacterSetList);
+  AddProp('CoverOpen', Printer.CoverOpen);
+  AddProp('ErrorStation', Printer.ErrorStation);
+  AddProp('JrnEmpty', Printer.JrnEmpty);
+  AddProp('JrnLineCharsList', Printer.JrnLineCharsList);
+  AddProp('JrnLineWidth', Printer.JrnLineWidth);
+  AddProp('JrnNearEnd', Printer.JrnNearEnd);
+  AddProp('RecEmpty', Printer.RecEmpty);
+  AddProp('RecLineCharsList', Printer.RecLineCharsList);
+  AddProp('RecLinesToPaperCut', Printer.RecLinesToPaperCut);
+  AddProp('RecLineWidth', Printer.RecLineWidth);
+  AddProp('RecNearEnd', Printer.RecNearEnd);
+  AddProp('RecSidewaysMaxChars', Printer.RecSidewaysMaxChars);
+  AddProp('RecSidewaysMaxLines', Printer.RecSidewaysMaxLines);
+  AddProp('SlpEmpty', Printer.SlpEmpty);
+  AddProp('SlpLineCharsList', Printer.SlpLineCharsList);
+  AddProp('SlpLinesNearEndToEnd', Printer.SlpLinesNearEndToEnd);
+  AddProp('SlpLineWidth', Printer.SlpLineWidth);
+  AddProp('SlpMaxLines', Printer.SlpMaxLines);
+  AddProp('SlpNearEnd', Printer.SlpNearEnd);
+  AddProp('SlpSidewaysMaxChars', Printer.SlpSidewaysMaxChars);
+  AddProp('SlpSidewaysMaxLines', Printer.SlpSidewaysMaxLines);
+  AddProp('CapCharacterSet', Printer.CapCharacterSet);
+  AddProp('CapTransaction', Printer.CapTransaction);
+  AddProp('ErrorLevel', Printer.ErrorLevel);
+  AddProp('ErrorString', Printer.ErrorString);
+  AddProp('FontTypefaceList', Printer.FontTypefaceList);
+  AddProp('RecBarCodeRotationList', Printer.RecBarCodeRotationList);
+  AddProp('SlpBarCodeRotationList', Printer.SlpBarCodeRotationList);
+  AddProp('CapPowerReporting', Printer.CapPowerReporting);
+  AddProp('PowerState', Printer.PowerState);
+  AddProp('CapJrnCartridgeSensor', Printer.CapJrnCartridgeSensor);
+  AddProp('CapJrnColor', Printer.CapJrnColor);
+  AddProp('CapRecCartridgeSensor', Printer.CapRecCartridgeSensor);
+  AddProp('CapRecColor', Printer.CapRecColor);
+  AddProp('CapRecMarkFeed', Printer.CapRecMarkFeed);
+  AddProp('CapSlpBothSidesPrint', Printer.CapSlpBothSidesPrint);
+  AddProp('CapSlpCartridgeSensor', Printer.CapSlpCartridgeSensor);
+  AddProp('CapSlpColor', Printer.CapSlpColor);
+  AddProp('JrnCartridgeState', Printer.JrnCartridgeState);
+  AddProp('RecCartridgeState', Printer.RecCartridgeState);
+  AddProp('SlpCartridgeState', Printer.SlpCartridgeState);
+  AddProp('SlpPrintSide', Printer.SlpPrintSide);
+  AddProp('CapMapCharacterSet', Printer.CapMapCharacterSet);
+  AddProp('RecBitmapRotationList', Printer.RecBitmapRotationList);
+  AddProp('SlpBitmapRotationList', Printer.SlpBitmapRotationList);
+  AddProp('CapStatisticsReporting', Printer.CapStatisticsReporting);
+  AddProp('CapUpdateStatistics', Printer.CapUpdateStatistics);
+  AddProp('CapCompareFirmwareVersion', Printer.CapCompareFirmwareVersion);
+  AddProp('CapUpdateFirmware', Printer.CapUpdateFirmware);
+  AddProp('CapConcurrentPageMode', Printer.CapConcurrentPageMode);
+  AddProp('CapRecPageMode', Printer.CapRecPageMode);
+  AddProp('CapSlpPageMode', Printer.CapSlpPageMode);
+  AddProp('PageModeArea', Printer.PageModeArea);
+  AddProp('PageModeDescriptor', Printer.PageModeDescriptor);
+  AddProp('CapRecRuledLine', Printer.CapRecRuledLine);
+  AddProp('CapSlpRuledLine', Printer.CapSlpRuledLine);
+  AddProp('FreezeEvents', Printer.FreezeEvents);
+  AddProp('AsyncMode', Printer.AsyncMode);
+  AddProp('CharacterSet', Printer.CharacterSet);
+  AddProp('FlagWhenIdle', Printer.FlagWhenIdle);
+  AddProp('JrnLetterQuality', Printer.JrnLetterQuality);
+  AddProp('JrnLineChars', Printer.JrnLineChars);
+  AddProp('JrnLineHeight', Printer.JrnLineHeight);
+
+  AddProp('JrnLineSpacing', Printer.JrnLineSpacing);
+  AddProp('MapMode', Printer.MapMode);
+  AddProp('RecLetterQuality', Printer.RecLetterQuality);
+  AddProp('RecLineChars', Printer.RecLineChars);
+  AddProp('RecLineHeight', Printer.RecLineHeight);
+  AddProp('RecLineSpacing', Printer.RecLineSpacing);
+  AddProp('SlpLetterQuality', Printer.SlpLetterQuality);
+  AddProp('SlpLineChars', Printer.SlpLineChars);
+  AddProp('SlpLineHeight', Printer.SlpLineHeight);
+  AddProp('SlpLineSpacing', Printer.SlpLineSpacing);
+  AddProp('RotateSpecial', Printer.RotateSpecial);
+  AddProp('BinaryConversion', Printer.BinaryConversion);
+  AddProp('PowerNotify', Printer.PowerNotify);
+  AddProp('CartridgeNotify', Printer.CartridgeNotify);
+  AddProp('JrnCurrentCartridge', Printer.JrnCurrentCartridge);
+  AddProp('RecCurrentCartridge', Printer.RecCurrentCartridge);
+  AddProp('SlpCurrentCartridge', Printer.SlpCurrentCartridge);
+  AddProp('MapCharacterSet', Printer.MapCharacterSet);
+  AddProp('PageModeHorizontalPosition', Printer.PageModeHorizontalPosition);
+  AddProp('PageModePrintArea', Printer.PageModePrintArea);
+  AddProp('PageModePrintDirection', Printer.PageModePrintDirection);
+  AddProp('PageModeStation', Printer.PageModeStation);
+  AddProp('PageModeVerticalPosition', Printer.PageModeVerticalPosition);
+  AddProp('CheckHealthText', Printer.CheckHealthText);
 end;
 
 function TRecPrinter.PrintTestReceipt: WideString;
@@ -364,7 +348,7 @@ end;
 
 constructor TWinPrinter.Create(AParams: TPrinterParameters);
 begin
-  inherited Create;
+  inherited Create(AParams);
   FParams := AParams;
   FPrinter := TPosWinPrinter.Create2(nil, FLogger);
 end;
@@ -378,7 +362,7 @@ end;
 
 constructor TOposPrinter.Create(AParams: TPrinterParameters);
 begin
-  inherited Create;
+  inherited Create(AParams);
   FParams := AParams;
   FPrinter := TOPOSPOSPrinter.Create(nil).ControlInterface;
 end;
@@ -404,10 +388,23 @@ end;
 
 constructor TSerialEscPrinter.Create(AParams: TPrinterParameters);
 begin
-  inherited Create;
+  inherited Create(AParams);
   FParams := AParams;
-  FPort := TSerialPort.Create(SerialParams);
-  FPrinter := TPosEscPrinter.Create2(nil, FPort, FLogger);
+  FPrinter := TPosEscPrinter.Create2(nil, CreateSerialPort, FLogger);
+end;
+
+function TSerialEscPrinter.CreateSerialPort: TSerialPort;
+var
+  SerialParams: TSerialParams;
+begin
+  SerialParams.PortName := Params.PortName;
+  SerialParams.BaudRate := Params.BaudRate;
+  SerialParams.DataBits := Params.DataBits;
+  SerialParams.StopBits := Params.StopBits;
+  SerialParams.Parity := Params.Parity;
+  SerialParams.FlowControl := Params.FlowControl;
+  SerialParams.ReconnectPort := Params.ReconnectPort;
+  Result := TSerialPort.Create(SerialParams, FLogger);
 end;
 
 function TSerialEscPrinter.ReadDeviceList: WideString;

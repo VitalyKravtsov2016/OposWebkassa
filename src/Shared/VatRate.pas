@@ -31,7 +31,7 @@ type
     FName: WideString;
     FTotal: Currency;
   public
-    constructor Create(AOwner: TVatRates; ACode: Integer; ARate: Double;
+    constructor Create2(AOwner: TVatRates; ACode: Integer; ARate: Double;
       const AName: string);
 
     function GetTax(Amount: Currency): Currency;
@@ -54,7 +54,7 @@ end;
 
 function TVatRates.Add(ACode: Integer; ARate: Double; const AName: string): TVatRate;
 begin
-  Result := TVatRate.Create(Self, ACode, ARate, AName);
+  Result := TVatRate.Create2(Self, ACode, ARate, AName);
 end;
 
 function TVatRates.ItemByCode(Code: Integer): TVatRate;
@@ -76,7 +76,7 @@ end;
 
 { TVatRate }
 
-constructor TVatRate.Create(AOwner: TVatRates; ACode: Integer; ARate: Double;
+constructor TVatRate.Create2(AOwner: TVatRates; ACode: Integer; ARate: Double;
   const AName: string);
 begin
   inherited Create(AOwner);

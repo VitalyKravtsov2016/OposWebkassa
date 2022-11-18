@@ -83,7 +83,11 @@ uses
   OposPtr in '..\Opos\OposPtr.pas',
   OposPtrhi in '..\Opos\OposPtrhi.pas',
   PrinterParametersReg in '..\Shared\PrinterParametersReg.pas',
-  VatRate in '..\Shared\VatRate.pas';
+  VatRate in '..\Shared\VatRate.pas',
+  SerialPort in '..\Shared\SerialPort.pas',
+  PrinterPort in '..\Shared\PrinterPort.pas',
+  DeviceNotification in '..\Shared\DeviceNotification.pas',
+  PortUtil in '..\Shared\PortUtil.pas';
 
 {$R *.RES}
 {$R WindowsXP.RES}

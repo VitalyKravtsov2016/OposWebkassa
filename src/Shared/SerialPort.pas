@@ -11,6 +11,14 @@ uses
   LogFile, PrinterPort, WException, TntSysUtils, gnugettext,
   DeviceNotification, PortUtil, TextReport;
 
+const
+  /////////////////////////////////////////////////////////////////////////////
+  // Flow control
+
+  FLOW_CONTROL_XON      = 0;
+  FLOW_CONTROL_HARDWARE = 1;
+  FLOW_CONTROL_NONE     = 2;
+
 type
   { TSerialParams }
 
@@ -39,6 +47,7 @@ type
     FLock: TCriticalSection;
     FNotification: TDeviceNotification;
 
+    procedure UpdateDCB;
     procedure CheckOpened;
     procedure CreateHandle;
     procedure ReadCommConfig;
@@ -46,11 +55,11 @@ type
     procedure UpdateCommTimeouts;
     procedure UpdateCommProperties;
     function GetOpened: Boolean;
-    procedure UpdateDCB(BaudRate: DWORD);
     procedure DeviceChanged(Sender: TObject; dbt: Integer);
     procedure DoClose;
 
     property Logger: ILogFile read FLogger;
+    property Params: TSerialParams read FParams;
   public
     constructor Create(const AParams: TSerialParams; ALogger: ILogFile);
     destructor Destroy; override;
@@ -307,6 +316,7 @@ end;
 (*
 DWORD DCBlength;
   DWORD BaudRate;
+
   DWORD fBinary : 1;
   DWORD fParity : 1;
   DWORD fOutxCtsFlow : 1;
@@ -322,20 +332,28 @@ DWORD DCBlength;
   DWORD fAbortOnError : 1;
   DWORD fDummy2 : 17;
 *)
-procedure TSerialPort.UpdateDCB(BaudRate: DWORD);
+
+procedure TSerialPort.UpdateDCB;
 const
-  fBinary              = $00000001;
-  fOutX     = $100;
+  fBinary       = $00000001;
+  fParity       = $00000002;
+  fOutxCtsFlow  = $00000004;
+  fOutxDsrFlow  = $00000008;
+  fOutX         = $100;
+  fInX          = $200;
 var
   DCB: TDCB;
 begin
   FillChar(DCB, SizeOf(TDCB), #0);
-  DCB.Bytesize := 8;
-  DCB.Parity := NOPARITY;
-  DCB.Stopbits := ONESTOPBIT;
-  DCB.BaudRate := BaudRate;
-  DCB.Flags := FBinary;
-  //DCB.Flags := FBinary + fOutX;
+  DCB.Bytesize := Params.DataBits;
+  DCB.Parity := Params.Parity;
+  DCB.Stopbits := Params.StopBits;
+  DCB.BaudRate := Params.BaudRate;
+  DCB.Flags := FBinary + fParity;
+  if Params.FlowControl = FLOW_CONTROL_XON then
+    DCB.Flags := DCB.Flags + fOutX;
+  if Params.FlowControl = FLOW_CONTROL_HARDWARE then
+    DCB.Flags := DCB.Flags + fOutxCtsFlow;
 
   if not SetCommState(GetHandle, DCB) then
   begin
@@ -479,12 +497,12 @@ begin
     begin
       CreateHandle;
       Inc(FOpenCount);
-      UpdateDCB(FParams.BaudRate);
+      UpdateDCB;
       SetupComm(GetHandle, 1024, 1024);
-
-      ReadCommConfig;
       UpdateCommTimeouts;
       UpdateCommProperties;
+
+      ReadCommConfig;
       FNotification.Install(FHandle);
     end;
   finally

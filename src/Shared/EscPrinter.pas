@@ -341,6 +341,11 @@ type
     procedure PrintText(Text: string);
     procedure SetNormalPrintMode;
 
+    function ReadFirmwareVersion: string;
+    function ReadManufacturer: string;
+    function ReadPrinterName: string;
+    function ReadSerialNumber: string;
+
     property DeviceMetrics: TDeviceMetrics read FDeviceMetrics write FDeviceMetrics;
   end;
 
@@ -814,6 +819,26 @@ begin
   finally
     FPort.Unlock;
   end;
+end;
+
+function TEscPrinter.ReadFirmwareVersion: string;
+begin
+  Result := ReadPrinterID(65);
+end;
+
+function TEscPrinter.ReadManufacturer: string;
+begin
+  Result := ReadPrinterID(66);
+end;
+
+function TEscPrinter.ReadPrinterName: string;
+begin
+  Result := ReadPrinterID(67);
+end;
+
+function TEscPrinter.ReadSerialNumber: string;
+begin
+  Result := ReadPrinterID(68);
 end;
 
 procedure TEscPrinter.SetHRIPosition(N: Byte);

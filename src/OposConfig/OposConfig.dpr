@@ -85,7 +85,8 @@ uses
   TextDocument in '..\OposWebkassa\units\TextDocument.pas',
   uZintBarcode in '..\Shared\uZintBarcode.pas',
   uZintInterface in '..\Shared\uZintInterface.pas',
-  SocketPort in '..\Shared\SocketPort.pas';
+  SocketPort in '..\Shared\SocketPort.pas',
+  RecPrinter in '..\OposWebkassa\units\RecPrinter.pas';
 
 {$R *.RES}
 {$R WindowsXP.RES}

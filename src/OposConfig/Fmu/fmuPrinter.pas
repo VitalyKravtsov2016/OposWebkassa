@@ -12,7 +12,7 @@ uses
   Opos, OposPtr, Oposhi, OposUtils, OposDevice,
   // This
   untUtil, PrinterParameters, FptrTypes, FiscalPrinterDevice, FileUtils,
-  WebkassaImpl;
+  WebkassaImpl, RecPrinter, SerialPort;
 
 type
   { TfmPrinter }
@@ -57,7 +57,6 @@ type
     procedure cbPrinterTypeChange(Sender: TObject);
     procedure cbPrinterNameChange(Sender: TObject);
   private
-    FPrinter: TWebkassaImpl;
     procedure UpdateFontNames;
     procedure UpdateDeviceNames;
     procedure UpdateBaudRates;
@@ -66,12 +65,8 @@ type
     procedure UpdateDataBits;
     procedure UpdateParity;
     procedure UpdateFlowControl;
-
-    function GetPrinter: TWebkassaImpl;
-    property Printer: TWebkassaImpl read GetPrinter;
+    function CreatePrinter(PrinterType: Integer): TRecPrinter;
   public
-    destructor Destroy; override;
-
     procedure UpdatePage; override;
     procedure UpdateObject; override;
   end;
@@ -84,12 +79,6 @@ implementation
 {$R *.dfm}
 
 { TfmFptrConnection }
-
-destructor TfmPrinter.Destroy;
-begin
-  FPrinter.Free;
-  inherited Destroy;
-end;
 
 procedure TfmPrinter.UpdatePage;
 begin
@@ -196,9 +185,9 @@ begin
   cbFlowControl.Items.BeginUpdate;
   try
     cbFlowControl.Clear;
-    cbFlowControl.Items.Add('XON / XOFF');
-    cbFlowControl.Items.Add('Аппаратный');
-    cbFlowControl.Items.Add('Нет');
+    cbFlowControl.Items.AddObject('XON / XOFF', TObject(FLOW_CONTROL_XON));
+    cbFlowControl.Items.AddObject('Аппаратный', TObject(FLOW_CONTROL_HARDWARE));
+    cbFlowControl.Items.AddObject('Нет', TObject(FLOW_CONTROL_NONE));
     cbFlowControl.ItemIndex := Parameters.FlowControl;
   finally
     cbFlowControl.Items.EndUpdate;
@@ -216,23 +205,34 @@ begin
   Parameters.StopBits := Integer(cbStopBits.Items.Objects[cbStopBits.ItemIndex]);
   Parameters.Parity := Integer(cbParity.Items.Objects[cbParity.ItemIndex]);
   Parameters.FlowControl := Integer(cbFlowControl.Items.Objects[cbFlowControl.ItemIndex]);
-  Printer.Params.Assign(Parameters);
 end;
 
-function TfmPrinter.GetPrinter: TWebkassaImpl;
+function TfmPrinter.CreatePrinter(PrinterType: Integer): TRecPrinter;
 begin
-  if FPrinter = nil then
-    FPrinter := TWebkassaImpl.Create(nil);
-  Result := FPrinter;
+  case PrinterType of
+    PrinterTypePosPrinter: Result := TOposPrinter.Create(Parameters);
+    PrinterTypeWinPrinter: Result := TWinPrinter.Create(Parameters);
+    PrinterTypeEscPrinterSerial: Result := TSerialEscPrinter.Create(Parameters);
+    PrinterTypeEscPrinterNetwork: Result := TSerialEscPrinter.Create(Parameters);
+  else
+    raise Exception.CreateFmt('Неизвестный тип принтера, %d', [PrinterType]);
+  end;
 end;
 
 procedure TfmPrinter.btnTestConnectionClick(Sender: TObject);
+var
+  Printer: TRecPrinter;
 begin
   EnableButtons(False);
   memResult.Clear;
   try
     UpdateObject;
-    memResult.Text := Printer.TestPrinterConnection;
+    Printer := CreatePrinter(Parameters.PrinterType);
+    try
+      memResult.Text := Printer.TestConnection;
+    finally
+      Printer.Free;
+    end;
   except
     on E: Exception do
     begin
@@ -243,12 +243,19 @@ begin
 end;
 
 procedure TfmPrinter.btnPrintReceiptClick(Sender: TObject);
+var
+  Printer: TRecPrinter;
 begin
   EnableButtons(False);
   memResult.Clear;
   try
     UpdateObject;
-    memResult.Text := Printer.PrintTestReceipt;
+    Printer := CreatePrinter(Parameters.PrinterType);
+    try
+      memResult.Text := Printer.PrintTestReceipt;
+    finally
+      Printer.Free;
+    end;
   except
     on E: Exception do
     begin
@@ -260,8 +267,6 @@ end;
 
 procedure TfmPrinter.cbPrinterTypeChange(Sender: TObject);
 begin
-  FPrinter.Free;
-  FPrinter := nil;
   UpdateDeviceNames;
   UpdateFontNames;
 end;
@@ -269,34 +274,50 @@ end;
 procedure TfmPrinter.UpdateDeviceNames;
 var
   Index: Integer;
+  Printer: TRecPrinter;
 begin
-  cbPrinterName.Items.BeginUpdate;
   try
-    cbPrinterName.Items.Text := Printer.ReadDeviceList;
-    Index := cbPrinterName.Items.IndexOf(Parameters.PrinterName);
-    if Index = -1 then
-      Index := 0;
-    cbPrinterName.ItemIndex := Index;
-  finally
-    cbPrinterName.Items.EndUpdate;
+    cbPrinterName.Items.BeginUpdate;
+    Printer := CreatePrinter(cbPrinterType.ItemIndex);
+    try
+      cbPrinterName.Items.Text := Printer.ReadDeviceList;
+      Index := cbPrinterName.Items.IndexOf(Parameters.PrinterName);
+      if Index = -1 then
+        Index := 0;
+      cbPrinterName.ItemIndex := Index;
+    finally
+      Printer.Free;
+      cbPrinterName.Items.EndUpdate;
+    end;
+  except
+    on E: Exception do
+      memResult.Text := E.Message;
   end;
 end;
 
 procedure TfmPrinter.UpdateFontNames;
 var
   Index: Integer;
+  Printer: TRecPrinter;
 begin
-  cbFontName.Items.BeginUpdate;
   try
-    cbFontName.Items.Text := Printer.GetFontNames;
-    Index := cbFontName.Items.IndexOf(Parameters.FontName);
-    if Index = -1 then
-      Index := 0;
-    cbFontName.ItemIndex := Index;
+    cbFontName.Items.BeginUpdate;
+    Parameters.PrinterName := cbPrinterName.Text;
+    Printer := CreatePrinter(cbPrinterType.ItemIndex);
+    try
+      cbFontName.Items.Text := Printer.GetFontNames;
+      Index := cbFontName.Items.IndexOf(Parameters.FontName);
+      if Index = -1 then
+        Index := 0;
+      cbFontName.ItemIndex := Index;
+    finally
+      Printer.Free;
+      cbFontName.Items.EndUpdate;
+    end;
   except
-    // !!!
+    on E: Exception do
+      memResult.Text := E.Message;
   end;
-  cbFontName.Items.EndUpdate;
 end;
 
 procedure TfmPrinter.cbPrinterNameChange(Sender: TObject);

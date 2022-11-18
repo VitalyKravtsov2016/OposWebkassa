@@ -1889,6 +1889,17 @@ begin
         FPrinter.SetJustification(JUSTIFICATION_LEFT);
         FPrinter.SetNormalPrintMode;
         UpdatePrinterStatus;
+
+        
+(*
+        FPrinter.ReadFirmwareVersion
+        FPrinter.ReadManufacturer
+        FPrinter.ReadPrinterName
+        FPrinter.ReadSerialNumber
+*)
+
+
+
         StartDeviceThread;
       end else
       begin
