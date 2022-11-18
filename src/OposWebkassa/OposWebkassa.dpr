@@ -67,7 +67,8 @@ uses
   DeviceNotification in '..\Shared\DeviceNotification.pas',
   PortUtil in '..\Shared\PortUtil.pas',
   TextReport in '..\Shared\TextReport.pas',
-  SocketPort in '..\Shared\SocketPort.pas';
+  SocketPort in '..\Shared\SocketPort.pas',
+  SerialPorts in '..\Shared\SerialPorts.pas';
 
 exports
   DllGetClassObject,

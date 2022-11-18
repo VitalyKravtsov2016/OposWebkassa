@@ -1727,10 +1727,10 @@ begin
     for i := 0 to Lines.Count-1 do
     begin
       Text := Lines[i];
-      IsDoubleHighAndWide := Pos(ESC_DoubleHighAndWide, Text) <> 0;
+      IsDoubleHighAndWide := Pos(ESC_DoubleHighWide, Text) <> 0;
       if IsDoubleHighAndWide then
       begin
-        Text := StringReplace(Text, ESC_DoubleHighAndWide, '', []);
+        Text := StringReplace(Text, ESC_DoubleHighWide, '', []);
         Printer.Canvas.Font.Name := 'FontA22';
       end;
       Printer.Canvas.TextOut(0, FPositionY, Text);

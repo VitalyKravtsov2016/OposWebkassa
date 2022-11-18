@@ -9,77 +9,59 @@ uses
   TntClasses, TntSysUtils,
   // Opos
   Opos, OposPtr, Oposhi, OposException, OposEsc, OposUtils, OposDevice,
-  OposPOSPrinter_CCO_TLB;
+  OposPOSPrinter_CCO_TLB,
+  // This
+  PosWinPrinter, PosEscPrinter, LogFile, PrinterParameters;
 
+  
 type
-  { IRecPrinter }
+  { TRecPrinter }
 
-  IRecPrinter = interface
-    function TestConnection: WideString;
-    function PrintTestReceipt: WideString;
-    function ReadDeviceList: WideString;
-    function GetDeviceName: WideString;
-    function GetFontName: WideString;
-    function GetFontNames: WideString;
-    procedure SetDeviceName(const Value: WideString);
-    procedure SetFontName(const Value: WideString);
-
-    property FontName: WideString read GetFontName write SetFontName;
-    property DeviceName: WideString read GetDeviceName write SetDeviceName;
-  end;
-
-  { TWinPrinter }
-
-  TWinPrinter = class(TInterfacedObject, IRecPrinter)
+  TRecPrinter = class
   private
-    FFontName: WideString;
-    FDeviceName: WideString;
-  public
-    function TestConnection: WideString;
-    function PrintTestReceipt: WideString;
-
-    function ReadDeviceList: WideString;
-    function GetFontNames: WideString;
-    function GetFontName: WideString;
-    procedure SetFontName(const Value: WideString);
-    function GetDeviceName: WideString;
-    procedure SetDeviceName(const Value: WideString);
-
-    property FontName: WideString read GetFontName write SetFontName;
-    property DeviceName: WideString read GetDeviceName write SetDeviceName;
-  end;
-
-  { TPosPrinter }
-
-  TPosPrinter = class(TInterfacedObject, IRecPrinter)
-  private
+    FLogger: ILogFile;
     FLines: TTntStrings;
-    FFontName: WideString;
-    FDeviceName: WideString;
-    FPrinter: TOPOSPOSPrinter;
+    FPrinter: IOPOSPOSPrinter;
+    FParams: TPrinterParameters;
 
     procedure Check(AResultCode: Integer);
-    function GetPrinter: TOPOSPOSPrinter;
     function GetPropVal(const PropertyName: WideString): WideString;
     procedure AddProp(const PropName: WideString; PropText: WideString = '');
     procedure AddProps;
-    function GetFontName: WideString;
-    function GetFontNames: WideString;
-    procedure SetFontName(const Value: WideString);
-    function GetDeviceName: WideString;
-    procedure SetDeviceName(const Value: WideString);
 
-    property Printer: TOPOSPOSPrinter read GetPrinter;
+    property Printer: IOPOSPOSPrinter read FPrinter;
   public
     constructor Create;
     destructor Destroy; override;
 
+    function GetFontNames: WideString;
     function TestConnection: WideString;
-    function ReadDeviceList: WideString;
     function PrintTestReceipt: WideString;
+    function ReadDeviceList: WideString; virtual; abstract;
+  end;
 
-    property FontName: WideString read GetFontName write SetFontName;
-    property DeviceName: WideString read GetDeviceName write SetDeviceName;
+  { TWinPrinter }
+
+  TWinPrinter = class(TRecPrinter)
+  public
+    constructor Create(AParams: TPrinterParameters);
+    function ReadDeviceList: WideString; override;
+  end;
+
+  { TOposPrinter }
+
+  TOposPrinter = class(TRecPrinter)
+  public
+    constructor Create(AParams: TPrinterParameters);
+    function ReadDeviceList: WideString; override;
+  end;
+
+  { TSerialEscPrinter }
+
+  TSerialEscPrinter = class(TRecPrinter)
+  public
+    constructor Create(AParams: TPrinterParameters);
+    function ReadDeviceList: WideString; override;
   end;
 
 implementation
@@ -99,22 +81,24 @@ const
     '            СПАСИБО ЗА ПОКУПКУ            ' + CRLF +
     '                                          ';
 
-{ TPosPrinter }
+{ TRecPrinter }
 
-constructor TPosPrinter.Create;
+constructor TRecPrinter.Create;
 begin
   inherited Create;
+  FLogger := TLogFile.Create;
   FLines := TTntStringList.Create;
 end;
 
-destructor TPosPrinter.Destroy;
+destructor TRecPrinter.Destroy;
 begin
   FLines.Free;
-  FPrinter.Free;
+  FLogger := nil;
+  FPrinter := nil;
   inherited Destroy;
 end;
 
-procedure TPosPrinter.Check(AResultCode: Integer);
+procedure TRecPrinter.Check(AResultCode: Integer);
 begin
   if AResultCode <> OPOS_SUCCESS then
   begin
@@ -124,46 +108,12 @@ begin
   end;
 end;
 
-function TPosPrinter.GetPrinter: TOPOSPOSPrinter;
-begin
-  if FPrinter = nil then
-    FPrinter := TOPOSPOSPrinter.Create(nil);
-  Result := FPrinter;
-end;
-
-function TPosPrinter.GetDeviceName: WideString;
-begin
-  Result := FDeviceName;
-end;
-
-procedure TPosPrinter.SetDeviceName(const Value: WideString);
-begin
-  FDeviceName := Value;
-end;
-
-function TPosPrinter.ReadDeviceList: WideString;
-var
-  Device: TOposDevice;
-  Strings: TTntStrings;
-begin
-  Strings := TTntStringList.Create;
-  Device := TOposDevice.Create(nil, OPOS_CLASSKEY_PTR, OPOS_CLASSKEY_PTR,
-    'Opos.PosPrinter');
-  try
-    Device.GetDeviceNames(Strings);
-    Result := Strings.Text;
-  finally
-    Device.Free;
-    Strings.Free;
-  end;
-end;
-
-function TPosPrinter.TestConnection: WideString;
+function TRecPrinter.TestConnection: WideString;
 const
   BoolToStr: array [Boolean] of string = ('[ ]', '[X]');
 begin
   FLines.Clear;
-  Check(Printer.Open(DeviceName));
+  Check(Printer.Open(FParams.PrinterName));
   try
     Check(Printer.ClaimDevice(0));
     Printer.DeviceEnabled := True;
@@ -174,7 +124,7 @@ begin
   Result := FLines.Text;
 end;
 
-function TPosPrinter.GetPropVal(const PropertyName: WideString): WideString;
+function TRecPrinter.GetPropVal(const PropertyName: WideString): WideString;
 var
   Value: Variant;
   Intf: IDispatch;
@@ -182,7 +132,7 @@ var
   PropID: Integer;
   DispParams: TDispParams;
 begin
-  Intf := Printer.ControlInterface;
+  Intf := Printer;
   PName := PWideChar(PropertyName);
   try
     OleCheck(Intf.GetIDsOfNames(GUID_NULL, @PName, 1, GetThreadLocale, @PropID));
@@ -197,7 +147,7 @@ begin
   end;
 end;
 
-procedure TPosPrinter.AddProp(const PropName: WideString; PropText: WideString);
+procedure TRecPrinter.AddProp(const PropName: WideString; PropText: WideString);
 var
   Line: WideString;
 begin
@@ -208,7 +158,7 @@ begin
   FLines.Add(Line);
 end;
 
-procedure TPosPrinter.AddProps;
+procedure TRecPrinter.AddProps;
 begin
   AddProp('ControlObjectDescription');
   AddProp('ControlObjectVersion');
@@ -354,7 +304,7 @@ begin
   AddProp('CheckHealthText');
 end;
 
-function TPosPrinter.PrintTestReceipt: WideString;
+function TRecPrinter.PrintTestReceipt: WideString;
 
   procedure CheckPtr(AResultCode: Integer);
   begin
@@ -369,14 +319,14 @@ var
   i: Integer;
   Lines: TStrings;
 begin
-  Check(Printer.Open(DeviceName));
+  Check(Printer.Open(FParams.PrinterName));
   Lines := TStringList.Create;
   try
     Lines.Text := CashOutReceiptText;
     Check(Printer.ClaimDevice(0));
     Printer.DeviceEnabled := True;
-    if Pos(FontName, Printer.RecLineCharsList) <> 0 then
-      Printer.RecLineChars := StrToInt(FontName);
+    if Pos(FParams.FontName, Printer.RecLineCharsList) <> 0 then
+      Printer.RecLineChars := StrToInt(FParams.FontName);
 
     if Printer.CapTransaction then
     begin
@@ -399,19 +349,9 @@ begin
   end;
 end;
 
-function TPosPrinter.GetFontName: WideString;
+function TRecPrinter.GetFontNames: WideString;
 begin
-  Result := FFontName;
-end;
-
-procedure TPosPrinter.SetFontName(const Value: WideString);
-begin
-  FFontName := Value;
-end;
-
-function TPosPrinter.GetFontNames: WideString;
-begin
-  Check(Printer.Open(DeviceName));
+  Check(Printer.Open(FParams.PrinterName));
   try
     Result := Printer.RecLineCharsList;
     Result := StringReplace(Result, ',', CRLF, [rfReplaceAll, rfIgnoreCase]);
@@ -422,102 +362,57 @@ end;
 
 { TWinPrinter }
 
+constructor TWinPrinter.Create(AParams: TPrinterParameters);
+begin
+  inherited Create;
+  FParams := AParams;
+  FPrinter := TPosWinPrinter.Create2(nil, FLogger);
+end;
+
 function TWinPrinter.ReadDeviceList: WideString;
 begin
-  Result := Printer.Printers.Text;
+  Result := Printers.Printer.Printers.Text;
 end;
 
-function TWinPrinter.GetDeviceName: WideString;
+{ TOposPrinter }
+
+constructor TOposPrinter.Create(AParams: TPrinterParameters);
 begin
-  Result := FDeviceName;
+  inherited Create;
+  FParams := AParams;
+  FPrinter := TOPOSPOSPrinter.Create(nil).ControlInterface;
 end;
 
-procedure TWinPrinter.SetDeviceName(const Value: WideString);
-begin
-  FDeviceName := Value;
-end;
-
-function TWinPrinter.TestConnection: WideString;
+function TOposPrinter.ReadDeviceList: WideString;
 var
-  Lines: TStrings;
-const
-  OrientationText: array [TPrinterOrientation] of string = ('Портретная', 'Альбомная');
+  Device: TOposDevice;
+  Strings: TTntStrings;
 begin
-  Lines := TStringList.Create;
+  Strings := TTntStringList.Create;
+  Device := TOposDevice.Create(nil, OPOS_CLASSKEY_PTR, OPOS_CLASSKEY_PTR,
+    'Opos.PosPrinter');
   try
-    Printer.PrinterIndex := Printer.Printers.IndexOf(DeviceName);
-    Lines.Add(Format('Ширина страницы     : %d', [Printer.PageWidth]));
-    Lines.Add(Format('Высота страницы     : %d', [Printer.PageHeight]));
-    Lines.Add(Format('Ориентация страницы : %s', [OrientationText[Printer.Orientation]]));
-    Lines.Add('Шрифты:');
-    Lines.Add(GetFontNames);
-    Result := Lines.Text;
+    Device.GetDeviceNames(Strings);
+    Result := Strings.Text;
   finally
-    Lines.Free;
+    Device.Free;
+    Strings.Free;
   end;
 end;
 
-function TWinPrinter.PrintTestReceipt: WideString;
-var
-  i: Integer;
-  Y: Integer;
-  Lines: TStrings;
-  Metrics: TTextMetric;
-begin
-  Printer.PrinterIndex := Printer.Printers.IndexOf(DeviceName);
-  Printer.BeginDoc;
-  Lines := TStringList.Create;
-  try
-    Lines.Text := CashOutReceiptText;
-    Printer.Canvas.Font.Name := FontName;
-    GetTextMetrics(Printer.Canvas.Handle, Metrics);
+{ TSerialEscPrinter }
 
-    Y := 0;
-    for i := 0 to Lines.Count-1 do
-    begin
-      Printer.Canvas.TextOut(10, Y, Lines[i]);
-      Inc(Y, Metrics.tmHeight);
-    end;
-  finally
-    Lines.Free;
-    Printer.EndDoc;
-  end;
+constructor TSerialEscPrinter.Create(AParams: TPrinterParameters);
+begin
+  inherited Create;
+  FParams := AParams;
+  FPort := TSerialPort.Create(SerialParams);
+  FPrinter := TPosEscPrinter.Create2(nil, FPort, FLogger);
 end;
 
-function TWinPrinter.GetFontName: WideString;
+function TSerialEscPrinter.ReadDeviceList: WideString;
 begin
-  Result := FFontName;
-end;
-
-procedure TWinPrinter.SetFontName(const Value: WideString);
-begin
-  FFontName := Value;
-end;
-
-function EnumFontsProc(var LogFont: TLogFont; var TextMetric: TTextMetric;
-  FontType: Integer; Data: Pointer): Integer; stdcall;
-begin
-  if FontType = (RASTER_FONTTYPE + DEVICE_FONTTYPE) then
-  begin
-    TStrings(Data).Add(LogFont.lfFaceName);
-  end;
-  Result := 1;
-end;
-
-function TWinPrinter.GetFontNames: WideString;
-var
-  Fonts: TStringList;
-begin
-  Printer.PrinterIndex := Printer.Printers.IndexOf(DeviceName);
-
-  Fonts := TStringList.Create;
-  try
-    EnumFonts(Printer.Handle, nil, @EnumFontsProc, Pointer(Fonts));
-    Result := Fonts.Text;
-  except
-    Fonts.Free;
-    raise;
-  end;
+  Result := 'Serial ESC printer';
 end;
 
 end.

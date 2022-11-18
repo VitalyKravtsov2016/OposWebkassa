@@ -64,9 +64,16 @@ uses
   uZintBarcode in '..\..\src\Shared\uZintBarcode.pas',
   uZintInterface in '..\..\src\Shared\uZintInterface.pas',
   POSPrinterLog in '..\..\src\Opos\POSPrinterLog.pas',
-  PosWinPrinter in '..\..\src\Shared\PosWinPrinter.pas',
+  duWebkassaImpl in 'units\duWebkassaImpl.pas',
   EscPrinter in '..\..\src\Shared\EscPrinter.pas',
-  ByteUtils in '..\..\src\Shared\ByteUtils.pas';
+  ByteUtils in '..\..\src\Shared\ByteUtils.pas',
+  PosWinPrinter in '..\..\src\Shared\PosWinPrinter.pas',
+  PrinterPort in '..\..\src\Shared\PrinterPort.pas',
+  SerialPort in '..\..\src\Shared\SerialPort.pas',
+  DeviceNotification in '..\..\src\Shared\DeviceNotification.pas',
+  PortUtil in '..\..\src\Shared\PortUtil.pas',
+  TextReport in '..\..\src\Shared\TextReport.pas',
+  SocketPort in '..\..\src\Shared\SocketPort.pas';
 
 {$R *.RES}
 

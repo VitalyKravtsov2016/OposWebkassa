@@ -11,41 +11,31 @@ type
 
   { TVatRates }
 
-  TVatRates = class
+  TVatRates = class(TCollection)
   private
-    FList: TList;
-    function GetCount: Integer;
     function GetItem(Index: Integer): TVatRate;
-    procedure InsertItem(AItem: TVatRate);
-    procedure RemoveItem(AItem: TVatRate);
   public
     constructor Create;
-    destructor Destroy; override;
 
-    procedure Clear;
-    function Add(ACode: Integer; ARate: Double; const AName: string): TVatRate;
     function ItemByCode(Code: Integer): TVatRate;
-
-    property Count: Integer read GetCount;
+    function Add(ACode: Integer; ARate: Double; const AName: string): TVatRate;
     property Items[Index: Integer]: TVatRate read GetItem; default;
   end;
 
   { TVatRate }
 
-  TVatRate = class
+  TVatRate = class(TCollectionItem)
   private
-    FOwner: TVatRates;
     FCode: Integer;
     FRate: Double;
     FName: WideString;
     FTotal: Currency;
-    procedure SetOwner(AOwner: TVatRates);
   public
     constructor Create(AOwner: TVatRates; ACode: Integer; ARate: Double;
       const AName: string);
-    destructor Destroy; override;
 
     function GetTax(Amount: Currency): Currency;
+    procedure Assign(Source: TPersistent); override;
 
     property Rate: Double read FRate write FRate;
     property Code: Integer read FCode write FCode;
@@ -59,42 +49,7 @@ implementation
 
 constructor TVatRates.Create;
 begin
-  inherited Create;
-  FList := TList.Create;
-end;
-
-destructor TVatRates.Destroy;
-begin
-  Clear;
-  FList.Free;
-  inherited Destroy;
-end;
-
-procedure TVatRates.Clear;
-begin
-  while Count > 0 do Items[0].Free;
-end;
-
-function TVatRates.GetCount: Integer;
-begin
-  Result := FList.Count;
-end;
-
-function TVatRates.GetItem(Index: Integer): TVatRate;
-begin
-  Result := FList[Index];
-end;
-
-procedure TVatRates.InsertItem(AItem: TVatRate);
-begin
-  FList.Add(AItem);
-  AItem.FOwner := Self;
-end;
-
-procedure TVatRates.RemoveItem(AItem: TVatRate);
-begin
-  AItem.FOwner := nil;
-  FList.Remove(AItem);
+  inherited Create(TVatRate);
 end;
 
 function TVatRates.Add(ACode: Integer; ARate: Double; const AName: string): TVatRate;
@@ -114,31 +69,20 @@ begin
   Result := nil;
 end;
 
+function TVatRates.GetItem(Index: Integer): TVatRate;
+begin
+  Result := inherited Items[Index] as TVatRate;
+end;
+
 { TVatRate }
 
 constructor TVatRate.Create(AOwner: TVatRates; ACode: Integer; ARate: Double;
   const AName: string);
 begin
-  inherited Create;
-  SetOwner(AOwner);
+  inherited Create(AOwner);
   FCode := ACode;
   FRate := ARate;
   FName := AName;
-end;
-
-destructor TVatRate.Destroy;
-begin
-  SetOwner(nil);
-  inherited Destroy;
-end;
-
-procedure TVatRate.SetOwner(AOwner: TVatRates);
-begin
-  if AOwner <> FOwner then
-  begin
-    if FOwner <> nil then FOwner.RemoveItem(Self);
-    if AOwner <> nil then AOwner.InsertItem(Self);
-  end;
 end;
 
 function TVatRate.GetTax(Amount: Currency): Currency;
@@ -146,6 +90,22 @@ begin
   Result := Amount * (Rate/100) / (1 + Rate/100);
   Result := Round(Result * 100) / 100;
 end;
+
+procedure TVatRate.Assign(Source: TPersistent);
+var
+  Src: TVatRate;
+begin
+  if Source is TVatRate then
+  begin
+    Src := Source as TVatRate;
+    FCode := Src.Code;
+    FRate := Src.Rate;
+    FName := Src.Name;
+    FTotal := Src.Total;
+  end else
+    inherited Assign(Source);
+end;
+
 
 
 end.

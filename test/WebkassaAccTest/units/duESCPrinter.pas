@@ -22,11 +22,13 @@ type
     FLogger: ILogFile;
     FPrinter: TESCPrinter;
     FPrinterPort: IPrinterPort;
-
-    property Printer: TESCPrinter read FPrinter;
   protected
     procedure SetUp; override;
     procedure TearDown; override;
+
+    function CreateSerialPort: TSerialPort;
+    function CreateSocketPort: TSocketPort;
+    property Printer: TESCPrinter read FPrinter;
   published
     procedure TestReadStatus;
     procedure TestPrintMode;
@@ -41,28 +43,13 @@ implementation
 { TESCPrinterTest }
 
 procedure TESCPrinterTest.SetUp;
-var
-  SocketParams: TSocketParams;
 begin
   inherited SetUp;
   FLogger := TLogFile.Create;
-
-(*
-  // Socket
-  SocketParams.RemoteHost := '10.11.7.176';
-  SocketParams.RemotePort := 9100;
-  SocketParams.MaxRetryCount := 1;
-  SocketParams.ByteTimeout := 1000;
-  FPrinterPort := TSocketPort.Create(SocketParams, FLogger);
+  //FPrinterPort := CreateSocketPort;
+  FPrinterPort := CreateSerialPort;
   FPrinterPort.Open;
-  // Serial
-  FPrinterPort := TSerialPort.Create(2, FLogger);
-  FPrinterPort.Timeout := 1000;
-  FPrinterPort.BaudRate := 115200;
-  FPrinterPort.Open;
-  FPrinterPort.SetCmdTimeout(1000);
-*)
-  FPrinter := TEscPrinter.Create(FPrinterPort);
+  FPrinter := TEscPrinter.Create(FPrinterPort, FLogger);
 end;
 
 procedure TESCPrinterTest.TearDown;
@@ -70,6 +57,32 @@ begin
   FPrinter.Free;
   FPrinterPort := nil;
   inherited TearDown;
+end;
+
+function TESCPrinterTest.CreateSerialPort: TSerialPort;
+var
+  SerialParams: TSerialParams;
+begin
+  SerialParams.PortName := 'COM3';
+  SerialParams.BaudRate := 115200;
+  SerialParams.DataBits := 8;
+  SerialParams.StopBits := 1;
+  SerialParams.Parity := 0;
+  SerialParams.FlowControl := 0;
+  SerialParams.ReconnectPort := False;
+  SerialParams.ByteTimeout := 1000;
+  Result := TSerialPort.Create(SerialParams, FLogger);
+end;
+
+function TESCPrinterTest.CreateSocketPort: TSocketPort;
+var
+  SocketParams: TSocketParams;
+begin
+  SocketParams.RemoteHost := '10.11.7.176';
+  SocketParams.RemotePort := 9100;
+  SocketParams.MaxRetryCount := 1;
+  SocketParams.ByteTimeout := 1000;
+  Result := TSocketPort.Create(SocketParams, FLogger);
 end;
 
 procedure TESCPrinterTest.TestReadStatus;

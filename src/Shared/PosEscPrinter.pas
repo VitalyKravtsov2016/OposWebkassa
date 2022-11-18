@@ -11,7 +11,8 @@ uses
   Opos, OposEsc, OposPtr, OposException, OposServiceDevice19, OposEvents,
   OposPOSPrinter_CCO_TLB, WException,
   // This
-  LogFile, DriverError, EscPrinter, PrinterPort, NotifyThread, RegExpr;
+  LogFile, DriverError, EscPrinter, PrinterPort, NotifyThread,
+  RegExpr, SerialPort;
 
 type
   TPrintMode = (pmBold, pmDoubleWide, pmDoubleHigh, pmUnderlined);
@@ -33,10 +34,8 @@ type
     FPrinter: TEscPrinter;
     FThread: TNotifyThread;
     FDevice: TOposServiceDevice19;
-    FPrintMode: TPrintModes;
     FLastPrintMode: TPrintModes;
 
-    FPositionY: Integer;
     FTransaction: Boolean;
     FFontName: WideString;
 
@@ -596,7 +595,7 @@ constructor TPosEscPrinter.Create2(AOwner: TComponent; APort: IPrinterPort;
 begin
   inherited Create(AOwner);
   FPort := APort;
-  FPrinter := TEscPrinter.Create(APort);
+  FPrinter := TEscPrinter.Create(APort, ALogger);
   FLogger := ALogger;
   FDevice := TOposServiceDevice19.Create(FLogger);
   FDevice.ErrorEventEnabled := False;
@@ -605,8 +604,13 @@ end;
 
 destructor TPosEscPrinter.Destroy;
 begin
+  Close;
+
   FDevice.Free;
   FThread.Free;
+  FPrinter.Free;
+  FPort := nil;
+  FLogger := nil;
   inherited Destroy;
 end;
 
@@ -723,7 +727,7 @@ begin
   FRecLineCharsList := '42,56';
   FRecLineHeight := 24;
   FRecLineSpacing := 30;
-  FRecLinesToPaperCut := 5;
+  FRecLinesToPaperCut := 4;
   FRecLineWidth := 512;
   FRecNearEnd := False;
   FRecSidewaysMaxChars := 69;
@@ -746,8 +750,6 @@ begin
   FSlpPrintSide := 0;
   FSlpSidewaysMaxChars := 0;
   FSlpSidewaysMaxLines := 0;
-
-  FPrintMode := [];
   FLastPrintMode := [];
 end;
 
@@ -777,6 +779,15 @@ begin
     OPOSError.ErrorString := GetExceptionMessage(E);
     OPOSError.ResultCode := OPOSException.ResultCode;
     OPOSError.ResultCodeExtended := OPOSException.ResultCodeExtended;
+    FDevice.HandleException(OPOSError);
+    Result := OPOSError.ResultCode;
+    Exit;
+  end;
+  if E is ETimeoutError then
+  begin
+    OPOSError.ErrorString := GetExceptionMessage(E);
+    OPOSError.ResultCode := OPOS_E_TIMEOUT;
+    OPOSError.ResultCodeExtended := OPOS_SUCCESS;
     FDevice.HandleException(OPOSError);
     Result := OPOSError.ResultCode;
     Exit;
@@ -1645,7 +1656,7 @@ end;
 function TPosEscPrinter.Open(const DeviceName: WideString): Integer;
 begin
   try
-    FDevice.Open('POSPrinter', DeviceName, nil);
+    FDevice.Open('POSPrinter', DeviceName, Self);
     Result := ClearResult;
   except
     on E: Exception do
@@ -1873,7 +1884,10 @@ begin
       if pDeviceEnabled then
       begin
         FPort.Open;
+        FPrinter.Initialize;
         FPrinter.SetCodeTable(CODEPAGE_WCP1251);
+        FPrinter.SetJustification(JUSTIFICATION_LEFT);
+        FPrinter.SetNormalPrintMode;
         UpdatePrinterStatus;
         StartDeviceThread;
       end else
@@ -1946,7 +1960,6 @@ end;
 
 procedure TPosEscPrinter.UpdatePrinterStatus;
 var
-  ErrorStatus: TErrorStatus;
   OfflineStatus: TOfflineStatus;
 begin
   try
@@ -1955,6 +1968,7 @@ begin
     SetRecEmpty(not FPrinter.ReadPaperStatus.PaperPresent);
     SetRecNearEnd(FPrinter.ReadPaperRollStatus.PaperNearEnd);
   (*
+    ErrorStatus: TErrorStatus;
     ErrorStatus := FPrinter.ReadErrorStatus;
     if ErrorStatus.CutterError and ErrorStatus.UnrecoverableError then
       FDevice.ErrorEvent(OPOS_E_EXTENDED, ,OPOS_EL_OUTPUT);
@@ -1966,8 +1980,8 @@ begin
   except
     on E: Exception do
     begin
-      FLogger.Error(E.Message);
       FDevice.PowerState := OPOS_PS_OFF_OFFLINE;
+      raise;
     end;
   end;
 end;
@@ -1979,7 +1993,14 @@ begin
   try
     while not FThread.Terminated do
     begin
-      UpdatePrinterStatus;
+      try
+        UpdatePrinterStatus;
+      except
+        on E: Exception do
+        begin
+          FLogger.Error(E.Message);
+        end;
+      end;
       // wait
       TickCount := GetTickCount;
       repeat
@@ -2258,11 +2279,13 @@ begin
   if P = 0 then
   begin
     Token.Text := Text;
+    Text := '';
   end else
   begin
     if P = 1 then
     begin
       Token.Text := Copy(Text, 1, 4);
+      Text := Copy(Text, 5, Length(Text));
     end else
     begin
       Token.Text := Copy(Text, 1, P-1);
@@ -2274,38 +2297,40 @@ end;
 procedure TPosEscPrinter.PrintText(Text: string);
 var
   Token: TEscToken;
+  PrintMode: TPrintModes;
   Mode: EscPrinter.TPrintMode;
 begin
+  PrintMode := [];
   Text := ReplaceRegExpr('\' + ESC + '\|[0-9]{0,3}\P', Text, #$1B#$69);
   while GetToken(Text, Token) do
   begin
     if Token.IsEsc then
     begin
       if Token.Text = ESC + '|bC' then
-        FPrintMode := FPrintMode + [pmBold];
+        PrintMode := PrintMode + [pmBold];
       if Token.Text = ESC + '|!bC' then
-        FPrintMode := FPrintMode + [pmBold];
+        PrintMode := PrintMode + [pmBold];
       if Token.Text = ESC + '|1C' then
-        FPrintMode := [];
+        PrintMode := [];
       if Token.Text = ESC + '|2C' then
-        FPrintMode := FPrintMode + [pmDoubleWide];
+        PrintMode := PrintMode + [pmDoubleWide];
       if Token.Text = ESC + '|3C' then
-        FPrintMode := FPrintMode + [pmDoubleHigh];
+        PrintMode := PrintMode + [pmDoubleHigh];
       if Token.Text = ESC + '|4C' then
-        FPrintMode := FPrintMode + [pmDoubleWide, pmDoubleHigh];
+        PrintMode := PrintMode + [pmDoubleWide, pmDoubleHigh];
     end else
     begin
       // Select print mode is needed
-      if FPrintMode <> FLastPrintMode then
+      if PrintMode <> FLastPrintMode then
       begin
         Mode.CharacterFontB := False;
-        Mode.Emphasized := pmBold in FPrintMode;
-        Mode.DoubleHeight := pmDoubleHigh in FPrintMode;
-        Mode.DoubleWidth := pmDoubleWide in FPrintMode;
-        Mode.Underlined := pmUnderlined in FPrintMode;
+        Mode.Emphasized := pmBold in PrintMode;
+        Mode.DoubleHeight := pmDoubleHigh in PrintMode;
+        Mode.DoubleWidth := pmDoubleWide in PrintMode;
+        Mode.Underlined := pmUnderlined in PrintMode;
 
         FPrinter.SelectPrintMode(Mode);
-        FLastPrintMode := FPrintMode;
+        FLastPrintMode := PrintMode;
       end;
       FPrinter.PrintText(Token.Text);
     end;

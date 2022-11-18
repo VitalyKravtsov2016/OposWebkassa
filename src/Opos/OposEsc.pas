@@ -5,12 +5,12 @@ interface
 const
   GS     = #$1D;
   ESC     = #$1B;
-  EscBold = ESC + '|bC';
 
-  ESC_SingleHighAndWide = ESC + '|1C'; // Prints normal size.
+  EscBold               = ESC + '|bC';
+  ESC_Normal            = ESC + '|1C'; // Prints normal size.
   ESC_DoubleWide        = ESC + '|2C'; // Prints double-wide characters.
   ESC_DoubleHigh        = ESC + '|3C'; // Prints double-high characters.
-  ESC_DoubleHighAndWide = ESC + '|4C'; // Prints double-high/double-wide characters.
+  ESC_DoubleHighWide    = ESC + '|4C'; // Prints double-high/double-wide characters.
 
 
   // Cuts receipt paper. The character ‘#’ is replaced by an

@@ -4,15 +4,15 @@ interface
 
 uses
   // VCL
-  Windows, SysUtils, Classes,
+  Windows, SysUtils, Classes, Forms,
   // DUnit
   TestFramework,
   // Opos
   Opos, OposEsc, Oposhi, OposPtr, OposPtrUtils, OposUtils,
-  OposPOSPrinter_CCO_TLB,
+  OposPOSPrinter_CCO_TLB, OposEvents,
   // Tnt
   TntClasses, TntSysUtils, DebugUtils, StringUtils, SocketPort, LogFile,
-  PrinterPort, PosEscPrinter;
+  PrinterPort, PosEscPrinter, SerialPort;
 
 type
   { TPosEscPrinterTest }
@@ -20,23 +20,35 @@ type
   TPosEscPrinterTest = class(TTestCase)
   private
     FLogger: ILogFile;
-    FPrinter: IOPOSPOSPrinter;
+    FEvents: TStrings;
+    FPrinter: TPosEscPrinter;
+    FPrinterPort: IPrinterPort;
 
     procedure ClaimDevice;
     procedure EnableDevice;
     procedure OpenService;
     procedure OpenClaimEnable;
     procedure PtrCheck(Code: Integer);
+    procedure StatusUpdateEvent(ASender: TObject; Data: Integer);
 
-    property Printer: IOPOSPOSPrinter read FPrinter;
+    property Events: TStrings read FEvents;
+    property Printer: TPosEscPrinter read FPrinter;
   protected
     procedure SetUp; override;
     procedure TearDown; override;
+  public
+    function CreateSerialPort: TSerialPort;
+    function CreateSocketPort: TSocketPort;
   published
     procedure TestCheckHealth;
     procedure TestPrintBarCode;
     procedure TestPrintBarCode2;
     procedure TestPrintBarCodeEsc;
+
+    procedure TestStatusUpdateEvent;
+    procedure TestCoverStateEvent;
+    procedure TestPowerStateEvent;
+    procedure TestPrintReceipt;
   end;
 
 implementation
@@ -61,32 +73,65 @@ begin
 end;
 
 procedure TPosEscPrinterTest.SetUp;
-var
-  PrinterPort: IPrinterPort;
-  SocketParams: TSocketParams;
 begin
   inherited SetUp;
+  FLogger := TLogFile.Create;
+  FEvents := TStringList.Create;
+  FPrinterPort := CreateSerialPort;
+  FPrinter := TPosEscPrinter.Create2(nil, FPrinterPort, FLogger);
+  FPrinter.OnStatusUpdateEvent := StatusUpdateEvent;
+end;
+
+procedure TPosEscPrinterTest.StatusUpdateEvent(ASender: TObject; Data: Integer);
+begin
+  Events.Add(PtrStatusUpdateEventText(Data));
+end;
+
+function TPosEscPrinterTest.CreateSerialPort: TSerialPort;
+var
+  SerialParams: TSerialParams;
+begin
+  SerialParams.PortName := 'COM3';
+  SerialParams.BaudRate := 19200;
+  SerialParams.DataBits := 8;
+  SerialParams.StopBits := 1;
+  SerialParams.Parity := 0;
+  SerialParams.FlowControl := 0;
+  SerialParams.ReconnectPort := False;
+  SerialParams.ByteTimeout := 200;
+  Result := TSerialPort.Create(SerialParams, FLogger);
+end;
+
+function TPosEscPrinterTest.CreateSocketPort: TSocketPort;
+var
+  SocketParams: TSocketParams;
+begin
   SocketParams.RemoteHost := '10.11.7.176';
   SocketParams.RemotePort := 9100;
-  SocketParams.ByteTimeout := 1000;
   SocketParams.MaxRetryCount := 1;
-
-  FLogger := TLogFile.Create;
-  PrinterPort := TSocketPort.Create(SocketParams, FLogger);
-  PrinterPort.Open;
-  FPrinter := TPosEscPrinter.Create2(nil, PrinterPort, FLogger);
+  SocketParams.ByteTimeout := 1000;
+  Result := TSocketPort.Create(SocketParams, FLogger);
 end;
 
 procedure TPosEscPrinterTest.TearDown;
 begin
   FPrinter.Close;
-  FPrinter := nil;
+  FPrinter.Free;
+  FEvents.Free;
+  FPrinterPort := nil;
   inherited TearDown;
 end;
 
 procedure TPosEscPrinterTest.OpenService;
 begin
   PtrCheck(Printer.Open('ThermalU'));
+
+  CheckEquals(OPOS_PR_STANDARD, Printer.CapPowerReporting, 'CapPowerReporting');
+  CheckEquals(OPOS_PN_DISABLED, Printer.PowerNotify, 'PowerNotify');
+  CheckEquals(False, Printer.FreezeEvents, 'FreezeEvents');
+
+  Printer.PowerNotify := OPOS_PN_ENABLED;
+  CheckEquals(OPOS_PN_ENABLED, Printer.PowerNotify, 'PowerNotify');
 end;
 
 procedure TPosEscPrinterTest.ClaimDevice;
@@ -99,7 +144,7 @@ end;
 procedure TPosEscPrinterTest.EnableDevice;
 begin
   Printer.DeviceEnabled := True;
-  CheckEquals(OPOS_SUCCESS, Printer.ResultCode, 'OPOS_SUCCESS');
+  PtrCheck(Printer.ResultCode);
   CheckEquals(True, Printer.DeviceEnabled, 'DeviceEnabled <> True');
 end;
 
@@ -197,6 +242,74 @@ begin
   PtrCheck(Printer.ValidateData(PTR_S_RECEIPT, Data));
   //PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Data));
 *)
+end;
+
+procedure TPosEscPrinterTest.TestStatusUpdateEvent;
+begin
+  OpenClaimEnable;
+  CheckEquals(1, FEvents.Count, 'FEvents.Count');
+  CheckEquals('OPOS_SUE_POWER_ONLINE', Events[0], 'OPOS_SUE_POWER_ONLINE');
+end;
+
+procedure TPosEscPrinterTest.TestCoverStateEvent;
+begin
+  OpenClaimEnable;
+  CheckEquals(1, FEvents.Count, 'FEvents.Count');
+  CheckEquals('OPOS_SUE_POWER_ONLINE', FEvents[0], 'OPOS_SUE_POWER_ONLINE');
+  FEvents.Clear;
+  if Application.MessageBox('Open printer cover and press OK', 'Attention',
+    MB_OKCANCEL) = ID_CANCEL then Abort;
+  Check(FEvents.IndexOf('PTR_SUE_COVER_OPEN') <> -1, 'PTR_SUE_COVER_OPEN');
+  FEvents.Clear;
+  if Application.MessageBox('Close printer cover and press OK', 'Attention',
+    MB_OKCANCEL) = ID_CANCEL then Abort;
+  Check(FEvents.IndexOf('PTR_SUE_COVER_OK') <> -1, 'PTR_SUE_COVER_OK');
+end;
+
+procedure TPosEscPrinterTest.TestPowerStateEvent;
+begin
+  OpenClaimEnable;
+  CheckEquals(1, FEvents.Count, 'FEvents.Count');
+  CheckEquals('OPOS_SUE_POWER_ONLINE', Events[0], 'OPOS_SUE_POWER_ONLINE');
+  FEvents.Clear;
+  if Application.MessageBox('Turn printer OFF and press OK', 'Attention',
+    MB_OKCANCEL) = ID_CANCEL then Abort;
+  Check(FEvents.IndexOf('OPOS_SUE_POWER_OFF_OFFLINE') <> -1, 'OPOS_SUE_POWER_OFF_OFFLINE');
+  FEvents.Clear;
+  if Application.MessageBox('Turn printer ON and press OK', 'Attention',
+    MB_OKCANCEL) = ID_CANCEL then Abort;
+  CheckEquals(1, FEvents.Count, 'FEvents.Count');
+  CheckEquals('OPOS_SUE_POWER_ONLINE', Events[0], 'OPOS_SUE_POWER_ONLINE');
+end;
+
+procedure TPosEscPrinterTest.TestPrintReceipt;
+var
+  i: Integer;
+const
+  Barcode = 'http://dev.kofd.kz/consumer?i=925871425876&f=211030200207&s=15443.72&t=20220826T210014';
+begin
+  OpenClaimEnable;
+
+  if Printer.CapTransaction then
+  begin
+    PtrCheck(Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_TRANSACTION));
+  end;
+  for i := 1 to 5 do
+  begin
+    PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'Строка ' + IntToStr(i) + CRLF));
+  end;
+  PtrCheck(Printer.PrintBarCode(PTR_S_RECEIPT, Barcode, PTR_BCS_QRCODE, 0, 4,
+    PTR_BC_CENTER, PTR_BC_TEXT_NONE));
+
+  for i := 1 to 5 do
+  begin
+    PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'Строка ' + IntToStr(i) + CRLF));
+  end;
+  PtrCheck(Printer.CutPaper(90));
+  if Printer.CapTransaction then
+  begin
+    Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_NORMAL);
+  end;
 end;
 
 initialization

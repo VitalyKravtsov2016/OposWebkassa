@@ -6,7 +6,7 @@ uses
   // JVCL
   JvSetupAPI, WException;
 
-procedure EnableComPort(PortNumber: Integer; AEnabled: Boolean);
+procedure EnableComPort(PortName: string; AEnabled: Boolean);
 
 implementation
 
@@ -25,18 +25,15 @@ begin
     RaiseLastError;
 end;
 
-function IsCOMName(const Name: AnsiString; PortNumber: Integer): Boolean;
+function GetComName(const Name: string): string;
 var
-  p1: Integer;
-  p2: Integer;
-  ComName: AnsiString;
-  ComNumber: Integer;
+  p1, p2: Integer;
 begin
-  p1 := Pos('(COM', Name);
+  Result := '';
+  p1 := Pos('(', Name);
   p2 := Pos(')', Name);
-  ComName := Copy(Name, p1 + 4, (p2 - p1) - 4);
-  ComNumber := StrToIntDef(ComName, -1);
-  Result := ComNumber = PortNumber;
+  if (P1 <= 0)or(P2 <= 0) then Exit;
+  Result := Copy(Name, p1+1, p2-p1-1);
 end;
 
 // Имя устройства в формате "Serial port (COM1)"
@@ -63,7 +60,7 @@ begin
   Result := Buffer;
 end;
 
-function GetComPortDevIndex(DevInfo: HDEVINFO; PortNumber: Integer): DWORD;
+function GetComPortDevIndex(DevInfo: HDEVINFO; PortName: string): DWORD;
 var
   DevData: TSPDevInfoData;
   DeviceInterfaceData: TSPDeviceInterfaceData;
@@ -79,7 +76,7 @@ begin
     if RES then
     begin
       Name := GetDeviceName(DevInfo, DevData);
-      if IsCOMName(Name, PortNumber) then
+      if GetComName(Name) = PortName then
         Break
       else
         Inc(Result);
@@ -87,7 +84,7 @@ begin
   until not RES;
 end;
 
-procedure EnableComPort(PortNumber: Integer; AEnabled: Boolean);
+procedure EnableComPort(PortName: string; AEnabled: Boolean);
 var
   DevInfo: HDEVINFO;
   PCHP: TSPPropChangeParams;
@@ -100,7 +97,7 @@ begin
 
     DeviceData.cbSize := sizeof(TSPDevInfoData);
     if not SetupDiEnumDeviceInfo(DevInfo,
-      GetComPortDevIndex(DevInfo, PortNumber), DeviceData) then Exit;
+      GetComPortDevIndex(DevInfo, PortName), DeviceData) then Exit;
 
     PCHP.ClassInstallHeader.cbSize := sizeof(TSPClassInstallHeader);
 

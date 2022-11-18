@@ -34,6 +34,7 @@ type
     FDataEventEnabled: Boolean;
     FDeviceEnabled: Boolean;
     FEvents: TOposEvents;
+    FFreezeEvents: Boolean;
     FEventThread: TNotifyThread;
     FOutputID: Integer;
     FPowerNotify: Integer;
@@ -50,6 +51,7 @@ type
     FLongDeviceName: WideString;
     FErrorEventEnabled: Boolean;
     FLogger: ILogFile;
+    FEventThreadEnabled: Boolean;
 
     procedure EventProc(Sender: TObject);
     procedure SetPowerState(const Value: Integer);
@@ -114,6 +116,7 @@ type
     property ErrorString: WideString read FErrorString write FErrorString;
     property ResultCodeExtended: Integer read FResultCodeExtended;
     property ErrorEventEnabled: Boolean read FErrorEventEnabled write FErrorEventEnabled;
+    property EventThreadEnabled: Boolean read FEventThreadEnabled write FEventThreadEnabled;
   end;
 
 implementation
@@ -305,22 +308,33 @@ procedure TOposServiceDevice19.SetFreezeEvents(const Value: Boolean);
 begin
   if Value <> FreezeEvents then
   begin
-    if not Value then
+    if FEventThreadEnabled then
     begin
-      FEventThread := TNotifyThread.Create(True);
-      FEventThread.OnExecute := EventProc;
-      FEventThread.Resume;
-    end else
-    begin
-      FEventThread.Free;
-      FEventThread := nil;
+      if not Value then
+      begin
+        FEventThread := TNotifyThread.Create(True);
+        FEventThread.OnExecute := EventProc;
+        FEventThread.Resume;
+      end else
+      begin
+        FEventThread.Free;
+        FEventThread := nil;
+      end;
     end;
+    FFreezeEvents := Value;
   end;
 end;
 
 procedure TOposServiceDevice19.FireEvent(Event: TOposEvent);
 begin
-  Events.Add(Event);
+  if EventThreadEnabled then
+  begin
+    Events.Add(Event);
+  end else
+  begin
+    Event.Execute(FOposEvents);
+    Event.Free;
+  end;
 end;
 
 // Execute events from queue
@@ -467,7 +481,7 @@ end;
 
 function TOposServiceDevice19.GetFreezeEvents: Boolean;
 begin
-  Result := FEventThread = nil;
+  Result := FFreezeEvents;
 end;
 
 end.

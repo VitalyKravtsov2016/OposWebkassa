@@ -15,7 +15,7 @@ type
   { TSerialParams }
 
   TSerialParams = record
-    PortNumber: Integer;
+    PortName: string;
     BaudRate: Integer;
     DataBits: Integer;
     StopBits: Integer;
@@ -43,9 +43,9 @@ type
     procedure CreateHandle;
     procedure ReadCommConfig;
     function GetHandle: THandle;
+    procedure UpdateCommTimeouts;
     procedure UpdateCommProperties;
     function GetOpened: Boolean;
-    function GetDeviceName: AnsiString;
     procedure UpdateDCB(BaudRate: DWORD);
     procedure DeviceChanged(Sender: TObject; dbt: Integer);
     procedure DoClose;
@@ -63,12 +63,11 @@ type
     procedure Unlock;
     procedure Write(const Data: AnsiString);
     function Read(Count: DWORD): AnsiString;
-    procedure SetCmdTimeout(Value: DWORD);
-    function ReadChar(var C: Char): Boolean;
     property Opened: Boolean read GetOpened;
   end;
 
   ENoPortError = class(WideException);
+  ETimeoutError = class(WideException);
 
   { ESerialPortError }
 
@@ -352,11 +351,6 @@ begin
   Result := FHandle <> INVALID_HANDLE_VALUE;
 end;
 
-function TSerialPort.GetDeviceName: AnsiString;
-begin
-  Result := 'COM' + IntToStr(FParams.PortNumber);
-end;
-
 procedure TSerialPort.CreateHandle;
 var
   i: Integer;
@@ -364,7 +358,7 @@ var
 const
   MaxReconnectCount = 3;
 begin
-  DevName := '\\.\' + GetDeviceName;
+  DevName := '\\.\' + FParams.PortName;
   for i := 1 to MaxReconnectCount do
   begin
     FHandle := CreateFile(PCHAR(DevName), GENERIC_READ or GENERIC_WRITE, 0, nil,
@@ -377,9 +371,9 @@ begin
 
     if FParams.ReconnectPort and (i <> MaxReconnectCount) then
     begin
-      EnableComPort(FParams.PortNumber, False);
+      EnableComPort(FParams.PortName, False);
       Sleep(100);
-      EnableComPort(FParams.PortNumber, True);
+      EnableComPort(FParams.PortName, True);
     end;
   end;
 
@@ -489,8 +483,9 @@ begin
       SetupComm(GetHandle, 1024, 1024);
 
       ReadCommConfig;
+      UpdateCommTimeouts;
       UpdateCommProperties;
-      FNotification.Install(FHandle); 
+      FNotification.Install(FHandle);
     end;
   finally
     Unlock;
@@ -551,26 +546,8 @@ begin
     if Count <> WriteCount then
     begin
       Logger.Error('Write failed. ' + _('Device not connected'));
-      raise ESerialPortError.Create(_('Device not connected'));
+      raise ETimeoutError.Create(_('Write data failed'));
     end;
-  finally
-    Unlock;
-  end;
-end;
-
-function TSerialPort.ReadChar(var C: Char): Boolean;
-var
-  ReadCount: DWORD;
-begin
-  Lock;
-  try
-    if not ReadFile(GetHandle, C, 1, ReadCount, nil) then
-    begin
-      Logger.Error('ReadFile function failed.');
-      Logger.Error(GetLastErrorText);
-      RaiseSerialPortError;
-    end;
-    Result := ReadCount = 1;
   finally
     Unlock;
   end;
@@ -580,6 +557,7 @@ function TSerialPort.Read(Count: DWORD): AnsiString;
 var
   ReadCount: DWORD;
 begin
+  Logger.Error('TSerialPort.Read');
   Lock;
   try
     Result := '';
@@ -598,25 +576,25 @@ begin
     begin
       Logger.Error(Format('Read data: %d <> %d', [ReadCount, Count]));
       Logger.Error('Read error. ' + _('Device not connected'));
-      raise ESerialPortError.Create(_('Device not connected'));
+      raise ETimeoutError.Create(_('Read data failed'));
     end;
   finally
     Unlock;
   end;
 end;
 
-procedure TSerialPort.SetCmdTimeout(Value: DWORD);
+procedure TSerialPort.UpdateCommTimeouts;
 var
   TimeOuts: TCommTimeOuts;
 begin
   Lock;
   try
     // Default timeouts
-    TimeOuts.ReadIntervalTimeout := Value;
+    TimeOuts.ReadIntervalTimeout := 100;
     TimeOuts.ReadTotalTimeoutMultiplier := 0;
-    TimeOuts.ReadTotalTimeoutConstant := Value;
-    TimeOuts.WriteTotalTimeoutMultiplier := FParams.ByteTimeout;
-    TimeOuts.WriteTotalTimeoutConstant := 0;
+    TimeOuts.ReadTotalTimeoutConstant := FParams.ByteTimeout;
+    TimeOuts.WriteTotalTimeoutMultiplier := 100;
+    TimeOuts.WriteTotalTimeoutConstant := FParams.ByteTimeout;
 
     if not SetCommTimeOuts(GetHandle, TimeOuts) then
     begin

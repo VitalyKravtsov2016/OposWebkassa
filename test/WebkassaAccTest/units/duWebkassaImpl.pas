@@ -117,12 +117,23 @@ begin
   FDriver.Params.PrinterType := PrinterTypeWinPrinter;
   FDriver.Params.PrinterName := 'SLK-TE122';
   FDriver.Params.FontName := 'FontA11';
-*)
+  // Network
   FDriver.Params.PrinterType := PrinterTypeEscPrinterNetwork;
   FDriver.Params.RemoteHost := '10.11.7.176';
   FDriver.Params.RemotePort := 9100;
   FDriver.Params.ByteTimeout := 1000;
   FDriver.Params.FontName := 'FontA11';
+*)
+  FDriver.Params.PrinterType := PrinterTypeEscPrinterSerial;
+  FDriver.Params.ByteTimeout := 100;
+  FDriver.Params.FontName := 'FontA11';
+  FDriver.Params.PortName := 'COM3';
+  FDriver.Params.BaudRate := 19200;
+  FDriver.Params.DataBits := DATABITS_8;
+  FDriver.Params.StopBits := STOPBITS_10;
+  FDriver.Params.Parity := PARITY_NONE;
+  FDriver.Params.FlowControl := 0;
+  FDriver.Params.ReconnectPort := False;
 end;
 
 procedure TWebkassaImplTest.TearDown;
@@ -219,7 +230,7 @@ begin
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_TOTAL, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   FptrCheck(Driver.PrintRecTotal(0, 30, ''));
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
-  FptrCheck(Driver.EndFiscalReceipt(False));
+  FptrCheck(Driver.EndFiscalReceipt(True));
   CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
 end;
 

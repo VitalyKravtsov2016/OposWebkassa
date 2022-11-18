@@ -172,6 +172,14 @@ begin
       FParameters.RemoteHost := IniFile.ReadString(Section, 'RemoteHost', DefRemoteHost);
       FParameters.RemotePort := IniFile.ReadInteger(Section, 'RemotePort', DefRemotePort);
       FParameters.ByteTimeout := IniFile.ReadInteger(Section, 'ByteTimeout', DefByteTimeout);
+      FParameters.PortName := IniFile.ReadString(Section, 'PortName', DefPortName);
+      FParameters.BaudRate := IniFile.ReadInteger(Section, 'BaudRate', DefBaudRate);
+      FParameters.DataBits := IniFile.ReadInteger(Section, 'DataBits', DefDataBits);
+      FParameters.StopBits := IniFile.ReadInteger(Section, 'StopBits', DefStopBits);
+      FParameters.Parity := IniFile.ReadInteger(Section, 'Parity', DefParity);
+      FParameters.FlowControl := IniFile.ReadInteger(Section, 'FlowControl', DefFlowControl);
+      FParameters.ReconnectPort := IniFile.ReadBool(Section, 'ReconnectPort', DefReconnectPort);
+      FParameters.SerialTimeout := IniFile.ReadInteger(Section, 'SerialTimeout', DefSerialTimeout);
     end;
   finally
     IniFile.Free;
@@ -203,6 +211,14 @@ begin
     IniFile.WriteString(Section, 'RemoteHost', FParameters.RemoteHost);
     IniFile.WriteInteger(Section, 'RemotePort', FParameters.RemotePort);
     IniFile.WriteInteger(Section, 'ByteTimeout', FParameters.ByteTimeout);
+    IniFile.WriteString(Section, 'PortName', FParameters.PortName);
+    IniFile.WriteInteger(Section, 'BaudRate', FParameters.BaudRate);
+    IniFile.WriteInteger(Section, 'DataBits', FParameters.DataBits);
+    IniFile.WriteInteger(Section, 'StopBits', FParameters.StopBits);
+    IniFile.WriteInteger(Section, 'Parity', FParameters.Parity);
+    IniFile.WriteInteger(Section, 'FlowControl', FParameters.FlowControl);
+    IniFile.WriteBool(Section, 'ReconnectPort', FParameters.ReconnectPort);
+    IniFile.WriteInteger(Section, 'SerialTimeout', FParameters.SerialTimeout);
   finally
     IniFile.Free;
   end;

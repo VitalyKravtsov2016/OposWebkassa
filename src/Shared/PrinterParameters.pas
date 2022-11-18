@@ -10,9 +10,25 @@ uses
   // Opos
   Opos, Oposhi, OposException,
   // This
-  WException, LogFile, FileUtils, VatRate;
+  WException, LogFile, FileUtils, VatRate, SerialPorts;
 
 const
+  /////////////////////////////////////////////////////////////////////////////
+  // Valid baudrates
+
+  ValidBaudRates: array [0..9] of Integer = (
+    2400,
+    4800,
+    9600,
+    19200,
+    38400,
+    57600,
+    115200,
+    230400,
+    460800,
+    921600
+  );
+
   FiscalPrinterProgID = 'OposWebkassa.FiscalPrinter';
 
   // PrinterType constants
@@ -56,7 +72,16 @@ const
   DefAmountDecimalPlaces = 2;
   DefRemoteHost = '192.168.1.87';
   DefRemotePort = 9100;
-  DefByteTimeout = 1000;
+  DefByteTimeout = 100;
+
+  DefPortName = 'COM1';
+  DefBaudRate = CBR_9600;
+  DefDataBits = DATABITS_8;
+  DefStopBits = STOPBITS_10;
+  DefParity = PARITY_NONE;
+  DefFlowControl = 0;
+  DefReconnectPort = false;
+  DefSerialTimeout = 100;
 
   /////////////////////////////////////////////////////////////////////////////
   // Header and trailer parameters
@@ -108,6 +133,7 @@ type
     FRemoteHost: string;
     FRemotePort: Integer;
     FByteTimeout: Integer;
+    FBaudRate: Integer;
 
     procedure LogText(const Caption, Text: WideString);
     procedure SetHeaderText(const Text: WideString);
@@ -117,13 +143,25 @@ type
     function GetHeaderText: WideString;
     function GetTrailerText: WideString;
     procedure SetAmountDecimalPlaces(const Value: Integer);
+    procedure SetBaudRate(const Value: Integer);
   public
+    PortName: string;
+    DataBits: Integer;
+    StopBits: Integer;
+    Parity: Integer;
+    FlowControl: Integer;
+    SerialTimeout: Integer;
+    ReconnectPort: Boolean;
+
     constructor Create(ALogger: ILogFile);
     destructor Destroy; override;
 
     procedure SetDefaults;
     procedure CheckPrameters;
     procedure WriteLogParameters;
+    function SerialPortNames: string;
+    function BaudRateIndex(const Value: Integer): Integer;
+    procedure Assign(Source: TPersistent); override;
 
     property Logger: ILogFile read FLogger;
     property Header: TTntStringList read FHeader;
@@ -155,6 +193,7 @@ type
     property RemoteHost: string read FRemoteHost write FRemoteHost;
     property RemotePort: Integer read FRemotePort write FRemotePort;
     property ByteTimeout: Integer read FByteTimeout write FByteTimeout;
+    property BaudRate: Integer read FBaudRate write SetBaudRate;
   end;
 
 function QRSizeToWidth(QRSize: Integer): Integer;
@@ -229,6 +268,14 @@ begin
   FRemoteHost := DefRemoteHost;
   FRemotePort := DefRemotePort;
   FByteTimeout := DefByteTimeout;
+  PortName := DefPortName;
+  BaudRate := DefBaudRate;
+  DataBits := DefDataBits;
+  StopBits := DefStopBits;
+  Parity := DefParity;
+  FlowControl := DefFlowControl;
+  ReconnectPort := DefReconnectPort;
+  SerialTimeout := DefSerialTimeout;
 end;
 
 procedure TPrinterParameters.LogText(const Caption, Text: WideString);
@@ -394,6 +441,79 @@ procedure TPrinterParameters.SetAmountDecimalPlaces(const Value: Integer);
 begin
   if Value in [0, 2] then
     FAmountDecimalPlaces := Value;
+end;
+
+function TPrinterParameters.BaudRateIndex(const Value: Integer): Integer;
+var
+  i: Integer;
+begin
+  Result := -1;
+  for i := Low(ValidBaudRates) to High(ValidBaudRates) do
+  begin
+    if ValidBaudRates[i] = Value then
+    begin
+      Result := i;
+      Break;
+    end;
+  end;
+end;
+
+procedure TPrinterParameters.SetBaudRate(const Value: Integer);
+begin
+  if BaudRateIndex(Value) = -1 then
+    raise Exception.CreateFmt('Invalid baudrate value, %d', [Value]);
+
+  FBaudRate := Value;
+end;
+
+function TPrinterParameters.SerialPortNames: string;
+begin
+  Result := TSerialPorts.GetPortNames;
+end;
+
+procedure TPrinterParameters.Assign(Source: TPersistent);
+var
+  Src: TPrinterParameters;
+begin
+  if Source is TPrinterParameters then
+  begin
+    Header.Assign(Src.Header);
+    Trailer.Assign(Src.Trailer);
+    LogMaxCount := Src.LogMaxCount;
+    LogFileEnabled := Src.LogFileEnabled;
+    LogFilePath := Src.LogFilePath;
+    NumHeaderLines := Src.NumHeaderLines;
+    NumTrailerLines := Src.NumTrailerLines;
+    WebkassaAddress := Src.WebkassaAddress;
+    ConnectTimeout := Src.ConnectTimeout;
+    Login := Src.Login;
+    Password := Src.Password;
+    CashboxNumber := Src.CashboxNumber;
+    PrinterName := Src.PrinterName;
+    PrinterType := Src.PrinterType;
+    FontName := Src.FontName;
+    VatRateEnabled := Src.VatRateEnabled;
+    PaymentType2 := Src.PaymentType2;
+    PaymentType3 := Src.PaymentType3;
+    PaymentType4 := Src.PaymentType4;
+    RoundType := Src.RoundType;
+    VATNumber := Src.VATNumber;
+    VATSeries := Src.VATSeries;
+    AmountDecimalPlaces := Src.AmountDecimalPlaces;
+    RemoteHost := Src.RemoteHost;
+    RemotePort := Src.RemotePort;
+    ByteTimeout := Src.ByteTimeout;
+    BaudRate := Src.BaudRate;
+    PortName := Src.PortName;
+    DataBits := Src.DataBits;
+    StopBits := Src.StopBits;
+    Parity := Src.Parity;
+    FlowControl := Src.FlowControl;
+    SerialTimeout := Src.SerialTimeout;
+    ReconnectPort := Src.ReconnectPort;
+    VatRates.Assign(VatRates);
+  end else
+    inherited Assign(Source);
 end;
 
 end.

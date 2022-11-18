@@ -6,7 +6,7 @@ uses
   // VCL
   Types, SysUtils, Graphics,
   // This
-  ByteUtils, PrinterPort, RegExpr;
+  ByteUtils, PrinterPort, RegExpr, StringUtils, LogFile;
 
 const
   ESC   = #$1B;
@@ -232,6 +232,7 @@ type
 
   TEscPrinter = class
   private
+    FLogger: ILogFile;
     FPort: IPrinterPort;
     FDeviceMetrics: TDeviceMetrics;
     function GetImageData(Image: TGraphic): string;
@@ -247,7 +248,7 @@ type
     function ReadString: string;
     procedure Send(const Data: string);
   public
-    constructor Create(APort: IPrinterPort);
+    constructor Create(APort: IPrinterPort; ALogger: ILogFile);
 
     procedure HorizontalTab;
     procedure LineFeed;
@@ -355,10 +356,11 @@ const
 
 { TEscPrinter }
 
-constructor TEscPrinter.Create(APort: IPrinterPort);
+constructor TEscPrinter.Create(APort: IPrinterPort; ALogger: ILogFile);
 begin
   inherited Create;
   FPort := APort;
+  FLogger := ALogger;
   FDeviceMetrics.PrintWidth := 576;
 end;
 
@@ -366,6 +368,7 @@ procedure TEscPrinter.Send(const Data: string);
 begin
   FPort.Lock;
   try
+    FLogger.Debug('-> ' + StrToHex(Data));
     FPort.Write(Data);
   finally
     FPort.Unlock;
@@ -375,6 +378,7 @@ end;
 function TEscPrinter.ReadByte: Byte;
 begin
   Result := Ord(FPort.Read(1)[1]);
+  FLogger.Debug('<- ' + StrToHex(Chr(Result)));
 end;
 
 function TEscPrinter.ReadString: string;
@@ -387,6 +391,7 @@ begin
     if C <> #0 then
       Result := Result + C;
   until C = #0;
+  FLogger.Debug('<- ' + StrToHex(Result));
 end;
 
 procedure TEscPrinter.CarriageReturn;
@@ -583,7 +588,6 @@ end;
 
 function TEscPrinter.GetImageData2(Justification: Integer; Image: TGraphic): string;
 var
-  x: Integer;
   Bitmap: TBitmap;
 begin
   Bitmap := TBitmap.Create;
