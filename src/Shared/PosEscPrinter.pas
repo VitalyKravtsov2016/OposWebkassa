@@ -9,7 +9,7 @@ uses
   TntClasses,
   // Opos
   Opos, OposEsc, OposPtr, OposException, OposServiceDevice19, OposEvents,
-  OposPOSPrinter_CCO_TLB, WException,
+  OposPOSPrinter_CCO_TLB, WException, OposPtrUtils,
   // This
   LogFile, DriverError, EscPrinter, PrinterPort, NotifyThread,
   RegExpr, SerialPort;
@@ -817,7 +817,19 @@ end;
 
 function TPosEscPrinter.CheckHealth(Level: Integer): Integer;
 begin
-  Result := ClearResult;
+  try
+    case Level of
+      OPOS_CH_INTERNAL: FPrinter.ReadPrinterStatus;
+      OPOS_CH_EXTERNAL: FPrinter.PrintTestPage;
+      OPOS_CH_INTERACTIVE: FPrinter.PrintTestPage;
+    else
+      raiseIllegalError('Invalid level parameter value');
+    end;
+    Result := ClearResult;
+  except
+    on E: Exception do
+      Result := HandleException(E);
+  end;
 end;
 
 function TPosEscPrinter.ClaimDevice(Timeout: Integer): Integer;
@@ -1675,8 +1687,80 @@ end;
 function TPosEscPrinter.PrintBarCode(Station: Integer;
   const Data: WideString; Symbology, Height, Width, Alignment,
   TextPosition: Integer): Integer;
+var
+  QRCode: TQRCode;
+  PDF417: TPDF417;
+  BarcodeType: Integer;
 begin
-  Result := ClearResult;
+  try
+    CheckRecStation(Station);
+
+    FPrinter.SetBarcodeHeight(Height);
+    FPrinter.SetBarcodeWidth(Width);
+    // Alignment
+    case Alignment of
+      PTR_BC_LEFT: FPrinter.SetJustification(JUSTIFICATION_LEFT);
+      PTR_BC_CENTER: FPrinter.SetJustification(JUSTIFICATION_CENTERING);
+      PTR_BC_RIGHT: FPrinter.SetJustification(JUSTIFICATION_RIGHT);
+    else
+      FPrinter.SetLeftMargin(Alignment);
+    end;
+    // textPosition
+    case TextPosition of
+      PTR_BC_TEXT_NONE: FPrinter.SetHRIPosition(HRI_NOT_PRINTED);
+      PTR_BC_TEXT_ABOVE: FPrinter.SetHRIPosition(HRI_ABOVE_BARCODE);
+      PTR_BC_TEXT_BELOW: FPrinter.SetHRIPosition(HRI_BELOW_BARCODE);
+    end;
+    // Symbology
+    if Is2DBarcode(Symbology) then
+    begin
+      case Symbology of
+        PTR_BCS_PDF417:
+        begin
+          FPrinter.Select2DBarcode(BARCODE_PDF417);
+          PDF417.ColumnNumber := 0;
+          PDF417.SecurityLevel := 0;
+          PDF417.HVRatio := 0;
+          PDF417.data := Data;
+          FPrinter.printPDF417(PDF417);
+        end;
+        PTR_BCS_QRCODE:
+        begin
+          FPrinter.Select2DBarcode(BARCODE_QR_CODE);
+          QRCode.SymbolVersion := 0;
+          QRCode.ECLevel := 1;
+          QRCode.ModuleSize := 4;
+          QRCode.data := Data;
+          FPrinter.printQRCode(QRCode);
+          FPrinter.PrintAndFeed(10);
+        end;
+      else
+        RaiseIllegalError('Symbology not supported');
+      end;
+    end else
+    begin
+      case Symbology of
+        PTR_BCS_UPCA: BarcodeType := BARCODE2_UPC_A;
+        PTR_BCS_UPCE: BarcodeType := BARCODE2_UPC_E;
+        PTR_BCS_EAN8: BarcodeType := BARCODE2_EAN8;
+        PTR_BCS_EAN13: BarcodeType := BARCODE2_EAN13;
+        PTR_BCS_ITF: BarcodeType := BARCODE2_ITF;
+        PTR_BCS_Codabar: BarcodeType := BARCODE2_CODABAR;
+        PTR_BCS_Code39: BarcodeType := BARCODE2_CODE39;
+        PTR_BCS_Code93: BarcodeType := BARCODE2_CODE93;
+        PTR_BCS_Code128: BarcodeType := BARCODE2_CODE128;
+      else
+        BarcodeType := BARCODE2_CODE128;
+        RaiseIllegalError('Symbology not supported');
+      end;
+      FPrinter.PrintBarcode2(BarcodeType, Data);
+    end;
+    FPrinter.SetJustification(JUSTIFICATION_LEFT);
+    Result := ClearResult;
+  except
+    on E: Exception do
+      Result := HandleException(E);
+  end;
 end;
 
 function TPosEscPrinter.PrintBitmap(Station: Integer;
@@ -1735,7 +1819,8 @@ procedure TPosEscPrinter.PrintGraphics(Graphic: TGraphic;
 var
   Justification: Integer;
 begin
-  //ScaleGraphic(Graphic, 2); !!!
+  ScaleGraphic(Graphic, 2);
+
   case Alignment of
     PTR_BM_LEFT: Justification := JUSTIFICATION_LEFT;
     PTR_BM_CENTER: Justification := JUSTIFICATION_CENTERING;
@@ -1767,6 +1852,8 @@ begin
       Stream.Position := 0;
       case Type_ of
         PTR_BMT_BMP: Bitmap.LoadFromStream(Stream);
+        //PTR_BMT_JPEG:
+        //PTR_BMT_GIF:
       else
         raiseIllegalError('Only BMP supported');
       end;

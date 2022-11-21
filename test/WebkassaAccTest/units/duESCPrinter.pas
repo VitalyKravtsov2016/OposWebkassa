@@ -34,6 +34,11 @@ type
     procedure TestPrintMode;
     procedure TestPrintModeInLine;
     procedure TestBarcode;
+    procedure TestBarcode2;
+    procedure TestQRCode;
+    procedure PrintTestPage;
+    procedure TestJustification;
+
     procedure TestBitmap;
     procedure TestReadPrinterID;
   end;
@@ -63,10 +68,10 @@ function TESCPrinterTest.CreateSerialPort: TSerialPort;
 var
   SerialParams: TSerialParams;
 begin
-  SerialParams.PortName := 'COM3';
-  SerialParams.BaudRate := 115200;
+  SerialParams.PortName := 'COM2';
+  SerialParams.BaudRate := 19200;
   SerialParams.DataBits := 8;
-  SerialParams.StopBits := 1;
+  SerialParams.StopBits := ONESTOPBIT;
   SerialParams.Parity := 0;
   SerialParams.FlowControl := 0;
   SerialParams.ReconnectPort := False;
@@ -93,6 +98,7 @@ var
   PaperStatus: TPaperStatus;
   RollStatus: TPaperRollStatus;
 begin
+  FPrinter.Initialize;
   PrinterStatus := FPrinter.ReadPrinterStatus;
   CheckEquals(True, PrinterStatus.DrawerOpened, 'DrawerOpened');
 
@@ -117,7 +123,7 @@ procedure TESCPrinterTest.TestPrintMode;
 var
   PrintMode: TPrintMode;
 begin
-  FPrinter.SetJustification(JUSTIFICATION_LEFT);
+  FPrinter.Initialize;
   // Normal mode, font A
   PrintMode.CharacterFontB := False;
   PrintMode.Emphasized := False;
@@ -259,44 +265,75 @@ begin
   FPrinter.PrintText(' Double height & width' + CRLF);
 end;
 
-(*
-  BARCODE2_UPC_A    = 65;
-  BARCODE2_UPC_E    = 66;
-  BARCODE2_EAN13    = 67;
-  BARCODE2_EAN8     = 68;
-  BARCODE2_CODE39   = 69;
-  BARCODE2_ITF      = 70;
-  BARCODE2_CODABAR  = 71;
-  BARCODE2_CODE93   = 72;
-  BARCODE2_CODE128  = 73;
-*)
-
 procedure TESCPrinterTest.TestBarcode;
 begin
-(*
+  FPrinter.SetNormalPrintMode;
+  FPrinter.SetBarcodeLeft(50);
+  FPrinter.SetBarcodeHeight(50);
+  FPrinter.SetHRIPosition(HRI_BELOW_BARCODE);
+
+  FPrinter.PrintText('Barcode test' + CRLF);
+  FPrinter.PrintText('UPC A' + CRLF);
+  FPrinter.PrintBarcode(BARCODE_UPC_A, '17236517261');
+  FPrinter.PrintText('UPC E' + CRLF);
+  FPrinter.PrintBarcode(BARCODE_UPC_E, '17236517261');
+  FPrinter.PrintText('EAN13' + CRLF);
+  FPrinter.PrintBarcode(BARCODE_EAN13, '172365172613');
+  FPrinter.PrintText('EAN8' + CRLF);
+  FPrinter.PrintBarcode(BARCODE_EAN8, '1723651');
+  FPrinter.PrintText('CODE39' + CRLF);
+  FPrinter.PrintBarcode(BARCODE_CODE39, '837465873');
+  FPrinter.PrintText('ITF' + CRLF);
+  FPrinter.PrintBarcode(BARCODE_ITF, '83746587');
+  FPrinter.PrintText('CODABAR' + CRLF);
+  FPrinter.PrintBarcode(BARCODE_CODABAR, '837465873');
+end;
+
+procedure TESCPrinterTest.TestBarcode2;
+begin
+  FPrinter.SetNormalPrintMode;
+  FPrinter.SetBarcodeLeft(50);
+  FPrinter.SetBarcodeHeight(50);
+  FPrinter.SetHRIPosition(HRI_BELOW_BARCODE);
+
+  FPrinter.PrintText('Barcode 2 test' + CRLF);
+  FPrinter.PrintText('UPC A' + CRLF);
+  FPrinter.PrintBarcode2(BARCODE2_UPC_A, '17236517261');
+  FPrinter.PrintText('UPC E' + CRLF);
+  FPrinter.PrintBarcode2(BARCODE2_UPC_E, '17236517261');
+  FPrinter.PrintText('EAN13' + CRLF);
+  FPrinter.PrintBarcode2(BARCODE2_EAN13, '172365172613');
+  FPrinter.PrintText('EAN8' + CRLF);
+  FPrinter.PrintBarcode2(BARCODE2_EAN8, '1723651');
+  FPrinter.PrintText('CODE39' + CRLF);
+  FPrinter.PrintBarcode2(BARCODE2_CODE39, '837465873');
+  FPrinter.PrintText('ITF' + CRLF);
+  FPrinter.PrintBarcode2(BARCODE2_ITF, '83746587');
+  FPrinter.PrintText('CODABAR' + CRLF);
+  FPrinter.PrintBarcode2(BARCODE2_CODABAR, '837465873');
+  FPrinter.PrintText('CODE93' + CRLF);
+  FPrinter.PrintBarcode2(BARCODE2_CODE93, '837465873');
+  FPrinter.PrintText('CODE128' + CRLF);
+  FPrinter.PrintBarcode2(BARCODE2_CODE128, '93487593845');
+  FPrinter.PrintText(CRLF);
+end;
+
+procedure TESCPrinterTest.TestQRCode;
 var
   QRCode: TQRCode;
-
-  FPrinter.SetNormalPrintMode;
-  FPrinter.PrintText('Barcode test' + CRLF);
-  FPrinter.PrintText('BARCODE2_UPC_A' + CRLF);
-  FPrinter.PrintBarcode(BARCODE2_UPC_A, '1625341');
-
-  FPrinter.PrintText('BARCODE2_CODE128' + CRLF);
-  FPrinter.PrintBarcode(BARCODE2_CODE128, '1625341');
-
-
-  FPrinter.SetPageMode;
-  //FPrinter.SetBarcodeLeft(100);
+begin
+  FPrinter.Initialize;
+  FPrinter.PrintText('QRCode test' + CRLF);
+  FPrinter.PrintText('SetLeftMargin(100)' + CRLF);
   FPrinter.SetLeftMargin(100);
-  FPrinter.Select2DBarcode(1); // QR code
+  FPrinter.PrintText('SetLeftMargin(100): OK' + CRLF);
+  FPrinter.PrintText('SetLeftMargin(100): OK' + CRLF);
+  FPrinter.Select2DBarcode(BARCODE_QR_CODE);
   QRCode.SymbolVersion := 0;
   QRCode.ECLevel := 1;
   QRCode.ModuleSize := 4;
-  QRCode.data := 'QRCode test test test';
+  QRCode.data := 'QRCodetestQRCodetestQRCodetest';
   FPrinter.printQRCode(QRCode);
-  FPrinter.PrintAndReturnStandardMode;
-*)
 end;
 
 procedure TESCPrinterTest.TestBitmap;
@@ -332,6 +369,29 @@ begin
   CheckEquals('_EPSON', FPrinter.ReadPrinterID(66), 'Manufacturer');
   CheckEquals('_TM-T88III', FPrinter.ReadPrinterID(67), 'Printer name');
   CheckEquals('_D6KG074561', FPrinter.ReadPrinterID(68), 'Serial number');
+end;
+
+procedure TESCPrinterTest.PrintTestPage;
+begin
+  FPrinter.Initialize;
+  FPrinter.PrintTestPage;
+end;
+
+procedure TESCPrinterTest.TestJustification;
+var
+  QRCode: TQRCode;
+begin
+  FPrinter.Initialize;
+  FPrinter.SetHRIPosition(HRI_BELOW_BARCODE);
+  FPrinter.SetJustification(JUSTIFICATION_CENTERING);
+  FPrinter.PrintText('QRCode test' + CRLF);
+  FPrinter.Select2DBarcode(BARCODE_QR_CODE);
+  QRCode.SymbolVersion := 0;
+  QRCode.ECLevel := 1;
+  QRCode.ModuleSize := 4;
+  QRCode.data := 'QRCodetestQRCodetestQRCodetest';
+  FPrinter.printQRCode(QRCode);
+  FPrinter.SetJustification(JUSTIFICATION_LEFT);
 end;
 
 initialization

@@ -2915,13 +2915,16 @@ begin
     case Item.Style of
       STYLE_QR_CODE:
       begin
-        if Printer.CapRecBitmap then
+        if Printer.CapRecBarcode then
         begin
-          PrintQRCode(Item.Text);
+          if Printer.PrintBarCode(PTR_S_RECEIPT, Item.Text, PTR_BCS_QRCODE, 0, 4,
+            PTR_BC_CENTER, PTR_BC_TEXT_NONE) <> OPOS_SUCCESS then
+          begin
+            PrintQRCode(Item.Text);
+          end;
         end else
         begin
-          Printer.PrintBarCode(PTR_S_RECEIPT, Item.Text, PTR_BCS_DATAMATRIX, 0, 4,
-            PTR_BC_CENTER, PTR_BC_TEXT_NONE);
+          PrintQRCode(Item.Text);
         end;
       end;
     else
@@ -3110,6 +3113,8 @@ var
   Stream: TMemoryStream;
   BitmapData: WideString;
 begin
+  if not Printer.CapRecBitmap then Exit;
+
   Bitmap := TBitmap.Create;
   Render := TZintBarcode.Create;
   Stream := TMemoryStream.Create;

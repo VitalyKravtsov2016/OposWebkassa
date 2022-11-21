@@ -11,6 +11,7 @@ uses
 function PtrPropertyName(const ID: Integer): WideString;
 function PtrResultCodeExtendedText(Value: Integer): WideString;
 function PtrStatusUpdateEventText(Value: Integer): WideString;
+function Is2DBarcode(Symbology: Integer): Boolean;
 
 implementation
 
@@ -205,6 +206,20 @@ begin
     PTR_SUE_IDLE: Result := 'PTR_SUE_IDLE';
   else
     Result := GetCommonStatusUpdateEventText(Value);
+  end;
+end;
+
+function Is2DBarcode(Symbology: Integer): Boolean;
+begin
+  Result := False;
+  case Symbology of
+    PTR_BCS_PDF417,
+    PTR_BCS_MAXICODE,
+    PTR_BCS_DATAMATRIX,
+    PTR_BCS_QRCODE,
+    PTR_BCS_UQRCODE,
+    PTR_BCS_AZTEC,
+    PTR_BCS_UPDF417: Result := True;
   end;
 end;
 

@@ -269,8 +269,9 @@ begin
   FptrCheck(Driver.BeginFiscalReceipt(True));
   CheckEquals(FPTR_PS_FISCAL_RECEIPT, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
 
-  FptrCheck(Driver.PrintRecItem('Item 1', 123.45, 1000, 0, 123.45, 'ЙЦ'));
-  FptrCheck(Driver.PrintRecTotal(123.45, 123.45, '1'));
+  //FptrCheck(Driver.PrintRecItem('Item 1', 123.45, 1000, 0, 123.45, 'ЙЦ'));
+  FptrCheck(Driver.PrintRecItem('яЕП. ╧ 5                                  ьнйнкюдмюъ окхрйю MILKA BUBBLES лнкнвмши', 590, 1000, 4, 590, 'ЬР'));
+  FptrCheck(Driver.PrintRecTotal(12345, 12345, '0'));
 
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
 

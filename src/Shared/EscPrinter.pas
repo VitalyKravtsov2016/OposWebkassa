@@ -137,6 +137,12 @@ const
   BARCODE2_CODE128  = 73;
 
   /////////////////////////////////////////////////////////////////////////////
+  // Barcode constants to select 2D barcode, 1D5A command
+
+  BARCODE_PDF417    = 0;
+  BARCODE_QR_CODE   = 1;
+
+  /////////////////////////////////////////////////////////////////////////////
   // Page mode direction constants
 
   PM_DIRECTION_LEFT_TO_RIGHT  = 0;
@@ -243,12 +249,12 @@ type
       Image: TGraphic): string;
     procedure DrawImage(Justification: Integer; Image: TGraphic;
       Bitmap: TBitmap);
-  private
+  public
+    constructor Create(APort: IPrinterPort; ALogger: ILogFile);
+
     function ReadByte: Byte;
     function ReadString: string;
     procedure Send(const Data: string);
-  public
-    constructor Create(APort: IPrinterPort; ALogger: ILogFile);
 
     procedure HorizontalTab;
     procedure LineFeed;

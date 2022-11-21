@@ -40,6 +40,7 @@ type
     function GetFontNames: WideString;
     function TestConnection: WideString;
     function PrintTestReceipt: WideString;
+    function PrintTestReceipt2: WideString;
     function ReadDeviceList: WideString; virtual; abstract;
   end;
 
@@ -302,6 +303,19 @@ begin
 end;
 
 function TRecPrinter.PrintTestReceipt: WideString;
+begin
+  Check(Printer.Open(FParams.PrinterName));
+  try
+    Check(Printer.ClaimDevice(0));
+    Printer.DeviceEnabled := True;
+    Check(Printer.ResultCode);
+    Check(Printer.CheckHealth(OPOS_CH_EXTERNAL));
+  finally
+    Printer.Close;
+  end;
+end;
+
+function TRecPrinter.PrintTestReceipt2: WideString;
 
   procedure CheckPtr(AResultCode: Integer);
   begin
