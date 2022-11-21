@@ -64,6 +64,7 @@ type
     FDocument: TTextDocument;
     FDuplicate: TTextDocument;
     FReceipt: TCustomReceipt;
+    FPrinterObj: TObject;
     FPrinter: IOPOSPOSPrinter;
     FPrinterLog: TPOSPrinterLog;
     FParams: TPrinterParameters;
@@ -411,6 +412,7 @@ destructor TWebkassaImpl.Destroy;
 begin
   Close;
   FLines.Free;
+  FPrinterObj.Free;
   FCashboxStatusJson.Free;
   FClient.Free;
   FParams.Free;
@@ -2228,6 +2230,7 @@ var
   PrinterPort: IPrinterPort;
   SocketParams: TSocketParams;
 begin
+  FPrinterObj.Free;
   case Params.PrinterType of
     PrinterTypePosPrinter:
     begin
@@ -2237,12 +2240,14 @@ begin
       PosPrinter.OnDirectIOEvent := PrinterDirectIOEvent;
       PosPrinter.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
       FPrinterLog := TPosPrinterLog.Create2(nil, PosPrinter.ControlInterface, Logger);
+      FPrinterObj := FPrinterLog;
       Result := FPrinterLog;
     end;
     PrinterTypeWinPrinter:
     begin
       PosWinPrinter := TPosWinPrinter.Create2(nil, Logger);
       PosWinPrinter.FontName := Params.FontName;
+      FPrinterObj := PosWinPrinter;
       Result := PosWinPrinter;
     end;
     PrinterTypeEscPrinterSerial:
@@ -2254,6 +2259,7 @@ begin
       PosEscPrinter.OnDirectIOEvent := PrinterDirectIOEvent;
       PosEscPrinter.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
       PosEscPrinter.FontName := Params.FontName;
+      FPrinterObj := PosEscPrinter;
       Result := PosEscPrinter;
     end;
     PrinterTypeEscPrinterNetwork:
@@ -2269,6 +2275,7 @@ begin
       PosEscPrinter.OnDirectIOEvent := PrinterDirectIOEvent;
       PosEscPrinter.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
       PosEscPrinter.FontName := Params.FontName;
+      FPrinterObj := PosEscPrinter;
       Result := PosEscPrinter;
     end;
   end;
@@ -2285,6 +2292,7 @@ begin
   SerialParams.Parity := Params.Parity;
   SerialParams.FlowControl := Params.FlowControl;
   SerialParams.ReconnectPort := Params.ReconnectPort;
+  SerialParams.ByteTimeout := Params.SerialTimeout;
   Result := TSerialPort.Create(SerialParams, Logger);
 end;
 
@@ -2930,7 +2938,7 @@ begin
       if Item.Style = STYLE_BOLD then
       begin
         if CapRecBold then
-          Prefix := ESCBold;
+          Prefix := ESC_Bold;
       end;
       PrintText(Prefix, Text, RecLineChars);
     end;

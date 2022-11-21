@@ -6,7 +6,7 @@ const
   GS     = #$1D;
   ESC     = #$1B;
 
-  EscBold               = ESC + '|bC';
+  ESC_Bold              = ESC + '|bC';
   ESC_Normal            = ESC + '|1C'; // Prints normal size.
   ESC_DoubleWide        = ESC + '|2C'; // Prints double-wide characters.
   ESC_DoubleHigh        = ESC + '|3C'; // Prints double-high characters.

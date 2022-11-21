@@ -11,7 +11,8 @@ uses
   Opos, OposPtr, Oposhi, OposException, OposEsc, OposUtils, OposDevice,
   OposPOSPrinter_CCO_TLB,
   // This
-  PosWinPrinter, PosEscPrinter, LogFile, PrinterParameters, SerialPort;
+  PosWinPrinter, PosEscPrinter, LogFile, PrinterParameters,
+  SerialPort, SocketPort;
 
 
 type
@@ -21,6 +22,7 @@ type
   private
     FLogger: ILogFile;
     FLines: TTntStrings;
+    FPrinterObj: TObject;
     FPrinter: IOPOSPOSPrinter;
     FParams: TPrinterParameters;
 
@@ -67,6 +69,16 @@ type
     function ReadDeviceList: WideString; override;
   end;
 
+  { TNetworkEscPrinter }
+
+  TNetworkEscPrinter = class(TRecPrinter)
+  private
+    function CreateSocketPort: TSocketPort;
+  public
+    constructor Create(AParams: TPrinterParameters);
+    function ReadDeviceList: WideString; override;
+  end;
+
 implementation
 
 const
@@ -99,6 +111,7 @@ begin
   FLines.Free;
   FLogger := nil;
   FPrinter := nil;
+  FPrinterObj.Free;
   inherited Destroy;
 end;
 
@@ -320,8 +333,10 @@ begin
     begin
       CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, TrimRight(Lines[i]) + CRLF));
     end;
-    CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, CRLF));
-    CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, CRLF));
+    for i := 0 to Printer.RecLinesToPaperCut-1 do
+    begin
+      CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, CRLF));
+    end;
     CheckPtr(Printer.CutPaper(90));
     if Printer.CapTransaction then
     begin
@@ -347,10 +362,14 @@ end;
 { TWinPrinter }
 
 constructor TWinPrinter.Create(AParams: TPrinterParameters);
+var
+  PosWinPrinter: TPosWinPrinter;
 begin
   inherited Create(AParams);
   FParams := AParams;
-  FPrinter := TPosWinPrinter.Create2(nil, FLogger);
+  PosWinPrinter := TPosWinPrinter.Create2(nil, FLogger);
+  FPrinterObj := PosWinPrinter;
+  FPrinter := PosWinPrinter;
 end;
 
 function TWinPrinter.ReadDeviceList: WideString;
@@ -365,6 +384,7 @@ begin
   inherited Create(AParams);
   FParams := AParams;
   FPrinter := TOPOSPOSPrinter.Create(nil).ControlInterface;
+  FPrinterObj := nil;
 end;
 
 function TOposPrinter.ReadDeviceList: WideString;
@@ -387,10 +407,14 @@ end;
 { TSerialEscPrinter }
 
 constructor TSerialEscPrinter.Create(AParams: TPrinterParameters);
+var
+  PosEscPrinter: TPosEscPrinter;
 begin
   inherited Create(AParams);
   FParams := AParams;
-  FPrinter := TPosEscPrinter.Create2(nil, CreateSerialPort, FLogger);
+  PosEscPrinter := TPosEscPrinter.Create2(nil, CreateSerialPort, FLogger);
+  FPrinterObj := PosEscPrinter;
+  FPrinter := PosEscPrinter;
 end;
 
 function TSerialEscPrinter.CreateSerialPort: TSerialPort;
@@ -404,12 +428,42 @@ begin
   SerialParams.Parity := Params.Parity;
   SerialParams.FlowControl := Params.FlowControl;
   SerialParams.ReconnectPort := Params.ReconnectPort;
+  SerialParams.ByteTimeout := Params.SerialTimeout;
   Result := TSerialPort.Create(SerialParams, FLogger);
 end;
 
 function TSerialEscPrinter.ReadDeviceList: WideString;
 begin
   Result := 'Serial ESC printer';
+end;
+
+{ TNetworkEscPrinter }
+
+constructor TNetworkEscPrinter.Create(AParams: TPrinterParameters);
+var
+  PosEscPrinter: TPosEscPrinter;
+begin
+  inherited Create(AParams);
+  FParams := AParams;
+  PosEscPrinter := TPosEscPrinter.Create2(nil, CreateSocketPort, FLogger);
+  FPrinterObj := PosEscPrinter;
+  FPrinter := PosEscPrinter;
+end;
+
+function TNetworkEscPrinter.CreateSocketPort: TSocketPort;
+var
+  SocketParams: TSocketParams;
+begin
+  SocketParams.RemoteHost := Params.RemoteHost;
+  SocketParams.RemotePort := Params.RemotePort;
+  SocketParams.ByteTimeout := Params.ByteTimeout;
+  SocketParams.MaxRetryCount := 1;
+  Result := TSocketPort.Create(SocketParams, FLogger);
+end;
+
+function TNetworkEscPrinter.ReadDeviceList: WideString;
+begin
+  Result := 'Network ESC printer';
 end;
 
 end.

@@ -272,10 +272,11 @@ end;
 *)
 
 procedure TESCPrinterTest.TestBarcode;
-var
-  QRCode: TQRCode;
 begin
 (*
+var
+  QRCode: TQRCode;
+
   FPrinter.SetNormalPrintMode;
   FPrinter.PrintText('Barcode test' + CRLF);
   FPrinter.PrintText('BARCODE2_UPC_A' + CRLF);

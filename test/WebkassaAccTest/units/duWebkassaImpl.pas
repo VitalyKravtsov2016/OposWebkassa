@@ -117,23 +117,24 @@ begin
   FDriver.Params.PrinterType := PrinterTypeWinPrinter;
   FDriver.Params.PrinterName := 'SLK-TE122';
   FDriver.Params.FontName := 'FontA11';
+  
+  FDriver.Params.PrinterType := PrinterTypeEscPrinterSerial;
+  FDriver.Params.ByteTimeout := 100;
+  FDriver.Params.FontName := 'FontA11';
+  FDriver.Params.PortName := 'COM2';
+  FDriver.Params.BaudRate := 19200;
+  FDriver.Params.DataBits := DATABITS_8;
+  FDriver.Params.StopBits := ONESTOPBIT;
+  FDriver.Params.Parity := NOPARITY;
+  FDriver.Params.FlowControl := 0;
+  FDriver.Params.ReconnectPort := False;
+*)
   // Network
   FDriver.Params.PrinterType := PrinterTypeEscPrinterNetwork;
   FDriver.Params.RemoteHost := '10.11.7.176';
   FDriver.Params.RemotePort := 9100;
   FDriver.Params.ByteTimeout := 1000;
   FDriver.Params.FontName := 'FontA11';
-*)
-  FDriver.Params.PrinterType := PrinterTypeEscPrinterSerial;
-  FDriver.Params.ByteTimeout := 100;
-  FDriver.Params.FontName := 'FontA11';
-  FDriver.Params.PortName := 'COM3';
-  FDriver.Params.BaudRate := 19200;
-  FDriver.Params.DataBits := DATABITS_8;
-  FDriver.Params.StopBits := STOPBITS_10;
-  FDriver.Params.Parity := PARITY_NONE;
-  FDriver.Params.FlowControl := 0;
-  FDriver.Params.ReconnectPort := False;
 end;
 
 procedure TWebkassaImplTest.TearDown;

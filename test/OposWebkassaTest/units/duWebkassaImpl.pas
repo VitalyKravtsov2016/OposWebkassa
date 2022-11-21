@@ -271,8 +271,8 @@ const
     'гмл  хмй нтд                              ' + CRLF +
     'Message 1                                 ' + CRLF +
     'Message 2                                 ' + CRLF +
-    EscBold + 'бмеяемхе демец б йюяяс              =60.00' + CRLF +
-    EscBold + 'мюкхвмшу б йюяяе                     =0.00' + CRLF +
+    ESC_Bold + 'бмеяемхе демец б йюяяс              =60.00' + CRLF +
+    ESC_Bold + 'мюкхвмшу б йюяяе                     =0.00' + CRLF +
     'Message 3                                 ' + CRLF +
     'Message 4                                 ' + CRLF +
     '           CallЖЕМРП 039458039850         ' + CRLF +
@@ -318,8 +318,8 @@ const
     'гмл  хмй нтд                              ' + CRLF +
     'Message 1                                 ' + CRLF +
     'Message 2                                 ' + CRLF +
-    EscBold + 'хгзърхе демец хг йюяяш              =60.00' + CRLF +
-    EscBold + 'мюкхвмшу б йюяяе                     =0.00' + CRLF +
+    ESC_Bold + 'хгзърхе демец хг йюяяш              =60.00' + CRLF +
+    ESC_Bold + 'мюкхвмшу б йюяяе                     =0.00' + CRLF +
     'Message 3                                 ' + CRLF +
     'Message 4                                 ' + CRLF +
     '           CallЖЕМРП 039458039850         ' + CRLF +
@@ -457,7 +457,7 @@ const
     '------------------------------------------' + CRLF +
     'яЙХДЙЮ:                              10.00' + CRLF +
     'мЮЖЕМЙЮ:                              5.00' + CRLF +
-    ESC_DoubleHighAndWide + 'хрнц          =108.27' + CRLF +
+    ESC_DoubleHighWide + 'хрнц          =108.27' + CRLF +
     'аЮМЙНБЯЙЮЪ ЙЮПРЮ:                  =123.45' + CRLF +
     '  ядювю                             =15.18' + CRLF +
     'Б Р.В. мдя 12%                      =12.14' + CRLF +

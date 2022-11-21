@@ -153,9 +153,9 @@ begin
   cbStopBits.Items.BeginUpdate;
   try
     cbStopBits.Clear;
-    cbStopBits.Items.AddObject('1', TObject(STOPBITS_10));
-    cbStopBits.Items.AddObject('1.5', TObject(STOPBITS_15));
-    cbStopBits.Items.AddObject('2', TObject(STOPBITS_20));
+    cbStopBits.Items.AddObject('1', TObject(ONESTOPBIT));
+    cbStopBits.Items.AddObject('1.5', TObject(ONE5STOPBITS));
+    cbStopBits.Items.AddObject('2', TObject(TWOSTOPBITS));
     cbStopBits.ItemIndex := cbStopBits.Items.IndexOfObject(
       TObject(Parameters.StopBits));
   finally
@@ -168,11 +168,11 @@ begin
   cbParity.Items.BeginUpdate;
   try
     cbParity.Clear;
-    cbParity.Items.AddObject('Нет', TObject(PARITY_NONE));
-    cbParity.Items.AddObject('Нечетность', TObject(PARITY_ODD));
-    cbParity.Items.AddObject('Четность', TObject(PARITY_EVEN));
-    cbParity.Items.AddObject('Установлен', TObject(PARITY_MARK));
-    cbParity.Items.AddObject('Сброшен', TObject(PARITY_SPACE));
+    cbParity.Items.AddObject('Нет', TObject(NOPARITY));
+    cbParity.Items.AddObject('Нечетность', TObject(ODDPARITY));
+    cbParity.Items.AddObject('Четность', TObject(EVENPARITY));
+    cbParity.Items.AddObject('Установлен', TObject(MARKPARITY));
+    cbParity.Items.AddObject('Сброшен', TObject(SPACEPARITY));
     cbParity.ItemIndex := cbParity.Items.IndexOfObject(
       TObject(Parameters.Parity));
   finally
@@ -200,11 +200,17 @@ begin
   Parameters.PrinterName := cbPrinterName.Text;
   Parameters.FontName := cbFontName.Text;
   Parameters.PortName := cbPortName.Text;
+  // Serial
   Parameters.BaudRate := Integer(cbBaudRate.Items.Objects[cbBaudRate.ItemIndex]);
   Parameters.DataBits := Integer(cbDataBits.Items.Objects[cbDataBits.ItemIndex]);
   Parameters.StopBits := Integer(cbStopBits.Items.Objects[cbStopBits.ItemIndex]);
   Parameters.Parity := Integer(cbParity.Items.Objects[cbParity.ItemIndex]);
   Parameters.FlowControl := Integer(cbFlowControl.Items.Objects[cbFlowControl.ItemIndex]);
+  Parameters.SerialTimeout := seSerialTimeout.Value;
+  // Socket
+  Parameters.RemoteHost := edtRemoteHost.Text;
+  Parameters.RemotePort := seRemotePort.Value;
+  Parameters.ByteTimeout := seByteTimeout.Value;
 end;
 
 function TfmPrinter.CreatePrinter(PrinterType: Integer): TRecPrinter;
@@ -213,7 +219,7 @@ begin
     PrinterTypePosPrinter: Result := TOposPrinter.Create(Parameters);
     PrinterTypeWinPrinter: Result := TWinPrinter.Create(Parameters);
     PrinterTypeEscPrinterSerial: Result := TSerialEscPrinter.Create(Parameters);
-    PrinterTypeEscPrinterNetwork: Result := TSerialEscPrinter.Create(Parameters);
+    PrinterTypeEscPrinterNetwork: Result := TNetworkEscPrinter.Create(Parameters);
   else
     raise Exception.CreateFmt('Неизвестный тип принтера, %d', [PrinterType]);
   end;

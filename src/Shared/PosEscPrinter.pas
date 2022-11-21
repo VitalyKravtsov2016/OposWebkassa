@@ -36,7 +36,7 @@ type
     FDevice: TOposServiceDevice19;
     FLastPrintMode: TPrintModes;
 
-    FTransaction: Boolean;
+    //FTransaction: Boolean; !!!
     FFontName: WideString;
 
     FAsyncMode: Boolean;

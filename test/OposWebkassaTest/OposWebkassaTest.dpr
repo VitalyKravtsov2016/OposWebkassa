@@ -73,7 +73,8 @@ uses
   DeviceNotification in '..\..\src\Shared\DeviceNotification.pas',
   PortUtil in '..\..\src\Shared\PortUtil.pas',
   TextReport in '..\..\src\Shared\TextReport.pas',
-  SocketPort in '..\..\src\Shared\SocketPort.pas';
+  SocketPort in '..\..\src\Shared\SocketPort.pas',
+  SerialPorts in '..\..\src\Shared\SerialPorts.pas';
 
 {$R *.RES}
 

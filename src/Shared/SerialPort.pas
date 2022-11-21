@@ -335,6 +335,28 @@ DWORD DCBlength;
 
 procedure TSerialPort.UpdateDCB;
 const
+  fBinary              = $00000001;
+var
+  DCB: TDCB;
+begin
+  FillChar(DCB, SizeOf(TDCB), #0);
+  DCB.Bytesize := 8;
+  DCB.Parity := NOPARITY;
+  DCB.Stopbits := ONESTOPBIT;
+  DCB.BaudRate := Params.BaudRate;
+  DCB.Flags := FBinary;
+
+  if not SetCommState(GetHandle, DCB) then
+  begin
+    Logger.Error('SetCommState function failed.');
+    Logger.Error(GetLastErrorText);
+    RaiseSerialPortError;
+  end;
+end;
+
+(*
+procedure TSerialPort.UpdateDCB;
+const
   fBinary       = $00000001;
   fParity       = $00000002;
   fOutxCtsFlow  = $00000004;
@@ -349,7 +371,8 @@ begin
   DCB.Parity := Params.Parity;
   DCB.Stopbits := Params.StopBits;
   DCB.BaudRate := Params.BaudRate;
-  DCB.Flags := FBinary + fParity;
+  //DCB.Flags := FBinary + fParity;
+  DCB.Flags := FBinary;
   if Params.FlowControl = FLOW_CONTROL_XON then
     DCB.Flags := DCB.Flags + fOutX;
   if Params.FlowControl = FLOW_CONTROL_HARDWARE then
@@ -362,7 +385,7 @@ begin
     RaiseSerialPortError;
   end;
 end;
-
+*)
 
 function TSerialPort.GetOpened: Boolean;
 begin

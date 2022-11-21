@@ -77,8 +77,8 @@ const
   DefPortName = 'COM1';
   DefBaudRate = CBR_9600;
   DefDataBits = DATABITS_8;
-  DefStopBits = STOPBITS_10;
-  DefParity = PARITY_NONE;
+  DefStopBits = ONESTOPBIT;
+  DefParity = NOPARITY;
   DefFlowControl = FLOW_CONTROL_NONE;
   DefReconnectPort = false;
   DefSerialTimeout = 100;

@@ -73,7 +73,8 @@ uses
   PortUtil in '..\..\src\Shared\PortUtil.pas',
   TextReport in '..\..\src\Shared\TextReport.pas',
   SocketPort in '..\..\src\Shared\SocketPort.pas',
-  duPOSPrinter in 'units\duPOSPrinter.pas';
+  duPOSPrinter in 'units\duPOSPrinter.pas',
+  SerialPorts in '..\..\src\Shared\SerialPorts.pas';
 
 {$R *.RES}
 

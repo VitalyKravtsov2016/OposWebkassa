@@ -87,7 +87,9 @@ uses
   SerialPort in '..\Shared\SerialPort.pas',
   PrinterPort in '..\Shared\PrinterPort.pas',
   DeviceNotification in '..\Shared\DeviceNotification.pas',
-  PortUtil in '..\Shared\PortUtil.pas';
+  PortUtil in '..\Shared\PortUtil.pas',
+  TextReport in '..\Shared\TextReport.pas',
+  SerialPorts in '..\Shared\SerialPorts.pas';
 
 {$R *.RES}
 {$R WindowsXP.RES}
