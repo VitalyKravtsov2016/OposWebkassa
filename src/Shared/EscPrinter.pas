@@ -817,11 +817,14 @@ begin
 end;
 
 function TEscPrinter.ReadPrinterID(N: Byte): string;
+var
+  S: string;
 begin
   FPort.Lock;
   try
     Send(#$1D#$49 + Chr(N));
-    Result := ReadString;
+    S := ReadString;
+    Result := Copy(S, 2, Length(S)-1);
   finally
     FPort.Unlock;
   end;

@@ -313,48 +313,6 @@ begin
   Result := FHandle;
 end;
 
-(*
-DWORD DCBlength;
-  DWORD BaudRate;
-
-  DWORD fBinary : 1;
-  DWORD fParity : 1;
-  DWORD fOutxCtsFlow : 1;
-  DWORD fOutxDsrFlow : 1;
-  DWORD fDtrControl : 2;
-  DWORD fDsrSensitivity : 1;
-  DWORD fTXContinueOnXoff : 1;
-  DWORD fOutX : 1;
-  DWORD fInX : 1;
-  DWORD fErrorChar : 1;
-  DWORD fNull : 1;
-  DWORD fRtsControl : 2;
-  DWORD fAbortOnError : 1;
-  DWORD fDummy2 : 17;
-*)
-
-procedure TSerialPort.UpdateDCB;
-const
-  fBinary              = $00000001;
-var
-  DCB: TDCB;
-begin
-  FillChar(DCB, SizeOf(TDCB), #0);
-  DCB.Bytesize := 8;
-  DCB.Parity := NOPARITY;
-  DCB.Stopbits := ONESTOPBIT;
-  DCB.BaudRate := Params.BaudRate;
-  DCB.Flags := FBinary;
-
-  if not SetCommState(GetHandle, DCB) then
-  begin
-    Logger.Error('SetCommState function failed.');
-    Logger.Error(GetLastErrorText);
-    RaiseSerialPortError;
-  end;
-end;
-
-(*
 procedure TSerialPort.UpdateDCB;
 const
   fBinary       = $00000001;
@@ -371,8 +329,7 @@ begin
   DCB.Parity := Params.Parity;
   DCB.Stopbits := Params.StopBits;
   DCB.BaudRate := Params.BaudRate;
-  //DCB.Flags := FBinary + fParity;
-  DCB.Flags := FBinary;
+  DCB.Flags := FBinary + fParity;
   if Params.FlowControl = FLOW_CONTROL_XON then
     DCB.Flags := DCB.Flags + fOutX;
   if Params.FlowControl = FLOW_CONTROL_HARDWARE then
@@ -385,7 +342,6 @@ begin
     RaiseSerialPortError;
   end;
 end;
-*)
 
 function TSerialPort.GetOpened: Boolean;
 begin
@@ -598,7 +554,6 @@ function TSerialPort.Read(Count: DWORD): AnsiString;
 var
   ReadCount: DWORD;
 begin
-  Logger.Error('TSerialPort.Read');
   Lock;
   try
     Result := '';

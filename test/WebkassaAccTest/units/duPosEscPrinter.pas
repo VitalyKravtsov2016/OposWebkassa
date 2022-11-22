@@ -96,7 +96,7 @@ begin
   SerialParams.DataBits := 8;
   SerialParams.StopBits := 1;
   SerialParams.Parity := 0;
-  SerialParams.FlowControl := 0;
+  SerialParams.FlowControl := FLOW_CONTROL_NONE;
   SerialParams.ReconnectPort := False;
   SerialParams.ByteTimeout := 200;
   Result := TSerialPort.Create(SerialParams, FLogger);

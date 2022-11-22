@@ -30,6 +30,8 @@ type
     function CreateSocketPort: TSocketPort;
     property Printer: TESCPrinter read FPrinter;
   published
+    procedure TestInitialize;
+    procedure TestPrintText;
     procedure TestReadStatus;
     procedure TestPrintMode;
     procedure TestPrintModeInLine;
@@ -68,12 +70,12 @@ function TESCPrinterTest.CreateSerialPort: TSerialPort;
 var
   SerialParams: TSerialParams;
 begin
-  SerialParams.PortName := 'COM2';
+  SerialParams.PortName := 'COM3';
   SerialParams.BaudRate := 19200;
   SerialParams.DataBits := 8;
   SerialParams.StopBits := ONESTOPBIT;
   SerialParams.Parity := 0;
-  SerialParams.FlowControl := 0;
+  SerialParams.FlowControl := FLOW_CONTROL_NONE;
   SerialParams.ReconnectPort := False;
   SerialParams.ByteTimeout := 1000;
   Result := TSerialPort.Create(SerialParams, FLogger);
@@ -88,6 +90,18 @@ begin
   SocketParams.MaxRetryCount := 1;
   SocketParams.ByteTimeout := 1000;
   Result := TSocketPort.Create(SocketParams, FLogger);
+end;
+
+procedure TESCPrinterTest.TestPrintText;
+begin
+  FPrinter.PrintText('Печать строки 1' + CRLF);
+  FPrinter.PrintText('Печать строки 2' + CRLF);
+  FPrinter.PrintText('Печать строки 3' + CRLF);
+end;
+
+procedure TESCPrinterTest.TestInitialize;
+begin
+  FPrinter.Initialize;
 end;
 
 procedure TESCPrinterTest.TestReadStatus;

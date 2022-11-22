@@ -198,6 +198,7 @@ type
 
     function GetToken(var Text: string; var Token: TEscToken): Boolean;
     procedure PrintText(Text: string);
+    procedure InitializeDevice;
   public
     constructor Create2(AOwner: TComponent; APort: IPrinterPort; ALogger: ILogFile);
     destructor Destroy; override;
@@ -617,7 +618,7 @@ end;
 procedure TPosEscPrinter.Initialize;
 begin
   FAsyncMode := False;
-  FCapCharacterSet := PTR_CCS_ASCII;
+  FCapCharacterSet := PTR_CCS_UNICODE;
   FCapCompareFirmwareVersion := False;
   FCapConcurrentJrnRec := False;
   FCapConcurrentJrnSlp := False;
@@ -687,8 +688,11 @@ begin
   FCapUpdateFirmware := False;
   FCapUpdateStatistics := False;
   FCartridgeNotify := 0;
-  FCharacterSet := PTR_CCS_ASCII;
-  FCharacterSetList := '255,437,737,775,850,852,857,858,860,863,864,865,866,874,1250,1251,1252,1253,1254,1256,1257,1258,28604';
+  FCharacterSet := 1251;
+  FCharacterSetList :=
+    '437,720,737,755,775,850,852,855,856,857,858,860,862,863,864,865,866,874,' +
+    '1250,1251,1252,1253,1254,1255,1256,1257,1258,88591,88592,' +
+    '88593,88594,88595,88596,88597,88598,88599,885915';
   FCheckHealthText := '';
   FControlObjectDescription := 'OPOS Windows Printer';
   FControlObjectVersion := 1014001;
@@ -724,7 +728,7 @@ begin
   FRecEmpty := False;
   FRecLetterQuality := False;
   FRecLineChars := 48;
-  FRecLineCharsList := '42,56';
+  FRecLineCharsList := '42,64';
   FRecLineHeight := 24;
   FRecLineSpacing := 30;
   FRecLinesToPaperCut := 4;
@@ -1971,20 +1975,10 @@ begin
       if pDeviceEnabled then
       begin
         FPort.Open;
-        FPrinter.Initialize;
-        FPrinter.SetCodeTable(CODEPAGE_WCP1251);
-        FPrinter.SetJustification(JUSTIFICATION_LEFT);
-        FPrinter.SetNormalPrintMode;
         UpdatePrinterStatus;
-
-        
-(*
-        FPrinter.ReadFirmwareVersion
-        FPrinter.ReadManufacturer
-        FPrinter.ReadPrinterName
-        FPrinter.ReadSerialNumber
-*)
-
+        FDeviceDescription := Format('%s %s %s %s', [
+          FPrinter.ReadManufacturer, FPrinter.ReadPrinterName,
+          FPrinter.ReadFirmwareVersion, FPrinter.ReadSerialNumber]);
 
 
         StartDeviceThread;
@@ -2074,7 +2068,11 @@ begin
       Result.UnrecoverableError := TestBit(B, 5);
       Result.AutoRecoverableError := TestBit(B, 6);
   *)
-    FDevice.PowerState := OPOS_PS_ONLINE;
+    if FDevice.PowerState <> OPOS_PS_ONLINE then
+    begin
+      InitializeDevice;
+      FDevice.PowerState := OPOS_PS_ONLINE;
+    end;
   except
     on E: Exception do
     begin
@@ -2082,6 +2080,14 @@ begin
       raise;
     end;
   end;
+end;
+
+procedure TPosEscPrinter.InitializeDevice;
+begin
+  FPrinter.Initialize;
+  FPrinter.SetCodeTable(CODEPAGE_WCP1251);
+  FPrinter.SetJustification(JUSTIFICATION_LEFT);
+  FPrinter.SetNormalPrintMode;
 end;
 
 procedure TPosEscPrinter.DeviceProc(Sender: TObject);
