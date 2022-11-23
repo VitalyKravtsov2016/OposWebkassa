@@ -72,7 +72,7 @@ const
   DefAmountDecimalPlaces = 2;
   DefRemoteHost = '192.168.1.87';
   DefRemotePort = 9100;
-  DefByteTimeout = 100;
+  DefByteTimeout = 500;
 
   DefPortName = 'COM1';
   DefBaudRate = CBR_9600;
@@ -81,7 +81,7 @@ const
   DefParity = NOPARITY;
   DefFlowControl = FLOW_CONTROL_NONE;
   DefReconnectPort = false;
-  DefSerialTimeout = 100;
+  DefSerialTimeout = 500;
 
   /////////////////////////////////////////////////////////////////////////////
   // Header and trailer parameters

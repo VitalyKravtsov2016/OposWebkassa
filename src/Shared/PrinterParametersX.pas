@@ -3,6 +3,8 @@ unit PrinterParametersX;
 interface
 
 uses
+  // VCL
+  SysUtils,
   // this
   LogFile,
   PrinterParameters,
@@ -23,19 +25,34 @@ implementation
 procedure LoadParameters(Item: TPrinterParameters; const DeviceName: WideString;
   Logger: ILogFile);
 begin
-  LoadParametersReg(Item, DeviceName, Logger);
+  try
+    LoadParametersReg(Item, DeviceName, Logger);
+  except
+    on E: Exception do
+      Logger.Error('LoadParameters', E);
+  end;
 end;
 
 procedure SaveParameters(Item: TPrinterParameters; const DeviceName: WideString;
   Logger: ILogFile);
 begin
-  SaveParametersReg(Item, DeviceName, Logger);
+  try
+    SaveParametersReg(Item, DeviceName, Logger);
+  except
+    on E: Exception do
+      Logger.Error('SaveParameters', E);
+  end;
 end;
 
 procedure SaveUsrParameters(Item: TPrinterParameters; const DeviceName: WideString;
   Logger: ILogFile);
 begin
-  SaveUsrParametersReg(Item, DeviceName, Logger);
+  try
+    SaveUsrParametersReg(Item, DeviceName, Logger);
+  except
+    on E: Exception do
+      Logger.Error('SaveUsrParameters', E);
+  end;
 end;
 
 end.

@@ -77,6 +77,7 @@ type
     procedure CheckOpened;
     procedure CheckClaimed;
     procedure CheckEnabled;
+    procedure CheckOnline;
 
     procedure FireEvent(Event: TOposEvent);
     function TextToBinary(const Data: string): string;
@@ -302,6 +303,12 @@ procedure TOposServiceDevice19.CheckEnabled;
 begin
   if not DeviceEnabled then
     RaiseOposException(OPOS_E_DISABLED, _('Device is disabled'));
+end;
+
+procedure TOposServiceDevice19.CheckOnline;
+begin
+  if not PowerState = OPOS_PS_ONLINE then
+    RaiseOposException(OPOS_E_OFFLINE, _('Device is offline'));
 end;
 
 procedure TOposServiceDevice19.SetFreezeEvents(const Value: Boolean);

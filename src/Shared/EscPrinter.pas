@@ -1207,7 +1207,7 @@ end;
 
 procedure TEscPrinter.PrintText(Text: string);
 begin
-  Logger.Debug(Format('TEscPrinter.PrintText(''%s'')', [Text]));
+  Logger.Debug(Format('TEscPrinter.PrintText(''%s'')', [TrimRight(Text)]));
   Send(Text);
 end;
 

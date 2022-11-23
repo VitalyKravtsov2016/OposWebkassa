@@ -14,6 +14,9 @@ uses
   LogFile, DriverError, EscPrinter, PrinterPort, NotifyThread,
   RegExpr, SerialPort;
 
+const
+  DevicePollTime = 3000;
+
 type
   TPrintMode = (pmBold, pmDoubleWide, pmDoubleHigh, pmUnderlined);
   TPrintModes = set of TPrintMode;
@@ -199,6 +202,7 @@ type
     function GetToken(var Text: string; var Token: TEscToken): Boolean;
     procedure PrintText(Text: string);
     procedure InitializeDevice;
+    procedure CheckPrinterStatus;
   public
     constructor Create2(AOwner: TComponent; APort: IPrinterPort; ALogger: ILogFile);
     destructor Destroy; override;
@@ -1882,6 +1886,7 @@ function TPosEscPrinter.PrintNormal(Station: Integer;
 begin
   try
     CheckRecStation(Station);
+    CheckPrinterStatus;
     PrintText(Data);
     Result := ClearResult;
   except
@@ -2049,6 +2054,19 @@ begin
   end;
 end;
 
+procedure TPosEscPrinter.CheckPrinterStatus;
+begin
+  FDevice.CheckOnline;
+  SetRecEmpty(not FPrinter.ReadPaperStatus.PaperPresent);
+
+  if FCapRecPresent and FCapRecEmptySensor and FRecEmpty then
+    RaiseExtendedError(OPOS_EPTR_REC_EMPTY, 'Receipt station is empty');
+(*
+  if FCapCoverSensor and FCoverOpened then
+    RaiseExtendedError(OPOS_EPTR_COVER_OPEN, 'Cover is opened');
+*)
+end;
+
 procedure TPosEscPrinter.UpdatePrinterStatus;
 var
   OfflineStatus: TOfflineStatus;
@@ -2081,6 +2099,7 @@ begin
   end;
 end;
 
+
 procedure TPosEscPrinter.InitializeDevice;
 begin
   FPrinter.Initialize;
@@ -2107,7 +2126,7 @@ begin
       repeat
         if FThread.Terminated then Break;
         Sleep(20);
-      until (GetTickCount-TickCount) > 3000;
+      until (GetTickCount-TickCount) > DevicePollTime;
     end;
   except
     on E: Exception do
