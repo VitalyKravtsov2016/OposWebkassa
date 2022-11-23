@@ -410,9 +410,13 @@ end;
 
 destructor TWebkassaImpl.Destroy;
 begin
-  Close;
-  FLines.Free;
+  if FOposDevice.Opened then
+    Close;
+
+  FPrinter := nil;
   FPrinterObj.Free;
+
+  FLines.Free;
   FCashboxStatusJson.Free;
   FClient.Free;
   FParams.Free;
@@ -422,7 +426,6 @@ begin
   FOposDevice.Free;
   FPrinterState.Free;
   FReceipt.Free;
-  FPrinter := nil;
   FPrinterLog.Free;
   FCashBoxes.Free;
   FCashBox.Free;

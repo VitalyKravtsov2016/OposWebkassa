@@ -1471,7 +1471,7 @@ function TMockPOSPrinter.PrintBarCode(Station: Integer;
   const Data: WideString; Symbology, Height, Width, Alignment,
   TextPosition: Integer): Integer;
 begin
-  FLines.AddObject(Data, TObject(Station));
+  //FLines.AddObject(Data, TObject(Station));
   Result := 0;
 end;
 

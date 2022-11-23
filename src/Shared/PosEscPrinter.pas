@@ -605,7 +605,8 @@ end;
 
 destructor TPosEscPrinter.Destroy;
 begin
-  Close;
+  if FDevice.Opened then
+    Close;
 
   FDevice.Free;
   FThread.Free;
@@ -866,10 +867,8 @@ end;
 function TPosEscPrinter.Close: Integer;
 begin
   try
-    Result := ClearResult;
-    if not FDevice.Opened then Exit;
-
     Set_DeviceEnabled(False);
+    ReleaseDevice;
     FDevice.Close;
     Result := ClearResult;
   except
@@ -1976,10 +1975,10 @@ begin
       begin
         FPort.Open;
         UpdatePrinterStatus;
+
         FDeviceDescription := Format('%s %s %s %s', [
           FPrinter.ReadManufacturer, FPrinter.ReadPrinterName,
           FPrinter.ReadFirmwareVersion, FPrinter.ReadSerialNumber]);
-
 
         StartDeviceThread;
       end else
@@ -2086,8 +2085,6 @@ procedure TPosEscPrinter.InitializeDevice;
 begin
   FPrinter.Initialize;
   FPrinter.SetCodeTable(CODEPAGE_WCP1251);
-  FPrinter.SetJustification(JUSTIFICATION_LEFT);
-  FPrinter.SetNormalPrintMode;
 end;
 
 procedure TPosEscPrinter.DeviceProc(Sender: TObject);

@@ -5,7 +5,7 @@ interface
 
 uses
   // VCL
-  Windows, SysUtils, Classes,
+  Windows, SysUtils, Classes, Forms, 
   // DUnit
   TestFramework,
   // Opos
@@ -129,7 +129,7 @@ begin
   FDriver.Params.PrinterType := PrinterTypeEscPrinterSerial;
   FDriver.Params.ByteTimeout := 100;
   FDriver.Params.FontName := 'FontA11';
-  FDriver.Params.PortName := 'COM3';
+  FDriver.Params.PortName := 'COM8';
   FDriver.Params.BaudRate := 19200;
   FDriver.Params.DataBits := DATABITS_8;
   FDriver.Params.StopBits := ONESTOPBIT;
@@ -140,9 +140,6 @@ end;
 
 procedure TWebkassaImplTest.TearDown;
 begin
-  if FDriver <> nil then
-    FDriver.Close;
-
   FDriver.Free;
   inherited TearDown;
 end;
@@ -251,6 +248,14 @@ end;
 procedure TWebkassaImplTest.TestNonFiscal;
 begin
   OpenClaimEnable;
+  CheckEquals(0, Driver.ResetPrinter, 'ResetPrinter');
+  CheckEquals(0, Driver.BeginNonFiscal, 'BeginNonFiscal');
+  CheckEquals(0, Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 1'));
+  CheckEquals(0, Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 2'));
+  CheckEquals(0, Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 3'));
+  CheckEquals(0, Driver.EndNonFiscal, 'EndNonFiscal');
+  Application.MessageBox('Restart printer', 'Attention');
+
   CheckEquals(0, Driver.ResetPrinter, 'ResetPrinter');
   CheckEquals(0, Driver.BeginNonFiscal, 'BeginNonFiscal');
   CheckEquals(0, Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 1'));

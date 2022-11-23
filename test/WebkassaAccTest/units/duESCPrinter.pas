@@ -40,6 +40,7 @@ type
     procedure TestQRCode;
     procedure PrintTestPage;
     procedure TestJustification;
+    procedure TestJustification2;
 
     procedure TestBitmap;
     procedure TestReadPrinterID;
@@ -70,7 +71,7 @@ function TESCPrinterTest.CreateSerialPort: TSerialPort;
 var
   SerialParams: TSerialParams;
 begin
-  SerialParams.PortName := 'COM3';
+  SerialParams.PortName := 'COM11';
   SerialParams.BaudRate := 19200;
   SerialParams.DataBits := 8;
   SerialParams.StopBits := ONESTOPBIT;
@@ -102,6 +103,7 @@ end;
 procedure TESCPrinterTest.TestInitialize;
 begin
   FPrinter.Initialize;
+  FPrinter.SetCodeTable(CODEPAGE_WCP1251);
 end;
 
 procedure TESCPrinterTest.TestReadStatus;
@@ -406,6 +408,18 @@ begin
   QRCode.data := 'QRCodetestQRCodetestQRCodetest';
   FPrinter.printQRCode(QRCode);
   FPrinter.SetJustification(JUSTIFICATION_LEFT);
+end;
+
+procedure TESCPrinterTest.TestJustification2;
+begin
+  FPrinter.Initialize;
+  FPrinter.PrintText('Default justification' + CRLF);
+  FPrinter.SetJustification(JUSTIFICATION_LEFT);
+  FPrinter.PrintText('Left justification' + CRLF);
+  FPrinter.SetJustification(JUSTIFICATION_CENTERING);
+  FPrinter.PrintText('Centering justification' + CRLF);
+  FPrinter.SetJustification(JUSTIFICATION_RIGHT);
+  FPrinter.PrintText('Right justification' + CRLF);
 end;
 
 initialization

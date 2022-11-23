@@ -383,9 +383,9 @@ end;
 
 procedure TOposServiceDevice19.SetPowerState(const Value: Integer);
 begin
-  if FPowerNotify = OPOS_PN_ENABLED then
+  if Value <> PowerState then
   begin
-    if Value <> PowerState then
+    if FPowerNotify = OPOS_PN_ENABLED then
     begin
       case Value of
         OPOS_PS_ONLINE       : StatusUpdateEvent(OPOS_SUE_POWER_ONLINE);
@@ -393,8 +393,8 @@ begin
         OPOS_PS_OFFLINE      : StatusUpdateEvent(OPOS_SUE_POWER_OFFLINE);
         OPOS_PS_OFF_OFFLINE  : StatusUpdateEvent(OPOS_SUE_POWER_OFF_OFFLINE);
       end;
-      FPowerState := Value;
     end;
+    FPowerState := Value;
   end;
 end;
 
