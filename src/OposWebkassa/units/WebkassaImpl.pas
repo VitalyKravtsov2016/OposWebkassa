@@ -49,6 +49,7 @@ type
   TWebkassaImpl = class(TComponent, IFiscalPrinterService_1_12)
   private
     FLines: TTntStrings;
+    FCheckNumber: WideString;
     FCashboxStatusJson: TlkJSON;
     FCashboxStatus: TlkJSONbase;
     FTestMode: Boolean;
@@ -1021,8 +1022,7 @@ begin
       FPTR_GD_GRAND_TOTAL: Data := AmountToOutStr(ReadGrandTotal);
       FPTR_GD_MID_VOID: Data := AmountToOutStr(0);
       FPTR_GD_NOT_PAID: Data := AmountToOutStr(0);
-      FPTR_GD_RECEIPT_NUMBER: Data := ReadCashboxStatus.Get('Data').Get(
-        'CurrentState').Get('ContinuousDocumentNumber').Value;
+      FPTR_GD_RECEIPT_NUMBER: Data := FCheckNumber;
       FPTR_GD_REFUND: Data := AmountToOutStr(ReadRefundTotal);
       FPTR_GD_REFUND_VOID: Data := AmountToOutStr(0);
       FPTR_GD_Z_REPORT: Data := ReadCashboxStatus.Get('Data').Get(
@@ -2667,6 +2667,7 @@ begin
       end;
     end;
     FClient.SendReceipt(Command);
+    FCheckNumber := Command.Data.CheckNumber;
     PrintReceipt(Receipt, Command);
   finally
     Command.Free;

@@ -507,6 +507,8 @@ procedure TWebkassaImplTest.PrintReceipt3;
 var
   pData: Integer;
   pString: WideString;
+  OptArgs: Integer;
+  Data: WideString;
 begin
   // FiscalSign
   pData := DriverParameterFiscalSign;
@@ -555,6 +557,8 @@ begin
 
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   CheckEquals(OPOS_SUCCESS, Driver.EndFiscalReceipt(False));
+  CheckEquals(OPOS_SUCCESS, Driver.GetData(FPTR_GD_RECEIPT_NUMBER, OptArgs, Data));
+  CheckEquals('923956785162', Data);
 end;
 
 procedure TWebkassaImplTest.TestDuplicateReceipt;
