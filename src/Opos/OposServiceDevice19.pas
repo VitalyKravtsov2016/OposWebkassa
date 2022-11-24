@@ -379,12 +379,13 @@ procedure TOposServiceDevice19.ErrorEvent(ResultCode, ResultCodeExtended,
 begin
   Logger.Debug(Format('ErrorEvent: %d, %d, %d', [
     ResultCode, ResultCodeExtended, ErrorLocus]));
+
   FireEvent(TErrorEvent.Create(ResultCode, ResultCodeExtended, ErrorLocus, Logger));
 end;
 
 procedure TOposServiceDevice19.StatusUpdateEvent(Data: Integer);
 begin
-  Logger.Debug('StatusUpdateEvent: ' + GetStatusUpdateEventText(Data));
+  //Logger.Debug('StatusUpdateEvent: ' + GetStatusUpdateEventText(Data));
   FireEvent(TStatusUpdateEvent.Create(Data, Logger));
 end;
 

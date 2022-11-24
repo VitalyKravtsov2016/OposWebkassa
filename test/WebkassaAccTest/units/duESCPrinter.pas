@@ -41,6 +41,7 @@ type
     procedure PrintTestPage;
     procedure TestJustification;
     procedure TestJustification2;
+    procedure TestUnderlined;
 
     procedure TestBitmap;
     procedure TestReadPrinterID;
@@ -420,6 +421,32 @@ begin
   FPrinter.PrintText('Centering justification' + CRLF);
   FPrinter.SetJustification(JUSTIFICATION_RIGHT);
   FPrinter.PrintText('Right justification' + CRLF);
+end;
+
+procedure TESCPrinterTest.TestUnderlined;
+var
+  PrintMode: TPrintMode;
+begin
+  FPrinter.Initialize;
+  FPrinter.PrintText('Not underlined text' + CRLF);
+  FPrinter.SetUnderlineMode(UNDERLINE_MODE_1DOT);
+  FPrinter.PrintText('Underlined text 1 dot' + CRLF);
+  FPrinter.SetUnderlineMode(UNDERLINE_MODE_2DOT);
+  FPrinter.PrintText('Underlined text 2 dot' + CRLF);
+  FPrinter.SetUnderlineMode(UNDERLINE_MODE_NONE);
+  FPrinter.PrintText('Not underlined text' + CRLF);
+  FPrinter.SetUnderlineMode(UNDERLINE_MODE_2DOT);
+  FPrinter.PrintText('Underlined');
+  FPrinter.SetUnderlineMode(UNDERLINE_MODE_NONE);
+  FPrinter.PrintText(' text in line' + CRLF);
+  // Normal mode, font A
+  PrintMode.CharacterFontB := False;
+  PrintMode.Emphasized := False;
+  PrintMode.DoubleHeight := False;
+  PrintMode.DoubleWidth := False;
+  PrintMode.Underlined := True;
+  FPrinter.SelectPrintMode(PrintMode);
+  FPrinter.PrintText('Underlined mode, font A' + CRLF);
 end;
 
 initialization

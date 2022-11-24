@@ -180,6 +180,7 @@ begin
       FParameters.FlowControl := IniFile.ReadInteger(Section, 'FlowControl', DefFlowControl);
       FParameters.ReconnectPort := IniFile.ReadBool(Section, 'ReconnectPort', DefReconnectPort);
       FParameters.SerialTimeout := IniFile.ReadInteger(Section, 'SerialTimeout', DefSerialTimeout);
+      FParameters.DevicePollTime := IniFile.ReadInteger(Section, 'DevicePollTime', DefDevicePollTime);
     end;
   finally
     IniFile.Free;
@@ -219,6 +220,7 @@ begin
     IniFile.WriteInteger(Section, 'FlowControl', FParameters.FlowControl);
     IniFile.WriteBool(Section, 'ReconnectPort', FParameters.ReconnectPort);
     IniFile.WriteInteger(Section, 'SerialTimeout', FParameters.SerialTimeout);
+    IniFile.WriteInteger(Section, 'DevicePollTime', FParameters.DevicePollTime);
   finally
     IniFile.Free;
   end;

@@ -1980,27 +1980,57 @@ begin
   try
     case PropIndex of
       // common
-      PIDX_DeviceEnabled            : SetDeviceEnabled(IntToBool(Number));
-      PIDX_DataEventEnabled         : FOposDevice.DataEventEnabled := IntToBool(Number);
-      PIDX_PowerNotify              : FOposDevice.PowerNotify := Number;
-      PIDX_BinaryConversion         : FOposDevice.BinaryConversion := Number;
+      PIDX_DeviceEnabled:
+        SetDeviceEnabled(IntToBool(Number));
+
+      PIDX_DataEventEnabled:
+        FOposDevice.DataEventEnabled := IntToBool(Number);
+
+      PIDX_PowerNotify:
+      begin
+        FOposDevice.PowerNotify := Number;
+        Printer.PowerNotify := Number;
+      end;
+
+      PIDX_BinaryConversion:
+      begin
+        FOposDevice.BinaryConversion := Number;
+        Printer.BinaryConversion := Number;
+      end;
+
       // Specific
-      PIDXFptr_AsyncMode            : FAsyncMode := IntToBool(Number);
-      PIDXFptr_CheckTotal           : FCheckTotal := IntToBool(Number);
-      PIDXFptr_DateType             : FDateType := Number;
-      PIDXFptr_DuplicateReceipt     : FDuplicateReceipt := IntToBool(Number);
-      PIDXFptr_FiscalReceiptStation : FFiscalReceiptStation := Number;
+      PIDXFptr_AsyncMode:
+      begin
+        FAsyncMode := IntToBool(Number);
+        Printer.AsyncMode := IntToBool(Number);
+      end;
+
+      PIDXFptr_CheckTotal: FCheckTotal := IntToBool(Number);
+      PIDXFptr_DateType: FDateType := Number;
+      PIDXFptr_DuplicateReceipt: FDuplicateReceipt := IntToBool(Number);
+      PIDXFptr_FiscalReceiptStation: FFiscalReceiptStation := Number;
 
       PIDXFptr_FiscalReceiptType:
       begin
         CheckState(FPTR_PS_MONITOR);
         FFiscalReceiptType := Number;
       end;
-      PIDXFptr_FlagWhenIdle         : FFlagWhenIdle := IntToBool(Number);
-      PIDXFptr_MessageType          : FMessageType := Number;
-      PIDXFptr_SlipSelection        : FSlipSelection := Number;
-      PIDXFptr_TotalizerType        : FTotalizerType := Number;
-      PIDX_FreezeEvents             : FOposDevice.FreezeEvents := Number <> 0;
+      PIDXFptr_FlagWhenIdle:
+      begin
+        FFlagWhenIdle := IntToBool(Number);
+        Printer.FlagWhenIdle  := IntToBool(Number);
+      end;
+      PIDXFptr_MessageType:
+        FMessageType := Number;
+      PIDXFptr_SlipSelection:
+        FSlipSelection := Number;
+      PIDXFptr_TotalizerType:
+        FTotalizerType := Number;
+      PIDX_FreezeEvents:
+      begin
+        FOposDevice.FreezeEvents := Number <> 0;
+        Printer.FreezeEvents := Number <> 0;
+      end;
     end;
 
     ClearResult;
@@ -2145,10 +2175,10 @@ end;
 
 procedure TWebkassaImpl.PrinterStatusUpdateEvent(ASender: TObject; Data: Integer);
 begin
-  Logger.Debug(Format('PtrStatusUpdateEvent: %d, %s', [
+  Logger.Debug(Format('StatusUpdateEvent: %d, %s', [
     Data, PtrStatusUpdateEventText(Data)]));
 
-  if IsValidFptrStatusUpdateEvent(Data) then
+  if IsValidOposStatusUpdateEvent(Data) or IsValidFptrStatusUpdateEvent(Data) then
   begin
     OposDevice.StatusUpdateEvent(Data);
   end;
@@ -2262,6 +2292,7 @@ begin
       PosEscPrinter.OnDirectIOEvent := PrinterDirectIOEvent;
       PosEscPrinter.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
       PosEscPrinter.FontName := Params.FontName;
+      PosEscPrinter.DevicePollTime := Params.DevicePollTime;
       FPrinterObj := PosEscPrinter;
       Result := PosEscPrinter;
     end;
@@ -2278,6 +2309,7 @@ begin
       PosEscPrinter.OnDirectIOEvent := PrinterDirectIOEvent;
       PosEscPrinter.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
       PosEscPrinter.FontName := Params.FontName;
+      PosEscPrinter.DevicePollTime := Params.DevicePollTime;
       FPrinterObj := PosEscPrinter;
       Result := PosEscPrinter;
     end;

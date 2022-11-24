@@ -52,6 +52,8 @@ type
     cbFlowControl: TTntComboBox;
     Label1: TLabel;
     seSerialTimeout: TSpinEdit;
+    lblDevicePollTime: TTntLabel;
+    seDevicePollTime: TSpinEdit;
     procedure btnTestConnectionClick(Sender: TObject);
     procedure btnPrintReceiptClick(Sender: TObject);
     procedure cbPrinterTypeChange(Sender: TObject);
@@ -99,6 +101,7 @@ begin
   seRemotePort.Value := Parameters.RemotePort;
   seByteTimeout.Value := Parameters.ByteTimeout;
   seSerialTimeout.Value := Parameters.SerialTimeout;
+  seDevicePollTime.Value := Parameters.DevicePollTime;
 end;
 
 procedure TfmPrinter.UpdatePortNames;
@@ -200,6 +203,7 @@ begin
   Parameters.PrinterName := cbPrinterName.Text;
   Parameters.FontName := cbFontName.Text;
   Parameters.PortName := cbPortName.Text;
+  Parameters.DevicePollTime := seDevicePollTime.Value;
   // Serial
   Parameters.BaudRate := Integer(cbBaudRate.Items.Objects[cbBaudRate.ItemIndex]);
   Parameters.DataBits := Integer(cbDataBits.Items.Objects[cbDataBits.ItemIndex]);

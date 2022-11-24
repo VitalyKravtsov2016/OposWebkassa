@@ -26,7 +26,7 @@ function GetResultCodeText(Value: Integer): WideString;
 function GetErrorResponseText(Value: Integer): WideString;
 function PowerStateToStr(PowerState: Integer): WideString;
 function GetCommonPropertyName(const ID: Integer): WideString;
-function GetCommonStatusUpdateEventText(Value: Integer): WideString;
+function GetOPOSStatusUpdateEventText(Value: Integer): WideString;
 function GetOpenResultText(Value: Integer): WideString;
 function BinaryConversionToStr(Value: Integer): WideString;
 function StateToStr(Value: Integer): WideString;
@@ -34,6 +34,7 @@ function PowerReportingToStr(Value: Integer): WideString;
 function PowerNotifyToStr(Value: Integer): WideString;
 function OposStrToNibble(const Data: string): string;
 function OposNibbleToStr(const Data: string): string;
+function IsValidOposStatusUpdateEvent(Code: Integer): Boolean;
 
 const
   CRLF = #13#10;
@@ -128,7 +129,7 @@ begin
   end;
 end;
 
-function GetCommonStatusUpdateEventText(Value: Integer): WideString;
+function GetOPOSStatusUpdateEventText(Value: Integer): WideString;
 begin
   case Value of
     // common
@@ -275,6 +276,25 @@ begin
   end;
 end;
 
+function IsValidOposStatusUpdateEvent(Code: Integer): Boolean;
+begin
+  case Code of
+    OPOS_SUE_POWER_ONLINE,
+    OPOS_SUE_POWER_OFF,
+    OPOS_SUE_POWER_OFFLINE,
+    OPOS_SUE_POWER_OFF_OFFLINE,
+    OPOS_SUE_UF_PROGRESS,
+    OPOS_SUE_UF_COMPLETE,
+    OPOS_SUE_UF_COMPLETE_DEV_NOT_RESTORED,
+    OPOS_SUE_UF_FAILED_DEV_OK,
+    OPOS_SUE_UF_FAILED_DEV_UNRECOVERABLE,
+    OPOS_SUE_UF_FAILED_DEV_NEEDS_FIRMWARE,
+    OPOS_SUE_UF_FAILED_DEV_UNKNOWN:
+    REsult := True;
+  else
+    Result := False;
+  end;
+end;
 
 
 end.

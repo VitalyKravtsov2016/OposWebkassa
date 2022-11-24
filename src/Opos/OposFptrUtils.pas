@@ -285,7 +285,7 @@ begin
      FPTR_SUE_SLP_PAPEROK                 : Result := 'FPTR_SUE_SLP_PAPEROK';
      FPTR_SUE_IDLE                        : Result := 'FPTR_SUE_IDLE';
   else
-    Result := GetCommonStatusUpdateEventText(Value);
+    Result := GetOPOSStatusUpdateEventText(Value);
   end;
 end;
 

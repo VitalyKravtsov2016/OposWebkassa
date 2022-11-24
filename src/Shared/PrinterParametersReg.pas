@@ -252,6 +252,9 @@ begin
       if Reg.ValueExists('SerialTimeout') then
         Parameters.SerialTimeout := Reg.ReadInteger('SerialTimeout');
 
+      if Reg.ValueExists('DevicePollTime') then
+        Parameters.DevicePollTime := Reg.ReadInteger('DevicePollTime');
+
       Reg.CloseKey;
     end;
     // VatRates
@@ -335,6 +338,7 @@ begin
     Reg.WriteInteger('FlowControl', FParameters.FlowControl);
     Reg.WriteBool('ReconnectPort', FParameters.ReconnectPort);
     Reg.WriteInteger('SerialTimeout', FParameters.SerialTimeout);
+    Reg.WriteInteger('DevicePollTime', FParameters.DevicePollTime);
 
     Reg.CloseKey;
     // VatRates

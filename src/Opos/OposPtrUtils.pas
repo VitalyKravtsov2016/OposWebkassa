@@ -205,7 +205,7 @@ begin
     PTR_SUE_SLP_CARTRIDGE_OK: Result := 'PTR_SUE_SLP_CARTRIDGE_OK';
     PTR_SUE_IDLE: Result := 'PTR_SUE_IDLE';
   else
-    Result := GetCommonStatusUpdateEventText(Value);
+    Result := GetOPOSStatusUpdateEventText(Value);
   end;
 end;
 

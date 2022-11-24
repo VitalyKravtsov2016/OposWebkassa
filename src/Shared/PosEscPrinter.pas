@@ -14,9 +14,6 @@ uses
   LogFile, DriverError, EscPrinter, PrinterPort, NotifyThread,
   RegExpr, SerialPort;
 
-const
-  DevicePollTime = 3000;
-
 type
   TPrintMode = (pmBold, pmDoubleWide, pmDoubleHigh, pmUnderlined);
   TPrintModes = set of TPrintMode;
@@ -41,6 +38,7 @@ type
 
     //FTransaction: Boolean; !!!
     FFontName: WideString;
+    FDevicePollTime: Integer;
 
     FAsyncMode: Boolean;
     FCapCharacterSet: Integer;
@@ -202,7 +200,8 @@ type
     function GetToken(var Text: string; var Token: TEscToken): Boolean;
     procedure PrintText(Text: string);
     procedure InitializeDevice;
-    procedure CheckPrinterStatus;
+    procedure CheckPaperPresent;
+    procedure CheckCoverClosed;
   public
     constructor Create2(AOwner: TComponent; APort: IPrinterPort; ALogger: ILogFile);
     destructor Destroy; override;
@@ -587,6 +586,8 @@ type
       ErrorLocus: Integer; var pErrorResponse: Integer);
 
     property FontName: WideString read FFontName write FFontName;
+    property DevicePollTime: Integer read FDevicePollTime write FDevicePollTime;
+
     property OnDirectIOEvent: TOPOSPOSPrinterDirectIOEvent read FOnDirectIOEvent write FOnDirectIOEvent;
     property OnErrorEvent: TOPOSPOSPrinterErrorEvent read FOnErrorEvent write FOnErrorEvent;
     property OnOutputCompleteEvent: TOPOSPOSPrinterOutputCompleteEvent read FOnOutputCompleteEvent write FOnOutputCompleteEvent;
@@ -760,6 +761,7 @@ begin
   FSlpSidewaysMaxChars := 0;
   FSlpSidewaysMaxLines := 0;
   FLastPrintMode := [];
+  FDevicePollTime := 3000;
 end;
 
 function TPosEscPrinter.ClearResult: Integer;
@@ -828,9 +830,16 @@ function TPosEscPrinter.CheckHealth(Level: Integer): Integer;
 begin
   try
     case Level of
-      OPOS_CH_INTERNAL: FPrinter.ReadPrinterStatus;
-      OPOS_CH_EXTERNAL: FPrinter.PrintTestPage;
-      OPOS_CH_INTERACTIVE: FPrinter.PrintTestPage;
+      OPOS_CH_INTERNAL:
+      begin
+        CheckPaperPresent;
+        CheckCoverClosed;
+      end;
+      OPOS_CH_EXTERNAL:
+        FPrinter.PrintTestPage;
+
+      OPOS_CH_INTERACTIVE:
+        FPrinter.PrintTestPage;
     else
       raiseIllegalError('Invalid level parameter value');
     end;
@@ -1886,7 +1895,7 @@ function TPosEscPrinter.PrintNormal(Station: Integer;
 begin
   try
     CheckRecStation(Station);
-    CheckPrinterStatus;
+    CheckPaperPresent;
     PrintText(Data);
     Result := ClearResult;
   except
@@ -2054,21 +2063,31 @@ begin
   end;
 end;
 
-procedure TPosEscPrinter.CheckPrinterStatus;
+procedure TPosEscPrinter.CheckPaperPresent;
 begin
+  if not FCapRecPresent then Exit;
+  if not FCapRecEmptySensor then Exit;
+
   FDevice.CheckOnline;
   SetRecEmpty(not FPrinter.ReadPaperStatus.PaperPresent);
 
-  if FCapRecPresent and FCapRecEmptySensor and FRecEmpty then
+  if FRecEmpty then
     RaiseExtendedError(OPOS_EPTR_REC_EMPTY, 'Receipt station is empty');
-(*
-  if FCapCoverSensor and FCoverOpened then
+end;
+
+procedure TPosEscPrinter.CheckCoverClosed;
+begin
+  if not FCapCoverSensor then Exit;
+
+  FDevice.CheckOnline;
+  SetCoverState(FPrinter.ReadOfflineStatus.CoverOpened);
+  if FCoverOpened then
     RaiseExtendedError(OPOS_EPTR_COVER_OPEN, 'Cover is opened');
-*)
 end;
 
 procedure TPosEscPrinter.UpdatePrinterStatus;
 var
+  ErrorStatus: TErrorStatus;
   OfflineStatus: TOfflineStatus;
 begin
   try
@@ -2076,15 +2095,8 @@ begin
     SetCoverState(OfflineStatus.CoverOpened);
     SetRecEmpty(not FPrinter.ReadPaperStatus.PaperPresent);
     SetRecNearEnd(FPrinter.ReadPaperRollStatus.PaperNearEnd);
-  (*
-    ErrorStatus: TErrorStatus;
     ErrorStatus := FPrinter.ReadErrorStatus;
-    if ErrorStatus.CutterError and ErrorStatus.UnrecoverableError then
-      FDevice.ErrorEvent(OPOS_E_EXTENDED, ,OPOS_EL_OUTPUT);
-      Result.CutterError := TestBit(B, 3);
-      Result.UnrecoverableError := TestBit(B, 5);
-      Result.AutoRecoverableError := TestBit(B, 6);
-  *)
+
     if FDevice.PowerState <> OPOS_PS_ONLINE then
     begin
       InitializeDevice;
@@ -2126,7 +2138,7 @@ begin
       repeat
         if FThread.Terminated then Break;
         Sleep(20);
-      until (GetTickCount-TickCount) > DevicePollTime;
+      until (GetTickCount-TickCount) > DWORD(DevicePollTime);
     end;
   except
     on E: Exception do
@@ -2448,7 +2460,6 @@ begin
         Mode.DoubleHeight := pmDoubleHigh in PrintMode;
         Mode.DoubleWidth := pmDoubleWide in PrintMode;
         Mode.Underlined := pmUnderlined in PrintMode;
-
         FPrinter.SelectPrintMode(Mode);
         FLastPrintMode := PrintMode;
       end;

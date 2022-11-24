@@ -90,6 +90,13 @@ object fmPrinter: TfmPrinter
         Height = 13
         Caption = #1064#1088#1080#1092#1090' '#1087#1088#1080#1085#1090#1077#1088#1072':'
       end
+      object lblDevicePollTime: TTntLabel
+        Left = 8
+        Top = 120
+        Width = 103
+        Height = 13
+        Caption = #1055#1077#1088#1080#1086#1076' '#1086#1087#1088#1086#1089#1072', '#1084#1089'.:'
+      end
       object cbPrinterName: TTntComboBox
         Left = 120
         Top = 56
@@ -123,6 +130,16 @@ object fmPrinter: TfmPrinter
         Style = csDropDownList
         ItemHeight = 13
         TabOrder = 2
+      end
+      object seDevicePollTime: TSpinEdit
+        Left = 120
+        Top = 120
+        Width = 137
+        Height = 22
+        MaxValue = 0
+        MinValue = 0
+        TabOrder = 3
+        Value = 0
       end
     end
     object tsSocketParams: TTabSheet
@@ -236,7 +253,7 @@ object fmPrinter: TfmPrinter
         Width = 113
         Height = 21
         Style = csDropDownList
-        ItemHeight = 0
+        ItemHeight = 13
         TabOrder = 0
         OnChange = cbPrinterTypeChange
       end
@@ -293,7 +310,7 @@ object fmPrinter: TfmPrinter
         Width = 113
         Height = 21
         Style = csDropDownList
-        ItemHeight = 0
+        ItemHeight = 13
         TabOrder = 4
         OnChange = cbPrinterTypeChange
       end

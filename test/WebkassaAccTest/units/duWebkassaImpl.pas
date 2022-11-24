@@ -52,6 +52,7 @@ type
     procedure TestFiscalReceiptWithAdjustments;
     procedure TestPrintBarcode;
     procedure TestGetData;
+    procedure TestEvents;
   end;
 
 implementation
@@ -160,6 +161,7 @@ end;
 procedure TWebkassaImplTest.OpenService;
 begin
   FptrCheck(Driver.OpenService(OPOS_CLASSKEY_FPTR, 'DeviceName', nil));
+  Driver.SetPropertyNumber(PIDX_PowerNotify, OPOS_PN_ENABLED);
 end;
 
 procedure TWebkassaImplTest.ClaimDevice;
@@ -458,6 +460,12 @@ begin
   FptrCheck(Driver.GetData(FPTR_GD_DAILY_TOTAL, OptArgs, Data));
 end;
 
+
+procedure TWebkassaImplTest.TestEvents;
+begin
+  OpenClaimEnable;
+  Application.MessageBox('Change printer state', 'Attention');
+end;
 
 initialization
   RegisterTest('', TWebkassaImplTest.Suite);

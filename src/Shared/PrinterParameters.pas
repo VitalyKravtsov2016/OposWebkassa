@@ -82,6 +82,7 @@ const
   DefFlowControl = FLOW_CONTROL_NONE;
   DefReconnectPort = false;
   DefSerialTimeout = 500;
+  DefDevicePollTime = 3000;
 
   /////////////////////////////////////////////////////////////////////////////
   // Header and trailer parameters
@@ -134,6 +135,7 @@ type
     FRemotePort: Integer;
     FByteTimeout: Integer;
     FBaudRate: Integer;
+    FDevicePollTime: Integer;
 
     procedure LogText(const Caption, Text: WideString);
     procedure SetHeaderText(const Text: WideString);
@@ -194,6 +196,7 @@ type
     property RemotePort: Integer read FRemotePort write FRemotePort;
     property ByteTimeout: Integer read FByteTimeout write FByteTimeout;
     property BaudRate: Integer read FBaudRate write SetBaudRate;
+    property DevicePollTime: Integer read FDevicePollTime write FDevicePollTime;
   end;
 
 function QRSizeToWidth(QRSize: Integer): Integer;
@@ -276,6 +279,7 @@ begin
   FlowControl := DefFlowControl;
   ReconnectPort := DefReconnectPort;
   SerialTimeout := DefSerialTimeout;
+  DevicePollTime := DefDevicePollTime;
 end;
 
 procedure TPrinterParameters.LogText(const Caption, Text: WideString);
@@ -334,6 +338,8 @@ begin
   Logger.Debug('RemoteHost: ' + RemoteHost);
   Logger.Debug('RemotePort: ' + IntToStr(RemotePort));
   Logger.Debug('ByteTimeout: ' + IntToStr(ByteTimeout));
+  Logger.Debug('DevicePollTime: ' + IntToStr(DevicePollTime));
+
 
   // VatRates
   for i := 0 to VatRates.Count-1 do
@@ -513,6 +519,7 @@ begin
     SerialTimeout := Src.SerialTimeout;
     ReconnectPort := Src.ReconnectPort;
     VatRates.Assign(VatRates);
+    DevicePollTime := Src.DevicePollTime;
   end else
     inherited Assign(Source);
 end;

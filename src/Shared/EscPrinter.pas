@@ -382,6 +382,7 @@ begin
   FPort.Lock;
   try
     FLogger.Debug('-> ' + StrToHex(Data));
+    //FPort.Purge; !!!
     FPort.Write(Data);
   finally
     FPort.Unlock;
