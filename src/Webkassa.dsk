@@ -1,49 +1,49 @@
 [Closed Files]
-File_0=SourceModule,'D:\projects\WebKassa\test\WebkassaAccTest\units\duESCPrinter.pas',0,1,89,11,104,0,0
-File_1=SourceModule,'D:\projects\WebKassa\src\Shared\PosEscPrinter.pas',0,1,716,80,722,0,0
-File_2=SourceModule,'D:\projects\WebKassa\test\WebkassaAccTest\units\duWebkassaImpl.pas',0,1,1,12,18,0,0
-File_3=SourceModule,'D:\projects\WebKassa\test\WebkassaAccTest\units\duPosEscPrinter.pas',0,1,82,35,101,0,0
-File_4=SourceModule,'D:\projects\WebKassa\src\Opos\OposPtr.pas',0,1,77,5,80,0,0
-File_5=SourceModule,'D:\projects\WebKassa\src\Shared\EscPrinter.pas',0,1,818,19,827,0,0
-File_6=SourceModule,'D:\projects\WebKassa\src\Shared\SerialPort.pas',0,1,563,18,613,0,0
-File_7=SourceModule,'D:\projects\WebKassa\src\Shared\PrinterParameters.pas',0,1,495,20,512,0,0
-File_8=SourceModule,'D:\projects\WebKassa\src\Shared\PrinterParametersIni.pas',0,1,202,73,218,0,0
-File_9=SourceModule,'D:\projects\WebKassa\src\Shared\PrinterParametersReg.pas',0,1,1,1,1,0,0
+File_0=SourceModule,'C:\projects\WebKassa\src\OposWebkassa\units\SalesReceipt.pas',0,1,554,102,556,0,0
+File_1=SourceModule,'C:\projects\WebKassa\src\Shared\DriverError.pas',0,1,23,1,42,0,0
+File_2=SourceModule,'C:\projects\WebKassa\test\WebkassaAccTest\units\duWebkassaImpl.pas',0,1,62,20,78,0,0
+File_3=SourceModule,'C:\projects\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas',0,1,2598,9,2619,0,0
+File_4=SourceModule,'C:\projects\WebKassa\src\Opos\OposException.pas',0,1,73,1,92,0,0
+File_5=SourceModule,'C:\projects\WebKassa\src\OposWebkassa\units\FiscalPrinterState.pas',0,1,56,48,69,0,0
+File_6=SourceModule,'C:\projects\WebKassa\src\Shared\PrinterParameters.pas',0,1,167,1,187,0,0
+File_7=SourceModule,'C:\projects\WebKassa\src\OposConfig\Fmu\fmuFptrMiscParams.pas',0,1,1,110,9,1,0
+File_8=SourceModule,'C:\projects\WebKassa\src\OposConfig\Fmu\fmuFptrPayType.pas',0,1,33,52,41,1,0
+File_9=SourceModule,'C:\projects\WebKassa\src\OposWebkassa\units\WebkassaClient.pas',0,1,1,38,12,0,0
 
 [Modules]
 Count=0
 EditWindowCount=0
 TypeLibWindowCount=1
 
-[D:\projects\WebKassa\test\WebkassaAccTest\WebkassaAccTest.dpr]
+[C:\projects\WebKassa\test\WebkassaAccTest\WebkassaAccTest.dpr]
 FormState=0
 FormOnTop=0
 
-[D:\projects\WebKassa\src\Webkassa.bpg]
+[C:\projects\WebKassa\src\Webkassa.bpg]
 FormState=0
 FormOnTop=0
 
-[D:\projects\WebKassa\src\OposConfig\OposConfig.dpr]
+[C:\projects\WebKassa\src\OposConfig\OposConfig.dpr]
 FormState=0
 FormOnTop=0
 
-[D:\projects\WebKassa\src\OposTest\OposTest.dpr]
+[C:\projects\WebKassa\src\OposTest\OposTest.dpr]
 FormState=0
 FormOnTop=0
 
-[D:\projects\WebKassa\src\OposWebkassa\OposWebkassa.dpr]
+[C:\projects\WebKassa\src\OposWebkassa\OposWebkassa.dpr]
 FormState=0
 FormOnTop=0
 
-[D:\projects\WebKassa\src\OposWebkassa\OposWebkassa.tlb]
+[C:\projects\WebKassa\src\OposWebkassa\OposWebkassa.tlb]
 FormState=0
 FormOnTop=0
 
-[D:\projects\WebKassa\test\OposWebkassaTest\OposWebkassaTest.dpr]
+[C:\projects\WebKassa\test\OposWebkassaTest\OposWebkassaTest.dpr]
 FormState=0
 FormOnTop=0
 
-[D:\projects\WebKassa\test\OposWebkassaTest\OposWebkassaTestLib.dpr]
+[C:\projects\WebKassa\test\OposWebkassaTest\OposWebkassaTestLib.dpr]
 FormState=0
 FormOnTop=0
 
@@ -51,15 +51,15 @@ FormOnTop=0
 Create=1
 Visible=0
 State=0
-Left=246
-Top=140
+Left=200
+Top=589
 Width=647
-Height=458
+Height=457
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=631
 ClientHeight=419
-Module=D:\projects\WebKassa\src\OposWebkassa\OposWebkassa.tlb
+Module=C:\projects\WebKassa\src\OposWebkassa\OposWebkassa.tlb
 
 [Watches]
 Count=6
@@ -83,7 +83,7 @@ Height=142
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=476
-ClientHeight=103
+ClientHeight=108
 TBDockHeight=180
 LRDockWidth=320
 Dockable=1
@@ -100,13 +100,13 @@ Visible=1
 State=2
 Left=651
 Top=0
-Width=629
-Height=123
+Width=1269
+Height=122
 MaxLeft=-1
 MaxTop=-1
-MaxWidth=1296
-MaxHeight=123
-ClientWidth=1280
+MaxWidth=1936
+MaxHeight=122
+ClientWidth=1920
 ClientHeight=84
 
 [ProjectManager]
@@ -115,12 +115,12 @@ Visible=1
 State=0
 Left=3
 Top=113
-Width=813
-Height=574
+Width=700
+Height=568
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=797
-ClientHeight=535
+ClientWidth=684
+ClientHeight=534
 TBDockHeight=681
 LRDockWidth=445
 Dockable=0
@@ -136,7 +136,7 @@ Height=861
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=954
-ClientHeight=822
+ClientHeight=823
 DumpPane=163
 DisassemblyPane=921
 RegisterPane=231
@@ -149,7 +149,7 @@ State=0
 Left=822
 Top=767
 Width=156
-Height=89
+Height=84
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=150
@@ -157,16 +157,16 @@ ClientHeight=60
 
 [PropertyInspector]
 Create=1
-Visible=0
+Visible=1
 State=0
-Left=1
-Top=123
+Left=-13
+Top=174
 Width=487
 Height=831
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=471
-ClientHeight=792
+ClientHeight=797
 TBDockHeight=681
 LRDockWidth=291
 Dockable=1
@@ -187,7 +187,7 @@ Height=613
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=805
-ClientHeight=574
+ClientHeight=579
 TBDockHeight=197
 LRDockWidth=737
 Dockable=1
@@ -205,12 +205,12 @@ State=0
 Left=0
 Top=12
 Width=439
-Height=484
+Height=489
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=439
-ClientHeight=484
-TBDockHeight=484
+ClientHeight=489
+TBDockHeight=489
 LRDockWidth=320
 Dockable=1
 
@@ -225,7 +225,7 @@ Height=189
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=544
-ClientHeight=150
+ClientHeight=155
 TBDockHeight=152
 LRDockWidth=320
 Dockable=1
@@ -245,7 +245,7 @@ Height=318
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=174
-ClientHeight=279
+ClientHeight=284
 TBDockHeight=318
 LRDockWidth=190
 Dockable=1
@@ -255,13 +255,13 @@ Create=1
 Visible=0
 State=0
 Left=0
-Top=679
+Top=339
 Width=1280
-Height=263
+Height=603
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1264
-ClientHeight=224
+ClientHeight=569
 TBDockHeight=263
 LRDockWidth=445
 Dockable=1
@@ -277,7 +277,7 @@ Height=142
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=312
-ClientHeight=103
+ClientHeight=108
 TBDockHeight=192
 LRDockWidth=320
 Dockable=1
@@ -293,7 +293,7 @@ Height=536
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=745
-ClientHeight=497
+ClientHeight=502
 TBDockHeight=63
 LRDockWidth=470
 Dockable=1
@@ -317,7 +317,7 @@ Height=250
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=441
-ClientHeight=211
+ClientHeight=212
 RegisterPane=121
 FlagPane=59
 
@@ -332,7 +332,7 @@ Height=825
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1057
-ClientHeight=786
+ClientHeight=791
 TBDockHeight=137
 LRDockWidth=638
 Dockable=1
@@ -350,19 +350,19 @@ DockSiteType=0
 Create=1
 Visible=0
 State=0
-Left=586
-Top=110
+Left=864
+Top=599
 Width=455
 Height=535
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=439
-ClientHeight=496
+ClientHeight=501
 TBDockHeight=690
 LRDockWidth=328
 Dockable=1
 DockClients=CallStackWindow
-DockSiteData=0000040000000000F00100000000000001B701000000000000010000000087000000000000000100000002F0010000000000000200000000B70100000F00000043616C6C537461636B57696E646F770200000000F7010000000000000100000000080100000000000001000000008C010000000000000100000000100200000000000001000000009802000000000000FFFFFFFF
+DockSiteData=0000040000000000F50100000000000001B701000000000000010000000087000000000000000100000002F5010000000000000200000000B70100000F00000043616C6C537461636B57696E646F770200000000F7010000000000000100000000080100000000000001000000008C010000000000000100000000100200000000000001000000009802000000000000FFFFFFFF
 
 [ActiveProject]
 ActiveProject=6

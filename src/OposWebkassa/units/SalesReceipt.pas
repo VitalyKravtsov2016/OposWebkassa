@@ -541,8 +541,14 @@ begin
 end;
 
 function TSalesReceipt.GetPayment: Currency;
+var
+  i: Integer;
 begin
-  Result := FPayments[0] + FPayments[1] + FPayments[2] + FPayments[3];
+  Result := 0;
+  for i := Low(FPayments) to High(FPayments) do
+  begin
+    Result := Result + FPayments[i];
+  end;
 end;
 
 procedure TSalesReceipt.PrintRecSubtotalAdjustVoid(

@@ -2617,7 +2617,7 @@ begin
         end;
         Position.PositionName := Item.Description;
         Position.DisplayName := Item.Description;
-        Position.PositionCode := '';
+        Position.PositionCode := IntToStr(i+1);
         Position.Discount := Item.GetDiscount;
         Position.Markup := Item.GetCharge;
         Position.IsStorno := False;
@@ -2657,7 +2657,7 @@ begin
       Modifier.Tax := 0;
     end;
     // Payments
-    for i := 0 to 3 do
+    for i := Low(Receipt.Payments) to High(Receipt.Payments) do
     begin
       if Receipt.Payments[i] <> 0 then
       begin

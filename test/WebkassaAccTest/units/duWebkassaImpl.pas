@@ -5,7 +5,7 @@ interface
 
 uses
   // VCL
-  Windows, SysUtils, Classes, Forms, 
+  Windows, SysUtils, Classes, Forms,
   // DUnit
   TestFramework,
   // Opos
@@ -47,6 +47,7 @@ type
     procedure TestFiscalReceipt;
     procedure TestFiscalReceipt2;
     procedure TestFiscalReceipt3;
+    procedure TestFiscalReceipt4;
     procedure TestFiscalReceiptWithVAT;
     procedure TestFiscalReceiptWithAdjustments;
     procedure TestPrintBarcode;
@@ -96,10 +97,10 @@ begin
   FDriver.Params.Password := 'Kassa123';
   FDriver.Params.ConnectTimeout := 10;
   FDriver.Params.WebkassaAddress := 'https://devkkm.webkassa.kz/';
-  FDriver.Params.CashboxNumber := 'SWK00032685';
+  FDriver.Params.CashboxNumber := 'SWK00033059';
   FDriver.Params.PrinterName := 'ThermalU';
-  FDriver.Params.NumHeaderLines := 4;
-  FDriver.Params.NumTrailerLines := 3;
+  FDriver.Params.NumHeaderLines := 5;
+  FDriver.Params.NumTrailerLines := 11;
   FDriver.Params.RoundType := RoundTypeNo;
   FDriver.Params.HeaderText :=
     ' ' + CRLF +
@@ -127,7 +128,7 @@ begin
 *)
   // Serial
   FDriver.Params.PrinterType := PrinterTypeEscPrinterSerial;
-  FDriver.Params.ByteTimeout := 100;
+  FDriver.Params.ByteTimeout := 500;
   FDriver.Params.FontName := 'FontA11';
   FDriver.Params.PortName := 'COM8';
   FDriver.Params.BaudRate := 19200;
@@ -136,6 +137,18 @@ begin
   FDriver.Params.Parity := NOPARITY;
   FDriver.Params.FlowControl := FLOW_CONTROL_NONE;
   FDriver.Params.ReconnectPort := False;
+
+
+  FDriver.Params.PaymentType2 := 1;
+  FDriver.Params.PaymentType3 := 4;
+  FDriver.Params.PaymentType4 := 4;
+  FDriver.Params.VatRateEnabled := True;
+  FDriver.Params.RoundType := RoundTypeItems;
+  FDriver.Params.VATSeries := '12347';
+  FDriver.Params.VATNumber := '7654321';
+  FDriver.Params.AmountDecimalPlaces := 2;
+  FDriver.Params.VatRates.Clear;
+  FDriver.Params.VatRates.Add(1, 12, 'Õƒ— 12%');
 end;
 
 procedure TWebkassaImplTest.TearDown;
@@ -320,6 +333,20 @@ begin
   FptrCheck(Driver.PrintRecItem('Americano 180ÏÎ', 400, 1000, 4, 400, '¯Ú'));
   FptrCheck(Driver.PrintRecItemAdjustment(1, '98', 40, 4));
   FptrCheck(Driver.PrintRecTotal(980, 980, '0'));
+  FptrCheck(Driver.EndFiscalReceipt(False));
+end;
+
+procedure TWebkassaImplTest.TestFiscalReceipt4;
+begin
+  OpenClaimEnable;
+  CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
+  CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
+  CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
+
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+  FptrCheck(Driver.PrintRecItem('ÿŒ ŒÀ¿ƒÕ€… ¡¿“ŒÕ◊»  TWIX 55 √–.', 236, 1000, 4, 236, '¯Ú'));
+  FptrCheck(Driver.PrintRecTotal(236, 236, '2'));
   FptrCheck(Driver.EndFiscalReceipt(False));
 end;
 
