@@ -53,6 +53,7 @@ type
     procedure TestPrintBarcode;
     procedure TestGetData;
     procedure TestEvents;
+    procedure TestFontB;
   end;
 
 implementation
@@ -465,6 +466,11 @@ procedure TWebkassaImplTest.TestEvents;
 begin
   OpenClaimEnable;
   Application.MessageBox('Change printer state', 'Attention');
+end;
+
+procedure TWebkassaImplTest.TestFontB;
+begin
+  OpenClaimEnable;
 end;
 
 initialization
