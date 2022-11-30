@@ -213,7 +213,7 @@ type
   TUserChar = record
     c1: Byte;
     c2: Byte;
-    Data: string;
+    Data: AnsiString;
   end;
 
   { TPDF417 }
@@ -222,7 +222,7 @@ type
     ColumnNumber: Byte; // 1..30
     SecurityLevel: Byte; // 0..8
     HVRatio: Byte; // 2..5
-    data: string;
+    data: AnsiString;
   end;
 
   { TQRCode }
@@ -231,7 +231,7 @@ type
     SymbolVersion: Byte; // 1~40, 0:auto size
     ECLevel: Byte; // 1..19
     ModuleSize: Byte; // 1..8
-    data: string;
+    data: AnsiString;
   end;
 
   { TEscPrinter }
@@ -241,20 +241,20 @@ type
     FLogger: ILogFile;
     FPort: IPrinterPort;
     FDeviceMetrics: TDeviceMetrics;
-    function GetImageData(Image: TGraphic): string;
-    function GetBitmapData(Bitmap: TBitmap): string;
-    function GetRasterBitmapData(Bitmap: TBitmap): string;
-    function GetRasterImageData(Image: TGraphic): string;
+    function GetImageData(Image: TGraphic): AnsiString;
+    function GetBitmapData(Bitmap: TBitmap): AnsiString;
+    function GetRasterBitmapData(Bitmap: TBitmap): AnsiString;
+    function GetRasterImageData(Image: TGraphic): AnsiString;
     function GetImageData2(Justification: Integer;
-      Image: TGraphic): string;
+      Image: TGraphic): AnsiString;
     procedure DrawImage(Justification: Integer; Image: TGraphic;
       Bitmap: TBitmap);
   public
     constructor Create(APort: IPrinterPort; ALogger: ILogFile);
 
     function ReadByte: Byte;
-    function ReadString: string;
-    procedure Send(const Data: string);
+    function ReadAnsiString: AnsiString;
+    procedure Send(const Data: AnsiString);
 
     procedure HorizontalTab;
     procedure LineFeed;
@@ -277,7 +277,7 @@ type
     procedure CancelUserCharacter(n: Byte);
     procedure Initialize;
     procedure SetBeepParams(N: Byte; T: Byte);
-    procedure SetHorizontalTabPositions(Tabs: string);
+    procedure SetHorizontalTabPositions(Tabs: AnsiString);
     procedure SetEmphasizedMode(Value: Boolean);
     procedure SetDoubleStrikeMode(Value: Boolean);
     procedure PrintAndFeed(N: Byte);
@@ -288,18 +288,18 @@ type
     procedure SetJustification(N: Byte);
     procedure EnableButtons(Value: Boolean);
     procedure PrintAndFeedLines(N: Byte);
-    procedure SetCodeTable(n: Integer);
+    procedure SetCodePage(CodePage: Integer);
     procedure SetUpsideDownPrinting(Value: Boolean);
     procedure PartialCut;
     procedure PartialCut2;
     procedure SelectChineseCode(N: Byte);
-    procedure PrintNVBitImage(N, M: Byte);
-    procedure DefineNVBitImage(n: Byte; Image: TGraphic);
+    procedure PrintNVBitImage(Number, Mode: Byte);
+    procedure DefineNVBitImage(Number: Byte; Image: TGraphic);
     procedure SetCharacterSize(N: Byte);
     procedure DownloadBMP(Justification: Integer; Image: TGraphic);
     procedure PrintBmp(Mode: Byte);
     procedure SetWhiteBlackReverse(Value: Boolean);
-    function ReadPrinterID(N: Byte): string;
+    function ReadPrinterID(N: Byte): AnsiString;
     procedure SetHRIPosition(N: Byte);
     procedure SetLeftMargin(N: Word);
     procedure SetCutModeAndCutPaper(M: Byte);
@@ -310,8 +310,8 @@ type
     procedure EnableAutomaticStatusBack(N: Byte);
     procedure SetHRIFont(N: Byte);
     procedure SetBarcodeHeight(N: Byte);
-    procedure PrintBarcode(BCType: Byte; const Data: string);
-    procedure PrintBarcode2(BCType: Byte; const Data: string);
+    procedure PrintBarcode(BCType: Byte; const Data: AnsiString);
+    procedure PrintBarcode2(BCType: Byte; const Data: AnsiString);
     function ReadPaperRollStatus: TPaperRollStatus;
     procedure PrintRasterBMP(Mode: Byte; Image: TGraphic);
     procedure SetBarcodeWidth(N: Integer);
@@ -322,7 +322,7 @@ type
     procedure SelectKanjiCharacter;
     procedure SetKanjiUnderline(Value: Boolean);
     procedure CancelKanjiCharacter;
-    procedure DefineKanjiCharacters(c1, c2: Byte; const data: string);
+    procedure DefineKanjiCharacters(c1, c2: Byte; const data: AnsiString);
     procedure SetPeripheralDevice(m: Byte);
     procedure SetKanjiSpacing(n1, n2: Byte);
     procedure PrintAndReturnStandardMode;
@@ -331,7 +331,7 @@ type
     procedure SetStandardMode;
     procedure SetPageModeDirection(n: Byte);
     procedure SetPageModeArea(R: TRect);
-    procedure printBarcode2D(m, n, k: Byte; const data: string);
+    procedure printBarcode2D(m, n, k: Byte; const data: AnsiString);
     procedure printPDF417(const Barcode: TPDF417);
     procedure printQRCode(const Barcode: TQRCode);
     procedure SetKanjiQuadSizeMode(Value: Boolean);
@@ -344,13 +344,13 @@ type
     procedure Select2DBarcode(n: Byte);
     procedure SetPMRelativeVerticalPosition(n: Word);
     procedure PrintCounter;
-    procedure PrintText(Text: string);
+    procedure PrintText(Text: AnsiString);
     procedure SetNormalPrintMode;
 
-    function ReadFirmwareVersion: string;
-    function ReadManufacturer: string;
-    function ReadPrinterName: string;
-    function ReadSerialNumber: string;
+    function ReadFirmwareVersion: AnsiString;
+    function ReadManufacturer: AnsiString;
+    function ReadPrinterName: AnsiString;
+    function ReadSerialNumber: AnsiString;
 
     property Logger: ILogFile read FLogger;
     property Port: IPrinterPort read FPort;
@@ -377,7 +377,7 @@ begin
   FDeviceMetrics.PrintWidth := 576;
 end;
 
-procedure TEscPrinter.Send(const Data: string);
+procedure TEscPrinter.Send(const Data: AnsiString);
 begin
   FPort.Lock;
   try
@@ -395,7 +395,7 @@ begin
   FLogger.Debug('<- ' + StrToHex(Chr(Result)));
 end;
 
-function TEscPrinter.ReadString: string;
+function TEscPrinter.ReadAnsiString: AnsiString;
 var
   C: Char;
 begin
@@ -547,7 +547,7 @@ begin
   Send(#$1B#$26#$03 + Chr(C.c1) + Chr(C.c2) + C.Data);
 end;
 
-function TEscPrinter.GetBitmapData(Bitmap: TBitmap): string;
+function TEscPrinter.GetBitmapData(Bitmap: TBitmap): AnsiString;
 var
   B: Byte;
   Bit: Byte;
@@ -579,7 +579,7 @@ begin
   end;
 end;
 
-function TEscPrinter.GetRasterBitmapData(Bitmap: TBitmap): string;
+function TEscPrinter.GetRasterBitmapData(Bitmap: TBitmap): AnsiString;
 var
   B: Byte;
   Bit: Byte;
@@ -607,12 +607,12 @@ begin
 end;
 
 
-function TEscPrinter.GetImageData(Image: TGraphic): string;
+function TEscPrinter.GetImageData(Image: TGraphic): AnsiString;
 begin
-  Result := GetImageData2(JUSTIFICATION_CENTERING, Image);
+  Result := GetImageData2(JUSTIFICATION_LEFT, Image);
 end;
 
-function TEscPrinter.GetImageData2(Justification: Integer; Image: TGraphic): string;
+function TEscPrinter.GetImageData2(Justification: Integer; Image: TGraphic): AnsiString;
 var
   Bitmap: TBitmap;
 begin
@@ -652,7 +652,7 @@ begin
   end;
 end;
 
-function TEscPrinter.GetRasterImageData(Image: TGraphic): string;
+function TEscPrinter.GetRasterImageData(Image: TGraphic): AnsiString;
 var
   Bitmap: TBitmap;
 begin
@@ -672,7 +672,7 @@ end;
 procedure TEscPrinter.SelectBitImageMode(mode: Integer; Image: TGraphic);
 var
   n: Word;
-  data: string;
+  data: AnsiString;
 begin
   Logger.Debug('TEscPrinter.SelectBitImageMode');
 
@@ -717,7 +717,7 @@ begin
   Send(#$1B#$42 + Chr(N) + Chr(T));
 end;
 
-procedure TEscPrinter.SetHorizontalTabPositions(Tabs: string);
+procedure TEscPrinter.SetHorizontalTabPositions(Tabs: AnsiString);
 begin
   Logger.Debug('TEscPrinter.SetHorizontalTabPositions');
   Send(#$1B#$44 + Tabs + #0);
@@ -783,10 +783,10 @@ begin
   Send(#$1B#$64 + Chr(N));
 end;
 
-procedure TEscPrinter.SetCodeTable(n: Integer);
+procedure TEscPrinter.SetCodePage(CodePage: Integer);
 begin
-  Logger.Debug('TEscPrinter.SetCodeTable');
-  Send(#$1B#$74 + Chr(N));
+  Logger.Debug('TEscPrinter.SetCodePage');
+  Send(#$1B#$74 + Chr(CodePage));
 end;
 
 procedure TEscPrinter.SetUpsideDownPrinting(Value: Boolean);
@@ -813,16 +813,30 @@ begin
   Send(#$1B#$39 + Chr(N));
 end;
 
-procedure TEscPrinter.PrintNVBitImage(N, M: Byte);
+procedure TEscPrinter.PrintNVBitImage(Number, Mode: Byte);
 begin
   Logger.Debug('TEscPrinter.PrintNVBitImage');
-  Send(#$1C#$70 + Chr(N) + Chr(M));
+  Send(#$1C#$70 + Chr(Number) + Chr(Mode));
 end;
 
-procedure TEscPrinter.DefineNVBitImage(n: Byte; Image: TGraphic);
+procedure TEscPrinter.DefineNVBitImage(Number: Byte; Image: TGraphic);
+var
+  x, y: Integer;
+  Bitmap: TBitmap;
 begin
   Logger.Debug('TEscPrinter.DefineNVBitImage');
-  Send(#$1C#$71 + Chr(N) + GetImageData(Image));
+
+  Bitmap := TBitmap.Create;
+  try
+    DrawImage(JUSTIFICATION_LEFT, Image, Bitmap);
+
+    x := (Bitmap.Width + 7) div 8;
+    y := (Bitmap.Height + 7) div 8;
+    Send(#$1C#$71 + Chr(Number) + Chr(Lo(x)) + Chr(Hi(x)) +
+      Chr(Lo(y)) + Chr(Hi(y)) + GetBitmapData(Bitmap));
+  finally
+    Bitmap.Free;
+  end;
 end;
 
 procedure TEscPrinter.SetCharacterSize(N: Byte);
@@ -861,40 +875,40 @@ begin
   Send(#$1D#$42 + Chr(BoolToInt[Value]));
 end;
 
-function TEscPrinter.ReadPrinterID(N: Byte): string;
+function TEscPrinter.ReadPrinterID(N: Byte): AnsiString;
 var
-  S: string;
+  S: AnsiString;
 begin
   Logger.Debug('TEscPrinter.ReadPrinterID');
   FPort.Lock;
   try
     Send(#$1D#$49 + Chr(N));
-    S := ReadString;
+    S := ReadAnsiString;
     Result := Copy(S, 2, Length(S)-1);
   finally
     FPort.Unlock;
   end;
 end;
 
-function TEscPrinter.ReadFirmwareVersion: string;
+function TEscPrinter.ReadFirmwareVersion: AnsiString;
 begin
   Logger.Debug('TEscPrinter.ReadFirmwareVersion');
   Result := ReadPrinterID(65);
 end;
 
-function TEscPrinter.ReadManufacturer: string;
+function TEscPrinter.ReadManufacturer: AnsiString;
 begin
   Logger.Debug('TEscPrinter.ReadManufacturer');
   Result := ReadPrinterID(66);
 end;
 
-function TEscPrinter.ReadPrinterName: string;
+function TEscPrinter.ReadPrinterName: AnsiString;
 begin
   Logger.Debug('TEscPrinter.ReadPrinterName');
   Result := ReadPrinterID(67);
 end;
 
-function TEscPrinter.ReadSerialNumber: string;
+function TEscPrinter.ReadSerialNumber: AnsiString;
 begin
   Logger.Debug('TEscPrinter.ReadSerialNumber');
   Result := ReadPrinterID(68);
@@ -960,13 +974,13 @@ begin
   Send(#$1D#$68 + Chr(N));
 end;
 
-procedure TEscPrinter.PrintBarcode(BCType: Byte; const Data: string);
+procedure TEscPrinter.PrintBarcode(BCType: Byte; const Data: AnsiString);
 begin
   Logger.Debug('TEscPrinter.PrintBarcode');
   Send(#$1D#$6B + Chr(BCType) + Data + #0);
 end;
 
-procedure TEscPrinter.PrintBarcode2(BCType: Byte; const Data: string);
+procedure TEscPrinter.PrintBarcode2(BCType: Byte; const Data: AnsiString);
 begin
   Logger.Debug('TEscPrinter.PrintBarcode2');
   Send(#$1D#$6B + Chr(BCType) + Chr(Length(Data)) + Data);
@@ -1046,7 +1060,7 @@ begin
 end;
 
 procedure TEscPrinter.DefineKanjiCharacters(c1, c2: Byte;
-  const data: string);
+  const data: AnsiString);
 begin
   Logger.Debug('TEscPrinter.DefineKanjiCharacters');
   Send(#$1C#$32 + Chr(c1) + Chr(c2) + data);
@@ -1104,7 +1118,7 @@ begin
     Chr(Lo(R.Bottom)) + Chr(Hi(R.Bottom)));
 end;
 
-procedure TEscPrinter.printBarcode2D(m, n, k: Byte; const data: string);
+procedure TEscPrinter.printBarcode2D(m, n, k: Byte; const data: AnsiString);
 begin
   Logger.Debug('TEscPrinter.printBarcode2D');
   Send(#$1B#$5A + Chr(m) + Chr(n) + Chr(k) +
@@ -1206,7 +1220,7 @@ begin
   SelectPrintMode(PrintMode);
 end;
 
-procedure TEscPrinter.PrintText(Text: string);
+procedure TEscPrinter.PrintText(Text: AnsiString);
 begin
   Logger.Debug(Format('TEscPrinter.PrintText(''%s'')', [TrimRight(Text)]));
   Send(Text);

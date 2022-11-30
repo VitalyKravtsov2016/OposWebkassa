@@ -30,6 +30,8 @@ type
     function CreateSocketPort: TSocketPort;
     property Printer: TESCPrinter read FPrinter;
   published
+    procedure TestBitmap;
+    procedure TestReadPrinterID;
     procedure TestInitialize;
     procedure TestPrintText;
     procedure TestReadStatus;
@@ -42,9 +44,14 @@ type
     procedure TestJustification;
     procedure TestJustification2;
     procedure TestUnderlined;
-
-    procedure TestBitmap;
-    procedure TestReadPrinterID;
+    procedure TestBeepParams;
+    procedure TestEmphasized;
+    procedure TestDoubleStrikeMode;
+    procedure TestCharacterFont;
+    procedure TestCodePage;
+    procedure TestNVBitImage;
+    procedure TestCoverOpen;
+    procedure TestRecoverError;
   end;
 
 implementation
@@ -55,6 +62,11 @@ procedure TESCPrinterTest.SetUp;
 begin
   inherited SetUp;
   FLogger := TLogFile.Create;
+  FLogger.MaxCount := 10;
+  FLogger.Enabled := True;
+  FLogger.FilePath := 'Logs';
+  FLogger.DeviceName := 'DeviceName';
+
   //FPrinterPort := CreateSocketPort;
   FPrinterPort := CreateSerialPort;
   FPrinterPort.Open;
@@ -72,7 +84,7 @@ function TESCPrinterTest.CreateSerialPort: TSerialPort;
 var
   SerialParams: TSerialParams;
 begin
-  SerialParams.PortName := 'COM11';
+  SerialParams.PortName := 'COM6';
   SerialParams.BaudRate := 19200;
   SerialParams.DataBits := 8;
   SerialParams.StopBits := ONESTOPBIT;
@@ -104,7 +116,7 @@ end;
 procedure TESCPrinterTest.TestInitialize;
 begin
   FPrinter.Initialize;
-  FPrinter.SetCodeTable(CODEPAGE_WCP1251);
+  FPrinter.SetCodePage(CODEPAGE_WCP1251);
 end;
 
 procedure TESCPrinterTest.TestReadStatus;
@@ -362,18 +374,15 @@ begin
   try
     FileName := GetModulePath + 'ShtrihM.bmp';
     Bitmap.LoadFromFile(FileName);
-    //FPrinter.PrintRasterBMP(BMP_MODE_NORMAL, Bitmap);
 
     FPrinter.Initialize;
     FPrinter.DownloadBMP(JUSTIFICATION_LEFT, Bitmap);
-    FPrinter.PrintBmp(BMP_MODE_NORMAL);
 
-    FPrinter.Initialize;
-    FPrinter.DownloadBMP(JUSTIFICATION_CENTERING, Bitmap);
+    FPrinter.SetJustification(JUSTIFICATION_LEFT);
     FPrinter.PrintBmp(BMP_MODE_NORMAL);
-
-    FPrinter.Initialize;
-    FPrinter.DownloadBMP(JUSTIFICATION_RIGHT, Bitmap);
+    FPrinter.SetJustification(JUSTIFICATION_CENTERING);
+    FPrinter.PrintBmp(BMP_MODE_NORMAL);
+    FPrinter.SetJustification(JUSTIFICATION_RIGHT);
     FPrinter.PrintBmp(BMP_MODE_NORMAL);
   finally
     Bitmap.Free;
@@ -447,6 +456,140 @@ begin
   PrintMode.Underlined := True;
   FPrinter.SelectPrintMode(PrintMode);
   FPrinter.PrintText('Underlined mode, font A' + CRLF);
+end;
+
+procedure TESCPrinterTest.TestBeepParams;
+begin
+  FPrinter.Initialize;
+  FPrinter.SetBeepParams(3, 1);
+end;
+
+procedure TESCPrinterTest.TestEmphasized;
+begin
+  FPrinter.Initialize;
+  FPrinter.PrintText('Emphasized mode OFF ');
+  FPrinter.SetEmphasizedMode(True);
+  FPrinter.PrintText('Emphasized mode ON' + CRLF);
+  FPrinter.PrintText('Emphasized mode ON' + CRLF);
+  FPrinter.SetEmphasizedMode(False);
+end;
+
+procedure TESCPrinterTest.TestDoubleStrikeMode;
+begin
+  FPrinter.Initialize;
+  FPrinter.PrintText('Double-strike mode OFF ');
+  FPrinter.SetDoubleStrikeMode(True);
+  FPrinter.PrintText('Double-strike mode ON' + CRLF);
+  FPrinter.PrintText('Double-strike mode ON' + CRLF);
+  FPrinter.SetDoubleStrikeMode(False);
+end;
+
+procedure TESCPrinterTest.TestCharacterFont;
+begin
+  FPrinter.Initialize;
+  FPrinter.PrintText('Character font A');
+  FPrinter.SetCharacterFont(1);
+  FPrinter.PrintText('Character font B' + CRLF);
+  FPrinter.SetCharacterFont(0);
+end;
+
+procedure TESCPrinterTest.TestCodePage;
+const
+  TextCodePage1251: WideString = 'Кодовая страница 1251';
+  TextCodePage866: WideString = 'Кодовая страница 866';
+var
+  Text: AnsiString;
+  WideText: WideString;
+  Strings: TTntStrings;
+begin
+  Strings := TTntStringList.Create;
+  try
+    FPrinter.Initialize;
+    // 1251
+    FPrinter.SetCodePage(CODEPAGE_WCP1251);
+    Text := WideStringToAnsiString(1251, TextCodePage1251);
+    FPrinter.PrintText(Text + CRLF);
+    // 866
+    FPrinter.SetCodePage(CODEPAGE_CP866);
+    Text := WideStringToAnsiString(866, TextCodePage866);
+    FPrinter.PrintText(Text + CRLF);
+    // 1255 Hebrew
+    FPrinter.SetCodePage(CODEPAGE_WCP1251);
+    FPrinter.PrintText('CODEPAGE 1255 Hebrew' + CRLF);
+    FPrinter.SetCodePage(CODEPAGE_WCP1255);
+    Strings.LoadFromFile(GetModulePath + 'HebrewText.txt');
+    WideText := Strings[0];
+    Text := WideStringToAnsiString(1255, WideText);
+    FPrinter.PrintText(Text + CRLF);
+    // 1256 Arabic
+    FPrinter.SetCodePage(CODEPAGE_WCP1251);
+    FPrinter.PrintText('CODEPAGE 1256 Arabic' + CRLF);
+    FPrinter.SetCodePage(CODEPAGE_WCP1256);
+    Strings.LoadFromFile(GetModulePath + 'ArabicText.txt');
+    WideText := Strings[0];
+    Text := WideStringToAnsiString(1256, WideText);
+    FPrinter.PrintText(Text + CRLF);
+  finally
+    Strings.Free;
+  end;
+end;
+
+procedure TESCPrinterTest.TestNVBitImage;
+var
+  Bitmap: TBitmap;
+  FileName: string;
+begin
+  Bitmap := TBitmap.Create;
+  try
+    FileName := GetModulePath + 'ShtrihM.bmp';
+    Bitmap.LoadFromFile(FileName);
+
+    FPrinter.Initialize;
+    FPrinter.DefineNVBitImage(1, Bitmap);
+    FPrinter.SetJustification(JUSTIFICATION_CENTERING);
+    FPrinter.PrintNVBitImage(1, BMP_MODE_NORMAL);
+  finally
+    Bitmap.Free;
+  end;
+end;
+
+procedure TESCPrinterTest.TestCoverOpen;
+var
+  i: Integer;
+begin
+  FPrinter.Initialize;
+  FPrinter.RecoverError(True);
+  FPrinter.SetCodePage(CODEPAGE_WCP1251);
+  for i := 1 to 20 do
+  begin
+    FPrinter.PrintText('Печать строки ' + IntToStr(i) + CRLF);
+  end;
+(*
+  for i := 1 to 100 do
+  begin
+    try
+      FPrinter.ReadPaperStatus;
+      FPrinter.ReadErrorStatus;
+      FPrinter.ReadPrinterStatus;
+      FPrinter.ReadOfflineStatus;
+      FPrinter.ReadPaperRollStatus;
+    except
+      on E: Exception do
+        FLogger.Error(E.Message);
+    end;
+  end;
+*)
+end;
+
+procedure TESCPrinterTest.TestRecoverError;
+var
+  ErrorStatus: TErrorStatus;
+begin
+  ErrorStatus := FPrinter.ReadErrorStatus;
+  if ErrorStatus.AutoRecoverableError then
+  begin
+    FPrinter.RecoverError(True);
+  end;
 end;
 
 initialization

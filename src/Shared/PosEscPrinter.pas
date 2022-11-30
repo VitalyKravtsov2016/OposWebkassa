@@ -202,6 +202,7 @@ type
     procedure InitializeDevice;
     procedure CheckPaperPresent;
     procedure CheckCoverClosed;
+    procedure SetPowerState(PowerState: Integer);
   public
     constructor Create2(AOwner: TComponent; APort: IPrinterPort; ALogger: ILogFile);
     destructor Destroy; override;
@@ -794,7 +795,7 @@ begin
     Result := OPOSError.ResultCode;
     Exit;
   end;
-  if E is ETimeoutError then
+  if E is ESerialError then
   begin
     OPOSError.ErrorString := GetExceptionMessage(E);
     OPOSError.ResultCode := OPOS_E_TIMEOUT;
@@ -809,6 +810,11 @@ begin
   OPOSError.ResultCodeExtended := OPOS_SUCCESS;
   FDevice.HandleException(OPOSError);
   Result := OPOSError.ResultCode;
+
+  if OPOSError.ResultCode = OPOS_E_TIMEOUT then
+  begin
+    SetPowerState(OPOS_PS_OFF_OFFLINE);
+  end;
 end;
 
 function TPosEscPrinter.BeginInsertion(Timeout: Integer): Integer;
@@ -2096,26 +2102,32 @@ begin
     SetRecEmpty(not FPrinter.ReadPaperStatus.PaperPresent);
     SetRecNearEnd(FPrinter.ReadPaperRollStatus.PaperNearEnd);
     ErrorStatus := FPrinter.ReadErrorStatus;
-
-    if FDevice.PowerState <> OPOS_PS_ONLINE then
-    begin
-      InitializeDevice;
-      FDevice.PowerState := OPOS_PS_ONLINE;
-    end;
+    SetPowerState(OPOS_PS_ONLINE);
   except
     on E: Exception do
     begin
-      FDevice.PowerState := OPOS_PS_OFF_OFFLINE;
+      SetPowerState(OPOS_PS_OFF_OFFLINE);
       raise;
     end;
   end;
 end;
 
+procedure TPosEscPrinter.SetPowerState(PowerState: Integer);
+begin
+  if PowerState <> FDevice.PowerState then
+  begin
+    FDevice.PowerState := PowerState;
+    if PowerState = OPOS_PS_ONLINE then
+    begin
+      InitializeDevice;
+    end;
+  end;
+end;
 
 procedure TPosEscPrinter.InitializeDevice;
 begin
   FPrinter.Initialize;
-  FPrinter.SetCodeTable(CODEPAGE_WCP1251);
+  FPrinter.SetCodePage(CODEPAGE_WCP1251);
 end;
 
 procedure TPosEscPrinter.DeviceProc(Sender: TObject);

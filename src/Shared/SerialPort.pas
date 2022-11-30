@@ -75,12 +75,13 @@ type
     property Opened: Boolean read GetOpened;
   end;
 
-  ENoPortError = class(WideException);
-  ETimeoutError = class(WideException);
+  ESerialError = class(WideException);
+  ENoPortError = class(ESerialError);
+  ETimeoutError = class(ESerialError);
 
   { ESerialPortError }
 
-  ESerialPortError = class(WideException)
+  ESerialPortError = class(ESerialError)
   public
     ErrorCode: Integer;
   end;

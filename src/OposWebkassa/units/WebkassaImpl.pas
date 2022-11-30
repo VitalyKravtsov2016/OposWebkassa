@@ -2909,7 +2909,6 @@ end;
 
 procedure TWebkassaImpl.PrintDocumentSafe(Document: TTextDocument);
 begin
-  CheckCanPrint;
   try
     Document.AddText(Params.TrailerText);
     PrintDocument(Document);
@@ -2936,6 +2935,8 @@ begin
   Logger.Debug('PrintDocument');
   TickCount := GetTickCount;
 
+
+  CheckPtr(Printer.CheckHealth(OPOS_CH_INTERNAL));
   CheckCanPrint;
   CapRecDwideDhigh := Printer.CapRecDwideDhigh;
   CapRecBold := Printer.CapRecBold;
@@ -2987,6 +2988,7 @@ begin
   begin
     CheckPtr(Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_NORMAL));
   end;
+  CheckPtr(Printer.CheckHealth(OPOS_CH_INTERNAL));
   Logger.Debug(Format('PrintDocument, time=%d ms', [GetTickCount-TickCount]));
 end;
 

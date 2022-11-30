@@ -132,7 +132,7 @@ begin
   FDriver.Params.PrinterType := PrinterTypeEscPrinterSerial;
   FDriver.Params.ByteTimeout := 500;
   FDriver.Params.FontName := 'FontA11';
-  FDriver.Params.PortName := 'COM8';
+  FDriver.Params.PortName := 'COM6';
   FDriver.Params.BaudRate := 19200;
   FDriver.Params.DataBits := DATABITS_8;
   FDriver.Params.StopBits := ONESTOPBIT;
@@ -258,7 +258,9 @@ end;
 procedure TWebkassaImplTest.TestXReport;
 begin
   OpenClaimEnable;
-  CheckEquals(0, Driver.PrintXReport, 'Driver.PrintXReport');
+  //CheckEquals(0, Driver.PrintXReport, 'Driver.PrintXReport');
+  Driver.PrintXReport;
+  Application.MessageBox('PrintXReport', 'Attention');
 end;
 
 procedure TWebkassaImplTest.TestNonFiscal;
