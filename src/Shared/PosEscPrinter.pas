@@ -2317,6 +2317,7 @@ begin
     if Control = PTR_TP_TRANSACTION then
     begin
       StopDeviceThread;
+      InitializeDevice;
     end;
     if Control = PTR_TP_NORMAL then
     begin
