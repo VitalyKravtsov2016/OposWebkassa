@@ -2603,7 +2603,7 @@ procedure TWebkassaImpl.Print(Receipt: TSalesReceipt);
 var
   i: Integer;
   Payment: TPayment;
-  Discount: TAdjustment;
+  Adjustment: TAdjustment;
   VatRate: TVatRate;
   Item: TSalesReceiptItem;
   ReceiptItem: TReceiptItem;
@@ -2650,8 +2650,8 @@ begin
         Position.PositionName := Item.Description;
         Position.DisplayName := Item.Description;
         Position.PositionCode := IntToStr(i+1);
-        Position.Discount := Item.GetDiscount;
-        Position.Markup := Item.GetCharge;
+        Position.Discount := Item.GetDiscount.Amount;
+        Position.Markup := Item.GetCharge.Amount;
         Position.IsStorno := False;
         Position.MarkupDeleted := False;
         Position.DiscountDeleted := False;
@@ -2675,16 +2675,26 @@ begin
       end;
     end;
     // Discounts
-    for i := 0 to Receipt.Adjustments.Count-1 do
+    for i := 0 to Receipt.Discounts.Count-1 do
     begin
-      Discount := Receipt.Adjustments[i];
+      Adjustment := Receipt.Discounts[i];
       Modifier := Command.Request.TicketModifiers.Add as TTicketModifier;
 
-      Modifier.Sum := Abs(Discount.Total);
-      Modifier.Text := Discount.Description;
+      Modifier.Sum := Abs(Adjustment.Total);
+      Modifier.Text := Adjustment.Description;
       Modifier._Type := ModifierTypeDiscount;
-      if Discount.Total < 0 then
-        Modifier._Type := ModifierTypeCharge;
+      Modifier.TaxType := TaxTypeNoTax;
+      Modifier.Tax := 0;
+    end;
+    // Charges
+    for i := 0 to Receipt.Charges.Count-1 do
+    begin
+      Adjustment := Receipt.Charges[i];
+      Modifier := Command.Request.TicketModifiers.Add as TTicketModifier;
+
+      Modifier.Sum := Abs(Adjustment.Total);
+      Modifier.Text := Adjustment.Description;
+      Modifier._Type := ModifierTypeCharge;
       Modifier.TaxType := TaxTypeNoTax;
       Modifier.Tax := 0;
     end;
@@ -2776,7 +2786,7 @@ var
   RecItem: TSalesReceiptItem;
   ItemQuantity: Double;
   UnitPrice: Currency;
-  AdjustmentName: WideString;
+  Adjustment: TAdjustmentRec;
 begin
   Document.PrintHeader := Receipt.PrintHeader;
   Document.LineChars := Printer.RecLineChars;
@@ -2812,18 +2822,22 @@ begin
       Document.Add(Format('   %.3f %s x %s', [ItemQuantity,
         RecItem.UnitName, AmountToStr(UnitPrice)]));
       // Скидка
-      Amount := RecItem.GetDiscount;
-      if Amount <> 0 then
+      Adjustment := RecItem.GetDiscount;
+      if Adjustment.Amount <> 0 then
       begin
-        Document.AddLines('   Скидка ' + AdjustmentName,
-          '-' + AmountToStr(Amount));
+        if Adjustment.Name = '' then
+          Adjustment.Name := 'Скидка';
+        Document.AddLines('   ' + Adjustment.Name,
+          '-' + AmountToStr(Abs(Adjustment.Amount)));
       end;
       // Наценка
-      Amount := RecItem.GetCharge;
-      if Amount <> 0 then
+      Adjustment := RecItem.GetCharge;
+      if Adjustment.Amount <> 0 then
       begin
-        Document.AddLines('   Наценка ' + AdjustmentName,
-          '+' + AmountToStr(Amount));
+        if Adjustment.Name = '' then
+          Adjustment.Name := 'Наценка';
+        Document.AddLines('   ' + Adjustment.Name,
+          '+' + AmountToStr(Abs(Adjustment.Amount)));
       end;
       Document.AddLines('   Стоимость', AmountToStr(RecItem.GetTotalWithDiscount));
     end;

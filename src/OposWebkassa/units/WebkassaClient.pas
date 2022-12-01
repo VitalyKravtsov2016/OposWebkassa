@@ -10,7 +10,7 @@ uses
   // Json
   uLkJSON,
   // Indy
-  IdHTTP, IdSSLOpenSSL,
+  IdHTTP, IdSSLOpenSSL, IdHeaderList,
   // This
   LogFile, JsonUtils, DriverError;
 
@@ -1241,6 +1241,7 @@ type
   private
     FLogger: ILogFile;
     FTransport: TIdHTTP;
+    FDomainNames: TStrings;
 
     FLogin: WideString;
     FPassword: WideString;
@@ -1262,6 +1263,9 @@ type
 
     property Transport: TIdHTTP read GetTransport;
     function PostJson(const URL, Request: WideString): WideString;
+  protected
+    procedure HTTPHeadersAvailable(Sender: TObject;
+      AHeaders: TIdHeaderList; var VContinue: Boolean);
   public
     constructor Create(ALogger: ILogFile);
     destructor Destroy; override;
@@ -1444,12 +1448,14 @@ begin
   FLogger := ALogger;
   FAddress := 'https://devkkm.webkassa.kz/';
   FErrorResult := TErrorResult.Create;
+  FDomainNames := TStringList.Create;
 end;
 
 destructor TWebkassaClient.Destroy;
 begin
   FTransport.Free;
   FErrorResult.Free;
+  FDomainNames.Free;
   inherited Destroy;
 end;
 
@@ -1468,6 +1474,44 @@ TIdSSLVersion = (sslvSSLv2, sslvSSLv23, sslvSSLv3, sslvTLSv1,sslvTLSv1_1,sslvTLS
 
 *)
 
+(*
+Альтернативное доменное имя можно получить по ключу	AlternativeDomainNames,
+содержащемуся в HttpHeaders ответа на запрос, по которому возникла ошибка
+Значения альтернативных имен хостов сервера Webkassa, доступных в данных момент,
+представлены строкой через запятую.
+
+DefWebkassaAddress = 'https://devkkm.webkassa.kz/';
+*)
+
+procedure TWebkassaClient.HTTPHeadersAvailable(Sender: TObject;
+  AHeaders: TIdHeaderList; var VContinue: Boolean);
+var
+  i: Integer;
+  DomainName: string;
+  DomainNames: TStrings;
+  DomainNamesText: string;
+begin
+  VContinue := False;
+  DomainNamesText := AHeaders.Values['AlternativeDomainNames'];
+  DomainNamesText := StringReplace(DomainNamesText, ',', #13#10, []);
+  DomainNames := TStringList.Create;
+  try
+    DomainNames.Text := DomainNamesText;
+    for i := 0 to DomainNames.Count-1 do
+    begin
+      DomainName := DomainNames[i];
+      if FDomainNames.IndexOf(DomainName) = -1 then
+      begin
+        FAddress := DomainName;
+        FDomainNames.Add(DomainName);
+        VContinue := True;
+      end;
+    end;
+  finally
+    DomainNames.Free;
+  end;
+end;
+
 function TWebkassaClient.GetTransport: TIdHTTP;
 var
   HandlerSocket: TIdSSLIOHandlerSocketOpenSSL;
@@ -1481,6 +1525,7 @@ begin
     FTransport.Request.Accept := 'application/json, */*; q=0.01';
     FTransport.Request.ContentType := 'application/json; charset=UTF-8';
     FTransport.Request.CharSet := 'utf-8';
+    //FTransport.OnHeadersAvailable := HTTPHeadersAvailable;
 
     HandlerSocket := TIdSSLIOHandlerSocketOpenSSL.Create(FTransport);
     HandlerSocket.SSLOptions.Mode := sslmClient;
@@ -3192,6 +3237,11 @@ begin
   Result := nil;
 end;
 
+(*
+505
+RSHTTPHTTPVersionNotSupported = 'HTTP version not supported';
+
+*)
 
 initialization
   DecimalSeparator := '.';

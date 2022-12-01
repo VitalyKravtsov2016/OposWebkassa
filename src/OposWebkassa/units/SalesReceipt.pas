@@ -24,10 +24,13 @@ type
     FRecItems: TList;
     FPayments: TPayments;
     FItems: TReceiptItems;
-    FAdjustments: TAdjustments;
+    FCharges: TAdjustments;
+    FDiscounts: TAdjustments;
     FAmountDecimalPlaces: Integer;
 
     function AddItem: TSalesReceiptItem;
+    procedure SubtotalCharge(Amount: Currency;
+      const Description: WideString);
   protected
     procedure SetRefundReceipt;
     procedure CheckPrice(Value: Currency);
@@ -118,9 +121,10 @@ type
     property Items: TReceiptItems read FItems;
     property IsRefund: Boolean read FIsRefund;
     property Charge: Currency read GetCharge;
-    property Discount: Currency read GetDiscount;
     property Payments: TPayments read FPayments;
-    property Adjustments: TAdjustments read FAdjustments;
+    property Discount: Currency read GetDiscount;
+    property Charges: TAdjustments read FCharges;
+    property Discounts: TAdjustments read FDiscounts;
     property AmountDecimalPlaces: Integer read FAmountDecimalPlaces;
   end;
 
@@ -162,25 +166,27 @@ begin
 
   FRecItems := TList.Create;
   FItems := TReceiptItems.Create;
-  FAdjustments := TAdjustments.Create;
+  FCharges := TAdjustments.Create;
+  FDiscounts := TAdjustments.Create;
 end;
 
 destructor TSalesReceipt.Destroy;
 begin
   FItems.Free;
   FRecItems.Free;
-  FAdjustments.Free;
+  FCharges.Free;
+  FDiscounts.Free;
   inherited Destroy;
 end;
 
 function TSalesReceipt.GetCharge: Currency;
 begin
-  Result := Adjustments.GetCharge;
+  Result := Abs(Charges.GetTotal);
 end;
 
 function TSalesReceipt.GetDiscount: Currency;
 begin
-  Result := Adjustments.GetDiscount;
+  Result := Abs(Discounts.GetTotal);
 end;
 
 procedure TSalesReceipt.Print(AVisitor: TObject);
@@ -357,7 +363,7 @@ begin
   case AdjustmentType of
     FPTR_AT_AMOUNT_DISCOUNT:
     begin
-      Adjustment := GetLastItem.AddAdjustment;
+      Adjustment := GetLastItem.AddDiscount;
       Adjustment.Amount := RoundAmount(Amount);
       Adjustment.Total := -RoundAmount(Amount);
       Adjustment.VatInfo := VatInfo;
@@ -367,7 +373,7 @@ begin
 
     FPTR_AT_AMOUNT_SURCHARGE:
     begin
-      Adjustment := GetLastItem.AddAdjustment;
+      Adjustment := GetLastItem.AddCharge;
       Adjustment.Amount := RoundAmount(Amount);
       Adjustment.Total := RoundAmount(Amount);
       Adjustment.VatInfo := VatInfo;
@@ -377,7 +383,7 @@ begin
     FPTR_AT_PERCENTAGE_DISCOUNT:
     begin
       CheckPercents(Amount);
-      Adjustment := GetLastItem.AddAdjustment;
+      Adjustment := GetLastItem.AddDiscount;
       Adjustment.Amount := Amount;
       Adjustment.Total := -RoundAmount(GetLastItem.Price * Amount/100);
       Adjustment.VatInfo := VatInfo;
@@ -388,7 +394,7 @@ begin
     FPTR_AT_PERCENTAGE_SURCHARGE:
     begin
       CheckPercents(Amount);
-      Adjustment := GetLastItem.AddAdjustment;
+      Adjustment := GetLastItem.AddCharge;
       Adjustment.Amount := Amount;
       Adjustment.Total := RoundAmount(GetLastItem.Price * Amount/100);
       Adjustment.VatInfo := VatInfo;
@@ -487,7 +493,7 @@ begin
 
     FPTR_AT_AMOUNT_SURCHARGE:
     begin
-      SubtotalDiscount(Amount, Description);
+      SubtotalCharge(Amount, Description);
     end;
 
     FPTR_AT_PERCENTAGE_DISCOUNT:
@@ -501,7 +507,7 @@ begin
     begin
       CheckPercents(Amount);
       Amount := GetTotal * Amount/100;
-      SubtotalDiscount(Amount, Description);
+      SubtotalCharge(Amount, Description);
     end;
   else
     InvalidParameterValue('AdjustmentType', IntToStr(AdjustmentType));
@@ -518,16 +524,30 @@ end;
 
 procedure TSalesReceipt.SubtotalDiscount(Amount: Currency; const Description: WideString);
 var
-  Discount: TAdjustment;
+  Adjustment: TAdjustment;
 begin
-  Discount := TTotalAdjustment.Create(FItems);
-  FAdjustments.Add(Discount);
+  Adjustment := TTotalAdjustment.Create(FItems);
+  FDiscounts.Add(Adjustment);
 
-  Discount.Total := RoundAmount(Amount);
-  Discount.Amount := Discount.Total;
-  Discount.VatInfo := 0;
-  Discount.AdjustmentType := 0;
-  Discount.Description := Description;
+  Adjustment.Total := RoundAmount(Amount);
+  Adjustment.Amount := Adjustment.Total;
+  Adjustment.VatInfo := 0;
+  Adjustment.AdjustmentType := 0;
+  Adjustment.Description := Description;
+end;
+
+procedure TSalesReceipt.SubtotalCharge(Amount: Currency; const Description: WideString);
+var
+  Adjustment: TAdjustment;
+begin
+  Adjustment := TTotalAdjustment.Create(FItems);
+  FCharges.Add(Adjustment);
+
+  Adjustment.Total := RoundAmount(Amount);
+  Adjustment.Amount := Adjustment.Total;
+  Adjustment.VatInfo := 0;
+  Adjustment.AdjustmentType := 0;
+  Adjustment.Description := Description;
 end;
 
 function TSalesReceipt.GetTotal: Currency;

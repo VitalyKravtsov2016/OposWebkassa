@@ -13,6 +13,13 @@ type
   TAdjustments = class;
   TReceiptItem = class;
 
+  { TAdjustmentRec }
+
+  TAdjustmentRec = record
+    Name: WideString;
+    Amount: Currency;
+  end;
+
   { TReceiptItems }
 
   TReceiptItems = class
@@ -61,21 +68,25 @@ type
     FUnitName: WideString;
     FDescription: WideString;
     FMarkCode: string;
-    FAdjustments: TAdjustments;
+    FCharges: TAdjustments;
+    FDiscounts: TAdjustments;
     FNumber: Integer;
   public
     constructor Create(AOwner: TReceiptItems); override;
     destructor Destroy; override;
 
-    function GetCharge: Currency;
-    function GetDiscount: Currency;
+    function GetCharge: TAdjustmentRec;
+    function GetDiscount: TAdjustmentRec;
     function GetTotal: Currency; override;
     function GetTotalWithDiscount: Currency;
     function GetTotalByVAT(AVatInfo: Integer): Currency; override;
-    function AddAdjustment: TAdjustment;
+    function AddCharge: TAdjustment;
+    function AddDiscount: TAdjustment;
     procedure Assign(Item: TSalesReceiptItem);
 
     property Total: Currency read GetTotal;
+    property Charges: TAdjustments read FCharges;
+    property Discounts: TAdjustments read FDiscounts;
     property Price: Currency read FPrice write FPrice;
     property Number: Integer read FNumber write FNumber;
     property VatInfo: Integer read FVatInfo write FVatInfo;
@@ -84,7 +95,6 @@ type
     property UnitName: WideString read FUnitName write FUnitName;
     property Description: WideString read FDescription write FDescription;
     property MarkCode: string read FMarkCode write FMarkCode;
-    property Adjustments: TAdjustments read FAdjustments;
   end;
 
   { TAdjustments }
@@ -260,12 +270,14 @@ end;
 constructor TSalesReceiptItem.Create(AOwner: TReceiptItems);
 begin
   inherited Create(AOwner);
-  FAdjustments := TAdjustments.Create;
+  FCharges := TAdjustments.Create;
+  FDiscounts := TAdjustments.Create;
 end;
 
 destructor TSalesReceiptItem.Destroy;
 begin
-  FAdjustments.Free;
+  FCharges.Free;
+  FDiscounts.Free;
   inherited Destroy;
 end;
 
@@ -276,7 +288,7 @@ end;
 
 function TSalesReceiptItem.GetTotalWithDiscount: Currency;
 begin
-  Result := FPrice + FAdjustments.GetTotal;
+  Result := FPrice + FDiscounts.GetTotal + FCharges.GetTotal;
 end;
 
 procedure TSalesReceiptItem.Assign(Item: TSalesReceiptItem);
@@ -296,20 +308,32 @@ begin
   end;
 end;
 
-function TSalesReceiptItem.AddAdjustment: TAdjustment;
+function TSalesReceiptItem.AddDiscount: TAdjustment;
 begin
   Result := TItemAdjustment.Create(FOwner);
-  FAdjustments.Add(Result);
+  FDiscounts.Add(Result);
 end;
 
-function TSalesReceiptItem.GetCharge: Currency;
+function TSalesReceiptItem.AddCharge: TAdjustment;
 begin
-  Result := FAdjustments.GetCharge;
+  Result := TItemAdjustment.Create(FOwner);
+  FCharges.Add(Result);
 end;
 
-function TSalesReceiptItem.GetDiscount: Currency;
+function TSalesReceiptItem.GetCharge: TAdjustmentRec;
 begin
-  Result := FAdjustments.GetDiscount;
+  Result.Name := '';
+  Result.Amount := FCharges.GetTotal;
+  if FCharges.Count = 1 then
+    Result.Name := FDiscounts[0].Description;
+end;
+
+function TSalesReceiptItem.GetDiscount: TAdjustmentRec;
+begin
+  Result.Name := '';
+  Result.Amount := FDiscounts.GetTotal;
+  if FDiscounts.Count = 1 then
+    Result.Name := FDiscounts[0].Description;
 end;
 
 function TSalesReceiptItem.GetTotalByVAT(AVatInfo: Integer): Currency;

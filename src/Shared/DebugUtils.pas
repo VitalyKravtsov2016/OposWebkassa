@@ -12,8 +12,8 @@ implementation
 
 procedure ODS(const S: WideString);
 begin
-  OutputDebugStringW(PWideChar(S));
 {$IFDEF DEBUG}
+  OutputDebugStringW(PWideChar(S));
 {$ENDIF}
 end;
 

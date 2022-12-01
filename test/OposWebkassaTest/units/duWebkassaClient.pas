@@ -7,8 +7,11 @@ uses
   Windows, SysUtils, Classes,
   // DUnit
   TestFramework, TntClasses,
+  // Indy
+  IdContext, IdHTTP, IdHTTPServer, IdHeaderList, IdGlobalProtocols,
+  IdCustomHTTPServer,
   // This
-  LogFile, WebkassaClient, JsonUtils, FileUtils;
+  LogFile, WebkassaClient, JsonUtils, FileUtils, DebugUtils;
 
 type
   { TWebkassaClientTest }
@@ -17,9 +20,20 @@ type
   private
     FLogger: ILogFile;
     FClient: TWebkassaClient;
+    procedure ServerConnect(AContext: TIdContext);
+    procedure ServerCreatePostStream(AContext: TIdContext;
+      AHeaders: TIdHeaderList; var VPostStream: TStream);
+    procedure ServerCommandGet(AContext: TIdContext;
+      ARequestInfo: TIdHTTPRequestInfo;
+      AResponseInfo: TIdHTTPResponseInfo);
+    procedure ClientHeadersAvailable(Sender: TObject;
+      AHeaders: TIdHeaderList; var VContinue: Boolean);
   protected
     procedure SetUp; override;
     procedure TearDown; override;
+    // !!!
+    procedure TestAlternativeDomainNames;
+    procedure TestIdHeaderList;
   published
     procedure TestAuthenticate;
     procedure TestChangeToken;
@@ -606,6 +620,102 @@ end;
 
 *)
 
+
+// https://devkkm.webkassa.kz/
+
+procedure TWebkassaClientTest.TestAlternativeDomainNames;
+var
+  Client: TIdHTTP;
+  Server: TIdHTTPServer;
+  CommandJson: string;
+begin
+  ODS('TWebkassaClientTest.TestAlternativeDomainNames.0');
+  Client := TIdHTTP.Create;
+  Server := TIdHTTPServer.Create;
+  try
+    Server.Active := True;
+    Server.OnConnect := ServerConnect;
+    Server.OnCreatePostStream := ServerCreatePostStream;
+    Server.OnCommandGet := ServerCommandGet;
+
+    Client.ProtocolVersion := pv1_1;
+    Client.Request.BasicAuthentication := False;
+    Client.Request.UserAgent := '';
+    Client.Request.Accept := 'application/json, */*; q=0.01';
+    Client.Request.ContentType := 'application/json; charset=UTF-8';
+    Client.Request.CharSet := 'utf-8';
+    Client.OnHeadersAvailable := ClientHeadersAvailable;
+
+    CommandJson := ReadFileData(GetModulePath + 'AuthenticateRequest.txt');
+    Client.Post('https://127.0.0.1/', CommandJson);
+  finally
+    Server.Free;
+    Client.Free;
+    ODS('TWebkassaClientTest.TestAlternativeDomainNames.1');
+  end;
+end;
+
+procedure TWebkassaClientTest.ClientHeadersAvailable(Sender: TObject;
+  AHeaders: TIdHeaderList; var VContinue: Boolean);
+begin
+  ODS('TWebkassaClientTest.ClientHeadersAvailable');
+
+end;
+
+procedure TWebkassaClientTest.ServerCommandGet(AContext: TIdContext;
+  ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
+begin
+  ODS('TWebkassaClientTest.ServerCommandGet');
+  AResponseInfo.ResponseNo := 505;
+  AResponseInfo.ResponseText := 'RSHTTPHTTPVersionNotSupported';
+  AResponseInfo.RawHeaders.AddValue('AlternativeDomainNames',
+    'https://devkkm.webkassa.kz/,https://devkkm.webkassa.com/');
+end;
+
+(*
+Redirect is a procedure that allows TIdHTTPResponseInfo to redirect the
+HTTP client to specific URL. Redirect sets ResponseNo to 302, the HTTP
+response code that indicates a temporary redirection has been performed.
+To indicate that a resource has been permanently moved, set ResponseNo to 301.
+*)
+
+procedure TWebkassaClientTest.ServerCreatePostStream(AContext: TIdContext;
+  AHeaders: TIdHeaderList; var VPostStream: TStream);
+begin
+  ODS('TWebkassaClientTest.ServerCreatePostStream');
+  AHeaders.AddValue('AlternativeDomainNames',
+    'https://devkkm.webkassa.kz/,https://devkkm.webkassa.com/');
+end;
+
+procedure TWebkassaClientTest.ServerConnect(AContext: TIdContext);
+begin
+  ODS('TWebkassaClientTest.ServerConnect');
+end;
+
+procedure TWebkassaClientTest.TestIdHeaderList;
+var
+  Text: string;
+  Lines: TStrings;
+  Headers: TIdHeaderList;
+const
+  AName = 'AlternativeDomainNames';
+  AText = 'https://devkkm.webkassa.kz/,https://devkkm.webkassa.com/';
+begin
+  Lines := TStringList.Create;
+  Headers := TIdHeaderList.Create(QuoteHTTP);
+  try
+    Headers.AddValue(AName, AText);
+    Text := Headers.Values[AName];
+    CheckEquals(Text, AText);
+
+    Headers.Extract(AName, Lines);
+    CheckEquals(1, Lines.Count, 'Lines.Count');
+    CheckEquals(AText, Lines[0], 'Lines[0]');
+  finally
+    Lines.Free;
+    Headers.Free;
+  end;
+end;
 
 initialization
   RegisterTest('', TWebkassaClientTest.Suite);
