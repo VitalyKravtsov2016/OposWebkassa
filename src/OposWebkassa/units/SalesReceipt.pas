@@ -19,9 +19,10 @@ type
 
   TSalesReceipt = class(TCustomReceipt)
   private
+    FRecItems: TList;
     FChange: Currency;
     FIsRefund: Boolean;
-    FRecItems: TList;
+    FRoundType: Integer;
     FPayments: TPayments;
     FItems: TReceiptItems;
     FCharges: TAdjustments;
@@ -43,7 +44,8 @@ type
     procedure SubtotalDiscount(Amount: Currency;
       const Description: WideString);
   public
-    constructor CreateReceipt(AIsRefund: Boolean; AAmountDecimalPlaces: Integer);
+    constructor CreateReceipt(AIsRefund: Boolean;
+      AAmountDecimalPlaces: Integer; ARoundType: Integer);
     destructor Destroy; override;
 
     function GetCharge: Currency;
@@ -118,9 +120,10 @@ type
     procedure PrintRecMessage(const Message: WideString); override;
 
     property Change: Currency read FChange;
+    property Charge: Currency read GetCharge;
     property Items: TReceiptItems read FItems;
     property IsRefund: Boolean read FIsRefund;
-    property Charge: Currency read GetCharge;
+    property RoundType: Integer read FRoundType;
     property Payments: TPayments read FPayments;
     property Discount: Currency read GetDiscount;
     property Charges: TAdjustments read FCharges;
@@ -154,10 +157,12 @@ end;
 
 { TSalesReceipt }
 
-constructor TSalesReceipt.CreateReceipt(AIsRefund: Boolean; AAmountDecimalPlaces: Integer);
+constructor TSalesReceipt.CreateReceipt(AIsRefund: Boolean;
+  AAmountDecimalPlaces: Integer; ARoundType: Integer);
 begin
   inherited Create;
   FIsRefund := AIsRefund;
+  FRoundType := ARoundType;
 
   if not(AAmountDecimalPlaces in [0..4]) then
     raise Exception.Create('Invalid AmountDecimalPlaces');
@@ -551,8 +556,19 @@ begin
 end;
 
 function TSalesReceipt.GetTotal: Currency;
+var
+  i: Integer;
+  Item: TSalesReceiptItem;
 begin
-  Result := FItems.GetTotal;
+  Result := 0;
+  for i := 0 to FRecItems.Count-1 do
+  begin
+    Item := TSalesReceiptItem(FRecItems[i]);
+    Result := Result + Item.GetTotalAmount(RoundType);
+  end;
+  Result := Result - Abs(FDiscounts.GetTotal) + Abs(FCharges.GetTotal);
+  if (RoundType = RoundTypeTotal)or(RoundType = RoundTypeItems) then
+    Result := Round(Result + 0.5);
 end;
 
 function TSalesReceipt.GetTotalByVAT(VatInfo: Integer): Currency;

@@ -629,6 +629,7 @@ begin
   FCapRecRuledLine := 0;
   FCapSlpRuledLine := 0;
   FRecLinesToPaperCut := 4;
+  FRecLineChars := 42;
 end;
 
 destructor TMockPOSPrinter.Destroy;

@@ -115,6 +115,7 @@ begin
   FDriver.Params.PrinterName := 'ThermalU';
   FDriver.Params.NumHeaderLines := 4;
   FDriver.Params.NumTrailerLines := 3;
+  FDriver.Params.RoundType := RoundTypeNone;
   FDriver.Params.HeaderText :=
     ' ' + CRLF +
     '   Восточно-Казастанская область, город' + CRLF +

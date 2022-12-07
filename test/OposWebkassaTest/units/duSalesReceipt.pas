@@ -10,7 +10,7 @@ uses
   // Opos
   OposFptr,
   // This
-  LogFile, SalesReceipt;
+  LogFile, SalesReceipt, ReceiptItem;
 
 type
   { TSalesReceiptTest }
@@ -37,7 +37,7 @@ implementation
 procedure TSalesReceiptTest.SetUp;
 begin
   inherited SetUp;
-  FReceipt := TSalesReceipt.CreateReceipt(False, 2);
+  FReceipt := TSalesReceipt.CreateReceipt(False, 2, RoundTypeNone);
 end;
 
 procedure TSalesReceiptTest.TearDown;

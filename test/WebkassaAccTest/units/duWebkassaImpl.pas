@@ -50,6 +50,8 @@ type
     procedure TestFiscalReceipt4;
     procedure TestFiscalReceiptWithVAT;
     procedure TestFiscalReceiptWithAdjustments;
+    procedure TestFiscalReceiptWithAdjustments2;
+    procedure TestFiscalReceiptWithAdjustments3;
     procedure TestPrintBarcode;
     procedure TestGetData;
     procedure TestEvents;
@@ -89,7 +91,7 @@ procedure TWebkassaImplTest.SetUp;
 begin
   inherited SetUp;
   FDriver := TWebkassaImpl.Create(nil);
-  //FDriver.Printer := TMockPOSPrinter.Create(nil);
+  FDriver.Printer := TMockPOSPrinter.Create(nil);
 
   FDriver.TestMode := True;
   FDriver.Params.LogFileEnabled := True;
@@ -103,7 +105,7 @@ begin
   FDriver.Params.PrinterName := 'ThermalU';
   FDriver.Params.NumHeaderLines := 5;
   FDriver.Params.NumTrailerLines := 11;
-  FDriver.Params.RoundType := RoundTypeNo;
+  FDriver.Params.RoundType := RoundTypeNone;
   FDriver.Params.HeaderText :=
     ' ' + CRLF +
     '  Восточно-Казастанская область, город' + CRLF +
@@ -383,7 +385,7 @@ var
   Total: Currency;
 begin
   CheckEquals(0, Driver.GetData(FPTR_GD_CURRENT_TOTAL, IData, Data));
-  Total := StrToCurr(Data);
+  Total := StrToCurr(Data)/100;
   CheckEquals(Amount, Total, 'Total');
 end;
 
@@ -392,7 +394,7 @@ begin
   FDriver.Params.VatRates.Clear;
   FDriver.Params.VatRates.Add(4, 12, 'Tax1');
   FDriver.Params.VatRateEnabled := True;
-  FDriver.Params.RoundType := RoundTypeItems;
+  FDriver.Params.RoundType := RoundTypeNone;
 
   OpenClaimEnable;
   Driver.SetPropertyNumber(PIDXFptr_CheckTotal, 1);
@@ -413,7 +415,7 @@ begin
   FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_SURCHARGE, 'Надбавка 12', 12, 4));
   CheckTotal(992);
   FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_PERCENTAGE_DISCOUNT, 'Скидка 10%', 10, 4));
-  CheckTotal(955);
+  CheckTotal(952);
   FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_PERCENTAGE_SURCHARGE, 'Надбавка 5%', 5, 4));
   CheckTotal(972);
   // Total adjustments
@@ -422,13 +424,99 @@ begin
   FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_AMOUNT_SURCHARGE, 'Надбавка 5', 5));
   CheckTotal(967);
   FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_PERCENTAGE_DISCOUNT, 'Скидка 10%', 10));
-  CheckTotal(870);
+  CheckTotal(870.3);
+  FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_PERCENTAGE_SURCHARGE, 'Надбавка 5%', 5));
+  CheckTotal(913.82);
+
+  FptrCheck(Driver.PrintRecTotal(913.82, 914, '0'));
+  FptrCheck(Driver.EndFiscalReceipt(False));
+end;
+
+procedure TWebkassaImplTest.TestFiscalReceiptWithAdjustments2;
+begin
+  FDriver.Params.VatRates.Clear;
+  FDriver.Params.VatRates.Add(4, 12, 'Tax1');
+  FDriver.Params.VatRateEnabled := True;
+  FDriver.Params.RoundType := RoundTypeTotal;
+
+  OpenClaimEnable;
+  Driver.SetPropertyNumber(PIDXFptr_CheckTotal, 1);
+  CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
+  CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
+  CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
+
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+  CheckTotal(0);
+  FptrCheck(Driver.PrintRecItem('Киви в корзинке Астана', 620, 1000, 4, 620, 'шт'));
+  CheckTotal(620);
+  FptrCheck(Driver.PrintRecItem('Americano 180мл', 400, 1000, 4, 400, 'шт'));
+  CheckTotal(1020);
+  // Item adjustments
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка 40', 40, 4));
+  CheckTotal(980);
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_SURCHARGE, 'Надбавка 12', 12, 4));
+  CheckTotal(992);
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_PERCENTAGE_DISCOUNT, 'Скидка 10%', 10, 4));
+  CheckTotal(952);
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_PERCENTAGE_SURCHARGE, 'Надбавка 5%', 5, 4));
+  CheckTotal(972);
+  // Total adjustments
+  FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка 10', 10));
+  CheckTotal(962);
+  FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_AMOUNT_SURCHARGE, 'Надбавка 5', 5));
+  CheckTotal(968);
+  FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_PERCENTAGE_DISCOUNT, 'Скидка 10%', 10));
+  CheckTotal(871);
   FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_PERCENTAGE_SURCHARGE, 'Надбавка 5%', 5));
   CheckTotal(914);
 
   FptrCheck(Driver.PrintRecTotal(914, 1000, '0'));
   FptrCheck(Driver.EndFiscalReceipt(False));
 end;
+
+procedure TWebkassaImplTest.TestFiscalReceiptWithAdjustments3;
+begin
+  FDriver.Params.VatRates.Clear;
+  FDriver.Params.VatRates.Add(4, 12, 'Tax1');
+  FDriver.Params.VatRateEnabled := True;
+  FDriver.Params.RoundType := RoundTypeItems;
+
+  OpenClaimEnable;
+  Driver.SetPropertyNumber(PIDXFptr_CheckTotal, 1);
+  CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
+  CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
+  CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
+
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+  CheckTotal(0);
+  FptrCheck(Driver.PrintRecItem('Киви в корзинке Астана', 555.52, 896, 4, 620, 'шт'));
+  CheckTotal(556);
+  FptrCheck(Driver.PrintRecItem('Americano 180мл', 400, 1000, 4, 400, 'шт'));
+  CheckTotal(956);
+  // Item adjustments
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка 40', 40, 4));
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_SURCHARGE, 'Надбавка 12', 12, 4));
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_PERCENTAGE_DISCOUNT, 'Скидка 10%', 10, 4));
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_PERCENTAGE_SURCHARGE, 'Надбавка 5%', 5, 4));
+  // Total adjustments
+  FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка 10', 10));
+  FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_AMOUNT_SURCHARGE, 'Надбавка 5', 5));
+  FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_PERCENTAGE_DISCOUNT, 'Скидка 10%', 10));
+  FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_PERCENTAGE_SURCHARGE, 'Надбавка 5%', 5));
+  CheckTotal(854);
+  FptrCheck(Driver.PrintRecTotal(854, 1000, '0'));
+  FptrCheck(Driver.EndFiscalReceipt(False));
+end;
+
+(*
+TestFiscalReceiptWithAdjustments: Exception
+at  $0054BA8D
+114, 309, 309 [Позиция 'Americano 180мл': Налог подсчитан неверно.
+(Текущее: 42,86, Ожидалось: 37,71); Сумма чека (914,00) не совпадает
+с суммой платежей (1 000,00) и сдачей (86,18)]
+*)
 
 ///////////////////////////////////////////////////////////////////////////////
 //

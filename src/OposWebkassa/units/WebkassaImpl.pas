@@ -488,10 +488,12 @@ begin
     FPTR_RT_GENERIC,
     FPTR_RT_SERVICE,
     FPTR_RT_SIMPLE_INVOICE:
-      Result := TSalesReceipt.CreateReceipt(False, Params.AmountDecimalPlaces);
+      Result := TSalesReceipt.CreateReceipt(False,
+        Params.AmountDecimalPlaces, Params.RoundType);
 
     FPTR_RT_REFUND:
-      Result := TSalesReceipt.CreateReceipt(True, Params.AmountDecimalPlaces);
+      Result := TSalesReceipt.CreateReceipt(True,
+        Params.AmountDecimalPlaces, Params.RoundType);
   else
     Result := nil;
     InvalidPropertyValue('FiscalReceiptType', IntToStr(FiscalReceiptType));
@@ -2650,8 +2652,8 @@ begin
         Position.PositionName := Item.Description;
         Position.DisplayName := Item.Description;
         Position.PositionCode := IntToStr(i+1);
-        Position.Discount := Item.GetDiscount.Amount;
-        Position.Markup := Item.GetCharge.Amount;
+        Position.Discount := Abs(Item.GetDiscount.Amount);
+        Position.Markup := Abs(Item.GetCharge.Amount);
         Position.IsStorno := False;
         Position.MarkupDeleted := False;
         Position.DiscountDeleted := False;
@@ -2668,7 +2670,7 @@ begin
           Position.TaxType := TaxTypeNoTax;
         end else
         begin
-          Position.Tax := Abs(VatRate.GetTax(Item.Total));
+          Position.Tax := Abs(VatRate.GetTax(Item.GetTotalAmount(Params.RoundType)));
           Position.TaxType := TaxTypeVAT;
           Position.TaxPercent := VatRate.Rate;
         end;
@@ -2839,7 +2841,7 @@ begin
         Document.AddLines('   ' + Adjustment.Name,
           '+' + AmountToStr(Abs(Adjustment.Amount)));
       end;
-      Document.AddLines('   Стоимость', AmountToStr(RecItem.GetTotalWithDiscount));
+      Document.AddLines('   Стоимость', AmountToStr(RecItem.GetTotalAmount(Params.RoundType)));
     end;
     // Text
     if ReceiptItem is TRecTexItem then
@@ -3027,10 +3029,15 @@ procedure TWebkassaImpl.PrintTextLine(Prefix, Text: WideString; RecLineChars: In
 var
   Line: WideString;
 begin
-  while Length(Text) > 0 do
+  if RecLineChars = 0 then
+    raise Exception.Create('RecLineChars = 0');
+
+  while True do
   begin
     Line := Prefix + TrimRight(Copy(Text, 1, RecLineChars));
     CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, Line + CRLF));
+    if Length(Text) <= RecLineChars then Break;
+
     Text := Copy(Text, RecLineChars + 1, Length(Text));
   end;
 end;

@@ -46,7 +46,7 @@ const
   CashboxStatusUnregistered   = 5; // Снята с учета
 
   // RoundType - Тип округления
-  RoundTypeNo                 = 0; // Без округления
+  RoundTypeNone               = 0; // Без округления
   RoundTypeTotal              = 1; // Округление итога
   RoundTypeItems              = 2; // Округление позиций
 

@@ -8,6 +8,12 @@ Uses
   // This
   MathUtils;
 
+const
+  // RoundType - Тип округления
+  RoundTypeNone               = 0; // Без округления
+  RoundTypeTotal              = 1; // Округление итога
+  RoundTypeItems              = 2; // Округление позиций
+
 type
   TAdjustment = class;
   TAdjustments = class;
@@ -78,7 +84,7 @@ type
     function GetCharge: TAdjustmentRec;
     function GetDiscount: TAdjustmentRec;
     function GetTotal: Currency; override;
-    function GetTotalWithDiscount: Currency;
+    function GetTotalAmount(RoundType: Integer): Currency;
     function GetTotalByVAT(AVatInfo: Integer): Currency; override;
     function AddCharge: TAdjustment;
     function AddDiscount: TAdjustment;
@@ -286,9 +292,11 @@ begin
   Result := FPrice;
 end;
 
-function TSalesReceiptItem.GetTotalWithDiscount: Currency;
+function TSalesReceiptItem.GetTotalAmount(RoundType: Integer): Currency;
 begin
-  Result := FPrice + FDiscounts.GetTotal + FCharges.GetTotal;
+  Result := FPrice - Abs(FDiscounts.GetTotal) + Abs(FCharges.GetTotal);
+  if (RoundType = RoundTypeItems) then
+    Result := Round(Result + 0.5);
 end;
 
 procedure TSalesReceiptItem.Assign(Item: TSalesReceiptItem);

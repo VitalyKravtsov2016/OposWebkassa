@@ -89,7 +89,9 @@ uses
   DeviceNotification in '..\Shared\DeviceNotification.pas',
   PortUtil in '..\Shared\PortUtil.pas',
   TextReport in '..\Shared\TextReport.pas',
-  SerialPorts in '..\Shared\SerialPorts.pas';
+  SerialPorts in '..\Shared\SerialPorts.pas',
+  ReceiptItem in '..\OposWebkassa\units\ReceiptItem.pas',
+  MathUtils in '..\OposWebkassa\units\MathUtils.pas';
 
 {$R *.RES}
 {$R WindowsXP.RES}

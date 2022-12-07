@@ -10,7 +10,7 @@ uses
   // Opos
   Opos, Oposhi, OposException,
   // This
-  WException, LogFile, FileUtils, VatRate, SerialPort, SerialPorts;
+  WException, LogFile, FileUtils, VatRate, SerialPort, SerialPorts, ReceiptItem;
 
 const
   /////////////////////////////////////////////////////////////////////////////
@@ -66,7 +66,7 @@ const
   DefPrinterName = '';
   DefPrinterType = 0;
   DefFontName = '';
-  DefRoundType = 2; // Округление позиций
+  DefRoundType = RoundTypeNone; // Округление позиций
   DefVATNumber = '00000';
   DefVATSeries = '00000';
   DefAmountDecimalPlaces = 2;
