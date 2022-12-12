@@ -125,14 +125,13 @@ type
 
     procedure Print(AVisitor: TObject); virtual;
 
-
+    property Barcode: string read FBarcode;
     property Lines: TTntStrings read FLines;
     property Trailer: TTntStrings read FTrailer;
     property AfterTotal: Boolean read FAfterTotal;
-    property Barcode: string read FBarcode;
-    property ExternalCheckNumber: WideString read FExternalCheckNumber;
-    property FiscalSign: WideString read FFiscalSign;
     property PrintHeader: Boolean read FPrintHeader;
+    property ExternalCheckNumber: WideString read FExternalCheckNumber;
+    property FiscalSign: WideString read FFiscalSign write FFiscalSign;
   end;
 
 function CurrencyToInt64(Value: Currency): Int64;

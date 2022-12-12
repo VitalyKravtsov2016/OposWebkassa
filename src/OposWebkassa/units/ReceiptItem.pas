@@ -4,7 +4,7 @@ interface
 
 Uses
   // VCL
-  Classes,
+  Classes, Math, 
   // This
   MathUtils;
 
@@ -296,7 +296,7 @@ function TSalesReceiptItem.GetTotalAmount(RoundType: Integer): Currency;
 begin
   Result := FPrice - Abs(FDiscounts.GetTotal) + Abs(FCharges.GetTotal);
   if (RoundType = RoundTypeItems) then
-    Result := Round(Result + 0.5);
+    Result := Ceil(Result);
 end;
 
 procedure TSalesReceiptItem.Assign(Item: TSalesReceiptItem);

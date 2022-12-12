@@ -37,7 +37,7 @@ implementation
 procedure TSalesReceiptTest.SetUp;
 begin
   inherited SetUp;
-  FReceipt := TSalesReceipt.CreateReceipt(False, 2, RoundTypeNone);
+  FReceipt := TSalesReceipt.CreateReceipt(rtSell, 2, RoundTypeNone);
 end;
 
 procedure TSalesReceiptTest.TearDown;

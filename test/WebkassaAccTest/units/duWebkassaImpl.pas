@@ -48,6 +48,7 @@ type
     procedure TestFiscalReceipt2;
     procedure TestFiscalReceipt3;
     procedure TestFiscalReceipt4;
+    procedure TestFiscalReceipt5;
     procedure TestFiscalReceiptWithVAT;
     procedure TestFiscalReceiptWithAdjustments;
     procedure TestFiscalReceiptWithAdjustments2;
@@ -357,6 +358,21 @@ begin
   FptrCheck(Driver.EndFiscalReceipt(False));
 end;
 
+procedure TWebkassaImplTest.TestFiscalReceipt5;
+begin
+  FDriver.Params.RoundType := RoundTypeTotal;
+  OpenClaimEnable;
+  CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+  FptrCheck(Driver.PrintRecItem('Яблоки', 333, 1000, 4, 333, 'кг'));
+  FptrCheck(Driver.PrintRecTotal(333, 333, '0'));
+  FptrCheck(Driver.PrintRecMessage('Оператор ts1'));
+  FptrCheck(Driver.PrintRecMessage('ID:      29211 '));
+  FptrCheck(Driver.EndFiscalReceipt(False));
+end;
+
+
 procedure TWebkassaImplTest.TestFiscalReceiptWithVAT;
 begin
   FDriver.Params.VatRates.Clear;
@@ -465,7 +481,7 @@ begin
   FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка 10', 10));
   CheckTotal(962);
   FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_AMOUNT_SURCHARGE, 'Надбавка 5', 5));
-  CheckTotal(968);
+  CheckTotal(967);
   FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_PERCENTAGE_DISCOUNT, 'Скидка 10%', 10));
   CheckTotal(871);
   FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_PERCENTAGE_SURCHARGE, 'Надбавка 5%', 5));

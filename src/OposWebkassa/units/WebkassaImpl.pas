@@ -488,11 +488,11 @@ begin
     FPTR_RT_GENERIC,
     FPTR_RT_SERVICE,
     FPTR_RT_SIMPLE_INVOICE:
-      Result := TSalesReceipt.CreateReceipt(False,
+      Result := TSalesReceipt.CreateReceipt(rtSell,
         Params.AmountDecimalPlaces, Params.RoundType);
 
     FPTR_RT_REFUND:
-      Result := TSalesReceipt.CreateReceipt(True,
+      Result := TSalesReceipt.CreateReceipt(rtRetSell,
         Params.AmountDecimalPlaces, Params.RoundType);
   else
     Result := nil;
@@ -2602,6 +2602,19 @@ begin
 end;
 
 procedure TWebkassaImpl.Print(Receipt: TSalesReceipt);
+
+  function RecTypeToOperationType(RecType: TRecType): Integer;
+  begin
+    case RecType of
+      rtBuy    : Result := OperationTypeBuy;
+      rtRetBuy : Result := OperationTypeRetBuy;
+      rtSell   : Result := OperationTypeSell;
+      rtRetSell: Result := OperationTypeRetSell;
+    else
+      raise Exception.CreateFmt('Invalid receipt type, %d', [Ord(RecType)]);
+    end;
+  end;
+
 var
   i: Integer;
   Payment: TPayment;
@@ -2609,20 +2622,15 @@ var
   VatRate: TVatRate;
   Item: TSalesReceiptItem;
   ReceiptItem: TReceiptItem;
-  OperationType: Integer;
   Position: TTicketItem;
   Modifier: TTicketModifier;
   Command: TSendReceiptCommand;
 begin
   Command := TSendReceiptCommand.Create;
   try
-    OperationType := OperationTypeSell;
-    if Receipt.IsRefund then
-      OperationType := OperationTypeRetSell;
-
     Command.Request.Token := FClient.Token;
     Command.Request.CashboxUniqueNumber := Params.CashboxNumber;
-    Command.Request.OperationType := OperationType;
+    Command.Request.OperationType := RecTypeToOperationType(Receipt.RecType);
     Command.Request.Change := Receipt.Change;
     Command.Request.RoundType := FParams.RoundType;
     Command.Request.ExternalCheckNumber := Receipt.ExternalCheckNumber;
@@ -2735,7 +2743,8 @@ end;
 "            Порядковый номер чека №2            ",
 "Чек №925871425876",
 "Кассир webkassa4@softit.kz",
-"ПРОДАЖА",
+"
+ПРОДАЖА",
 "------------------------------------------------",
 "  1. Позиция чека 1",
 "   123,456 шт x 123,45",
@@ -2778,6 +2787,18 @@ end;
 *)
 procedure TWebkassaImpl.PrintReceipt(Receipt: TSalesReceipt;
   Command: TSendReceiptCommand);
+
+  function OperationTypeToText(OperationType: Integer): string;
+  begin
+    Result := '';
+    case OperationType of
+      OperationTypeBuy: Result := 'ПОКУПКА';
+      OperationTypeRetBuy: Result := 'ВОЗВРАТ ПОКУПКИ';
+      OperationTypeSell: Result := 'ПРОДАЖА';
+      OperationTypeRetSell: Result := 'ВОЗВРАТ ПРОДАЖИ';
+    end;
+  end;
+
 var
   i: Integer;
   Text: WideString;
@@ -2798,8 +2819,10 @@ begin
   Document.AddSeparator;
   Document.Add(Document.AlignCenter(FCashBox.Name));
   Document.Add(Document.AlignCenter(Format('Смена %d', [Command.Data.ShiftNumber])));
+  Document.Add(OperationTypeToText(Command.Request.OperationType));
+
   //Document.Add(AlignCenter(Format('Порядковый номер чека №%d', [Command.Data.DocumentNumber])));
-  Document.Add(Format('Чек №%s', [Command.Data.CheckNumber]));
+  //Document.Add(Format('Чек №%s', [Command.Data.CheckNumber]));
   //Document.Add(Format('Кассир %s', [Command.Data.EmployeeName]));
   //Document.Add(UpperCase(Command.Data.OperationTypeText));
   Document.AddSeparator;
@@ -2893,10 +2916,11 @@ begin
     end;
   end;
   Document.AddSeparator;
-  if Receipt.FiscalSign <> '' then
+  if Receipt.FiscalSign = '' then
   begin
-    Document.Add('Фискальный признак: ' + Receipt.FiscalSign);
+    Receipt.FiscalSign := Command.Data.CheckNumber;
   end;
+  Document.Add('Фискальный признак: ' + Receipt.FiscalSign);
   Document.Add('Время: ' + Command.Data.DateTime);
   Document.Add('Оператор фискальных данных:');
   Document.Add(Command.Data.Cashbox.Ofd.Name);

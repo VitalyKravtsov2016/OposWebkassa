@@ -14,6 +14,7 @@ uses
 
 type
   TPayments = array [0..4] of Currency;
+  TRecType = (rtBuy, rtRetBuy, rtSell, rtRetSell);
 
   { TSalesReceipt }
 
@@ -21,7 +22,7 @@ type
   private
     FRecItems: TList;
     FChange: Currency;
-    FIsRefund: Boolean;
+    FRecType: TRecType;
     FRoundType: Integer;
     FPayments: TPayments;
     FItems: TReceiptItems;
@@ -44,7 +45,7 @@ type
     procedure SubtotalDiscount(Amount: Currency;
       const Description: WideString);
   public
-    constructor CreateReceipt(AIsRefund: Boolean;
+    constructor CreateReceipt(ARecType: TRecType;
       AAmountDecimalPlaces: Integer; ARoundType: Integer);
     destructor Destroy; override;
 
@@ -121,8 +122,8 @@ type
 
     property Change: Currency read FChange;
     property Charge: Currency read GetCharge;
+    property RecType: TRecType read FRecType;
     property Items: TReceiptItems read FItems;
-    property IsRefund: Boolean read FIsRefund;
     property RoundType: Integer read FRoundType;
     property Payments: TPayments read FPayments;
     property Discount: Currency read GetDiscount;
@@ -157,11 +158,11 @@ end;
 
 { TSalesReceipt }
 
-constructor TSalesReceipt.CreateReceipt(AIsRefund: Boolean;
+constructor TSalesReceipt.CreateReceipt(ARecType: TRecType;
   AAmountDecimalPlaces: Integer; ARoundType: Integer);
 begin
   inherited Create;
-  FIsRefund := AIsRefund;
+  FRecType := ARecType;
   FRoundType := ARoundType;
 
   if not(AAmountDecimalPlaces in [0..4]) then
@@ -209,7 +210,12 @@ end;
 procedure TSalesReceipt.SetRefundReceipt;
 begin
   if FItems.Count = 0 then
-    FIsRefund := True;
+  begin
+    case RecType of
+      rtBuy: FRecType := rtRetBuy;
+      rtSell: FRecType := rtRetSell;
+    end;
+  end;
 end;
 
 function TSalesReceipt.GetLastItem: TSalesReceiptItem;
@@ -568,7 +574,7 @@ begin
   end;
   Result := Result - Abs(FDiscounts.GetTotal) + Abs(FCharges.GetTotal);
   if (RoundType = RoundTypeTotal)or(RoundType = RoundTypeItems) then
-    Result := Round(Result + 0.5);
+    Result := Ceil(Result);
 end;
 
 function TSalesReceipt.GetTotalByVAT(VatInfo: Integer): Currency;

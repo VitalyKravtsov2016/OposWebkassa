@@ -1,19 +1,23 @@
 [Closed Files]
-File_0=SourceModule,'D:\projects\WebKassa\test\WebkassaAccTest\units\duWebkassaImpl.pas',0,1,462,100,474,0,0
-File_1=SourceModule,'D:\projects\WebKassa\src\OposWebkassa\units\SalesReceipt.pas',0,1,528,15,569,0,0
-File_2=SourceModule,'D:\projects\WebKassa\src\OposWebkassa\units\ReceiptItem.pas',0,1,279,65,294,0,0
-File_3=SourceModule,'D:\projects\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas',0,1,1628,1,1644,0,0
-File_4=SourceModule,'D:\projects\WebKassa\src\OposWebkassa\units\WebkassaClient.pas',0,1,30,2,51,0,0
-File_5=SourceModule,'D:\projects\WebKassa\src\OposWebkassa\units\MathUtils.pas',0,1,22,5,42,0,0
-File_6=SourceModule,'D:\projects\WebKassa\test\OposWebkassaTest\units\MockPosPrinter.pas',0,1,613,151,616,0,0
-File_7=SourceModule,'D:\projects\WebKassa\src\Opos\POSPrinterLog.pas',0,1,567,1,584,0,0
-File_8=SourceModule,'D:\projects\WebKassa\src\Shared\PrinterParameters.pas',0,1,52,1,70,0,0
-File_9=SourceModule,'c:\program files (x86)\borland\delphi7\source\rtl\Sys\sysutils.pas',0,1,10837,1,10857,0,0
+File_0=SourceModule,'D:\projects\WebKassa\test\WebkassaAccTest\units\duWebkassaImpl.pas',0,1,464,29,483,0,0
+File_1=SourceModule,'D:\projects\WebKassa\test\OposWebkassaTest\units\duOposUtils.pas',0,1,1,79,19,0,0
+File_2=SourceModule,'D:\projects\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas',0,1,1615,48,1644,0,0
+File_3=SourceModule,'D:\projects\WebKassa\src\OposWebkassa\units\SalesReceipt.pas',0,1,558,2,563,0,0
+File_4=SourceModule,'D:\projects\WebKassa\src\OposWebkassa\units\ReceiptItem.pas',0,1,1,20,15,0,0
+File_5=SourceModule,'D:\projects\WebKassa\src\OposConfig\Fmu\fmuFptrHeader.pas',0,1,1,22,11,1,1
+File_6=SourceModule,'D:\projects\WebKassa\src\OposConfig\Fmu\fmuFptrTrailer.pas',0,1,1,64,18,1,1
+File_7=SourceModule,'D:\projects\WebKassa\src\OposConfig\Fmu\fmuFptrHeader.dfm',0,1,1,1,1,0,0
+File_8=SourceModule,'D:\projects\WebKassa\src\OposConfig\Fmu\fmuFptrTrailer.dfm',0,1,1,1,1,0,0
+File_9=SourceModule,'D:\projects\WebKassa\src\OposConfig\Fmu\fmuDevice.pas',0,1,1,1,1,1,1
 
 [Modules]
 Count=0
 EditWindowCount=0
 TypeLibWindowCount=1
+
+[D:\projects\WebKassa\test\WebkassaAccTest\WebkassaAccTest.dpr]
+FormState=0
+FormOnTop=0
 
 [D:\projects\WebKassa\src\Webkassa.bpg]
 FormState=0
@@ -40,10 +44,6 @@ FormState=0
 FormOnTop=0
 
 [D:\projects\WebKassa\test\OposWebkassaTest\OposWebkassaTestLib.dpr]
-FormState=0
-FormOnTop=0
-
-[D:\projects\WebKassa\test\WebkassaAccTest\WebkassaAccTest.dpr]
 FormState=0
 FormOnTop=0
 
@@ -89,8 +89,7 @@ LRDockWidth=320
 Dockable=1
 
 [Breakpoints]
-Count=1
-Breakpoint0='D:\projects\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas',3041,'',0,1,'',1,0,0,'',1,'','',''
+Count=0
 
 [AddressBreakpoints]
 Count=0
@@ -158,7 +157,7 @@ ClientHeight=60
 
 [PropertyInspector]
 Create=1
-Visible=0
+Visible=1
 State=0
 Left=-13
 Top=174
@@ -174,7 +173,7 @@ Dockable=1
 SplitPos=153
 ArrangeBy=Name
 SelectedItem=
-ExpandedItems=Anchors,Attributes,BorderIcons,Constraints,Font,Font.Style,Greeting,Options,ProviderFlags,TestModeInfo,Title,Title.Font,VisibleButtons
+ExpandedItems=Anchors,Attributes,BorderIcons,Constraints,Font.Style,Greeting,Options,ProviderFlags,TestModeInfo,Title,Title.Font,VisibleButtons
 HiddenCategories=
 
 [BreakpointWindow]

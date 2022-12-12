@@ -5,7 +5,7 @@ interface
 
 uses
   // VCL
-  Windows, SysUtils, Classes, SyncObjs,
+  Windows, SysUtils, Classes, SyncObjs, Math, 
   // DUnit
   TestFramework,
   // Opos
@@ -16,12 +16,21 @@ type
 
   TOposUtilsTest = class(TTestCase)
   published
+    procedure TestCeil;
     procedure TestStrToNibble;
   end;
 
 implementation
 
 { TOposUtilsTest }
+
+procedure TOposUtilsTest.TestCeil;
+begin
+  CheckEquals(2, Ceil(1.01));
+  CheckEquals(2, Ceil(1.99));
+  CheckEquals(2, Ceil(2.0));
+  CheckEquals(3, Ceil(2.01));
+end;
 
 procedure TOposUtilsTest.TestStrToNibble;
 const

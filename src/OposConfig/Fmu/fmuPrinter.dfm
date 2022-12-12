@@ -1,6 +1,6 @@
 object fmPrinter: TfmPrinter
-  Left = 497
-  Top = 244
+  Left = 577
+  Top = 205
   Width = 471
   Height = 366
   Caption = #1055#1088#1080#1085#1090#1077#1088
@@ -13,7 +13,7 @@ object fmPrinter: TfmPrinter
   OldCreateOrder = False
   DesignSize = (
     455
-    328)
+    327)
   PixelsPerInch = 96
   TextHeight = 13
   object lblResultCode: TTntLabel
