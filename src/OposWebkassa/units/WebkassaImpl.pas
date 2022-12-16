@@ -1014,6 +1014,8 @@ end;
 
 function TWebkassaImpl.GetData(DataItem: Integer; out OptArgs: Integer;
   out Data: WideString): Integer;
+var
+  ZReportNumber: Integer;
 begin
   try
     case DataItem of
@@ -1027,8 +1029,14 @@ begin
       FPTR_GD_RECEIPT_NUMBER: Data := FCheckNumber;
       FPTR_GD_REFUND: Data := AmountToOutStr(ReadRefundTotal);
       FPTR_GD_REFUND_VOID: Data := AmountToOutStr(0);
-      FPTR_GD_Z_REPORT: Data := ReadCashboxStatus.Get('Data').Get(
-        'CurrentState').Get('ShiftNumber').Value;
+      FPTR_GD_Z_REPORT:
+      begin
+        ZReportNumber := ReadCashboxStatus.Get('Data').Get(
+          'CurrentState').Get('ShiftNumber').Value;
+        if ZReportNumber > 0 then
+          ZReportNumber := ZReportNumber - 1;
+        Data := IntToStr(ZReportNumber);
+      end;
       FPTR_GD_FISCAL_REC: Data := AmountToOutStr(ReadSellTotal);
       FPTR_GD_FISCAL_DOC,
       FPTR_GD_FISCAL_DOC_VOID,
