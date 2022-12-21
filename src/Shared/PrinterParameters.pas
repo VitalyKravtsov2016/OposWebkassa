@@ -83,6 +83,7 @@ const
   DefReconnectPort = false;
   DefSerialTimeout = 500;
   DefDevicePollTime = 3000;
+  DefReceiptTemplate = '';
 
   /////////////////////////////////////////////////////////////////////////////
   // Header and trailer parameters
@@ -136,6 +137,7 @@ type
     FByteTimeout: Integer;
     FBaudRate: Integer;
     FDevicePollTime: Integer;
+    FReceiptTemplate: WideString;
 
     procedure LogText(const Caption, Text: WideString);
     procedure SetHeaderText(const Text: WideString);
@@ -197,6 +199,7 @@ type
     property ByteTimeout: Integer read FByteTimeout write FByteTimeout;
     property BaudRate: Integer read FBaudRate write SetBaudRate;
     property DevicePollTime: Integer read FDevicePollTime write FDevicePollTime;
+    property ReceiptTemplate: WideString read FReceiptTemplate write FReceiptTemplate;
   end;
 
 function QRSizeToWidth(QRSize: Integer): Integer;
@@ -280,6 +283,7 @@ begin
   ReconnectPort := DefReconnectPort;
   SerialTimeout := DefSerialTimeout;
   DevicePollTime := DefDevicePollTime;
+  ReceiptTemplate := DefReceiptTemplate;
 end;
 
 procedure TPrinterParameters.LogText(const Caption, Text: WideString);

@@ -74,7 +74,8 @@ uses
   PortUtil in '..\..\src\Shared\PortUtil.pas',
   TextReport in '..\..\src\Shared\TextReport.pas',
   SocketPort in '..\..\src\Shared\SocketPort.pas',
-  SerialPorts in '..\..\src\Shared\SerialPorts.pas';
+  SerialPorts in '..\..\src\Shared\SerialPorts.pas',
+  ReceiptTemplate in '..\..\src\OposWebkassa\units\ReceiptTemplate.pas';
 
 {$R *.RES}
 

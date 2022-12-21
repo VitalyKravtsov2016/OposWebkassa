@@ -21,7 +21,7 @@ uses
   PrinterParameters, PrinterParametersX, CashInReceipt, CashOutReceipt,
   SalesReceipt, TextDocument, ReceiptItem, StringUtils, DebugUtils, VatRate,
   uZintBarcode, uZintInterface, FileUtils, PosWinPrinter, PosEscPrinter,
-  SerialPort, PrinterPort, SocketPort;
+  SerialPort, PrinterPort, SocketPort, ReceiptTemplate;
 
 const
   FPTR_DEVICE_DESCRIPTION = 'WebKassa OPOS driver';
@@ -92,6 +92,9 @@ type
       RecLineChars: Integer);
     function CreatePrinter: IOPOSPOSPrinter;
     function CreateSerialPort: TSerialPort;
+    procedure PrintReceipt2(Receipt: TSalesReceipt;
+      Command: TSendReceiptCommand; Template: TReceiptTemplate;
+      Json: TlkJSONbase);
   public
     procedure Initialize;
     procedure CheckEnabled;
@@ -2942,6 +2945,57 @@ begin
   Document.Add(Document.AlignCenter('ÇÍÌ: ' + Command.Data.Cashbox.UniqueNumber));
   Document.AddText(Receipt.Trailer.Text);
 
+  PrintDocumentSafe(Document);
+  Printer.RecLineChars := FRecLineChars;
+end;
+
+function GetJsonField(Json: TlkJSONbase; const FieldName: WideString): WideString;
+var
+  P: Integer;
+  S: WideString;
+  Field: WideString;
+  Root: TlkJSONbase;
+begin
+  Root := Json;
+  S := FieldName;
+  Result := '';
+  repeat
+    P := Pos('.', S);
+    if P <> 0 then
+    begin
+      Field := Copy(S, 1, P-1);
+      Root := Root.Field[Field];
+      S := Copy(S, P+1, Length(S));
+    end;
+  until P = 0;
+  Result := Root.Value;
+end;
+
+function GetTemplateItemText(Json: TlkJSONbase; Item: TTemplateItem): WideString;
+begin
+  case Item.ItemType of
+    TEMPLATE_TYPE_TEXT: Result := Item.Text;
+    TEMPLATE_TYPE_JSON_FIELD: Result := GetJsonField(Json, Item.Text);
+  end;
+end;
+
+procedure TWebkassaImpl.PrintReceipt2(Receipt: TSalesReceipt;
+  Command: TSendReceiptCommand; Template: TReceiptTemplate;
+  Json: TlkJSONbase);
+var
+  i: Integer;
+  Text: WideString;
+  Item: TTemplateItem;
+begin
+  Document.PrintHeader := Receipt.PrintHeader;
+  Document.LineChars := Printer.RecLineChars;
+  for i := 0 to Template.Items.Count-1 do
+  begin
+    Item := Template.Items[i];
+    Text := GetTemplateItemText(Json, Item);
+    Document.Add(Text, Item.TextStyle);
+  end;
+  Document.AddText(Receipt.Trailer.Text);
   PrintDocumentSafe(Document);
   Printer.RecLineChars := FRecLineChars;
 end;
