@@ -45,6 +45,8 @@ type
     procedure Write(const Data: AnsiString);
     function ReadChar(var C: Char): Boolean;
     function Read(Count: DWORD): AnsiString;
+    function CapRead: Boolean;
+    procedure Flush;
   end;
 
 
@@ -197,6 +199,16 @@ end;
 
 procedure TSocketPort.Purge;
 begin
+end;
+
+function TSocketPort.CapRead: Boolean;
+begin
+  Result := True;
+end;
+
+procedure TSocketPort.Flush;
+begin
+
 end;
 
 end.

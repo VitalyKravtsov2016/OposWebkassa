@@ -86,7 +86,9 @@ uses
   uZintBarcode in '..\Shared\uZintBarcode.pas',
   uZintInterface in '..\Shared\uZintInterface.pas',
   SocketPort in '..\Shared\SocketPort.pas',
-  RecPrinter in '..\OposWebkassa\units\RecPrinter.pas';
+  RecPrinter in '..\OposWebkassa\units\RecPrinter.pas',
+  ReceiptTemplate in '..\OposWebkassa\units\ReceiptTemplate.pas',
+  RawPrinterPort in '..\Shared\RawPrinterPort.pas';
 
 {$R *.RES}
 {$R WindowsXP.RES}

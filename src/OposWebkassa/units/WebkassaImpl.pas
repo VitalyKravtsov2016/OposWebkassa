@@ -21,7 +21,7 @@ uses
   PrinterParameters, PrinterParametersX, CashInReceipt, CashOutReceipt,
   SalesReceipt, TextDocument, ReceiptItem, StringUtils, DebugUtils, VatRate,
   uZintBarcode, uZintInterface, FileUtils, PosWinPrinter, PosEscPrinter,
-  SerialPort, PrinterPort, SocketPort, ReceiptTemplate;
+  SerialPort, PrinterPort, SocketPort, ReceiptTemplate, RawPrinterPort;
 
 const
   FPTR_DEVICE_DESCRIPTION = 'WebKassa OPOS driver';
@@ -92,10 +92,15 @@ type
       RecLineChars: Integer);
     function CreatePrinter: IOPOSPOSPrinter;
     function CreateSerialPort: TSerialPort;
+  public
     procedure PrintReceipt2(Receipt: TSalesReceipt;
       Command: TSendReceiptCommand; Template: TReceiptTemplate;
       Json: TlkJSONbase);
-  public
+    function GetJsonField(Json: TlkJSONbase;
+      const FieldName: WideString): Variant;
+    function GetTemplateItemText(Json: TlkJSONbase;
+      Item: TTemplateItem): WideString;
+
     procedure Initialize;
     procedure CheckEnabled;
     function ReadGrossTotal: Currency;
@@ -2326,6 +2331,19 @@ begin
       FPrinterObj := PosEscPrinter;
       Result := PosEscPrinter;
     end;
+    PrinterTypeEscPrinterWindows:
+    begin
+      PrinterPort := TRawPrinterPort.Create(Params.PrinterName);
+      PosEscPrinter := TPosEscPrinter.Create2(nil, PrinterPort, Logger);
+      PosEscPrinter.OnStatusUpdateEvent := PrinterStatusUpdateEvent;
+      PosEscPrinter.OnErrorEvent := PrinterErrorEvent;
+      PosEscPrinter.OnDirectIOEvent := PrinterDirectIOEvent;
+      PosEscPrinter.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
+      PosEscPrinter.FontName := Params.FontName;
+      PosEscPrinter.DevicePollTime := Params.DevicePollTime;
+      FPrinterObj := PosEscPrinter;
+      Result := PosEscPrinter;
+    end;
   end;
 end;
 
@@ -2949,7 +2967,7 @@ begin
   Printer.RecLineChars := FRecLineChars;
 end;
 
-function GetJsonField(Json: TlkJSONbase; const FieldName: WideString): WideString;
+function TWebkassaImpl.GetJsonField(Json: TlkJSONbase; const FieldName: WideString): Variant;
 var
   P: Integer;
   S: WideString;
@@ -2964,18 +2982,21 @@ begin
     if P <> 0 then
     begin
       Field := Copy(S, 1, P-1);
-      Root := Root.Field[Field];
       S := Copy(S, P+1, Length(S));
+    end else
+    begin
+      Field := S;
     end;
+    Root := Root.Field[Field];
   until P = 0;
   Result := Root.Value;
 end;
 
-function GetTemplateItemText(Json: TlkJSONbase; Item: TTemplateItem): WideString;
+function TWebkassaImpl.GetTemplateItemText(Json: TlkJSONbase; Item: TTemplateItem): WideString;
 begin
   case Item.ItemType of
     TEMPLATE_TYPE_TEXT: Result := Item.Text;
-    TEMPLATE_TYPE_JSON_FIELD: Result := GetJsonField(Json, Item.Text);
+    TEMPLATE_TYPE_FIELD: Result := GetJsonField(Json, Item.Text);
   end;
 end;
 

@@ -10,13 +10,15 @@ type
   { IPrinterPort }
 
   IPrinterPort = interface
-    procedure Lock;
-    procedure Unlock;
+    procedure Flush;
     procedure Purge;
     procedure Close;
     procedure Open;
+    procedure Lock;
+    procedure Unlock;
     procedure Write(const Data: AnsiString);
     function Read(Count: DWORD): AnsiString;
+    function CapRead: Boolean;
   end;
 
 implementation

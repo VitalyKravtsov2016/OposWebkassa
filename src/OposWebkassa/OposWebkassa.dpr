@@ -68,7 +68,9 @@ uses
   PortUtil in '..\Shared\PortUtil.pas',
   TextReport in '..\Shared\TextReport.pas',
   SocketPort in '..\Shared\SocketPort.pas',
-  SerialPorts in '..\Shared\SerialPorts.pas';
+  SerialPorts in '..\Shared\SerialPorts.pas',
+  ReceiptTemplate in 'units\ReceiptTemplate.pas',
+  RawPrinterPort in '..\Shared\RawPrinterPort.pas';
 
 exports
   DllGetClassObject,

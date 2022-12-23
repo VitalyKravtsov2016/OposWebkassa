@@ -72,6 +72,7 @@ type
     procedure Unlock;
     procedure Write(const Data: AnsiString);
     function Read(Count: DWORD): AnsiString;
+    function CapRead: Boolean;
     property Opened: Boolean read GetOpened;
   end;
 
@@ -633,6 +634,11 @@ begin
   finally
     Unlock;
   end;
+end;
+
+function TSerialPort.CapRead: Boolean;
+begin
+  Result := True;
 end;
 
 end.

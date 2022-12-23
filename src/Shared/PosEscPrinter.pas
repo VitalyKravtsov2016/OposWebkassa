@@ -631,7 +631,6 @@ begin
   FCapConcurrentJrnSlp := False;
   FCapConcurrentPageMode := False;
   FCapConcurrentRecSlp := False;
-  FCapCoverSensor := True;
   FCapJrn2Color := False;
   FCapJrnBold := False;
   FCapJrnCartridgeSensor := PTR_CART_OK;
@@ -645,7 +644,18 @@ begin
   FCapJrnPresent := False;
   FCapJrnUnderline := False;
   FCapMapCharacterSet := False;
-  FCapPowerReporting := OPOS_PR_STANDARD;
+  FCapRecNearEndSensor := False;
+  if FPrinter.CapRead then
+  begin
+    FCapPowerReporting := OPOS_PR_STANDARD;
+    FCapRecEmptySensor := True;
+    FCapCoverSensor := True;
+  end else
+  begin
+    FCapPowerReporting := OPOS_PR_NONE;
+    FCapRecEmptySensor := False;
+    FCapCoverSensor := False;
+  end;
   FCapRec2Color := False;
   FCapRecBarCode := True;
   FCapRecBitmap := True;
@@ -655,11 +665,9 @@ begin
   FCapRecDhigh := True;
   FCapRecDwide := True;
   FCapRecDwideDhigh := True;
-  FCapRecEmptySensor := True;
   FCapRecItalic := False;
   FCapRecLeft90 := True;
   FCapRecMarkFeed := 0;
-  FCapRecNearEndSensor := False;
   FCapRecPageMode := True;
   FCapRecPapercut := True;
   FCapRecPresent := True;
@@ -1994,13 +2002,16 @@ begin
       if pDeviceEnabled then
       begin
         FPort.Open;
+        InitializeDevice;
         UpdatePrinterStatus;
 
-        FDeviceDescription := Format('%s %s %s %s', [
-          FPrinter.ReadManufacturer, FPrinter.ReadPrinterName,
-          FPrinter.ReadFirmwareVersion, FPrinter.ReadSerialNumber]);
-
-        StartDeviceThread;
+        if FPrinter.CapRead then
+        begin
+          FDeviceDescription := Format('%s %s %s %s', [
+            FPrinter.ReadManufacturer, FPrinter.ReadPrinterName,
+            FPrinter.ReadFirmwareVersion, FPrinter.ReadSerialNumber]);
+          StartDeviceThread;
+        end;
       end else
       begin
         StopDeviceThread;
@@ -2073,6 +2084,7 @@ procedure TPosEscPrinter.CheckPaperPresent;
 begin
   if not FCapRecPresent then Exit;
   if not FCapRecEmptySensor then Exit;
+  if not FPrinter.CapRead then Exit;
 
   FDevice.CheckOnline;
   SetRecEmpty(not FPrinter.ReadPaperStatus.PaperPresent);
@@ -2084,6 +2096,7 @@ end;
 procedure TPosEscPrinter.CheckCoverClosed;
 begin
   if not FCapCoverSensor then Exit;
+  if not FPrinter.CapRead then Exit;
 
   FDevice.CheckOnline;
   SetCoverState(FPrinter.ReadOfflineStatus.CoverOpened);
@@ -2096,6 +2109,8 @@ var
   ErrorStatus: TErrorStatus;
   OfflineStatus: TOfflineStatus;
 begin
+  if not FPrinter.CapRead then Exit;
+
   try
     OfflineStatus := FPrinter.ReadOfflineStatus;
     SetCoverState(OfflineStatus.CoverOpened);
@@ -2317,10 +2332,12 @@ begin
     if Control = PTR_TP_TRANSACTION then
     begin
       StopDeviceThread;
+      FPrinter.BeginDocument;
       InitializeDevice;
     end;
     if Control = PTR_TP_NORMAL then
     begin
+      FPrinter.EndDocument;
       StartDeviceThread;
     end;
     Result := ClearResult;

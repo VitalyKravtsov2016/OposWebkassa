@@ -13,7 +13,7 @@ object fmPrinter: TfmPrinter
   OldCreateOrder = False
   DesignSize = (
     455
-    327)
+    328)
   PixelsPerInch = 96
   TextHeight = 13
   object lblResultCode: TTntLabel
@@ -120,7 +120,8 @@ object fmPrinter: TfmPrinter
           'OPOS '#1087#1088#1080#1085#1090#1077#1088
           'Windows '#1087#1088#1080#1085#1090#1077#1088
           'ESC POS '#1087#1088#1080#1085#1090#1077#1088', COM '#1087#1086#1088#1090
-          'ESC POS '#1087#1088#1080#1085#1090#1077#1088', '#1089#1077#1090#1077#1074#1086#1077' '#1087#1086#1076#1082#1083#1102#1095#1077#1085#1080#1077)
+          'ESC POS '#1087#1088#1080#1085#1090#1077#1088', '#1089#1077#1090#1077#1074#1086#1077' '#1087#1086#1076#1082#1083#1102#1095#1077#1085#1080#1077
+          'ESC Windows '#1087#1088#1080#1085#1090#1077#1088)
       end
       object cbFontName: TTntComboBox
         Left = 120
@@ -253,7 +254,7 @@ object fmPrinter: TfmPrinter
         Width = 113
         Height = 21
         Style = csDropDownList
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 0
         OnChange = cbPrinterTypeChange
       end
@@ -310,7 +311,7 @@ object fmPrinter: TfmPrinter
         Width = 113
         Height = 21
         Style = csDropDownList
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 4
         OnChange = cbPrinterTypeChange
       end

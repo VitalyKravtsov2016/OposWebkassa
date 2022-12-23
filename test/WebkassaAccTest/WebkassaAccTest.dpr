@@ -1,4 +1,4 @@
-cmdprogram WebkassaAccTest;
+program WebkassaAccTest;
 
 uses
   SysUtils,
@@ -57,7 +57,7 @@ uses
   VatRate in '..\..\src\Shared\VatRate.pas',
   OposPtrUtils in '..\..\src\Opos\OposPtrUtils.pas',
   OposPtrhi in '..\..\src\Opos\OposPtrhi.pas',
-  duWebkassaImpl in 'units\duWebkassaImpl.pas',
+  duPrinterTest in 'units\duPrinterTest.pas',
   MockPosPrinter in '..\OposWebkassaTest\units\MockPosPrinter.pas',
   PosEscPrinter in '..\..\src\Shared\PosEscPrinter.pas',
   uZintBarcode in '..\..\src\Shared\uZintBarcode.pas',
@@ -74,7 +74,10 @@ uses
   TextReport in '..\..\src\Shared\TextReport.pas',
   SocketPort in '..\..\src\Shared\SocketPort.pas',
   duPOSPrinter in 'units\duPOSPrinter.pas',
-  SerialPorts in '..\..\src\Shared\SerialPorts.pas';
+  SerialPorts in '..\..\src\Shared\SerialPorts.pas',
+  ReceiptTemplate in '..\..\src\OposWebkassa\units\ReceiptTemplate.pas',
+  duWebkassaImpl in 'units\duWebkassaImpl.pas',
+  RawPrinterPort in '..\..\src\Shared\RawPrinterPort.pas';
 
 {$R *.RES}
 

@@ -10,12 +10,12 @@ uses
   TestFramework,
   // Opos
   Opos, OposFptr, Oposhi, OposFptrhi, OposFptrUtils, OposUtils,
-  OposEvents, OposPtr, RCSEvents, OposEsc, 
+  OposEvents, OposPtr, RCSEvents, OposEsc,
   // Tnt
   TntClasses, TntSysUtils,
   // This
   LogFile, WebkassaImpl, WebkassaClient, MockPosPrinter, FileUtils,
-  CustomReceipt, uLkJSON;
+  CustomReceipt, uLkJSON, ReceiptTemplate, SalesReceipt;
 
 const
   CRLF = #13#10;
@@ -66,6 +66,7 @@ type
   public
     // !!!
     procedure TestXReport;
+    procedure TestReceiptTemplate; // !!!
   published
     procedure TestZReport;
     procedure TestCashIn;
@@ -694,6 +695,186 @@ begin
   CheckEquals('Trailer line 2', Driver.Params.Trailer[1]);
   CheckEquals('Trailer line 3', Driver.Params.Trailer[2]);
 end;
+
+procedure TWebkassaImplTest.TestReceiptTemplate;
+var
+  Json: TlkJSON;
+  JsonText: WideString;
+  JsonRoot: TlkJSONbase;
+  Template: TReceiptTemplate;
+  TemplateItem: TTemplateItem;
+  Receipt: TSalesReceipt;
+  Command: TSendReceiptCommand;
+begin
+  Json := TlkJSON.Create;
+  Receipt := TSalesReceipt.Create;
+  Template := TReceiptTemplate.Create;
+  Command := TSendReceiptCommand.Create;
+  try
+    JsonText := ReadFileData(GetModulePath + 'SendReceiptAnswer.txt');
+    JsonRoot := Json.ParseText(JsonText);
+    CheckEquals('923956785162', Driver.GetJsonField(JsonRoot, 'Data.CheckNumber'));
+    CheckEquals(false, Driver.GetJsonField(JsonRoot, 'Data.CashboxOfflineMode'));
+    CheckEquals(3, Driver.GetJsonField(JsonRoot, 'Data.Cashbox.Ofd.Code'));
+    CheckEquals('dev.kofd.kz/consumer', Driver.GetJsonField(JsonRoot, 'Data.Cashbox.Ofd.Host'));
+
+    // Line 1
+    Template.Items.AddText('НДС Серия ');
+    Template.Items.AddParam('VATSeries');
+    Template.Items.AddText(' № %s');
+    Template.Items.AddParam('VATNumber');
+    Template.Items.AddText(CRLF);
+    // Line2
+    Template.Items.AddSeparator;
+    // Line3
+    //Template.Items.AddField('CashBox.Name');
+    Template.Items.AddText(CRLF);
+    // Line4
+    TemplateItem := Template.Items.AddText('Смена ');
+    TemplateItem.Alignment := ALIGN_CENTER;
+    Template.Items.AddField('Data.ShiftNumber');
+    TemplateItem.Alignment := ALIGN_CENTER;
+    Template.Items.AddText(CRLF);
+    //
+    CheckEquals(0, Driver.Document.Items.Count, 'Driver.Document.Items.Count');
+    Driver.PrintReceipt2(Receipt, Command, Template, JsonRoot);
+
+    FLines.Text := Receipt3Text;
+    CheckLines;
+  finally
+    Json.Free;
+    Receipt.Free;
+    Template.Free;
+    Command.Free;
+  end;
+end;
+
+(*
+  Document.Addlines(Format('НДС Серия %s', [Params.VATSeries]),
+    Format('№ %s', [Params.VATNumber]));
+  Document.AddSeparator;
+  Document.Add(Document.AlignCenter(FCashBox.Name));
+  Document.Add(Document.AlignCenter(Format('Смена %d', [Command.Data.ShiftNumber])));
+  Document.Add(OperationTypeToText(Command.Request.OperationType));
+
+  //Document.Add(AlignCenter(Format('Порядковый номер чека №%d', [Command.Data.DocumentNumber])));
+  //Document.Add(Format('Чек №%s', [Command.Data.CheckNumber]));
+  //Document.Add(Format('Кассир %s', [Command.Data.EmployeeName]));
+  //Document.Add(UpperCase(Command.Data.OperationTypeText));
+  Document.AddSeparator;
+
+
+  for i := 0 to Receipt.Items.Count-1 do
+  begin
+    ReceiptItem := Receipt.Items[i];
+    if ReceiptItem is TSalesReceiptItem then
+    begin
+      RecItem := ReceiptItem as TSalesReceiptItem;
+      //Document.Add(Format('%3d. %s', [RecItem.Number, RecItem.Description]));
+      Document.Add(RecItem.Description);
+
+      ItemQuantity := 1;
+      UnitPrice := RecItem.Price;
+      if RecItem.Quantity <> 0 then
+      begin
+        ItemQuantity := RecItem.Quantity;
+        UnitPrice := RecItem.UnitPrice;
+      end;
+      Document.Add(Format('   %.3f %s x %s', [ItemQuantity,
+        RecItem.UnitName, AmountToStr(UnitPrice)]));
+      // Скидка
+      Adjustment := RecItem.GetDiscount;
+      if Adjustment.Amount <> 0 then
+      begin
+        if Adjustment.Name = '' then
+          Adjustment.Name := 'Скидка';
+        Document.AddLines('   ' + Adjustment.Name,
+          '-' + AmountToStr(Abs(Adjustment.Amount)));
+      end;
+      // Наценка
+      Adjustment := RecItem.GetCharge;
+      if Adjustment.Amount <> 0 then
+      begin
+        if Adjustment.Name = '' then
+          Adjustment.Name := 'Наценка';
+        Document.AddLines('   ' + Adjustment.Name,
+          '+' + AmountToStr(Abs(Adjustment.Amount)));
+      end;
+      Document.AddLines('   Стоимость', AmountToStr(RecItem.GetTotalAmount(Params.RoundType)));
+    end;
+    // Text
+    if ReceiptItem is TRecTexItem then
+    begin
+      TextItem := ReceiptItem as TRecTexItem;
+      Document.Add(TextItem.Text, TextItem.Style);
+    end;
+  end;
+  Document.AddSeparator;
+  // Скидка на чек
+  Amount := Receipt.GetDiscount;
+  if Amount <> 0 then
+  begin
+    Document.AddLines('Скидка:', AmountToStr(Amount));
+  end;
+  // Наценка на чек
+  Amount := Receipt.GetCharge;
+  if Amount <> 0 then
+  begin
+    Document.AddLines('Наценка:', AmountToStr(Amount));
+  end;
+  // ИТОГ
+  Text := Document.ConcatLines('ИТОГ', AmountToStrEq(Receipt.GetTotal), Document.LineChars div 2);
+  Document.Add(Text, STYLE_DWIDTH_HEIGHT);
+  // Payments
+  for i := Low(Receipt.Payments) to High(Receipt.Payments) do
+  begin
+    Amount := Receipt.Payments[i];
+    if Amount <> 0 then
+    begin
+      Document.AddLines(GetPaymentName(i) + ':', AmountToStrEq(Amount));
+    end;
+  end;
+  if Receipt.Change <> 0 then
+  begin
+    Document.AddLines('  СДАЧА', AmountToStrEq(Receipt.Change));
+  end;
+
+  // VAT amounts
+  for i := 0 to Params.VatRates.Count-1 do
+  begin
+    VatRate := Params.VatRates[i];
+    Amount := Receipt.GetTotalByVAT(VatRate.Code);
+    if Amount <> 0 then
+    begin
+      Amount := Receipt.RoundAmount(Amount * VATRate.Rate / (100 + VATRate.Rate));
+      Document.AddLines(Format('в т.ч. %s', [VATRate.Name]),
+        AmountToStrEq(Amount));
+    end;
+  end;
+  Document.AddSeparator;
+  if Receipt.FiscalSign = '' then
+  begin
+    Receipt.FiscalSign := Command.Data.CheckNumber;
+  end;
+  Document.Add('Фискальный признак: ' + Receipt.FiscalSign);
+  Document.Add('Время: ' + Command.Data.DateTime);
+  Document.Add('Оператор фискальных данных:');
+  Document.Add(Command.Data.Cashbox.Ofd.Name);
+  Document.Add('Для проверки чека зайдите на сайт:');
+  Document.Add(Command.Data.Cashbox.Ofd.Host);
+  Document.AddSeparator;
+  Document.Add(Document.AlignCenter('ФИСКАЛЬНЫЙ ЧЕK'));
+  Document.Add(Command.Data.TicketUrl, STYLE_QR_CODE);
+  Document.Add(Document.AlignCenter('ИНК ОФД: ' + Command.Data.Cashbox.IdentityNumber));
+  Document.Add(Document.AlignCenter('Код ККМ КГД (РНМ): ' + Command.Data.Cashbox.RegistrationNumber));
+  Document.Add(Document.AlignCenter('ЗНМ: ' + Command.Data.Cashbox.UniqueNumber));
+  Document.AddText(Receipt.Trailer.Text);
+
+  PrintDocumentSafe(Document);
+  Printer.RecLineChars := FRecLineChars;
+end;
+
+*)
 
 initialization
   RegisterTest('', TWebkassaImplTest.Suite);

@@ -12,10 +12,10 @@ unit OposWebkassaLib_TLB;
 // ************************************************************************ //
 
 // PASTLWTR : 1.2
-// File generated on 12.12.2022 15:46:10 from Type Library described below.
+// File generated on 23.12.2022 20:17:21 from Type Library described below.
 
 // ************************************************************************  //
-// Type Lib: D:\projects\WebKassa\src\OposWebkassa\OposWebkassa.tlb (1)
+// Type Lib: C:\projects\WebKassa\src\OposWebkassa\OposWebkassa.tlb (1)
 // LIBID: {70222E65-8696-4B47-9D36-284716EE0DE8}
 // LCID: 0
 // Helpfile: 

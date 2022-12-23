@@ -92,7 +92,7 @@ procedure TWebkassaImplTest.SetUp;
 begin
   inherited SetUp;
   FDriver := TWebkassaImpl.Create(nil);
-  FDriver.Printer := TMockPOSPrinter.Create(nil);
+  //FDriver.Printer := TMockPOSPrinter.Create(nil);
 
   FDriver.TestMode := True;
   FDriver.Params.LogFileEnabled := True;
@@ -102,8 +102,8 @@ begin
   FDriver.Params.Password := 'Kassa123';
   FDriver.Params.ConnectTimeout := 10;
   FDriver.Params.WebkassaAddress := 'https://devkkm.webkassa.kz/';
-  FDriver.Params.CashboxNumber := 'SWK00033059';
-  FDriver.Params.PrinterName := 'ThermalU';
+  //FDriver.Params.CashboxNumber := 'SWK00033059'; !!!
+  FDriver.Params.CashboxNumber := 'SWK00032685';
   FDriver.Params.NumHeaderLines := 5;
   FDriver.Params.NumTrailerLines := 11;
   FDriver.Params.RoundType := RoundTypeNone;
@@ -117,32 +117,6 @@ begin
     '          Ãîðÿ÷àÿ ëèíèÿ 20948802934' + CRLF +
     '            ÑÏÀÑÈÁÎ ÇÀ ÏÎÊÓÏÊÓ';
 
-(*
-  FDriver.Params.PrinterType := PrinterTypePosPrinter;
-  FDriver.Params.PrinterName := 'ThermalU';
-  FDriver.Params.FontName := '42';
-  FDriver.Params.PrinterType := PrinterTypeWinPrinter;
-  FDriver.Params.PrinterName := 'SLK-TE122';
-  FDriver.Params.FontName := 'FontA11';
-  // Network
-  FDriver.Params.PrinterType := PrinterTypeEscPrinterNetwork;
-  FDriver.Params.RemoteHost := '10.11.7.176';
-  FDriver.Params.RemotePort := 9100;
-  FDriver.Params.ByteTimeout := 1000;
-  FDriver.Params.FontName := 'FontA11';
-*)
-  // Serial
-  FDriver.Params.PrinterType := PrinterTypeEscPrinterSerial;
-  FDriver.Params.ByteTimeout := 500;
-  FDriver.Params.FontName := 'FontA11';
-  FDriver.Params.PortName := 'COM6';
-  FDriver.Params.BaudRate := 19200;
-  FDriver.Params.DataBits := DATABITS_8;
-  FDriver.Params.StopBits := ONESTOPBIT;
-  FDriver.Params.Parity := NOPARITY;
-  FDriver.Params.FlowControl := FLOW_CONTROL_NONE;
-  FDriver.Params.ReconnectPort := False;
-
 
   FDriver.Params.PaymentType2 := 1;
   FDriver.Params.PaymentType3 := 4;
@@ -154,6 +128,30 @@ begin
   FDriver.Params.AmountDecimalPlaces := 2;
   FDriver.Params.VatRates.Clear;
   FDriver.Params.VatRates.Add(1, 12, 'ÍÄÑ 12%');
+
+(*
+  // Network
+  FDriver.Params.PrinterType := PrinterTypeEscPrinterNetwork;
+  FDriver.Params.RemoteHost := '10.11.7.176';
+  FDriver.Params.RemotePort := 9100;
+  FDriver.Params.ByteTimeout := 1000;
+  FDriver.Params.FontName := 'FontA11';
+
+  // Serial
+  FDriver.Params.PrinterType := PrinterTypeEscPrinterSerial;
+  FDriver.Params.ByteTimeout := 500;
+  FDriver.Params.FontName := 'FontA11';
+  FDriver.Params.PortName := 'COM6';
+  FDriver.Params.BaudRate := 19200;
+  FDriver.Params.DataBits := DATABITS_8;
+  FDriver.Params.StopBits := ONESTOPBIT;
+  FDriver.Params.Parity := NOPARITY;
+  FDriver.Params.FlowControl := FLOW_CONTROL_NONE;
+  FDriver.Params.ReconnectPort := False;
+*)
+  FDriver.Params.PrinterType := PrinterTypeEscPrinterWindows;
+  FDriver.Params.PrinterName := 'RONGTA 80mm Series Printer';
+  FDriver.Params.FontName := 'FontA11';
 end;
 
 procedure TWebkassaImplTest.TearDown;
@@ -261,9 +259,7 @@ end;
 procedure TWebkassaImplTest.TestXReport;
 begin
   OpenClaimEnable;
-  //CheckEquals(0, Driver.PrintXReport, 'Driver.PrintXReport');
-  Driver.PrintXReport;
-  Application.MessageBox('PrintXReport', 'Attention');
+  CheckEquals(0, Driver.PrintXReport, 'Driver.PrintXReport');
 end;
 
 procedure TWebkassaImplTest.TestNonFiscal;

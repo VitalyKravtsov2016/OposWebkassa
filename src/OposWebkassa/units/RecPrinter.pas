@@ -12,7 +12,7 @@ uses
   OposPOSPrinter_CCO_TLB,
   // This
   PosWinPrinter, PosEscPrinter, LogFile, PrinterParameters,
-  SerialPort, SocketPort;
+  SerialPort, SocketPort, RawPrinterPort;
 
 
 type
@@ -75,6 +75,16 @@ type
   TNetworkEscPrinter = class(TRecPrinter)
   private
     function CreateSocketPort: TSocketPort;
+  public
+    constructor Create(AParams: TPrinterParameters);
+    function ReadDeviceList: WideString; override;
+  end;
+
+  { TWindowsEscPrinter }
+
+  TWindowsEscPrinter = class(TRecPrinter)
+  private
+    function CreatePort: TRawPrinterPort;
   public
     constructor Create(AParams: TPrinterParameters);
     function ReadDeviceList: WideString; override;
@@ -478,6 +488,29 @@ end;
 function TNetworkEscPrinter.ReadDeviceList: WideString;
 begin
   Result := 'Network ESC printer';
+end;
+
+{ TWindowsEscPrinter }
+
+constructor TWindowsEscPrinter.Create(AParams: TPrinterParameters);
+var
+  PosEscPrinter: TPosEscPrinter;
+begin
+  inherited Create(AParams);
+  FParams := AParams;
+  PosEscPrinter := TPosEscPrinter.Create2(nil, CreatePort, FLogger);
+  FPrinterObj := PosEscPrinter;
+  FPrinter := PosEscPrinter;
+end;
+
+function TWindowsEscPrinter.CreatePort: TRawPrinterPort;
+begin
+  Result := TRawPrinterPort.Create(Params.PrinterName);
+end;
+
+function TWindowsEscPrinter.ReadDeviceList: WideString;
+begin
+  Result := Printers.Printer.Printers.Text;
 end;
 
 end.

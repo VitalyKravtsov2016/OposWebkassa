@@ -36,6 +36,7 @@ const
   PrinterTypeWinPrinter         = 1;
   PrinterTypeEscPrinterSerial   = 2;
   PrinterTypeEscPrinterNetwork  = 3;
+  PrinterTypeEscPrinterWindows  = 4;
 
 
   DefLogMaxCount = 10;

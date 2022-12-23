@@ -224,6 +224,7 @@ begin
     PrinterTypeWinPrinter: Result := TWinPrinter.Create(Parameters);
     PrinterTypeEscPrinterSerial: Result := TSerialEscPrinter.Create(Parameters);
     PrinterTypeEscPrinterNetwork: Result := TNetworkEscPrinter.Create(Parameters);
+    PrinterTypeEscPrinterWindows: Result := TWindowsEscPrinter.Create(Parameters);
   else
     raise Exception.CreateFmt('Неизвестный тип принтера, %d', [PrinterType]);
   end;

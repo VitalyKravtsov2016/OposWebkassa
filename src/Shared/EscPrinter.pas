@@ -240,7 +240,9 @@ type
   private
     FLogger: ILogFile;
     FPort: IPrinterPort;
+    FInTransaction: Boolean;
     FDeviceMetrics: TDeviceMetrics;
+
     function GetImageData(Image: TGraphic): AnsiString;
     function GetBitmapData(Bitmap: TBitmap): AnsiString;
     function GetRasterBitmapData(Bitmap: TBitmap): AnsiString;
@@ -252,10 +254,13 @@ type
   public
     constructor Create(APort: IPrinterPort; ALogger: ILogFile);
 
+    procedure CheckCapRead;
     function ReadByte: Byte;
+    function CapRead: Boolean;
     function ReadAnsiString: AnsiString;
     procedure Send(const Data: AnsiString);
 
+    procedure PortFlush;
     procedure HorizontalTab;
     procedure LineFeed;
     procedure CarriageReturn;
@@ -352,6 +357,9 @@ type
     function ReadPrinterName: AnsiString;
     function ReadSerialNumber: AnsiString;
 
+    procedure BeginDocument;
+    procedure EndDocument;
+
     property Logger: ILogFile read FLogger;
     property Port: IPrinterPort read FPort;
     property DeviceMetrics: TDeviceMetrics read FDeviceMetrics write FDeviceMetrics;
@@ -384,6 +392,10 @@ begin
     FLogger.Debug('-> ' + StrToHex(Data));
     //FPort.Purge; !!!
     FPort.Write(Data);
+    if not FInTransaction then
+    begin
+      Port.Flush;
+    end;
   finally
     FPort.Unlock;
   end;
@@ -427,6 +439,8 @@ end;
 function TEscPrinter.ReadPrinterStatus: TPrinterStatus;
 begin
   Logger.Debug('TEscPrinter.ReadPrinterStatus');
+  CheckCapRead;
+
   FPort.Lock;
   try
     Send(#$10#$04#$01);
@@ -441,6 +455,8 @@ var
   B: Byte;
 begin
   Logger.Debug('TEscPrinter.ReadOfflineStatus');
+  
+  CheckCapRead;
   FPort.Lock;
   try
     Send(#$10#$04#$02);
@@ -458,6 +474,8 @@ var
   B: Byte;
 begin
   Logger.Debug('TEscPrinter.ReadErrorStatus');
+  
+  CheckCapRead;
   FPort.Lock;
   try
     Send(#$10#$04#$03);
@@ -475,6 +493,8 @@ var
   B: Byte;
 begin
   Logger.Debug('TEscPrinter.ReadPaperStatus');
+  
+  CheckCapRead;
   FPort.Lock;
   try
     Send(#$10#$04#$04);
@@ -880,6 +900,8 @@ var
   S: AnsiString;
 begin
   Logger.Debug('TEscPrinter.ReadPrinterID');
+  
+  CheckCapRead;
   FPort.Lock;
   try
     Send(#$1D#$49 + Chr(N));
@@ -893,24 +915,28 @@ end;
 function TEscPrinter.ReadFirmwareVersion: AnsiString;
 begin
   Logger.Debug('TEscPrinter.ReadFirmwareVersion');
+  CheckCapRead;
   Result := ReadPrinterID(65);
 end;
 
 function TEscPrinter.ReadManufacturer: AnsiString;
 begin
   Logger.Debug('TEscPrinter.ReadManufacturer');
+  CheckCapRead;
   Result := ReadPrinterID(66);
 end;
 
 function TEscPrinter.ReadPrinterName: AnsiString;
 begin
   Logger.Debug('TEscPrinter.ReadPrinterName');
+  CheckCapRead;
   Result := ReadPrinterID(67);
 end;
 
 function TEscPrinter.ReadSerialNumber: AnsiString;
 begin
   Logger.Debug('TEscPrinter.ReadSerialNumber');
+  CheckCapRead;
   Result := ReadPrinterID(68);
 end;
 
@@ -989,6 +1015,8 @@ end;
 function TEscPrinter.ReadPaperRollStatus: TPaperRollStatus;
 begin
   Logger.Debug('TEscPrinter.ReadPaperRollStatus');
+
+  CheckCapRead;
   FPort.Lock;
   try
     Send(#$1D#$72#$01);
@@ -1226,5 +1254,34 @@ begin
   Send(Text);
 end;
 
+
+function TEscPrinter.CapRead: Boolean;
+begin
+  Result := Port.CapRead;
+end;
+
+procedure TEscPrinter.CheckCapRead;
+begin
+  if not Port.CapRead then
+  begin
+    raise Exception.Create('Порт не поддерживает чтение');
+  end;
+end;
+
+procedure TEscPrinter.BeginDocument;
+begin
+  FInTransaction := True;
+end;
+
+procedure TEscPrinter.EndDocument;
+begin
+  FInTransaction := False;
+  Port.Flush;
+end;
+
+procedure TEscPrinter.PortFlush;
+begin
+  Port.Flush;
+end;
 
 end.
