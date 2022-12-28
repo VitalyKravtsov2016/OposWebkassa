@@ -359,28 +359,40 @@ end;
 procedure TPrinterParameters.SetNumHeaderLines(const Value: Integer);
 var
   i: Integer;
+  Text: WideString;
 begin
+  if Value = NumHeaderLines then Exit;
+
   if Value in [MinHeaderLines..MaxHeaderLines] then
   begin
+    Text := HeaderText;
     FNumHeaderLines := Value;
 
     FHeader.Clear;
-    for i := 1 to FNumHeaderLines do
+    for i := 0 to Value-1 do
+    begin
       FHeader.Add('');
+    end;
+    SetHeaderText(Text);
   end;
 end;
 
 procedure TPrinterParameters.SetNumTrailerLines(const Value: Integer);
 var
   i: Integer;
+  Text: WideString;
 begin
+  if Value = NumTrailerLines then Exit;
+
   if Value in [MinTrailerLines..MaxTrailerLines] then
   begin
+    Text := TrailerText;
     FNumTrailerLines := Value;
 
     FTrailer.Clear;
-    for i := 1 to FNumTrailerLines do
+    for i := 0 to Value-1 do
       FTrailer.Add('');
+    SetTrailerText(Text);
   end;
 end;
 

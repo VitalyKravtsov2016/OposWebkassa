@@ -25,6 +25,7 @@ type
     procedure TearDown; override;
   published
     procedure CheckLoadReg;
+    procedure CheckLoadParams;
     procedure CheckSetDefaults;
     procedure CheckDefaultParams;
   end;
@@ -144,6 +145,15 @@ begin
   LoadParametersReg(FParams, 'DeviceName', FLogger);
   CheckNonDefaultParams;
   DeleteParametersReg('DeviceName', FLogger);
+end;
+
+procedure TPrinterParametersTest.CheckLoadParams;
+begin
+  SetNonDefaultParams;
+  SaveParameters(FParams, 'DeviceName', FLogger);
+  FParams.SetDefaults;
+  LoadParameters(FParams, 'DeviceName', FLogger);
+  CheckNonDefaultParams;
 end;
 
 initialization

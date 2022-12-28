@@ -235,8 +235,8 @@ begin
   try
     Section := GetSectionName(DeviceName);
 
-    IniFile.WriteText(Section, 'Header', Parameters.Header.Text);
-    IniFile.WriteText(Section, 'Trailer', Parameters.Trailer.Text);
+    IniFile.WriteText(Section, 'Header', Parameters.HeaderText);
+    IniFile.WriteText(Section, 'Trailer', Parameters.TrailerText);
   finally
     IniFile.Free;
   end;
