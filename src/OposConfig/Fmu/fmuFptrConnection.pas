@@ -33,6 +33,7 @@ type
     lblResultCode: TTntLabel;
     procedure btnTestConnectionClick(Sender: TObject);
     procedure btnUpdateCashBoxNumbersClick(Sender: TObject);
+    procedure ModifiedClick(Sender: TObject);
   private
     FDriver: TWebkassaClient;
     property Driver: TWebkassaClient read FDriver;
@@ -148,6 +149,11 @@ begin
   end;
   Command.Free;
   EnableButtons(True);
+end;
+
+procedure TfmFptrConnection.ModifiedClick(Sender: TObject);
+begin
+  Modified;
 end;
 
 end.

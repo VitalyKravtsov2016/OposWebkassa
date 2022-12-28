@@ -56,6 +56,7 @@ object fmFptrMiscParams: TfmFptrMiscParams
     Anchors = [akLeft, akTop, akRight]
     ItemHeight = 13
     TabOrder = 0
+    OnChange = ModifiedClick
     Items.Strings = (
       #1053#1077#1090
       #1048#1090#1086#1075' '#1095#1077#1082#1072
@@ -69,6 +70,7 @@ object fmFptrMiscParams: TfmFptrMiscParams
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 1
     Text = 'edtVATSeries'
+    OnChange = ModifiedClick
   end
   object edtVATNumber: TEdit
     Left = 96
@@ -78,6 +80,7 @@ object fmFptrMiscParams: TfmFptrMiscParams
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 2
     Text = 'edtVATNumber'
+    OnChange = ModifiedClick
   end
   object cbAmountDecimalPlaces: TComboBox
     Left = 264
@@ -88,6 +91,7 @@ object fmFptrMiscParams: TfmFptrMiscParams
     Anchors = [akLeft, akTop, akRight]
     ItemHeight = 13
     TabOrder = 3
+    OnChange = ModifiedClick
     Items.Strings = (
       '0'
       '2')

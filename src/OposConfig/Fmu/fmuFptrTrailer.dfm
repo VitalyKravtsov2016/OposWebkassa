@@ -36,7 +36,7 @@ object fmFptrTrailer: TfmFptrTrailer
     Anchors = [akLeft, akTop, akRight]
     ItemHeight = 13
     TabOrder = 0
-    OnChange = PageChange
+    OnChange = ModifiedClick
   end
   object symTrailer: TSynMemo
     Left = 8
@@ -60,6 +60,6 @@ object fmFptrTrailer: TfmFptrTrailer
     Gutter.RightOffset = 4
     Gutter.ShowLineNumbers = True
     ScrollBars = ssVertical
-    OnChange = PageChange
+    OnChange = ModifiedClick
   end
 end

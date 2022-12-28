@@ -22,6 +22,7 @@ type
     lblVATNumber: TTntLabel;
     cbAmountDecimalPlaces: TComboBox;
     lblAmountDecimalPlaces: TTntLabel;
+    procedure ModifiedClick(Sender: TObject);
   public
     procedure UpdatePage; override;
     procedure UpdateObject; override;
@@ -48,6 +49,11 @@ begin
   Parameters.VATSeries := edtVATSeries.Text;
   Parameters.VATNumber := edtVATNumber.Text;
   Parameters.AmountDecimalPlaces := StrToInt(cbAmountDecimalPlaces.Text);
+end;
+
+procedure TfmFptrMiscParams.ModifiedClick(Sender: TObject);
+begin
+  Modified;
 end;
 
 end.

@@ -26,7 +26,7 @@ type
     edtVatRate: TEdit;
     procedure btnAddClick(Sender: TObject);
     procedure btnDeleteClick(Sender: TObject);
-    procedure PageChange(Sender: TObject);
+    procedure ModifiedClick(Sender: TObject);
   private
     procedure UpdateItems;
   public
@@ -122,7 +122,7 @@ begin
   end;
 end;
 
-procedure TfmFptrVatRate.PageChange(Sender: TObject);
+procedure TfmFptrVatRate.ModifiedClick(Sender: TObject);
 begin
   Modified;
 end;

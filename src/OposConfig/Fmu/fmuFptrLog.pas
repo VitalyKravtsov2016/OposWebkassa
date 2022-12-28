@@ -20,7 +20,7 @@ type
     seMaxLogFileCount: TSpinEdit;
     lblMaxLogFileCount: TTntLabel;
     Label1: TLabel;
-    procedure PageChange(Sender: TObject);
+    procedure ModifiedClick(Sender: TObject);
   public
     procedure UpdatePage; override;
     procedure UpdateObject; override;
@@ -46,7 +46,7 @@ begin
   Parameters.LogFilePath := edtLogFilePath.Text;
 end;
 
-procedure TfmFptrLog.PageChange(Sender: TObject);
+procedure TfmFptrLog.ModifiedClick(Sender: TObject);
 begin
   Modified;
 end;

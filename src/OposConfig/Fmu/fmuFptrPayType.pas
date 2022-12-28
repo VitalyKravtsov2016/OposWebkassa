@@ -21,6 +21,7 @@ type
     cbPaymentType4: TComboBox;
     lblPaymentType4: TTntLabel;
     Label1: TLabel;
+    procedure ModifiedClick(Sender: TObject);
   public
     procedure UpdatePage; override;
     procedure UpdateObject; override;
@@ -44,6 +45,11 @@ begin
   Parameters.PaymentType2 := cbPaymentType2.ItemIndex;
   Parameters.PaymentType3 := cbPaymentType3.ItemIndex;
   Parameters.PaymentType4 := cbPaymentType4.ItemIndex;
+end;
+
+procedure TfmFptrPayType.ModifiedClick(Sender: TObject);
+begin
+  Modified;
 end;
 
 end.

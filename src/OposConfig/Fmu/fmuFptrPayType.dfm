@@ -59,6 +59,7 @@ object fmFptrPayType: TfmFptrPayType
     Anchors = [akLeft, akTop, akRight]
     ItemHeight = 13
     TabOrder = 0
+    OnChange = ModifiedClick
     Items.Strings = (
       #1053#1072#1083#1080#1095#1085#1099#1077
       #1041#1072#1085#1082#1086#1074#1089#1082#1072#1103' '#1082#1072#1088#1090#1072
@@ -75,6 +76,7 @@ object fmFptrPayType: TfmFptrPayType
     Anchors = [akLeft, akTop, akRight]
     ItemHeight = 13
     TabOrder = 1
+    OnChange = ModifiedClick
     Items.Strings = (
       #1053#1072#1083#1080#1095#1085#1099#1077
       #1041#1072#1085#1082#1086#1074#1089#1082#1072#1103' '#1082#1072#1088#1090#1072
@@ -91,6 +93,7 @@ object fmFptrPayType: TfmFptrPayType
     Anchors = [akLeft, akTop, akRight]
     ItemHeight = 13
     TabOrder = 2
+    OnChange = ModifiedClick
     Items.Strings = (
       #1053#1072#1083#1080#1095#1085#1099#1077
       #1041#1072#1085#1082#1086#1074#1089#1082#1072#1103' '#1082#1072#1088#1090#1072

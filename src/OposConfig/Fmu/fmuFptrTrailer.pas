@@ -19,7 +19,7 @@ type
     symTrailer: TSynMemo;
     lblNumTrailerLines: TTntLabel;
     cbNumTrailerLines: TTntComboBox;
-    procedure PageChange(Sender: TObject);
+    procedure ModifiedClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   public
     procedure UpdatePage; override;
@@ -42,7 +42,7 @@ begin
   Parameters.NumTrailerLines := cbNumTrailerLines.ItemIndex;
 end;
 
-procedure TfmFptrTrailer.PageChange(Sender: TObject);
+procedure TfmFptrTrailer.ModifiedClick(Sender: TObject);
 begin
   Modified;
 end;

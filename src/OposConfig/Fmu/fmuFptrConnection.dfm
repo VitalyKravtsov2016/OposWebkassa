@@ -1,6 +1,6 @@
 object fmFptrConnection: TfmFptrConnection
-  Left = 583
-  Top = 282
+  Left = 359
+  Top = 251
   Width = 496
   Height = 363
   Caption = #1055#1086#1076#1082#1083#1102#1095#1077#1085#1080#1077
@@ -79,6 +79,7 @@ object fmFptrConnection: TfmFptrConnection
       MinValue = 0
       TabOrder = 1
       Value = 0
+      OnChange = ModifiedClick
     end
     object edtWebkassaAddress: TEdit
       Left = 168
@@ -88,6 +89,7 @@ object fmFptrConnection: TfmFptrConnection
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 0
       Text = 'edtWebkassaAddress'
+      OnChange = ModifiedClick
     end
     object edtLogin: TEdit
       Left = 168
@@ -97,6 +99,7 @@ object fmFptrConnection: TfmFptrConnection
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 2
       Text = 'edtLogin'
+      OnChange = ModifiedClick
     end
     object edtPassword: TEdit
       Left = 168
@@ -106,6 +109,7 @@ object fmFptrConnection: TfmFptrConnection
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 3
       Text = 'edtPassword'
+      OnChange = ModifiedClick
     end
     object btnTestConnection: TButton
       Left = 168
@@ -126,6 +130,7 @@ object fmFptrConnection: TfmFptrConnection
       ItemHeight = 13
       TabOrder = 4
       Text = 'cbCashboxNumber'
+      OnChange = ModifiedClick
     end
     object btnUpdateCashBoxNumbers: TButton
       Left = 320

@@ -17,7 +17,7 @@ type
     symHeader: TSynMemo;
     lblNumHeaderLines: TTntLabel;
     cbNumHeaderLines: TTntComboBox;
-    procedure PageChange(Sender: TObject);
+    procedure ModifiedClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   public
     procedure UpdatePage; override;
@@ -30,7 +30,7 @@ implementation
 
 { TfmFptrHeader }
 
-procedure TfmFptrHeader.PageChange(Sender: TObject);
+procedure TfmFptrHeader.ModifiedClick(Sender: TObject);
 begin
   Modified;
 end;

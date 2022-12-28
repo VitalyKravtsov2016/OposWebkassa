@@ -58,6 +58,7 @@ type
     procedure btnPrintReceiptClick(Sender: TObject);
     procedure cbPrinterTypeChange(Sender: TObject);
     procedure cbPrinterNameChange(Sender: TObject);
+    procedure ModifiedClick(Sender: TObject);
   private
     procedure UpdateFontNames;
     procedure UpdateDeviceNames;
@@ -280,6 +281,7 @@ procedure TfmPrinter.cbPrinterTypeChange(Sender: TObject);
 begin
   UpdateDeviceNames;
   UpdateFontNames;
+  Modified;
 end;
 
 procedure TfmPrinter.UpdateDeviceNames;
@@ -334,6 +336,12 @@ end;
 procedure TfmPrinter.cbPrinterNameChange(Sender: TObject);
 begin
   UpdateFontNames;
+  Modified;
+end;
+
+procedure TfmPrinter.ModifiedClick(Sender: TObject);
+begin
+  Modified;
 end;
 
 end.

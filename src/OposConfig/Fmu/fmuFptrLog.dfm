@@ -47,7 +47,7 @@ object fmFptrLog: TfmFptrLog
     Height = 17
     Caption = #1042#1077#1089#1090#1080' '#1083#1086#1075
     TabOrder = 0
-    OnClick = PageChange
+    OnClick = ModifiedClick
   end
   object edtLogFilePath: TTntEdit
     Left = 136
@@ -57,6 +57,7 @@ object fmFptrLog: TfmFptrLog
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 1
     Text = 'edtLogFilePath'
+    OnChange = ModifiedClick
   end
   object seMaxLogFileCount: TSpinEdit
     Left = 216
@@ -67,5 +68,6 @@ object fmFptrLog: TfmFptrLog
     MinValue = 0
     TabOrder = 2
     Value = 0
+    OnChange = ModifiedClick
   end
 end

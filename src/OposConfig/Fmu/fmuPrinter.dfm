@@ -13,7 +13,7 @@ object fmPrinter: TfmPrinter
   OldCreateOrder = False
   DesignSize = (
     455
-    328)
+    327)
   PixelsPerInch = 96
   TextHeight = 13
   object lblResultCode: TTntLabel
@@ -131,6 +131,7 @@ object fmPrinter: TfmPrinter
         Style = csDropDownList
         ItemHeight = 13
         TabOrder = 2
+        OnChange = ModifiedClick
       end
       object seDevicePollTime: TSpinEdit
         Left = 120
@@ -141,6 +142,7 @@ object fmPrinter: TfmPrinter
         MinValue = 0
         TabOrder = 3
         Value = 0
+        OnClick = ModifiedClick
       end
     end
     object tsSocketParams: TTabSheet
@@ -174,6 +176,7 @@ object fmPrinter: TfmPrinter
         Height = 21
         TabOrder = 0
         Text = '10.11.7.176'
+        OnChange = ModifiedClick
       end
       object seRemotePort: TSpinEdit
         Left = 128
@@ -184,6 +187,7 @@ object fmPrinter: TfmPrinter
         MinValue = 0
         TabOrder = 1
         Value = 0
+        OnChange = ModifiedClick
       end
       object seByteTimeout: TSpinEdit
         Left = 128
@@ -194,6 +198,7 @@ object fmPrinter: TfmPrinter
         MinValue = 0
         TabOrder = 2
         Value = 0
+        OnChange = ModifiedClick
       end
     end
     object tsSerialParams: TTabSheet
@@ -254,9 +259,9 @@ object fmPrinter: TfmPrinter
         Width = 113
         Height = 21
         Style = csDropDownList
-        ItemHeight = 0
+        ItemHeight = 13
         TabOrder = 0
-        OnChange = cbPrinterTypeChange
+        OnChange = ModifiedClick
       end
       object cbBaudRate: TTntComboBox
         Left = 88
@@ -266,7 +271,7 @@ object fmPrinter: TfmPrinter
         Style = csDropDownList
         ItemHeight = 13
         TabOrder = 1
-        OnChange = cbPrinterTypeChange
+        OnChange = ModifiedClick
         Items.Strings = (
           '2400'
           '4800'
@@ -287,7 +292,7 @@ object fmPrinter: TfmPrinter
         Style = csDropDownList
         ItemHeight = 13
         TabOrder = 2
-        OnChange = cbPrinterTypeChange
+        OnChange = ModifiedClick
         Items.Strings = (
           '8')
       end
@@ -299,7 +304,7 @@ object fmPrinter: TfmPrinter
         Style = csDropDownList
         ItemHeight = 13
         TabOrder = 3
-        OnChange = cbPrinterTypeChange
+        OnChange = ModifiedClick
         Items.Strings = (
           '1'
           '1.5'
@@ -311,9 +316,9 @@ object fmPrinter: TfmPrinter
         Width = 113
         Height = 21
         Style = csDropDownList
-        ItemHeight = 0
+        ItemHeight = 13
         TabOrder = 4
-        OnChange = cbPrinterTypeChange
+        OnChange = ModifiedClick
       end
       object cbFlowControl: TTntComboBox
         Left = 296
@@ -323,7 +328,7 @@ object fmPrinter: TfmPrinter
         Style = csDropDownList
         ItemHeight = 13
         TabOrder = 5
-        OnChange = cbPrinterTypeChange
+        OnChange = ModifiedClick
         Items.Strings = (
           'XON / XOFF'
           #1040#1087#1087#1072#1088#1072#1090#1085#1086#1077
@@ -338,6 +343,7 @@ object fmPrinter: TfmPrinter
         MinValue = 0
         TabOrder = 6
         Value = 0
+        OnChange = ModifiedClick
       end
     end
   end

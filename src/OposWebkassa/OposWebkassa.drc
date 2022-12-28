@@ -8,236 +8,231 @@
   resources were bound to the produced executable.
 */
 
-#define JclVclResources_RsNAStartDocument 64864
-#define JclVclResources_RsNASendData 64865
-#define JclVclResources_RsNAStartPage 64866
-#define JclVclResources_RsNAEndPage 64867
-#define JclVclResources_RsNAEndDocument 64868
-#define JclVclResources_RsNATransmission 64869
-#define JclResources_RsIntelCacheDescrE2 64880
-#define JclResources_RsIntelCacheDescrE3 64881
-#define JclResources_RsIntelCacheDescrE4 64882
-#define JclResources_RsIntelCacheDescrEA 64883
-#define JclResources_RsIntelCacheDescrEB 64884
-#define JclResources_RsIntelCacheDescrEC 64885
-#define JclResources_RsIntelCacheDescrF0 64886
-#define JclResources_RsIntelCacheDescrF1 64887
-#define JclResources_RsIntelCacheDescrFF 64888
-#define JclResources_RsOSVersionWin81 64889
-#define JclResources_RsOSVersionWinServer2012R2 64890
-#define JclResources_RsInvalidMMFName 64891
-#define JclResources_RsInvalidMMFEmpty 64892
-#define JclResources_RsWin32Error 64893
-#define JclVclResources_RsSpoolerDocName 64894
-#define JclVclResources_RsInvalidPrinter 64895
-#define JclResources_RsIntelCacheDescrB1 64896
-#define JclResources_RsIntelCacheDescrB2 64897
-#define JclResources_RsIntelCacheDescrB3 64898
-#define JclResources_RsIntelCacheDescrB4 64899
-#define JclResources_RsIntelCacheDescrBA 64900
-#define JclResources_RsIntelCacheDescrC0 64901
-#define JclResources_RsIntelCacheDescrCA 64902
-#define JclResources_RsIntelCacheDescrD0 64903
-#define JclResources_RsIntelCacheDescrD1 64904
-#define JclResources_RsIntelCacheDescrD2 64905
-#define JclResources_RsIntelCacheDescrD6 64906
-#define JclResources_RsIntelCacheDescrD7 64907
-#define JclResources_RsIntelCacheDescrD8 64908
-#define JclResources_RsIntelCacheDescrDC 64909
-#define JclResources_RsIntelCacheDescrDD 64910
-#define JclResources_RsIntelCacheDescrDE 64911
-#define JclResources_RsIntelCacheDescr76 64912
-#define JclResources_RsIntelCacheDescr78 64913
-#define JclResources_RsIntelCacheDescr79 64914
-#define JclResources_RsIntelCacheDescr7A 64915
-#define JclResources_RsIntelCacheDescr7B 64916
-#define JclResources_RsIntelCacheDescr7C 64917
-#define JclResources_RsIntelCacheDescr7D 64918
-#define JclResources_RsIntelCacheDescr7F 64919
-#define JclResources_RsIntelCacheDescr80 64920
-#define JclResources_RsIntelCacheDescr82 64921
-#define JclResources_RsIntelCacheDescr83 64922
-#define JclResources_RsIntelCacheDescr84 64923
-#define JclResources_RsIntelCacheDescr85 64924
-#define JclResources_RsIntelCacheDescr86 64925
-#define JclResources_RsIntelCacheDescr87 64926
-#define JclResources_RsIntelCacheDescrB0 64927
-#define JclResources_RsIntelCacheDescr55 64928
-#define JclResources_RsIntelCacheDescr56 64929
-#define JclResources_RsIntelCacheDescr57 64930
-#define JclResources_RsIntelCacheDescr59 64931
-#define JclResources_RsIntelCacheDescr5A 64932
-#define JclResources_RsIntelCacheDescr5B 64933
-#define JclResources_RsIntelCacheDescr5C 64934
-#define JclResources_RsIntelCacheDescr5D 64935
-#define JclResources_RsIntelCacheDescr60 64936
-#define JclResources_RsIntelCacheDescr66 64937
-#define JclResources_RsIntelCacheDescr67 64938
-#define JclResources_RsIntelCacheDescr68 64939
-#define JclResources_RsIntelCacheDescr70 64940
-#define JclResources_RsIntelCacheDescr71 64941
-#define JclResources_RsIntelCacheDescr72 64942
-#define JclResources_RsIntelCacheDescr73 64943
-#define JclResources_RsIntelCacheDescr43 64944
-#define JclResources_RsIntelCacheDescr44 64945
-#define JclResources_RsIntelCacheDescr45 64946
-#define JclResources_RsIntelCacheDescr46 64947
-#define JclResources_RsIntelCacheDescr47 64948
-#define JclResources_RsIntelCacheDescr48 64949
-#define JclResources_RsIntelCacheDescr49 64950
-#define JclResources_RsIntelCacheDescr4A 64951
-#define JclResources_RsIntelCacheDescr4B 64952
-#define JclResources_RsIntelCacheDescr4C 64953
-#define JclResources_RsIntelCacheDescr4D 64954
-#define JclResources_RsIntelCacheDescr4E 64955
-#define JclResources_RsIntelCacheDescr4F 64956
-#define JclResources_RsIntelCacheDescr50 64957
-#define JclResources_RsIntelCacheDescr51 64958
-#define JclResources_RsIntelCacheDescr52 64959
-#define JclResources_RsIntelCacheDescr21 64960
-#define JclResources_RsIntelCacheDescr22 64961
-#define JclResources_RsIntelCacheDescr23 64962
-#define JclResources_RsIntelCacheDescr25 64963
-#define JclResources_RsIntelCacheDescr29 64964
-#define JclResources_RsIntelCacheDescr2C 64965
-#define JclResources_RsIntelCacheDescr30 64966
-#define JclResources_RsIntelCacheDescr39 64967
-#define JclResources_RsIntelCacheDescr3A 64968
-#define JclResources_RsIntelCacheDescr3B 64969
-#define JclResources_RsIntelCacheDescr3C 64970
-#define JclResources_RsIntelCacheDescr3D 64971
-#define JclResources_RsIntelCacheDescr3E 64972
-#define JclResources_RsIntelCacheDescr40 64973
-#define JclResources_RsIntelCacheDescr41 64974
-#define JclResources_RsIntelCacheDescr42 64975
-#define JclResources_RsInconsistentPath 64976
-#define JclResources_RsSynchCreateMutex 64977
-#define JclResources_RsIntelCacheDescr00 64978
-#define JclResources_RsIntelCacheDescr01 64979
-#define JclResources_RsIntelCacheDescr02 64980
-#define JclResources_RsIntelCacheDescr03 64981
-#define JclResources_RsIntelCacheDescr04 64982
-#define JclResources_RsIntelCacheDescr05 64983
-#define JclResources_RsIntelCacheDescr06 64984
-#define JclResources_RsIntelCacheDescr08 64985
-#define JclResources_RsIntelCacheDescr09 64986
-#define JclResources_RsIntelCacheDescr0A 64987
-#define JclResources_RsIntelCacheDescr0B 64988
-#define JclResources_RsIntelCacheDescr0C 64989
-#define JclResources_RsIntelCacheDescr0D 64990
-#define JclResources_RsIntelCacheDescr0E 64991
-#define IdResourceStringsSSPI_RSHTTPSSPIErrorMsg 64992
-#define IdResourceStringsSSPI_RSHTTPSSPIInterfaceInitFailed 64993
-#define IdResourceStringsSSPI_RSHTTPSSPINoPkgInfoSpecified 64994
-#define IdResourceStringsSSPI_RSHTTPSSPINoCredentialHandle 64995
-#define IdResourceStringsSSPI_RSHTTPSSPICanNotChangeCredentials 64996
-#define IdResourceStringsSSPI_RSHTTPSSPIUnknwonCredentialUse 64997
-#define IdResourceStringsSSPI_RSHTTPSSPIDoAuquireCredentialHandle 64998
-#define IdResourceStringsSSPI_RSHTTPSSPICompleteTokenNotSupported 64999
-#define DBConsts_SBcdOverflow 65000
-#define DBConsts_SInvalidBcdValue 65001
-#define DBConsts_SCouldNotParseTimeStamp 65002
-#define DBConsts_SInvalidSqlTimeStamp 65003
-#define JclResources_RsEReplacementChar 65004
-#define JclResources_RsUnableToOpenKeyRead 65005
-#define JclResources_RsUnableToAccessValue 65006
-#define JclResources_RsWrongDataType 65007
-#define IdResourceStringsSSPI_RSHTTPSSPISmartcardExpired 65008
-#define IdResourceStringsSSPI_RSHTTPSSPINoS4UProtSupport 65009
-#define IdResourceStringsSSPI_RSHTTPSSPICrossRealmDeligationFailure 65010
-#define IdResourceStringsSSPI_RSHTTPSSPIRevocationOfflineKDC 65011
-#define IdResourceStringsSSPI_RSHTTPSSPICAUntrustedKDC 65012
-#define IdResourceStringsSSPI_RSHTTPSSPIKDCCertExpired 65013
-#define IdResourceStringsSSPI_RSHTTPSSPIKDCCertRevoked 65014
-#define IdResourceStringsSSPI_RSHTTPSSPISignatureNeeded 65015
-#define IdResourceStringsSSPI_RSHTTPSSPIInvalidParameter 65016
-#define IdResourceStringsSSPI_RSHTTPSSPIDeligationPolicy 65017
-#define IdResourceStringsSSPI_RSHTTPSSPIPolicyNTLMOnly 65018
-#define IdResourceStringsSSPI_RSHTTPSSPINoRenegotiation 65019
-#define IdResourceStringsSSPI_RSHTTPSSPINoContext 65020
-#define IdResourceStringsSSPI_RSHTTPSSPIPKU2UCertFailure 65021
-#define IdResourceStringsSSPI_RSHTTPSSPIMutualAuthFailed 65022
-#define IdResourceStringsSSPI_RSHTTPSSPIUnknwonError 65023
-#define IdResourceStringsSSPI_RSHTTPSSPISmartcardLogonReq 65024
-#define IdResourceStringsSSPI_RSHTTPSSPISysShutdownInProg 65025
-#define IdResourceStringsSSPI_RSHTTPSSPIKDCInvalidRequest 65026
-#define IdResourceStringsSSPI_RSHTTPSSPIKDCUnableToRefer 65027
-#define IdResourceStringsSSPI_RSHTTPSSPIKDCETypeUnknown 65028
-#define IdResourceStringsSSPI_RSHTTPSSPIUnsupPreauth 65029
-#define IdResourceStringsSSPI_RSHTTPSSPIDeligationReq 65030
-#define IdResourceStringsSSPI_RSHTTPSSPIBadBindings 65031
-#define IdResourceStringsSSPI_RSHTTPSSPIMultipleAccounts 65032
-#define IdResourceStringsSSPI_RSHTTPSSPINoKerbKey 65033
-#define IdResourceStringsSSPI_RSHTTPSSPICertWrongUsage 65034
-#define IdResourceStringsSSPI_RSHTTPSSPIDowngradeDetected 65035
-#define IdResourceStringsSSPI_RSHTTPSSPISmartcardCertRevoked 65036
-#define IdResourceStringsSSPI_RSHTTPSSPIIssuingCAUntrusted 65037
-#define IdResourceStringsSSPI_RSHTTPSSPIRevocationOffline 65038
-#define IdResourceStringsSSPI_RSHTTPSSPIPKInitClientFailure 65039
-#define IdResourceStringsSSPI_RSHTTPSSPICertExpired 65040
-#define IdResourceStringsSSPI_RSHTTPSSPIEncryptionFailure 65041
-#define IdResourceStringsSSPI_RSHTTPSSPIDecryptionFailure 65042
-#define IdResourceStringsSSPI_RSHTTPSSPIAlgorithmMismatch 65043
-#define IdResourceStringsSSPI_RSHTTPSSPISecurityQOSFailure 65044
-#define IdResourceStringsSSPI_RSHTTPSSPISecCtxWasDelBeforeUpdated 65045
-#define IdResourceStringsSSPI_RSHTTPSSPIClientNoTGTReply 65046
-#define IdResourceStringsSSPI_RSHTTPSSPILocalNoIPAddr 65047
-#define IdResourceStringsSSPI_RSHTTPSSPIWrongCredHandle 65048
-#define IdResourceStringsSSPI_RSHTTPSSPICryptoSysInvalid 65049
-#define IdResourceStringsSSPI_RSHTTPSSPIMaxTicketRef 65050
-#define IdResourceStringsSSPI_RSHTTPSSPIMustBeKDC 65051
-#define IdResourceStringsSSPI_RSHTTPSSPIStrongCryptoNotSupported 65052
-#define IdResourceStringsSSPI_RSHTTPSSPIKDCReplyTooManyPrincipals 65053
-#define IdResourceStringsSSPI_RSHTTPSSPINoPAData 65054
-#define IdResourceStringsSSPI_RSHTTPSSPIPKInitNameMismatch 65055
-#define IdResourceStringsSSPI_RSHTTPSSPICompleteNeeded 65056
-#define IdResourceStringsSSPI_RSHTTPSSPICompleteContinueNeeded 65057
-#define IdResourceStringsSSPI_RSHTTPSSPILocalLogin 65058
-#define IdResourceStringsSSPI_RSHTTPSSPIBadPackageID 65059
-#define IdResourceStringsSSPI_RSHTTPSSPIContextExpired 65060
-#define IdResourceStringsSSPI_RSHTTPSSPIIncompleteMessage 65061
-#define IdResourceStringsSSPI_RSHTTPSSPIIncompleteCredentialNotInit 65062
-#define IdResourceStringsSSPI_RSHTTPSSPIBufferTooSmall 65063
-#define IdResourceStringsSSPI_RSHTTPSSPIIncompleteCredentialsInit 65064
-#define IdResourceStringsSSPI_RSHTTPSSPIRengotiate 65065
-#define IdResourceStringsSSPI_RSHTTPSSPIWrongPrincipal 65066
-#define IdResourceStringsSSPI_RSHTTPSSPINoLSACode 65067
-#define IdResourceStringsSSPI_RSHTTPSSPITimeScew 65068
-#define IdResourceStringsSSPI_RSHTTPSSPIUntrustedRoot 65069
-#define IdResourceStringsSSPI_RSHTTPSSPIIllegalMessage 65070
-#define IdResourceStringsSSPI_RSHTTPSSPICertUnknown 65071
-#define IdResourceStringsSSPI_RSHTTPSSPIUnknownTarget 65072
-#define IdResourceStringsSSPI_RSHTTPSSPIInternalError 65073
-#define IdResourceStringsSSPI_RSHTTPSSPISecPackageNotFound 65074
-#define IdResourceStringsSSPI_RSHTTPSSPINotOwner 65075
-#define IdResourceStringsSSPI_RSHTTPSSPIPackageCannotBeInstalled 65076
-#define IdResourceStringsSSPI_RSHTTPSSPIInvalidToken 65077
-#define IdResourceStringsSSPI_RSHTTPSSPICannotPack 65078
-#define IdResourceStringsSSPI_RSHTTPSSPIQOPNotSupported 65079
-#define IdResourceStringsSSPI_RSHTTPSSPINoImpersonation 65080
-#define IdResourceStringsSSPI_RSHTTPSSPILoginDenied 65081
-#define IdResourceStringsSSPI_RSHTTPSSPIUnknownCredentials 65082
-#define IdResourceStringsSSPI_RSHTTPSSPINoCredentials 65083
-#define IdResourceStringsSSPI_RSHTTPSSPIMessageAltered 65084
-#define IdResourceStringsSSPI_RSHTTPSSPIOutOfSequence 65085
-#define IdResourceStringsSSPI_RSHTTPSSPINoAuthAuthority 65086
-#define IdResourceStringsSSPI_RSHTTPSSPIContinueNeeded 65087
-#define IdResourceStringsOpenSSL_RSOSSLReadAlert 65088
-#define IdResourceStringsOpenSSL_RSOSSLWriteAlert 65089
-#define IdResourceStringsOpenSSL_RSOSSLAcceptLoop 65090
-#define IdResourceStringsOpenSSL_RSOSSLAcceptError 65091
-#define IdResourceStringsOpenSSL_RSOSSLAcceptFailed 65092
-#define IdResourceStringsOpenSSL_RSOSSLAcceptExit 65093
-#define IdResourceStringsOpenSSL_RSOSSLConnectLoop 65094
-#define IdResourceStringsOpenSSL_RSOSSLConnectError 65095
-#define IdResourceStringsOpenSSL_RSOSSLConnectFailed 65096
-#define IdResourceStringsOpenSSL_RSOSSLConnectExit 65097
-#define IdResourceStringsOpenSSL_RSOSSLHandshakeStart 65098
-#define IdResourceStringsOpenSSL_RSOSSLHandshakeDone 65099
-#define IdResourceStringsSSPI_RSHTTPSSPISuccess 65100
-#define IdResourceStringsSSPI_RSHTTPSSPINotEnoughMem 65101
-#define IdResourceStringsSSPI_RSHTTPSSPIInvalidHandle 65102
-#define IdResourceStringsSSPI_RSHTTPSSPIFuncNotSupported 65103
+#define JclVclResources_RsNATransmission 64864
+#define JclResources_RsIntelCacheDescrEB 64880
+#define JclResources_RsIntelCacheDescrEC 64881
+#define JclResources_RsIntelCacheDescrF0 64882
+#define JclResources_RsIntelCacheDescrF1 64883
+#define JclResources_RsIntelCacheDescrFF 64884
+#define JclResources_RsOSVersionWin8 64885
+#define JclResources_RsOSVersionWinServer2012 64886
+#define JclResources_RsOSVersionWin81 64887
+#define JclResources_RsOSVersionWinServer2012R2 64888
+#define JclVclResources_RsSpoolerDocName 64889
+#define JclVclResources_RsInvalidPrinter 64890
+#define JclVclResources_RsNAStartDocument 64891
+#define JclVclResources_RsNASendData 64892
+#define JclVclResources_RsNAStartPage 64893
+#define JclVclResources_RsNAEndPage 64894
+#define JclVclResources_RsNAEndDocument 64895
+#define JclResources_RsIntelCacheDescrBA 64896
+#define JclResources_RsIntelCacheDescrC0 64897
+#define JclResources_RsIntelCacheDescrCA 64898
+#define JclResources_RsIntelCacheDescrD0 64899
+#define JclResources_RsIntelCacheDescrD1 64900
+#define JclResources_RsIntelCacheDescrD2 64901
+#define JclResources_RsIntelCacheDescrD6 64902
+#define JclResources_RsIntelCacheDescrD7 64903
+#define JclResources_RsIntelCacheDescrD8 64904
+#define JclResources_RsIntelCacheDescrDC 64905
+#define JclResources_RsIntelCacheDescrDD 64906
+#define JclResources_RsIntelCacheDescrDE 64907
+#define JclResources_RsIntelCacheDescrE2 64908
+#define JclResources_RsIntelCacheDescrE3 64909
+#define JclResources_RsIntelCacheDescrE4 64910
+#define JclResources_RsIntelCacheDescrEA 64911
+#define JclResources_RsIntelCacheDescr7B 64912
+#define JclResources_RsIntelCacheDescr7C 64913
+#define JclResources_RsIntelCacheDescr7D 64914
+#define JclResources_RsIntelCacheDescr7F 64915
+#define JclResources_RsIntelCacheDescr80 64916
+#define JclResources_RsIntelCacheDescr82 64917
+#define JclResources_RsIntelCacheDescr83 64918
+#define JclResources_RsIntelCacheDescr84 64919
+#define JclResources_RsIntelCacheDescr85 64920
+#define JclResources_RsIntelCacheDescr86 64921
+#define JclResources_RsIntelCacheDescr87 64922
+#define JclResources_RsIntelCacheDescrB0 64923
+#define JclResources_RsIntelCacheDescrB1 64924
+#define JclResources_RsIntelCacheDescrB2 64925
+#define JclResources_RsIntelCacheDescrB3 64926
+#define JclResources_RsIntelCacheDescrB4 64927
+#define JclResources_RsIntelCacheDescr5A 64928
+#define JclResources_RsIntelCacheDescr5B 64929
+#define JclResources_RsIntelCacheDescr5C 64930
+#define JclResources_RsIntelCacheDescr5D 64931
+#define JclResources_RsIntelCacheDescr60 64932
+#define JclResources_RsIntelCacheDescr66 64933
+#define JclResources_RsIntelCacheDescr67 64934
+#define JclResources_RsIntelCacheDescr68 64935
+#define JclResources_RsIntelCacheDescr70 64936
+#define JclResources_RsIntelCacheDescr71 64937
+#define JclResources_RsIntelCacheDescr72 64938
+#define JclResources_RsIntelCacheDescr73 64939
+#define JclResources_RsIntelCacheDescr76 64940
+#define JclResources_RsIntelCacheDescr78 64941
+#define JclResources_RsIntelCacheDescr79 64942
+#define JclResources_RsIntelCacheDescr7A 64943
+#define JclResources_RsIntelCacheDescr47 64944
+#define JclResources_RsIntelCacheDescr48 64945
+#define JclResources_RsIntelCacheDescr49 64946
+#define JclResources_RsIntelCacheDescr4A 64947
+#define JclResources_RsIntelCacheDescr4B 64948
+#define JclResources_RsIntelCacheDescr4C 64949
+#define JclResources_RsIntelCacheDescr4D 64950
+#define JclResources_RsIntelCacheDescr4E 64951
+#define JclResources_RsIntelCacheDescr4F 64952
+#define JclResources_RsIntelCacheDescr50 64953
+#define JclResources_RsIntelCacheDescr51 64954
+#define JclResources_RsIntelCacheDescr52 64955
+#define JclResources_RsIntelCacheDescr55 64956
+#define JclResources_RsIntelCacheDescr56 64957
+#define JclResources_RsIntelCacheDescr57 64958
+#define JclResources_RsIntelCacheDescr59 64959
+#define JclResources_RsIntelCacheDescr29 64960
+#define JclResources_RsIntelCacheDescr2C 64961
+#define JclResources_RsIntelCacheDescr30 64962
+#define JclResources_RsIntelCacheDescr39 64963
+#define JclResources_RsIntelCacheDescr3A 64964
+#define JclResources_RsIntelCacheDescr3B 64965
+#define JclResources_RsIntelCacheDescr3C 64966
+#define JclResources_RsIntelCacheDescr3D 64967
+#define JclResources_RsIntelCacheDescr3E 64968
+#define JclResources_RsIntelCacheDescr40 64969
+#define JclResources_RsIntelCacheDescr41 64970
+#define JclResources_RsIntelCacheDescr42 64971
+#define JclResources_RsIntelCacheDescr43 64972
+#define JclResources_RsIntelCacheDescr44 64973
+#define JclResources_RsIntelCacheDescr45 64974
+#define JclResources_RsIntelCacheDescr46 64975
+#define JclResources_RsIntelCacheDescr02 64976
+#define JclResources_RsIntelCacheDescr03 64977
+#define JclResources_RsIntelCacheDescr04 64978
+#define JclResources_RsIntelCacheDescr05 64979
+#define JclResources_RsIntelCacheDescr06 64980
+#define JclResources_RsIntelCacheDescr08 64981
+#define JclResources_RsIntelCacheDescr09 64982
+#define JclResources_RsIntelCacheDescr0A 64983
+#define JclResources_RsIntelCacheDescr0B 64984
+#define JclResources_RsIntelCacheDescr0C 64985
+#define JclResources_RsIntelCacheDescr0D 64986
+#define JclResources_RsIntelCacheDescr0E 64987
+#define JclResources_RsIntelCacheDescr21 64988
+#define JclResources_RsIntelCacheDescr22 64989
+#define JclResources_RsIntelCacheDescr23 64990
+#define JclResources_RsIntelCacheDescr25 64991
+#define IdResourceStringsSSPI_RSHTTPSSPINoCredentialHandle 64992
+#define IdResourceStringsSSPI_RSHTTPSSPICanNotChangeCredentials 64993
+#define IdResourceStringsSSPI_RSHTTPSSPIUnknwonCredentialUse 64994
+#define IdResourceStringsSSPI_RSHTTPSSPIDoAuquireCredentialHandle 64995
+#define IdResourceStringsSSPI_RSHTTPSSPICompleteTokenNotSupported 64996
+#define DBConsts_SBcdOverflow 64997
+#define DBConsts_SInvalidBcdValue 64998
+#define DBConsts_SCouldNotParseTimeStamp 64999
+#define DBConsts_SInvalidSqlTimeStamp 65000
+#define JclResources_RsEReplacementChar 65001
+#define JclResources_RsUnableToOpenKeyRead 65002
+#define JclResources_RsUnableToAccessValue 65003
+#define JclResources_RsWrongDataType 65004
+#define JclResources_RsInconsistentPath 65005
+#define JclResources_RsIntelCacheDescr00 65006
+#define JclResources_RsIntelCacheDescr01 65007
+#define IdResourceStringsSSPI_RSHTTPSSPIRevocationOfflineKDC 65008
+#define IdResourceStringsSSPI_RSHTTPSSPICAUntrustedKDC 65009
+#define IdResourceStringsSSPI_RSHTTPSSPIKDCCertExpired 65010
+#define IdResourceStringsSSPI_RSHTTPSSPIKDCCertRevoked 65011
+#define IdResourceStringsSSPI_RSHTTPSSPISignatureNeeded 65012
+#define IdResourceStringsSSPI_RSHTTPSSPIInvalidParameter 65013
+#define IdResourceStringsSSPI_RSHTTPSSPIDeligationPolicy 65014
+#define IdResourceStringsSSPI_RSHTTPSSPIPolicyNTLMOnly 65015
+#define IdResourceStringsSSPI_RSHTTPSSPINoRenegotiation 65016
+#define IdResourceStringsSSPI_RSHTTPSSPINoContext 65017
+#define IdResourceStringsSSPI_RSHTTPSSPIPKU2UCertFailure 65018
+#define IdResourceStringsSSPI_RSHTTPSSPIMutualAuthFailed 65019
+#define IdResourceStringsSSPI_RSHTTPSSPIUnknwonError 65020
+#define IdResourceStringsSSPI_RSHTTPSSPIErrorMsg 65021
+#define IdResourceStringsSSPI_RSHTTPSSPIInterfaceInitFailed 65022
+#define IdResourceStringsSSPI_RSHTTPSSPINoPkgInfoSpecified 65023
+#define IdResourceStringsSSPI_RSHTTPSSPIKDCUnableToRefer 65024
+#define IdResourceStringsSSPI_RSHTTPSSPIKDCETypeUnknown 65025
+#define IdResourceStringsSSPI_RSHTTPSSPIUnsupPreauth 65026
+#define IdResourceStringsSSPI_RSHTTPSSPIDeligationReq 65027
+#define IdResourceStringsSSPI_RSHTTPSSPIBadBindings 65028
+#define IdResourceStringsSSPI_RSHTTPSSPIMultipleAccounts 65029
+#define IdResourceStringsSSPI_RSHTTPSSPINoKerbKey 65030
+#define IdResourceStringsSSPI_RSHTTPSSPICertWrongUsage 65031
+#define IdResourceStringsSSPI_RSHTTPSSPIDowngradeDetected 65032
+#define IdResourceStringsSSPI_RSHTTPSSPISmartcardCertRevoked 65033
+#define IdResourceStringsSSPI_RSHTTPSSPIIssuingCAUntrusted 65034
+#define IdResourceStringsSSPI_RSHTTPSSPIRevocationOffline 65035
+#define IdResourceStringsSSPI_RSHTTPSSPIPKInitClientFailure 65036
+#define IdResourceStringsSSPI_RSHTTPSSPISmartcardExpired 65037
+#define IdResourceStringsSSPI_RSHTTPSSPINoS4UProtSupport 65038
+#define IdResourceStringsSSPI_RSHTTPSSPICrossRealmDeligationFailure 65039
+#define IdResourceStringsSSPI_RSHTTPSSPIAlgorithmMismatch 65040
+#define IdResourceStringsSSPI_RSHTTPSSPISecurityQOSFailure 65041
+#define IdResourceStringsSSPI_RSHTTPSSPISecCtxWasDelBeforeUpdated 65042
+#define IdResourceStringsSSPI_RSHTTPSSPIClientNoTGTReply 65043
+#define IdResourceStringsSSPI_RSHTTPSSPILocalNoIPAddr 65044
+#define IdResourceStringsSSPI_RSHTTPSSPIWrongCredHandle 65045
+#define IdResourceStringsSSPI_RSHTTPSSPICryptoSysInvalid 65046
+#define IdResourceStringsSSPI_RSHTTPSSPIMaxTicketRef 65047
+#define IdResourceStringsSSPI_RSHTTPSSPIMustBeKDC 65048
+#define IdResourceStringsSSPI_RSHTTPSSPIStrongCryptoNotSupported 65049
+#define IdResourceStringsSSPI_RSHTTPSSPIKDCReplyTooManyPrincipals 65050
+#define IdResourceStringsSSPI_RSHTTPSSPINoPAData 65051
+#define IdResourceStringsSSPI_RSHTTPSSPIPKInitNameMismatch 65052
+#define IdResourceStringsSSPI_RSHTTPSSPISmartcardLogonReq 65053
+#define IdResourceStringsSSPI_RSHTTPSSPISysShutdownInProg 65054
+#define IdResourceStringsSSPI_RSHTTPSSPIKDCInvalidRequest 65055
+#define IdResourceStringsSSPI_RSHTTPSSPIBadPackageID 65056
+#define IdResourceStringsSSPI_RSHTTPSSPIContextExpired 65057
+#define IdResourceStringsSSPI_RSHTTPSSPIIncompleteMessage 65058
+#define IdResourceStringsSSPI_RSHTTPSSPIIncompleteCredentialNotInit 65059
+#define IdResourceStringsSSPI_RSHTTPSSPIBufferTooSmall 65060
+#define IdResourceStringsSSPI_RSHTTPSSPIIncompleteCredentialsInit 65061
+#define IdResourceStringsSSPI_RSHTTPSSPIRengotiate 65062
+#define IdResourceStringsSSPI_RSHTTPSSPIWrongPrincipal 65063
+#define IdResourceStringsSSPI_RSHTTPSSPINoLSACode 65064
+#define IdResourceStringsSSPI_RSHTTPSSPITimeScew 65065
+#define IdResourceStringsSSPI_RSHTTPSSPIUntrustedRoot 65066
+#define IdResourceStringsSSPI_RSHTTPSSPIIllegalMessage 65067
+#define IdResourceStringsSSPI_RSHTTPSSPICertUnknown 65068
+#define IdResourceStringsSSPI_RSHTTPSSPICertExpired 65069
+#define IdResourceStringsSSPI_RSHTTPSSPIEncryptionFailure 65070
+#define IdResourceStringsSSPI_RSHTTPSSPIDecryptionFailure 65071
+#define IdResourceStringsSSPI_RSHTTPSSPINotOwner 65072
+#define IdResourceStringsSSPI_RSHTTPSSPIPackageCannotBeInstalled 65073
+#define IdResourceStringsSSPI_RSHTTPSSPIInvalidToken 65074
+#define IdResourceStringsSSPI_RSHTTPSSPICannotPack 65075
+#define IdResourceStringsSSPI_RSHTTPSSPIQOPNotSupported 65076
+#define IdResourceStringsSSPI_RSHTTPSSPINoImpersonation 65077
+#define IdResourceStringsSSPI_RSHTTPSSPILoginDenied 65078
+#define IdResourceStringsSSPI_RSHTTPSSPIUnknownCredentials 65079
+#define IdResourceStringsSSPI_RSHTTPSSPINoCredentials 65080
+#define IdResourceStringsSSPI_RSHTTPSSPIMessageAltered 65081
+#define IdResourceStringsSSPI_RSHTTPSSPIOutOfSequence 65082
+#define IdResourceStringsSSPI_RSHTTPSSPINoAuthAuthority 65083
+#define IdResourceStringsSSPI_RSHTTPSSPIContinueNeeded 65084
+#define IdResourceStringsSSPI_RSHTTPSSPICompleteNeeded 65085
+#define IdResourceStringsSSPI_RSHTTPSSPICompleteContinueNeeded 65086
+#define IdResourceStringsSSPI_RSHTTPSSPILocalLogin 65087
+#define IdResourceStringsOpenSSL_RSOSSLAcceptError 65088
+#define IdResourceStringsOpenSSL_RSOSSLAcceptFailed 65089
+#define IdResourceStringsOpenSSL_RSOSSLAcceptExit 65090
+#define IdResourceStringsOpenSSL_RSOSSLConnectLoop 65091
+#define IdResourceStringsOpenSSL_RSOSSLConnectError 65092
+#define IdResourceStringsOpenSSL_RSOSSLConnectFailed 65093
+#define IdResourceStringsOpenSSL_RSOSSLConnectExit 65094
+#define IdResourceStringsOpenSSL_RSOSSLHandshakeStart 65095
+#define IdResourceStringsOpenSSL_RSOSSLHandshakeDone 65096
+#define IdResourceStringsSSPI_RSHTTPSSPISuccess 65097
+#define IdResourceStringsSSPI_RSHTTPSSPINotEnoughMem 65098
+#define IdResourceStringsSSPI_RSHTTPSSPIInvalidHandle 65099
+#define IdResourceStringsSSPI_RSHTTPSSPIFuncNotSupported 65100
+#define IdResourceStringsSSPI_RSHTTPSSPIUnknownTarget 65101
+#define IdResourceStringsSSPI_RSHTTPSSPIInternalError 65102
+#define IdResourceStringsSSPI_RSHTTPSSPISecPackageNotFound 65103
 #define IdResourceStringsProtocols_RSSSLLoadingKeyError 65104
 #define IdResourceStringsProtocols_RSSSLLoadingDHParamsError 65105
 #define IdResourceStringsProtocols_RSSSLGetMethodError 65106
@@ -246,14 +241,14 @@
 #define IdResourceStringsProtocols_RSSSLEOFViolation 65109
 #define IdResourceStringsProtocols_RSURINoProto 65110
 #define IdResourceStringsProtocols_RSURINoHost 65111
-#define IdResourceStringsOpenSSL_RSOSSFailedToLoad_WithErrCode 65112
-#define IdResourceStringsOpenSSL_RSOSSMissingExport_WithErrCode 65113
-#define IdResourceStringsOpenSSL_RSOSSUnsupportedVersion 65114
-#define IdResourceStringsOpenSSL_RSOSSUnsupportedLibrary 65115
-#define IdResourceStringsOpenSSL_RSOSSLModeNotSet 65116
-#define IdResourceStringsOpenSSL_RSOSSLCouldNotLoadSSLLibrary 65117
-#define IdResourceStringsOpenSSL_RSOSSLStatusString 65118
-#define IdResourceStringsOpenSSL_RSOSSLAlert 65119
+#define IdResourceStringsOpenSSL_RSOSSFailedToLoad 65112
+#define IdResourceStringsOpenSSL_RSOSSLModeNotSet 65113
+#define IdResourceStringsOpenSSL_RSOSSLCouldNotLoadSSLLibrary 65114
+#define IdResourceStringsOpenSSL_RSOSSLStatusString 65115
+#define IdResourceStringsOpenSSL_RSOSSLAlert 65116
+#define IdResourceStringsOpenSSL_RSOSSLReadAlert 65117
+#define IdResourceStringsOpenSSL_RSOSSLWriteAlert 65118
+#define IdResourceStringsOpenSSL_RSOSSLAcceptLoop 65119
 #define IdResourceStringsCore_RSReplyInvalidCode 65120
 #define IdResourceStringsCore_RSReplyCodeAlreadyExists 65121
 #define IdResourceStringsProtocols_RSIOHandlerPropInvalid 65122
@@ -672,32 +667,23 @@
 #define SysConst_SIntOverflow 65535
 STRINGTABLE
 BEGIN
-	JclVclResources_RsNAStartDocument,	"Unable to \"Start document\""
-	JclVclResources_RsNASendData,	"Unable to send data to printer"
-	JclVclResources_RsNAStartPage,	"Unable to \"Start page\""
-	JclVclResources_RsNAEndPage,	"Unable to \"End page\""
-	JclVclResources_RsNAEndDocument,	"Unable to \"End document\""
 	JclVclResources_RsNATransmission,	"Not all chars have been sent correctly to printer"
-	JclResources_RsIntelCacheDescrE2,	"3rd-level cache: 2 MByte, 16-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescrE3,	"3rd-level cache: 4 MByte, 16-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescrE4,	"3rd-level cache: 8 MByte, 16-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescrEA,	"3rd-level cache: 12 MByte, 24-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescrEB,	"3rd-level cache: 18 MByte, 24-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescrEC,	"3rd-level cache: 24 MByte, 24-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescrF0,	"64-Byte Prefetching"
 	JclResources_RsIntelCacheDescrF1,	"128-Byte Prefetching"
 	JclResources_RsIntelCacheDescrFF,	"CPUID leaf 2 does not report cache descriptor information, use CPUID leaf 4 to query cache parameters"
+	JclResources_RsOSVersionWin8,	"Windows 8"
+	JclResources_RsOSVersionWinServer2012,	"Windows Server 2012"
 	JclResources_RsOSVersionWin81,	"Windows 8.1"
 	JclResources_RsOSVersionWinServer2012R2,	"Windows Server 2012 R2"
-	JclResources_RsInvalidMMFName,	"Invalid MMF name \"%s\""
-	JclResources_RsInvalidMMFEmpty,	"The MMF named \"%s\" cannot be created empty"
-	JclResources_RsWin32Error,	"Win32 error: %s (%u)%s%s"
 	JclVclResources_RsSpoolerDocName,	"My Document"
 	JclVclResources_RsInvalidPrinter,	"Invalid printer"
-	JclResources_RsIntelCacheDescrB1,	"Instruction TLB: 2 MByte pages, 4-way, 8 entries or 4 MByte pages, 4-way, 4 entries"
-	JclResources_RsIntelCacheDescrB2,	"Instruction TLB: 4 KByte pages, 4-way set associative, 64 entries"
-	JclResources_RsIntelCacheDescrB3,	"Data TLB: 4 KByte pages, 4-way set associative, 128 entries"
-	JclResources_RsIntelCacheDescrB4,	"Data TLB1: 4 KByte pages, 4-way set associative, 256 entries"
+	JclVclResources_RsNAStartDocument,	"Unable to \"Start document\""
+	JclVclResources_RsNASendData,	"Unable to send data to printer"
+	JclVclResources_RsNAStartPage,	"Unable to \"Start page\""
+	JclVclResources_RsNAEndPage,	"Unable to \"End page\""
+	JclVclResources_RsNAEndDocument,	"Unable to \"End document\""
 	JclResources_RsIntelCacheDescrBA,	"Data TLB1: 4 KByte pages, 4-way set associative, 64 entries"
 	JclResources_RsIntelCacheDescrC0,	"Data TLB: 4 KByte and 4 MByte pages, 4-way set associative, 8 entries"
 	JclResources_RsIntelCacheDescrCA,	"Shared 2nd-Level TLB: 4 KByte pages, 4-way associative, 512 entries"
@@ -710,10 +696,10 @@ BEGIN
 	JclResources_RsIntelCacheDescrDC,	"3rd-level cache: 1.5 MByte, 12-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescrDD,	"3rd-level cache: 3 MByte, 12-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescrDE,	"3rd-level cache: 6 MByte, 12-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescr76,	"Instruction TLB: 2M/4M pages, fully associative, 8 entries"
-	JclResources_RsIntelCacheDescr78,	"2nd-level cache: 1 MBytes, 4-way set associative, 64 bytes line size"
-	JclResources_RsIntelCacheDescr79,	"2nd-level cache: 128 KBytes, 8-way set associative, 64 bytes line size, 2 lines per sector"
-	JclResources_RsIntelCacheDescr7A,	"2nd-level cache: 256 KBytes, 8-way set associative, 64 bytes line size, 2 lines per sector"
+	JclResources_RsIntelCacheDescrE2,	"3rd-level cache: 2 MByte, 16-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescrE3,	"3rd-level cache: 4 MByte, 16-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescrE4,	"3rd-level cache: 8 MByte, 16-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescrEA,	"3rd-level cache: 12 MByte, 24-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr7B,	"2nd-level cache: 512 KBytes, 8-way set associative, 64 bytes line size, 2 lines per sector"
 	JclResources_RsIntelCacheDescr7C,	"2nd-level cache: 1 MBytes, 8-way set associative, 64 bytes line size, 2 lines per sector"
 	JclResources_RsIntelCacheDescr7D,	"2nd-level cache: 2 MBytes, 8-way set associative, 64 byte line size"
@@ -726,10 +712,10 @@ BEGIN
 	JclResources_RsIntelCacheDescr86,	"2nd-level cache: 512 KByte, 4-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr87,	"2nd-level cache: 1 MByte, 8-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescrB0,	"Instruction TLB: 4 KByte pages, 4-way set associative, 128 entries"
-	JclResources_RsIntelCacheDescr55,	"Instruction TLB: 2-MByte or 4-MByte pages, fully associative, 7 entries"
-	JclResources_RsIntelCacheDescr56,	"Data TLB0: 4 MByte pages, 4-way set associative, 16 entries"
-	JclResources_RsIntelCacheDescr57,	"Data TLB0: 4 KByte pages, 4-way associative, 16 entries"
-	JclResources_RsIntelCacheDescr59,	"Data TLB0: 4 KByte pages, fully associative, 16 entries"
+	JclResources_RsIntelCacheDescrB1,	"Instruction TLB: 2 MByte pages, 4-way, 8 entries or 4 MByte pages, 4-way, 4 entries"
+	JclResources_RsIntelCacheDescrB2,	"Instruction TLB: 4 KByte pages, 4-way set associative, 64 entries"
+	JclResources_RsIntelCacheDescrB3,	"Data TLB: 4 KByte pages, 4-way set associative, 128 entries"
+	JclResources_RsIntelCacheDescrB4,	"Data TLB1: 4 KByte pages, 4-way set associative, 256 entries"
 	JclResources_RsIntelCacheDescr5A,	"Data TLB0: 2 MByte or 4 MByte pages, 4-way set associative, 32 entries"
 	JclResources_RsIntelCacheDescr5B,	"Data TLB: 4 KByte and 4 MByte pages, 64 Entries"
 	JclResources_RsIntelCacheDescr5C,	"Data TLB: 4 KByte and 4 MByte pages, 128 Entries"
@@ -742,10 +728,10 @@ BEGIN
 	JclResources_RsIntelCacheDescr71,	"Trace cache: 16 K-Ops, 8-way set associative"
 	JclResources_RsIntelCacheDescr72,	"Trace cache: 32 K-Ops, 8-way set associative"
 	JclResources_RsIntelCacheDescr73,	"Trace cache: 64 K-Ops, 8-way set associative"
-	JclResources_RsIntelCacheDescr43,	"2nd-level cache: 512 KBytes, 4-way set associative, 32 byte line size"
-	JclResources_RsIntelCacheDescr44,	"2nd-level cache: 1 MBytes, 4-way set associative, 32 byte line size"
-	JclResources_RsIntelCacheDescr45,	"2nd-level cache: 2 MBytes, 4-way set associative, 32 byte line size"
-	JclResources_RsIntelCacheDescr46,	"3rd-level cache: 4 MBytes, 4-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescr76,	"Instruction TLB: 2M/4M pages, fully associative, 8 entries"
+	JclResources_RsIntelCacheDescr78,	"2nd-level cache: 1 MBytes, 4-way set associative, 64 bytes line size"
+	JclResources_RsIntelCacheDescr79,	"2nd-level cache: 128 KBytes, 8-way set associative, 64 bytes line size, 2 lines per sector"
+	JclResources_RsIntelCacheDescr7A,	"2nd-level cache: 256 KBytes, 8-way set associative, 64 bytes line size, 2 lines per sector"
 	JclResources_RsIntelCacheDescr47,	"3rd-level cache: 8 MBytes, 4-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr48,	"3rd-level cache: 8 MByte, 8-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr49,	"2nd-level cache: 4 MBytes, 16-way set associative, 64 byte line size"
@@ -758,10 +744,10 @@ BEGIN
 	JclResources_RsIntelCacheDescr50,	"Instruction TLB: 4 KByte and 2 MByte or 4 MByte pages, 64 Entries"
 	JclResources_RsIntelCacheDescr51,	"Instruction TLB: 4 KByte and 2 MByte or 4 MByte pages, 128 Entries"
 	JclResources_RsIntelCacheDescr52,	"Instruction TLB: 4 KByte and 2 MByte or 4 MByte pages, 256 Entries"
-	JclResources_RsIntelCacheDescr21,	"2nd level cache: 256 KBytes, 8-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescr22,	"3rd level cache: 512 KBytes, 4-way set associative, 64 byte line size, 2 lines per sector"
-	JclResources_RsIntelCacheDescr23,	"3rd level cache: 1 MBytes, 8-way set associative, 64 byte line size, 2 lines per sector"
-	JclResources_RsIntelCacheDescr25,	"3rd level cache: 2 MBytes, 8-way set associative, 64 byte line size, 2 lines per sector"
+	JclResources_RsIntelCacheDescr55,	"Instruction TLB: 2-MByte or 4-MByte pages, fully associative, 7 entries"
+	JclResources_RsIntelCacheDescr56,	"Data TLB0: 4 MByte pages, 4-way set associative, 16 entries"
+	JclResources_RsIntelCacheDescr57,	"Data TLB0: 4 KByte pages, 4-way associative, 16 entries"
+	JclResources_RsIntelCacheDescr59,	"Data TLB0: 4 KByte pages, fully associative, 16 entries"
 	JclResources_RsIntelCacheDescr29,	"3rd level cache: 4 MBytes, 8-way set associative, 64 byte line size, 2 lines per sector"
 	JclResources_RsIntelCacheDescr2C,	"1st level data cache: 32 KBytes, 8-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr30,	"1st level instruction cache: 32 KBytes, 8-way set associative, 64 byte line size"
@@ -774,10 +760,10 @@ BEGIN
 	JclResources_RsIntelCacheDescr40,	"No 2nd-level cache or, if processor contains a valid 2nd-level cache, no 3rd-level cache"
 	JclResources_RsIntelCacheDescr41,	"2nd-level cache: 128 KBytes, 4-way set associative, 32 byte line size"
 	JclResources_RsIntelCacheDescr42,	"2nd-level cache: 256 KBytes, 4-way set associative, 32 byte line size"
-	JclResources_RsInconsistentPath,	"\"%s\" does not match RootKey"
-	JclResources_RsSynchCreateMutex,	"Failed to create mutex"
-	JclResources_RsIntelCacheDescr00,	"Null descriptor"
-	JclResources_RsIntelCacheDescr01,	"Instruction TLB: 4 KByte pages, 4-way set associative, 32 entries"
+	JclResources_RsIntelCacheDescr43,	"2nd-level cache: 512 KBytes, 4-way set associative, 32 byte line size"
+	JclResources_RsIntelCacheDescr44,	"2nd-level cache: 1 MBytes, 4-way set associative, 32 byte line size"
+	JclResources_RsIntelCacheDescr45,	"2nd-level cache: 2 MBytes, 4-way set associative, 32 byte line size"
+	JclResources_RsIntelCacheDescr46,	"3rd-level cache: 4 MBytes, 4-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr02,	"Instruction TLB: 4 MByte pages, 4-way set associative, 2 entries"
 	JclResources_RsIntelCacheDescr03,	"Data TLB: 4 KByte pages, 4-way set associative, 64 entries"
 	JclResources_RsIntelCacheDescr04,	"Data TLB: 4 MByte pages, 4-way set associative, 8 entries"
@@ -790,9 +776,10 @@ BEGIN
 	JclResources_RsIntelCacheDescr0C,	"1st level data cache: 16 KBytes, 4-way set associative, 32 byte line size"
 	JclResources_RsIntelCacheDescr0D,	"1st level data cache: 16 KBytes, 4-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr0E,	"1st level data cache: 24 KBytes, 6-way set associative, 64 byte line size"
-	IdResourceStringsSSPI_RSHTTPSSPIErrorMsg,	"SSPI %s returns error #%d(0x%x): %s"
-	IdResourceStringsSSPI_RSHTTPSSPIInterfaceInitFailed,	"SSPI interface has failed to initialise properly"
-	IdResourceStringsSSPI_RSHTTPSSPINoPkgInfoSpecified,	"No PSecPkgInfo specified"
+	JclResources_RsIntelCacheDescr21,	"2nd level cache: 256 KBytes, 8-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescr22,	"3rd level cache: 512 KBytes, 4-way set associative, 64 byte line size, 2 lines per sector"
+	JclResources_RsIntelCacheDescr23,	"3rd level cache: 1 MBytes, 8-way set associative, 64 byte line size, 2 lines per sector"
+	JclResources_RsIntelCacheDescr25,	"3rd level cache: 2 MBytes, 8-way set associative, 64 byte line size, 2 lines per sector"
 	IdResourceStringsSSPI_RSHTTPSSPINoCredentialHandle,	"No credential handle acquired"
 	IdResourceStringsSSPI_RSHTTPSSPICanNotChangeCredentials,	"Can not change credentials after handle aquired. Use Release first"
 	IdResourceStringsSSPI_RSHTTPSSPIUnknwonCredentialUse,	"Unknown credentials use"
@@ -806,9 +793,9 @@ BEGIN
 	JclResources_RsUnableToOpenKeyRead,	"Unable to open key \"%s\\%s\" for read"
 	JclResources_RsUnableToAccessValue,	"Unable to open key \"%s\\%s\" and access value \"%s\""
 	JclResources_RsWrongDataType,	"\"%s\\%s\\%s\" is of wrong kind or size"
-	IdResourceStringsSSPI_RSHTTPSSPISmartcardExpired,	"The smartcard certificate used for authentication has expired. Please contact your system administrator."
-	IdResourceStringsSSPI_RSHTTPSSPINoS4UProtSupport,	"The Kerberos subsystem encountered an error. A service for user protocol request was made against a domain controller which does not support service for user."
-	IdResourceStringsSSPI_RSHTTPSSPICrossRealmDeligationFailure,	"An attempt was made by this server to make a Kerberos constrained delegation request for a target outside of the server's realm. This is not supported, and indicates a misconfiguration on this server's allowed to delegate to list. Please contact your administrator."
+	JclResources_RsInconsistentPath,	"\"%s\" does not match RootKey"
+	JclResources_RsIntelCacheDescr00,	"Null descriptor"
+	JclResources_RsIntelCacheDescr01,	"Instruction TLB: 4 KByte pages, 4-way set associative, 32 entries"
 	IdResourceStringsSSPI_RSHTTPSSPIRevocationOfflineKDC,	"The revocation status of the domain controller certificate used for smartcard authentication could not be determined. There is additional information in the system event log. Please contact your system administrator."
 	IdResourceStringsSSPI_RSHTTPSSPICAUntrustedKDC,	"An untrusted certificate authority was detected while processing the domain controller certificate used for authentication. There is additional information in the system event log. Please contact your system administrator."
 	IdResourceStringsSSPI_RSHTTPSSPIKDCCertExpired,	"The domain controller certificate used for smartcard logon has expired. Please contact your system administrator with the contents of your system event log."
@@ -822,9 +809,9 @@ BEGIN
 	IdResourceStringsSSPI_RSHTTPSSPIPKU2UCertFailure,	"The PKU2U protocol encountered an error while attempting to utilize the associated certificates."
 	IdResourceStringsSSPI_RSHTTPSSPIMutualAuthFailed,	"The identity of the server computer could not be verified."
 	IdResourceStringsSSPI_RSHTTPSSPIUnknwonError,	"Unknown error"
-	IdResourceStringsSSPI_RSHTTPSSPISmartcardLogonReq,	"Smartcard logon is required and was not used."
-	IdResourceStringsSSPI_RSHTTPSSPISysShutdownInProg,	"A system shutdown is in progress."
-	IdResourceStringsSSPI_RSHTTPSSPIKDCInvalidRequest,	"An invalid request was sent to the KDC."
+	IdResourceStringsSSPI_RSHTTPSSPIErrorMsg,	"SSPI %s returns error #%d(0x%x): %s"
+	IdResourceStringsSSPI_RSHTTPSSPIInterfaceInitFailed,	"SSPI interface has failed to initialise properly"
+	IdResourceStringsSSPI_RSHTTPSSPINoPkgInfoSpecified,	"No PSecPkgInfo specified"
 	IdResourceStringsSSPI_RSHTTPSSPIKDCUnableToRefer,	"The KDC was unable to generate a referral for the service requested."
 	IdResourceStringsSSPI_RSHTTPSSPIKDCETypeUnknown,	"The encryption type requested is not supported by the KDC."
 	IdResourceStringsSSPI_RSHTTPSSPIUnsupPreauth,	"An unsupported preauthentication mechanism was presented to the Kerberos package."
@@ -838,9 +825,9 @@ BEGIN
 	IdResourceStringsSSPI_RSHTTPSSPIIssuingCAUntrusted,	"An untrusted certificate authority was detected While processing the smartcard certificate used for authentication. Please contact your system administrator."
 	IdResourceStringsSSPI_RSHTTPSSPIRevocationOffline,	"The revocation status of the smartcard certificate used for authentication could not be determined. Please contact your system administrator."
 	IdResourceStringsSSPI_RSHTTPSSPIPKInitClientFailure,	"The smartcard certificate used for authentication was not trusted. Please contact your system administrator."
-	IdResourceStringsSSPI_RSHTTPSSPICertExpired,	"The received certificate has expired."
-	IdResourceStringsSSPI_RSHTTPSSPIEncryptionFailure,	"The specified data could not be encrypted."
-	IdResourceStringsSSPI_RSHTTPSSPIDecryptionFailure,	"The specified data could not be decrypted."
+	IdResourceStringsSSPI_RSHTTPSSPISmartcardExpired,	"The smartcard certificate used for authentication has expired. Please contact your system administrator."
+	IdResourceStringsSSPI_RSHTTPSSPINoS4UProtSupport,	"The Kerberos subsystem encountered an error. A service for user protocol request was made against a domain controller which does not support service for user."
+	IdResourceStringsSSPI_RSHTTPSSPICrossRealmDeligationFailure,	"An attempt was made by this server to make a Kerberos constrained delegation request for a target outside of the server's realm. This is not supported, and indicates a misconfiguration on this server's allowed to delegate to list. Please contact your administrator."
 	IdResourceStringsSSPI_RSHTTPSSPIAlgorithmMismatch,	"The client and server cannot communicate, because they do not possess a common algorithm."
 	IdResourceStringsSSPI_RSHTTPSSPISecurityQOSFailure,	"The security context could not be established due to a failure in the requested quality of service (e.g. mutual authentication or delegation)."
 	IdResourceStringsSSPI_RSHTTPSSPISecCtxWasDelBeforeUpdated,	"A security context was deleted before the context was completed. This is considered a logon failure."
@@ -854,9 +841,9 @@ BEGIN
 	IdResourceStringsSSPI_RSHTTPSSPIKDCReplyTooManyPrincipals,	"The KDC reply contained more than one principal name."
 	IdResourceStringsSSPI_RSHTTPSSPINoPAData,	"Expected to find PA data for a hint of what etype to use, but it was not found."
 	IdResourceStringsSSPI_RSHTTPSSPIPKInitNameMismatch,	"The client certificate does not contain a valid UPN, or does not match the client name in the logon request. Please contact your administrator."
-	IdResourceStringsSSPI_RSHTTPSSPICompleteNeeded,	"The function completed successfully, but CompleteToken must be called"
-	IdResourceStringsSSPI_RSHTTPSSPICompleteContinueNeeded,	"The function completed successfully, but both CompleteToken and this function must be called to complete the context"
-	IdResourceStringsSSPI_RSHTTPSSPILocalLogin,	"The logon was completed, but no network authority was available. The logon was made using locally known information"
+	IdResourceStringsSSPI_RSHTTPSSPISmartcardLogonReq,	"Smartcard logon is required and was not used."
+	IdResourceStringsSSPI_RSHTTPSSPISysShutdownInProg,	"A system shutdown is in progress."
+	IdResourceStringsSSPI_RSHTTPSSPIKDCInvalidRequest,	"An invalid request was sent to the KDC."
 	IdResourceStringsSSPI_RSHTTPSSPIBadPackageID,	"The requested security package does not exist"
 	IdResourceStringsSSPI_RSHTTPSSPIContextExpired,	"The context has expired and can no longer be used."
 	IdResourceStringsSSPI_RSHTTPSSPIIncompleteMessage,	"The supplied message is incomplete.  The signature was not verified."
@@ -870,9 +857,9 @@ BEGIN
 	IdResourceStringsSSPI_RSHTTPSSPIUntrustedRoot,	"The certificate chain was issued by an untrusted authority."
 	IdResourceStringsSSPI_RSHTTPSSPIIllegalMessage,	"The message received was unexpected or badly formatted."
 	IdResourceStringsSSPI_RSHTTPSSPICertUnknown,	"An unknown error occurred while processing the certificate."
-	IdResourceStringsSSPI_RSHTTPSSPIUnknownTarget,	"The specified target is unknown or unreachable"
-	IdResourceStringsSSPI_RSHTTPSSPIInternalError,	"The Local Security Authority cannot be contacted"
-	IdResourceStringsSSPI_RSHTTPSSPISecPackageNotFound,	"The requested security package does not exist"
+	IdResourceStringsSSPI_RSHTTPSSPICertExpired,	"The received certificate has expired."
+	IdResourceStringsSSPI_RSHTTPSSPIEncryptionFailure,	"The specified data could not be encrypted."
+	IdResourceStringsSSPI_RSHTTPSSPIDecryptionFailure,	"The specified data could not be decrypted."
 	IdResourceStringsSSPI_RSHTTPSSPINotOwner,	"The caller is not the owner of the desired credentials"
 	IdResourceStringsSSPI_RSHTTPSSPIPackageCannotBeInstalled,	"The security package failed to initialize, and cannot be installed"
 	IdResourceStringsSSPI_RSHTTPSSPIInvalidToken,	"The token supplied to the function is invalid"
@@ -886,9 +873,9 @@ BEGIN
 	IdResourceStringsSSPI_RSHTTPSSPIOutOfSequence,	"The message supplied for verification is out of sequence"
 	IdResourceStringsSSPI_RSHTTPSSPINoAuthAuthority,	"No authority could be contacted for authentication."
 	IdResourceStringsSSPI_RSHTTPSSPIContinueNeeded,	"The function completed successfully, but must be called again to complete the context"
-	IdResourceStringsOpenSSL_RSOSSLReadAlert,	"%s Read Alert"
-	IdResourceStringsOpenSSL_RSOSSLWriteAlert,	"%s Write Alert"
-	IdResourceStringsOpenSSL_RSOSSLAcceptLoop,	"Accept Loop"
+	IdResourceStringsSSPI_RSHTTPSSPICompleteNeeded,	"The function completed successfully, but CompleteToken must be called"
+	IdResourceStringsSSPI_RSHTTPSSPICompleteContinueNeeded,	"The function completed successfully, but both CompleteToken and this function must be called to complete the context"
+	IdResourceStringsSSPI_RSHTTPSSPILocalLogin,	"The logon was completed, but no network authority was available. The logon was made using locally known information"
 	IdResourceStringsOpenSSL_RSOSSLAcceptError,	"Accept Error"
 	IdResourceStringsOpenSSL_RSOSSLAcceptFailed,	"Accept Failed"
 	IdResourceStringsOpenSSL_RSOSSLAcceptExit,	"Accept Exit"
@@ -902,6 +889,9 @@ BEGIN
 	IdResourceStringsSSPI_RSHTTPSSPINotEnoughMem,	"Not enough memory is available to complete this request"
 	IdResourceStringsSSPI_RSHTTPSSPIInvalidHandle,	"The handle specified is invalid"
 	IdResourceStringsSSPI_RSHTTPSSPIFuncNotSupported,	"The function requested is not supported"
+	IdResourceStringsSSPI_RSHTTPSSPIUnknownTarget,	"The specified target is unknown or unreachable"
+	IdResourceStringsSSPI_RSHTTPSSPIInternalError,	"The Local Security Authority cannot be contacted"
+	IdResourceStringsSSPI_RSHTTPSSPISecPackageNotFound,	"The requested security package does not exist"
 	IdResourceStringsProtocols_RSSSLLoadingKeyError,	"Could not load key, check password."
 	IdResourceStringsProtocols_RSSSLLoadingDHParamsError,	"Could not load DH Parameters."
 	IdResourceStringsProtocols_RSSSLGetMethodError,	"Error getting SSL method."
@@ -910,14 +900,14 @@ BEGIN
 	IdResourceStringsProtocols_RSSSLEOFViolation,	"EOF was observed that violates the protocol"
 	IdResourceStringsProtocols_RSURINoProto,	"Protocol field is empty"
 	IdResourceStringsProtocols_RSURINoHost,	"Host field is empty"
-	IdResourceStringsOpenSSL_RSOSSFailedToLoad_WithErrCode,	"Failed to load %s (error #%d)."
-	IdResourceStringsOpenSSL_RSOSSMissingExport_WithErrCode,	"%s (error #%d)"
-	IdResourceStringsOpenSSL_RSOSSUnsupportedVersion,	"Unsupported SSL Library version: %.8x."
-	IdResourceStringsOpenSSL_RSOSSUnsupportedLibrary,	"Unsupported SSL Library: %s."
+	IdResourceStringsOpenSSL_RSOSSFailedToLoad,	"Failed to load %s."
 	IdResourceStringsOpenSSL_RSOSSLModeNotSet,	"Mode has not been set."
 	IdResourceStringsOpenSSL_RSOSSLCouldNotLoadSSLLibrary,	"Could not load SSL library."
 	IdResourceStringsOpenSSL_RSOSSLStatusString,	"SSL status: \"%s\""
 	IdResourceStringsOpenSSL_RSOSSLAlert,	"%s Alert"
+	IdResourceStringsOpenSSL_RSOSSLReadAlert,	"%s Read Alert"
+	IdResourceStringsOpenSSL_RSOSSLWriteAlert,	"%s Write Alert"
+	IdResourceStringsOpenSSL_RSOSSLAcceptLoop,	"Accept Loop"
 	IdResourceStringsCore_RSReplyInvalidCode,	"Reply Code is not valid: %s"
 	IdResourceStringsCore_RSReplyCodeAlreadyExists,	"Reply Code already exists: %s"
 	IdResourceStringsProtocols_RSIOHandlerPropInvalid,	"IOHandler value is not valid"
@@ -962,7 +952,7 @@ BEGIN
 	IdResourceStringsCore_RSSocksServerTTLExpiredError,	"TTL expired."
 	IdResourceStringsCore_RSSocksServerCommandError,	"Command not supported."
 	IdResourceStringsCore_RSSocksServerAddressError,	"Address type not supported."
-	IdResourceStringsCore_RSInterceptCircularLink,	"%s: Circular links are not allowed"
+	IdResourceStringsCore_RSInterceptCircularLink,	"%d: Circular links are not allowed"
 	IdResourceStringsCore_RSNotEnoughDataInBuffer,	"Not enough data in buffer. (%d/%d)"
 	IdResourceStringsCore_RSTooMuchDataInBuffer,	"Too much data in buffer."
 	IdResourceStringsCore_RSFileNotFound,	"File \"%s\" not found"
@@ -970,7 +960,7 @@ BEGIN
 	IdResourceStrings_RSCannotSetIPVersionWhenConnected,	"Cannot change IPVersion when connected"
 	IdResourceStrings_RSCannotBindRange,	"Can not bind in port range (%d - %d)"
 	IdResourceStrings_RSConnectionClosedGracefully,	"Connection Closed Gracefully."
-	IdResourceStrings_RSCouldNotBindSocket,	"Could not bind socket."
+	IdResourceStrings_RSCouldNotBindSocket,	"Could not bind socket. Address and port are already in use."
 	IdResourceStrings_RSInvalidPortRange,	"Invalid Port Range (%d - %d)"
 	IdResourceStrings_RSInvalidServiceName,	"%s is not a valid service."
 	IdResourceStrings_RSInvalidIPv6Address,	"%s is not a valid IPv6 address"

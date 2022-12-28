@@ -97,6 +97,7 @@ object fmFptrVatRate: TfmFptrVatRate
     MinValue = 0
     TabOrder = 0
     Value = 1
+    OnChange = ModifiedClick
   end
   object edtVatName: TEdit
     Left = 104
@@ -105,6 +106,7 @@ object fmFptrVatRate: TfmFptrVatRate
     Height = 21
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 2
+    OnChange = ModifiedClick
   end
   object chbVatCodeEnabled: TCheckBox
     Left = 8
@@ -113,6 +115,7 @@ object fmFptrVatRate: TfmFptrVatRate
     Height = 17
     Caption = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1085#1072#1083#1086#1075#1086#1074#1099#1077' '#1089#1090#1072#1074#1082#1080
     TabOrder = 5
+    OnClick = ModifiedClick
   end
   object edtVatRate: TEdit
     Left = 104
@@ -120,5 +123,6 @@ object fmFptrVatRate: TfmFptrVatRate
     Width = 145
     Height = 21
     TabOrder = 1
+    OnChange = ModifiedClick
   end
 end

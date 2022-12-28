@@ -49,7 +49,7 @@ object fmFptrHeader: TfmFptrHeader
     Gutter.RightOffset = 4
     Gutter.ShowLineNumbers = True
     ScrollBars = ssVertical
-    OnChange = PageChange
+    OnChange = ModifiedClick
   end
   object cbNumHeaderLines: TTntComboBox
     Left = 128
@@ -60,6 +60,6 @@ object fmFptrHeader: TfmFptrHeader
     Anchors = [akLeft, akTop, akRight]
     ItemHeight = 13
     TabOrder = 1
-    OnChange = PageChange
+    OnChange = ModifiedClick
   end
 end
