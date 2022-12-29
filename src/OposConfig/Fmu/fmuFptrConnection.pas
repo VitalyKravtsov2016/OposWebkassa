@@ -35,12 +35,8 @@ type
     procedure btnUpdateCashBoxNumbersClick(Sender: TObject);
     procedure ModifiedClick(Sender: TObject);
   private
-    FDriver: TWebkassaClient;
-    property Driver: TWebkassaClient read FDriver;
+    function CreateDriver: TWebkassaClient;
   public
-    constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
-
     procedure UpdatePage; override;
     procedure UpdateObject; override;
   end;
@@ -53,18 +49,6 @@ implementation
 {$R *.dfm}
 
 { TfmFptrConnection }
-
-constructor TfmFptrConnection.Create(AOwner: TComponent);
-begin
-  inherited Create(AOwner);
-  FDriver := TWebkassaClient.Create(TLogFile.Create);
-end;
-
-destructor TfmFptrConnection.Destroy;
-begin
-  FDriver.Free;
-  inherited Destroy;
-end;
 
 procedure TfmFptrConnection.UpdatePage;
 begin
@@ -84,16 +68,39 @@ begin
   Parameters.CashboxNumber := cbCashboxNumber.Text;
 end;
 
+function TfmFptrConnection.CreateDriver: TWebkassaClient;
+var
+  Logger: ILogFile;
+  Driver: TWebkassaClient;
+begin
+  Logger := TLogFile.Create;
+  Logger.MaxCount := Parameters.LogMaxCount;
+  Logger.Enabled := Parameters.LogFileEnabled;
+  Logger.FilePath := Parameters.LogFilePath;
+  Logger.DeviceName := DeviceName;
+  Logger.Debug('LOG START');
+  Parameters.WriteLogParameters;
+
+  Driver := TWebkassaClient.Create(Logger);
+  Driver.RaiseErrors := True;
+  Driver.Login := Parameters.Login;
+  Driver.Password := Parameters.Password;
+  Driver.Address := Parameters.WebkassaAddress;
+  Driver.ConnectTimeout := Parameters.ConnectTimeout;
+  Driver.Address := Parameters.WebkassaAddress;
+
+  Result := Driver;
+end;
+
 procedure TfmFptrConnection.btnTestConnectionClick(Sender: TObject);
+var
+  Driver: TWebkassaClient;
 begin
   EnableButtons(False);
   edtResultCode.Clear;
+  UpdateObject;
+  Driver := CreateDriver;
   try
-    UpdateObject;
-    Driver.RaiseErrors := True;
-    Driver.Address := Parameters.WebkassaAddress;
-    Driver.Login := Parameters.Login;
-    Driver.Password := Parameters.Password;
     Driver.Connect;
     edtResultCode.Text := 'OK';
   except
@@ -102,6 +109,7 @@ begin
       edtResultCode.Text := E.Message;
     end;
   end;
+  Driver.Free;
   EnableButtons(True);
 end;
 
@@ -111,16 +119,14 @@ var
   Index: Integer;
   Item: TCashbox;
   Command: TCashboxesCommand;
+  Driver: TWebkassaClient;
 begin
   EnableButtons(False);
   Command := TCashboxesCommand.Create;
   edtResultCode.Clear;
+  UpdateObject;
+  Driver := CreateDriver;                 
   try
-    UpdateObject;
-    Driver.RaiseErrors := True;
-    Driver.Address := Parameters.WebkassaAddress;
-    Driver.Login := Parameters.Login;
-    Driver.Password := Parameters.Password;
     Driver.Connect;
 
     Command.Request.Token := Driver.Token;
@@ -128,6 +134,7 @@ begin
 
     cbCashboxNumber.Items.BeginUpdate;
     try
+      cbCashboxNumber.Clear;
       for i := 0 to Command.Data.List.Count-1 do
       begin
         Item := Command.Data.List.Items[i] as TCashbox;
@@ -148,6 +155,7 @@ begin
     end;
   end;
   Command.Free;
+  Driver.Free;
   EnableButtons(True);
 end;
 

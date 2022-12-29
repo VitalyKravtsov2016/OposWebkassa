@@ -13,7 +13,7 @@ object fmFptrConnection: TfmFptrConnection
   OldCreateOrder = False
   DesignSize = (
     480
-    324)
+    325)
   PixelsPerInch = 96
   TextHeight = 13
   object gbConenctionParams: TTntGroupBox
@@ -128,6 +128,7 @@ object fmFptrConnection: TfmFptrConnection
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       ItemHeight = 13
+      Sorted = True
       TabOrder = 4
       Text = 'cbCashboxNumber'
       OnChange = ModifiedClick
