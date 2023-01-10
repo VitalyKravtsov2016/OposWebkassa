@@ -106,6 +106,7 @@ begin
   except
     on E: Exception do
     begin
+      Logger.Error(E.Message);
       edtResultCode.Text := E.Message;
     end;
   end;
@@ -125,7 +126,7 @@ begin
   Command := TCashboxesCommand.Create;
   edtResultCode.Clear;
   UpdateObject;
-  Driver := CreateDriver;                 
+  Driver := CreateDriver;
   try
     Driver.Connect;
 
@@ -151,6 +152,7 @@ begin
   except
     on E: Exception do
     begin
+      Logger.Error(E.Message);
       edtResultCode.Text := E.Message;
     end;
   end;

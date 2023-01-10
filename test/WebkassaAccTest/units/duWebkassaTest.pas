@@ -67,9 +67,11 @@ begin
   FLogger.DeviceName := 'DeviceName';
 
   FClient := TWebkassaClient.Create(FLogger);
-  FClient.Address := 'https://devkkm.webkassa.kz/';
-  FClient.Login := 'webkassa4@softit.kz';
-  FClient.Password := 'Kassa123';
+  FClient.Address := 'https://devkkm.webkassa.kz';
+  //FClient.Login := 'webkassa4@softit.kz';
+  //FClient.Password := 'Kassa123';
+  FClient.Login := 'Adilkhan.seilbekov@petroretail.kz';
+  FClient.Password := 'Aa123456789!';
   FClient.CashboxNumber := 'SWK00032685';
   //FClient.CashboxNumber := 'SWK00033059';
   FClient.RaiseErrors := True;
