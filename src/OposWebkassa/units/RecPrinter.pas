@@ -505,7 +505,7 @@ end;
 
 function TWindowsEscPrinter.CreatePort: TRawPrinterPort;
 begin
-  Result := TRawPrinterPort.Create(Params.PrinterName);
+  Result := TRawPrinterPort.Create(FLogger, Params.PrinterName);
 end;
 
 function TWindowsEscPrinter.ReadDeviceList: WideString;

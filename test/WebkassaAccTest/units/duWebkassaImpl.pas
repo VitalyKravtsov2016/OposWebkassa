@@ -49,6 +49,7 @@ type
     procedure TestFiscalReceipt3;
     procedure TestFiscalReceipt4;
     procedure TestFiscalReceipt5;
+    procedure TestFiscalReceipt6;
     procedure TestFiscalReceiptWithVAT;
     procedure TestFiscalReceiptWithAdjustments;
     procedure TestFiscalReceiptWithAdjustments2;
@@ -104,19 +105,30 @@ begin
   FDriver.Params.WebkassaAddress := 'https://devkkm.webkassa.kz/';
   //FDriver.Params.CashboxNumber := 'SWK00033059'; !!!
   FDriver.Params.CashboxNumber := 'SWK00032685';
-  FDriver.Params.NumHeaderLines := 5;
-  FDriver.Params.NumTrailerLines := 11;
+  FDriver.Params.NumHeaderLines := 6;
+  FDriver.Params.NumTrailerLines := 3;
   FDriver.Params.RoundType := RoundTypeNone;
+
+  FDriver.Params.HeaderText :=
+    ' ' + CRLF +
+    '                  ТОО PetroRetail                 230498234              029384     203948' + CRLF +
+    '                 БИН 181040037076                 ' + CRLF +
+    '             НДС Серия 60001 № 1204525            ' + CRLF +
+    '               АЗС №Z-5555 (Касса 1)              ' + CRLF +
+    '                       стенд                      ';
+
+(*
   FDriver.Params.HeaderText :=
     ' ' + CRLF +
     '  Восточно-Казастанская область, город' + CRLF +
     '    Усть-Каменогорск, ул. Грейдерная, 1/10' + CRLF +
     '            ТОО PetroRetail';
+*)
+
   FDriver.Params.TrailerText :=
     '           Callцентр 039458039850 ' + CRLF +
     '          Горячая линия 20948802934' + CRLF +
     '            СПАСИБО ЗА ПОКУПКУ';
-
 
   FDriver.Params.PaymentType2 := 1;
   FDriver.Params.PaymentType3 := 4;
@@ -368,6 +380,24 @@ begin
   FptrCheck(Driver.EndFiscalReceipt(False));
 end;
 
+procedure TWebkassaImplTest.TestFiscalReceipt6;
+begin
+  FDriver.Params.RoundType := RoundTypeTotal;
+
+  OpenClaimEnable;
+  CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+  FptrCheck(Driver.DirectIO2(30, 72, '4'));
+  FptrCheck(Driver.DirectIO2(30, 73, '1'));
+  FptrCheck(Driver.PrintRecItem('ТРК 1:АИ-92-К4/К5', 139, 870, 4, 160, 'л'));
+  FptrCheck(Driver.PrintRecTotal(139, 139, '1'));
+  FptrCheck(Driver.PrintRecMessage('Kaspi аварийный   №2832880234      '));
+  FptrCheck(Driver.PrintRecMessage('Оператор: Кассир1'));
+  FptrCheck(Driver.PrintRecMessage('Транз.:      11822 '));
+  FptrCheck(Driver.PrintRecMessage('Транз. продажи: 11820 (200,00 тг)'));
+  FptrCheck(Driver.EndFiscalReceipt(False));
+end;
 
 procedure TWebkassaImplTest.TestFiscalReceiptWithVAT;
 begin

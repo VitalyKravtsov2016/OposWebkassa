@@ -4,22 +4,23 @@ interface
 
 uses
   // VCL
-  Windows, SyncObjs,
+  Windows, SysUtils, SyncObjs,
   // Jcl
   JclPrint,
   // This
-  PrinterPort;
+  PrinterPort, LogFile, StringUtils;
 
 type
   { TRawPrinterPort }
 
   TRawPrinterPort = class(TInterfacedObject, IPrinterPort)
   private
+    FLogger: ILogFile;
     FBuffer: AnsiString;
     FPrinterName: AnsiString;
     FLock: TCriticalSection;
   public
-    constructor Create(const APrinterName: string);
+    constructor Create(ALogger: ILogFile; const APrinterName: string);
     destructor Destroy; override;
 
     procedure Flush;
@@ -37,9 +38,10 @@ implementation
 
 { TRawPrinterPort }
 
-constructor TRawPrinterPort.Create(const APrinterName: string);
+constructor TRawPrinterPort.Create(ALogger: ILogFile; const APrinterName: string);
 begin
   inherited Create;
+  FLogger := ALogger;
   FLock := TCriticalSection.Create;
   FPrinterName := APrinterName;
 end;
@@ -47,6 +49,7 @@ end;
 destructor TRawPrinterPort.Destroy;
 begin
   FLock.Free;
+  FLogger := nil;
   inherited Destroy;
 end;
 
@@ -62,7 +65,16 @@ end;
 
 procedure TRawPrinterPort.Flush;
 begin
-  DirectPrint(FPrinterName, FBuffer);
+  FLogger.Debug('DirectPrint => ' + StrToHexText(FBuffer));
+  try
+    DirectPrint(FPrinterName, FBuffer);
+  except
+    on E: Exception do
+    begin
+      FLogger.Error('DirectPrint failed: ' + E.Message);
+      raise;
+    end;
+  end;
   FBuffer := '';
 end;
 

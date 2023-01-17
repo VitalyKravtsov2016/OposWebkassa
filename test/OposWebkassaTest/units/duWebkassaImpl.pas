@@ -67,6 +67,7 @@ type
     // !!!
     procedure TestXReport;
     procedure TestReceiptTemplate; // !!!
+    procedure PrintHeaderAndCut;
   published
     procedure TestZReport;
     procedure TestCashIn;
@@ -875,6 +876,23 @@ end;
 end;
 
 *)
+
+procedure TWebkassaImplTest.PrintHeaderAndCut;
+const
+  Text: string =
+    '                                          ' + CRLF +
+    '   Восточно-Казастанская область, город   ' + CRLF +
+    '    Усть-Каменогорск, ул. Грейдерная, 1/10' + CRLF +
+    '            ТОО PetroRetail               ';
+
+begin
+  FPrinter.Lines.Clear;
+  OpenClaimEnable;
+  Driver.PrintHeaderAndCut;
+  CheckEquals(4, FPrinter.Lines.Count, 'Printer.Lines.Count');
+  FLines.Text := Text;
+  CheckLines;
+end;
 
 initialization
   RegisterTest('', TWebkassaImplTest.Suite);

@@ -12,7 +12,7 @@ uses
   TntClasses, TntSysUtils,
   // This
   DebugUtils, StringUtils, ESCPrinter, PrinterPort, SerialPort, LogFile,
-  FileUtils, SocketPort;
+  FileUtils, SocketPort, RawPrinterPort;
 
 type
   { TESCPrinterTest }
@@ -26,6 +26,7 @@ type
     procedure SetUp; override;
     procedure TearDown; override;
 
+    function CreateRawPort: TRawPrinterPort;
     function CreateSerialPort: TSerialPort;
     function CreateSocketPort: TSocketPort;
     property Printer: TESCPrinter read FPrinter;
@@ -40,6 +41,7 @@ type
     procedure TestBarcode;
     procedure TestBarcode2;
     procedure TestQRCode;
+    procedure TestQRCode2;
     procedure PrintTestPage;
     procedure TestJustification;
     procedure TestJustification2;
@@ -68,7 +70,9 @@ begin
   FLogger.DeviceName := 'DeviceName';
 
   //FPrinterPort := CreateSocketPort;
-  FPrinterPort := CreateSerialPort;
+  //FPrinterPort := CreateSerialPort;
+
+  FPrinterPort := CreateRawPort;
   FPrinterPort.Open;
   FPrinter := TEscPrinter.Create(FPrinterPort, FLogger);
 end;
@@ -78,6 +82,11 @@ begin
   FPrinter.Free;
   FPrinterPort := nil;
   inherited TearDown;
+end;
+
+function TESCPrinterTest.CreateRawPort: TRawPrinterPort;
+begin
+  Result := TRawPrinterPort.Create(FLogger, 'RONGTA 80mm Series Printer');
 end;
 
 function TESCPrinterTest.CreateSerialPort: TSerialPort;
@@ -363,6 +372,14 @@ begin
   QRCode.ModuleSize := 4;
   QRCode.data := 'QRCodetestQRCodetestQRCodetest';
   FPrinter.printQRCode(QRCode);
+end;
+
+procedure TESCPrinterTest.TestQRCode2;
+var
+  Data: string;
+begin
+  Data := HexToStr('1B5A0001045400687474703A2F2F6465762E6B6F66642E6B7A2F636F6E73756D65723F693D39333832393836333035343726663D32313130333032303032303726733D3133392E303026743D323032333031313754313730303237');
+  FPrinter.Send(Data);
 end;
 
 procedure TESCPrinterTest.TestBitmap;

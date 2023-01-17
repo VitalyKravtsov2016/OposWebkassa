@@ -77,6 +77,7 @@ uses
   SerialPorts in '..\..\src\Shared\SerialPorts.pas',
   ReceiptTemplate in '..\..\src\OposWebkassa\units\ReceiptTemplate.pas',
   duWebkassaImpl in 'units\duWebkassaImpl.pas',
+  MockPrinterPort in '..\..\src\Shared\MockPrinterPort.pas',
   RawPrinterPort in '..\..\src\Shared\RawPrinterPort.pas';
 
 {$R *.RES}

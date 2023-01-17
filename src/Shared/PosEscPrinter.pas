@@ -1908,6 +1908,7 @@ function TPosEscPrinter.PrintNormal(Station: Integer;
   const Data: WideString): Integer;
 begin
   try
+    CheckEnabled;
     CheckRecStation(Station);
     CheckPaperPresent;
     PrintText(Data);

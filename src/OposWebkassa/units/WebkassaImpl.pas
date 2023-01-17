@@ -74,7 +74,7 @@ type
     FVatValues: array [MinVatID..MaxVatID] of Integer;
     FRecLineChars: Integer;
     FHeaderPrinted: Boolean;
-
+  public
     procedure PrintDocumentSafe(Document: TTextDocument);
     procedure CheckCanPrint;
     function GetVatRate(Code: Integer): TVatRate;
@@ -252,6 +252,7 @@ type
     function ClaimDevice(Timeout: Integer): Integer; safecall;
     function ClearOutput: Integer; safecall;
     function DirectIO(Command: Integer; var pData: Integer; var pString: WideString): Integer; safecall;
+    function DirectIO2(Command: Integer; const pData: Integer; const pString: WideString): Integer;
     function ReleaseDevice: Integer; safecall;
     function BeginFiscalDocument(DocumentAmount: Integer): Integer; safecall;
     function BeginFiscalReceipt(PrintHeader: WordBool): Integer; safecall;
@@ -842,6 +843,16 @@ begin
     on E: Exception do
       Result := HandleException(E);
   end;
+end;
+
+function TWebkassaImpl.DirectIO2(Command: Integer; const pData: Integer; const pString: WideString): Integer;
+var
+  pData2: Integer;
+  pString2: WideString;
+begin
+  pData2 := pData;
+  pString2 := pString;
+  Result := DirectIO(Command, pData2, pString2);
 end;
 
 function TWebkassaImpl.EndFiscalDocument: Integer;
@@ -2333,7 +2344,7 @@ begin
     end;
     PrinterTypeEscPrinterWindows:
     begin
-      PrinterPort := TRawPrinterPort.Create(Params.PrinterName);
+      PrinterPort := TRawPrinterPort.Create(Logger, Params.PrinterName);
       PosEscPrinter := TPosEscPrinter.Create2(nil, PrinterPort, Logger);
       PosEscPrinter.OnStatusUpdateEvent := PrinterStatusUpdateEvent;
       PosEscPrinter.OnErrorEvent := PrinterErrorEvent;
@@ -3139,13 +3150,13 @@ begin
   if RecLineChars = 0 then
     raise Exception.Create('RecLineChars = 0');
 
+  Text := TrimRight(Text);
   while True do
   begin
     Line := Prefix + TrimRight(Copy(Text, 1, RecLineChars));
     CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, Line + CRLF));
-    if Length(Text) <= RecLineChars then Break;
-
-    Text := Copy(Text, RecLineChars + 1, Length(Text));
+    Text := TrimRight(Copy(Text, RecLineChars + 1, Length(Text)));
+    if Length(Text) = 0 then Break;
   end;
 end;
 

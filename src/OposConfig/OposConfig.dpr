@@ -88,6 +88,7 @@ uses
   SocketPort in '..\Shared\SocketPort.pas',
   RecPrinter in '..\OposWebkassa\units\RecPrinter.pas',
   ReceiptTemplate in '..\OposWebkassa\units\ReceiptTemplate.pas',
+  MockPrinterPort in '..\Shared\MockPrinterPort.pas',
   RawPrinterPort in '..\Shared\RawPrinterPort.pas';
 
 {$R *.RES}
