@@ -91,7 +91,8 @@ uses
   TextReport in '..\Shared\TextReport.pas',
   SerialPorts in '..\Shared\SerialPorts.pas',
   ReceiptItem in '..\OposWebkassa\units\ReceiptItem.pas',
-  MathUtils in '..\OposWebkassa\units\MathUtils.pas';
+  MathUtils in '..\OposWebkassa\units\MathUtils.pas',
+  Translation in '..\Shared\Translation.pas';
 
 {$R *.RES}
 {$R WindowsXP.RES}

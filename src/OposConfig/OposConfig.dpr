@@ -89,7 +89,8 @@ uses
   RecPrinter in '..\OposWebkassa\units\RecPrinter.pas',
   ReceiptTemplate in '..\OposWebkassa\units\ReceiptTemplate.pas',
   MockPrinterPort in '..\Shared\MockPrinterPort.pas',
-  RawPrinterPort in '..\Shared\RawPrinterPort.pas';
+  RawPrinterPort in '..\Shared\RawPrinterPort.pas',
+  Translation in '..\Shared\Translation.pas';
 
 {$R *.RES}
 {$R WindowsXP.RES}

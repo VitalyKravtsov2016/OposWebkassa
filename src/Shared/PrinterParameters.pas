@@ -561,8 +561,10 @@ begin
   begin
     FTranslation := Translations.Find(FTranslationName);
   end;
+(*
   if FTranslation <> nil then
     Result := FTranslation.GetTranslation(Text);
+*)    
 end;
 
 end.

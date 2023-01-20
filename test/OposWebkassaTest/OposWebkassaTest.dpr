@@ -78,7 +78,8 @@ uses
   ReceiptTemplate in '..\..\src\OposWebkassa\units\ReceiptTemplate.pas',
   MockPrinterPort in '..\..\src\Shared\MockPrinterPort.pas',
   duPosEscPrinter in 'units\duPosEscPrinter.pas',
-  RawPrinterPort in '..\..\src\Shared\RawPrinterPort.pas';
+  RawPrinterPort in '..\..\src\Shared\RawPrinterPort.pas',
+  Translation in '..\..\src\Shared\Translation.pas';
 
 {$R *.RES}
 
