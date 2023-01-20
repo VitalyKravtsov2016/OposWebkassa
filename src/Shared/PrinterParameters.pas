@@ -10,7 +10,8 @@ uses
   // Opos
   Opos, Oposhi, OposException,
   // This
-  WException, LogFile, FileUtils, VatRate, SerialPort, SerialPorts, ReceiptItem;
+  WException, LogFile, FileUtils, VatRate, SerialPort, SerialPorts, ReceiptItem,
+  Translation;
 
 const
   /////////////////////////////////////////////////////////////////////////////
@@ -85,6 +86,7 @@ const
   DefSerialTimeout = 500;
   DefDevicePollTime = 3000;
   DefReceiptTemplate = '';
+  DefTranslationName = 'KZ';
 
   /////////////////////////////////////////////////////////////////////////////
   // Header and trailer parameters
@@ -111,6 +113,7 @@ type
     FLogger: ILogFile;
     FHeader: TTntStringList;
     FTrailer: TTntStringList;
+    FTranslations: TTranslations;
     FLogMaxCount: Integer;
     FLogFileEnabled: Boolean;
     FLogFilePath: WideString;
@@ -139,6 +142,8 @@ type
     FBaudRate: Integer;
     FDevicePollTime: Integer;
     FReceiptTemplate: WideString;
+    FTranslationName: WideString;
+    FTranslation: TTranslation;
 
     procedure LogText(const Caption, Text: WideString);
     procedure SetHeaderText(const Text: WideString);
@@ -167,6 +172,7 @@ type
     function SerialPortNames: string;
     function BaudRateIndex(const Value: Integer): Integer;
     procedure Assign(Source: TPersistent); override;
+    function GetTranslation(const Text: WideString): WideString;
 
     property Logger: ILogFile read FLogger;
     property Header: TTntStringList read FHeader;
@@ -201,6 +207,8 @@ type
     property BaudRate: Integer read FBaudRate write SetBaudRate;
     property DevicePollTime: Integer read FDevicePollTime write FDevicePollTime;
     property ReceiptTemplate: WideString read FReceiptTemplate write FReceiptTemplate;
+    property Translations: TTranslations read FTranslations;
+    property TranslationName: WideString read FTranslationName write FTranslationName;
   end;
 
 function QRSizeToWidth(QRSize: Integer): Integer;
@@ -228,6 +236,7 @@ begin
   FVatRates := TVatRates.Create;
   FHeader := TTntStringList.Create;
   FTrailer := TTntStringList.Create;
+  FTranslations := TTranslations.Create;
   SetDefaults;
 end;
 
@@ -236,6 +245,7 @@ begin
   FHeader.Free;
   FTrailer.Free;
   FVatRates.Free;
+  FTranslations.Free;
   inherited Destroy;
 end;
 
@@ -539,6 +549,20 @@ begin
     DevicePollTime := Src.DevicePollTime;
   end else
     inherited Assign(Source);
+end;
+
+function TPrinterParameters.GetTranslation(
+  const Text: WideString): WideString;
+var
+  Translation: TTranslation;
+begin
+  Result := Text;
+  if FTranslation = nil then
+  begin
+    FTranslation := Translations.Find(FTranslationName);
+  end;
+  if FTranslation <> nil then
+    Result := FTranslation.GetTranslation(Text);
 end;
 
 end.

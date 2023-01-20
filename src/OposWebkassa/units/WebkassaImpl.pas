@@ -74,6 +74,7 @@ type
     FVatValues: array [MinVatID..MaxVatID] of Integer;
     FRecLineChars: Integer;
     FHeaderPrinted: Boolean;
+    procedure PrintLine(Text: WideString);
   public
     procedure PrintDocumentSafe(Document: TTextDocument);
     procedure CheckCanPrint;
@@ -3154,10 +3155,16 @@ begin
   while True do
   begin
     Line := Prefix + TrimRight(Copy(Text, 1, RecLineChars));
-    CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, Line + CRLF));
+    PrintLine(Line);
     Text := TrimRight(Copy(Text, RecLineChars + 1, Length(Text)));
     if Length(Text) = 0 then Break;
   end;
+end;
+
+procedure TWebkassaImpl.PrintLine(Text: WideString);
+begin
+  Text := Params.GetTranslation(Text);
+  CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, Text + CRLF));
 end;
 
 procedure TWebkassaImpl.PrintHeaderAndCut;
@@ -3177,32 +3184,32 @@ begin
         for i := 0 to Params.Header.Count-1 do
         begin
           Text := TrimRight(Params.Header[i]) + CRLF;
-          CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, Text));
+          PrintLine(Text);
         end;
         Count := RecLinesToPaperCut - FParams.NumHeaderLines;
         for i := 0 to Count-1 do
         begin
-          CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, CRLF));
+          PrintLine(CRLF);
         end;
         Printer.CutPaper(90);
       end else
       begin
         for i := 1 to RecLinesToPaperCut do
         begin
-          CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, CRLF));
+          PrintLine(CRLF);
         end;
         Printer.CutPaper(90);
         for i := 0 to Params.Header.Count-1 do
         begin
           Text := TrimRight(Params.Header[i]) + CRLF;
-          CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, Text));
+          PrintLine(Text);
         end;
       end;
     end else
     begin
       for i := 1 to RecLinesToPaperCut do
       begin
-        Printer.PrintNormal(PTR_S_RECEIPT, CRLF);
+        PrintLine(CRLF);
       end;
       Printer.CutPaper(90);
     end;

@@ -255,6 +255,10 @@ begin
       if Reg.ValueExists('DevicePollTime') then
         Parameters.DevicePollTime := Reg.ReadInteger('DevicePollTime');
 
+      if Reg.ValueExists('TranslationName') then
+        Parameters.TranslationName := Reg.ReadString('TranslationName');
+
+
       Reg.CloseKey;
     end;
     // VatRates
@@ -339,6 +343,7 @@ begin
     Reg.WriteBool('ReconnectPort', FParameters.ReconnectPort);
     Reg.WriteInteger('SerialTimeout', FParameters.SerialTimeout);
     Reg.WriteInteger('DevicePollTime', FParameters.DevicePollTime);
+    Reg.WriteString('TranslationName', FParameters.TranslationName);
 
     Reg.CloseKey;
     // VatRates

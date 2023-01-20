@@ -181,6 +181,7 @@ begin
       FParameters.ReconnectPort := IniFile.ReadBool(Section, 'ReconnectPort', DefReconnectPort);
       FParameters.SerialTimeout := IniFile.ReadInteger(Section, 'SerialTimeout', DefSerialTimeout);
       FParameters.DevicePollTime := IniFile.ReadInteger(Section, 'DevicePollTime', DefDevicePollTime);
+      FParameters.TranslationName := IniFile.ReadString(Section, 'TranslationName', DefTranslationName);
     end;
   finally
     IniFile.Free;
@@ -221,6 +222,7 @@ begin
     IniFile.WriteBool(Section, 'ReconnectPort', FParameters.ReconnectPort);
     IniFile.WriteInteger(Section, 'SerialTimeout', FParameters.SerialTimeout);
     IniFile.WriteInteger(Section, 'DevicePollTime', FParameters.DevicePollTime);
+    IniFile.WriteString(Section, 'TranslationName', FParameters.TranslationName);
   finally
     IniFile.Free;
   end;
