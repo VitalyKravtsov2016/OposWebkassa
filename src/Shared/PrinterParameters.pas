@@ -86,7 +86,7 @@ const
   DefSerialTimeout = 500;
   DefDevicePollTime = 3000;
   DefReceiptTemplate = '';
-  DefTranslationName = 'KZ';
+  DefTranslationName = 'KAZ';
 
   /////////////////////////////////////////////////////////////////////////////
   // Header and trailer parameters
@@ -114,6 +114,9 @@ type
     FHeader: TTntStringList;
     FTrailer: TTntStringList;
     FTranslations: TTranslations;
+    FTranslationName: WideString;
+    FTranslation: TTranslation;
+    FTranslationRus: TTranslation;
     FLogMaxCount: Integer;
     FLogFileEnabled: Boolean;
     FLogFilePath: WideString;
@@ -142,8 +145,6 @@ type
     FBaudRate: Integer;
     FDevicePollTime: Integer;
     FReceiptTemplate: WideString;
-    FTranslationName: WideString;
-    FTranslation: TTranslation;
 
     procedure LogText(const Caption, Text: WideString);
     procedure SetHeaderText(const Text: WideString);
@@ -154,6 +155,8 @@ type
     function GetTrailerText: WideString;
     procedure SetAmountDecimalPlaces(const Value: Integer);
     procedure SetBaudRate(const Value: Integer);
+    function GetTranslationRus: TTranslation;
+    function GetTranslation: TTranslation;
   public
     PortName: string;
     DataBits: Integer;
@@ -172,7 +175,7 @@ type
     function SerialPortNames: string;
     function BaudRateIndex(const Value: Integer): Integer;
     procedure Assign(Source: TPersistent); override;
-    function GetTranslation(const Text: WideString): WideString;
+    function GetTranslationText(const Text: WideString): WideString;
 
     property Logger: ILogFile read FLogger;
     property Header: TTntStringList read FHeader;
@@ -209,6 +212,8 @@ type
     property ReceiptTemplate: WideString read FReceiptTemplate write FReceiptTemplate;
     property Translations: TTranslations read FTranslations;
     property TranslationName: WideString read FTranslationName write FTranslationName;
+    property Translation: TTranslation read GetTranslation;
+    property TranslationRus: TTranslation read GetTranslationRus;
   end;
 
 function QRSizeToWidth(QRSize: Integer): Integer;
@@ -238,6 +243,7 @@ begin
   FTrailer := TTntStringList.Create;
   FTranslations := TTranslations.Create;
   SetDefaults;
+  Translations.Load;
 end;
 
 destructor TPrinterParameters.Destroy;
@@ -551,20 +557,40 @@ begin
     inherited Assign(Source);
 end;
 
-function TPrinterParameters.GetTranslation(
+function TPrinterParameters.GetTranslationText(
   const Text: WideString): WideString;
 var
-  Translation: TTranslation;
+  Index: Integer;
 begin
   Result := Text;
+  if GetTranslation = nil then Exit;
+  if GetTranslationRus = nil then Exit;
+  Index := GetTranslationRus.Items.IndexOf(Text);
+  if Index <> -1 then
+    Result := GetTranslation.Items[Index];
+end;
+
+function TPrinterParameters.GetTranslationRus: TTranslation;
+begin
+  if FTranslationRus = nil then
+  begin
+    FTranslationRus := Translations.Find('RUS');
+    if FTranslationRus = nil then
+    begin
+      FTranslationRus := TTranslation.Create(Translations);
+      //FTranslationRus.FName := 'RUS'; !!!
+    end;
+  end;
+  Result := FTranslationRus;
+end;
+
+function TPrinterParameters.GetTranslation: TTranslation;
+begin
   if FTranslation = nil then
   begin
     FTranslation := Translations.Find(FTranslationName);
   end;
-(*
-  if FTranslation <> nil then
-    Result := FTranslation.GetTranslation(Text);
-*)    
+  Result := FTranslation;
 end;
 
 end.

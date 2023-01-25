@@ -4,9 +4,9 @@ interface
 
 uses
   // VCL
-  Classes, SysUtils,
+  Classes, SysUtils, FileUtils,
   // Tnt
-  TntClasses;
+  TntClasses, TntSysUtils;
 
 type
   { TTranslation }
@@ -30,6 +30,8 @@ type
     function GetItem(Index: Integer): TTranslation;
   public
     constructor Create;
+    procedure Load;
+    procedure Save;
     function Find(const Name: WideString): TTranslation;
     property Items[Index: Integer]: TTranslation read GetItem; default;
   end;
@@ -72,6 +74,44 @@ end;
 function TTranslations.GetItem(Index: Integer): TTranslation;
 begin
   Result := inherited Items[Index] as TTranslation;
+end;
+
+procedure TTranslations.Load;
+var
+  i: Integer;
+  Text: WideString;
+  Path: WideString;
+  FileNames: TTntStrings;
+  Translation: TTranslation;
+begin
+  Clear;
+
+  FileNames := TTntStringList.Create;
+  try
+    Path := IncludeTrailingPathDelimiter(GetModulePath + 'Translation') + '*';
+    GetFileNames(Path, FileNames);
+    for i := 0 to FileNames.Count-1 do
+    begin
+      Translation := TTranslation.Create(Self);
+      try
+        Text := WideExtractFileExt(FileNames[i]);
+        Translation.FName := Copy(Text, 2, Length(Text));
+        Translation.Items.LoadFromFile(FileNames[i]);
+      except
+        on E: Exception do
+        begin
+          Translation.Free;
+        end;
+      end;
+    end;
+  finally
+    FileNames.Free;
+  end;
+end;
+
+procedure TTranslations.Save;
+begin
+
 end;
 
 end.

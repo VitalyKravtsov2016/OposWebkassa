@@ -6,7 +6,7 @@ uses
   // Opos
   OposDevice,
   // This
-  untPages, FptrTypes, PrinterParameters, PrinterParametersX, 
+  untPages, FptrTypes, PrinterParameters, PrinterParametersX,
   fmuPages, LogFile, DriverContext;
 
 type
@@ -52,7 +52,7 @@ implementation
 
 uses
   fmuFptrConnection, fmuPrinter, fmuFptrLog, fmuFptrHeader, fmuFptrTrailer,
-  fmuFptrVatRate, fmuFptrPayType, fmuFptrMiscParams;
+  fmuFptrVatRate, fmuFptrPayType, fmuFptrMiscParams, fmuTranslation;
 
 { TFiscalPrinterDevice }
 
@@ -104,6 +104,7 @@ begin
     AddPage(fm, TfmFptrTrailer);
     AddPage(fm, TfmFptrPayType);
     AddPage(fm, TfmFptrVatRate);
+    AddPage(fm, TfmTranslation);
     AddPage(fm, TfmFptrMiscParams);
 
     fm.Init;

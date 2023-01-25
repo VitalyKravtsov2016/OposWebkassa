@@ -137,39 +137,43 @@ end;
 
 procedure GetFileNames(const Mask: WideString; FileNames: TTntStrings);
 var
-  F: TSearchRec;
+  F: TSearchRecW;
   Result: Integer;
   FileName: WideString;
 begin
-  Result := FindFirst(Mask, faAnyFile, F);
+  Result := WideFindFirst(Mask, faAnyFile, F);
   while Result = 0 do
   begin
-    FileName := ExtractFilePath(Mask) + F.FindData.cFileName;
-    FileNames.Add(FileName);
-    Result := FindNext(F);
+    if (WideCompareText(F.FindData.cFileName, '.') <> 0)and
+      (WideCompareText(F.FindData.cFileName, '..') <> 0) then
+    begin
+      FileName := WideExtractFilePath(Mask) + F.FindData.cFileName;
+      FileNames.Add(FileName);
+    end;
+    Result := WideFindNext(F);
   end;
-  FindClose(F);
+  WideFindClose(F);
 end;
 
 procedure GetDirNames(const Mask: WideString; DirNames: TTntStrings);
 var
-  F: TSearchRec;
+  F: TSearchRecW;
   Result: Integer;
   FileName: WideString;
   DirName: WideString;
 begin
-  Result := FindFirst(Mask, faDirectory, F);
+  Result := WideFindFirst(Mask, faDirectory, F);
   while Result = 0 do
   begin
     DirName := F.FindData.cFileName;
     if (DirName <> '.') and (DirName <> '..')and((F.Attr and FILE_ATTRIBUTE_DIRECTORY) <> 0) then
     begin
-      FileName := ExtractFilePath(Mask) + DirName;
+      FileName := WideExtractFilePath(Mask) + DirName;
       DirNames.Add(FileName);
     end;
-    Result := FindNext(F);
+    Result := WideFindNext(F);
   end;
-  FindClose(F);
+  WideFindClose(F);
 end;
 
 procedure DeleteFiles(const FileMask: WideString);

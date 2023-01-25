@@ -3163,7 +3163,7 @@ end;
 
 procedure TWebkassaImpl.PrintLine(Text: WideString);
 begin
-  Text := Params.GetTranslation(Text);
+  Text := Params.GetTranslationText(Text);
   CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, Text + CRLF));
 end;
 
