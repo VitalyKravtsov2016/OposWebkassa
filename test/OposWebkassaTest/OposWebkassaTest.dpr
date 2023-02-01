@@ -53,7 +53,7 @@ uses
   PrinterParametersReg in '..\..\src\Shared\PrinterParametersReg.pas',
   uLkJSON in '..\..\src\Shared\uLkJSON.pas',
   VatRate in '..\..\src\Shared\VatRate.pas',
-  duPrinterParameters in 'units\duPrinterParameters.pas',
+  duTranslation in 'units\duTranslation.pas',
   duOposUtils in 'units\duOposUtils.pas',
   MockPosPrinter in 'units\MockPosPrinter.pas',
   OposPtrUtils in '..\..\src\Opos\OposPtrUtils.pas',
@@ -79,7 +79,8 @@ uses
   MockPrinterPort in '..\..\src\Shared\MockPrinterPort.pas',
   duPosEscPrinter in 'units\duPosEscPrinter.pas',
   RawPrinterPort in '..\..\src\Shared\RawPrinterPort.pas',
-  Translation in '..\..\src\Shared\Translation.pas';
+  Translation in '..\..\src\Shared\Translation.pas',
+  duPrinterParameters in 'units\duPrinterParameters.pas';
 
 {$R *.RES}
 

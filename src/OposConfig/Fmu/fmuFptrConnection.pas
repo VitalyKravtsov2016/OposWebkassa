@@ -41,9 +41,6 @@ type
     procedure UpdateObject; override;
   end;
 
-var
-  fmFptrConnection: TfmFptrConnection;
-
 implementation
 
 {$R *.dfm}

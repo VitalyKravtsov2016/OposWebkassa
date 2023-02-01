@@ -258,6 +258,11 @@ begin
       if Reg.ValueExists('TranslationName') then
         Parameters.TranslationName := Reg.ReadString('TranslationName');
 
+      if Reg.ValueExists('QRCode') then
+        Parameters.QRCode := Reg.ReadInteger('QRCode');
+
+      if Reg.ValueExists('TranslationEnabled') then
+        Parameters.TranslationEnabled := Reg.ReadBool('TranslationEnabled');
 
       Reg.CloseKey;
     end;
@@ -344,6 +349,8 @@ begin
     Reg.WriteInteger('SerialTimeout', FParameters.SerialTimeout);
     Reg.WriteInteger('DevicePollTime', FParameters.DevicePollTime);
     Reg.WriteString('TranslationName', FParameters.TranslationName);
+    Reg.WriteInteger('QRCode', FParameters.QRCode);
+    Reg.WriteBool('TranslationEnabled', FParameters.TranslationEnabled);
 
     Reg.CloseKey;
     // VatRates

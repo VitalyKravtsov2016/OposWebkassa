@@ -91,6 +91,7 @@ uses
   MockPrinterPort in '..\Shared\MockPrinterPort.pas',
   RawPrinterPort in '..\Shared\RawPrinterPort.pas',
   Translation in '..\Shared\Translation.pas',
+  fmuFptrBarcode in 'Fmu\fmuFptrBarcode.pas' {fmFptrBarcode},
   fmuFptrHeader in 'Fmu\fmuFptrHeader.pas' {fmFptrHeader};
 
 {$R *.RES}
@@ -99,8 +100,6 @@ uses
 begin
   Application.Initialize;
   Application.CreateForm(TfmMain, fmMain);
-  Application.CreateForm(TfmPrinter, fmPrinter);
-  Application.CreateForm(TfmFptrConnection, fmFptrConnection);
   Application.Run;
 end.
 

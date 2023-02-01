@@ -13,7 +13,7 @@ object fmFptrConnection: TfmFptrConnection
   OldCreateOrder = False
   DesignSize = (
     480
-    325)
+    324)
   PixelsPerInch = 96
   TextHeight = 13
   object gbConenctionParams: TTntGroupBox

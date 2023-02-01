@@ -348,7 +348,7 @@ type
 
     function DecodeString(const Text: WideString): WideString;
     function EncodeString(const S: WideString): WideString;
-    procedure PrintQRCode(const BarcodeData: WideString);
+    procedure PrintQRCodeAsGraphics(const BarcodeData: WideString);
 
     property Logger: ILogFile read FLogger;
     property CashBox: TCashBox read FCashBox;
@@ -3087,16 +3087,16 @@ begin
     case Item.Style of
       STYLE_QR_CODE:
       begin
-        if Printer.CapRecBarcode then
+        if Printer.CapRecBarcode and (Params.QRCode = QRCodeEsc) then
         begin
           if Printer.PrintBarCode(PTR_S_RECEIPT, Item.Text, PTR_BCS_QRCODE, 0, 4,
             PTR_BC_CENTER, PTR_BC_TEXT_NONE) <> OPOS_SUCCESS then
           begin
-            PrintQRCode(Item.Text);
+            PrintQRCodeAsGraphics(Item.Text);
           end;
         end else
         begin
-          PrintQRCode(Item.Text);
+          PrintQRCodeAsGraphics(Item.Text);
         end;
       end;
     else
@@ -3289,7 +3289,7 @@ begin
   end;
 end;
 
-procedure TWebkassaImpl.PrintQRCode(const BarcodeData: WideString);
+procedure TWebkassaImpl.PrintQRCodeAsGraphics(const BarcodeData: WideString);
 var
   Data: string;
   Bitmap: TBitmap;

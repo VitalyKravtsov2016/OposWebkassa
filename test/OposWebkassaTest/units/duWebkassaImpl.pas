@@ -68,6 +68,7 @@ type
     procedure TestXReport;
     procedure TestReceiptTemplate; // !!!
     procedure PrintHeaderAndCut;
+    procedure TestFiscalReceipt3;
   published
     procedure TestZReport;
     procedure TestCashIn;
@@ -76,7 +77,6 @@ type
 
     procedure OpenClaimEnable;
     procedure TestFiscalReceipt;
-    procedure TestFiscalReceipt3;
     procedure TestCoverError;
     procedure TestRecEmpty;
     procedure TestStatusUpateEvent;

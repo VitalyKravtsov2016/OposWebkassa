@@ -32,6 +32,7 @@ type
     constructor Create;
     procedure Load;
     procedure Save;
+    function Add(const AName: WideString): TTranslation;
     function Find(const Name: WideString): TTranslation;
     property Items[Index: Integer]: TTranslation read GetItem; default;
   end;
@@ -57,6 +58,12 @@ end;
 constructor TTranslations.Create;
 begin
   inherited Create(TTranslation);
+end;
+
+function TTranslations.Add(const AName: WideString): TTranslation;
+begin
+  Result := TTranslation.Create(Self);
+  Result.FName := AName;
 end;
 
 function TTranslations.Find(const Name: WideString): TTranslation;
@@ -110,8 +117,21 @@ begin
 end;
 
 procedure TTranslations.Save;
+var
+  i: Integer;
+  FileName: WideString;
 begin
-
+  for i := 0 to Count-1 do
+  begin
+    FileName := IncludeTrailingPathDelimiter(GetModulePath + 'Translation') +
+      'OposWebkassa.' + Items[i].Name;
+    DeleteFile(FileName);
+    (*
+    if not DeleteFile(FileName) then
+      raise Exception.Create('Failed to delete file');
+    *)
+    Items[i].Items.SaveToFile(FileName);
+  end;
 end;
 
 end.

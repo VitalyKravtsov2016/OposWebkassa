@@ -28,6 +28,8 @@ Name: "main"; Description: "Driver files"; Types: full compact custom; Flags: fi
 Source: "Setup\zint.dll"; DestDir: "{app}\Bin"; Flags: ignoreversion; components: main;
 Source: "Setup\zlib1.dll"; DestDir: "{app}\Bin"; Flags: ignoreversion; components: main;
 Source: "Setup\libpng15.dll"; DestDir: "{app}\Bin"; Flags: ignoreversion; components: main;
+Source: "Setup\Translation\OposWebkassa.RUS"; DestDir: "{app}\Bin\Translation\OposWebkassa.RUS"; Flags: ignoreversion; components: main;
+Source: "Setup\Translation\OposWebkassa.KAZ"; DestDir: "{app}\Bin\Translation\OposWebkassa.KAZ"; Flags: ignoreversion; components: main;
 ; Version history
 Source: "History.txt"; DestDir: "{app}"; Flags: ignoreversion; components: main;
 ; Drivers

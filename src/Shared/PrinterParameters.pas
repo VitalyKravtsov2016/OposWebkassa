@@ -15,6 +15,12 @@ uses
 
 const
   /////////////////////////////////////////////////////////////////////////////
+  // QR code print mode
+
+  QRCodeESC       = 0;
+  QRCodeGraphics  = 1;
+
+  /////////////////////////////////////////////////////////////////////////////
   // Valid baudrates
 
   ValidBaudRates: array [0..9] of Integer = (
@@ -87,6 +93,8 @@ const
   DefDevicePollTime = 3000;
   DefReceiptTemplate = '';
   DefTranslationName = 'KAZ';
+  DefQRCode = QRCodeEsc;
+  DefTranslationEnabled = false;
 
   /////////////////////////////////////////////////////////////////////////////
   // Header and trailer parameters
@@ -104,6 +112,13 @@ const
   QRSizeLarge     = 2;
   QRSizeXLarge    = 3;
   QRSizeXXLarge   = 4;
+
+  /////////////////////////////////////////////////////////////////////////////
+  // Translation name
+
+  TranslationNameRus = 'RUS';
+  TranslationNameKaz = 'KAZ';
+
 
 type
   { TPrinterParameters }
@@ -145,6 +160,7 @@ type
     FBaudRate: Integer;
     FDevicePollTime: Integer;
     FReceiptTemplate: WideString;
+    FTranslationEnabled: Boolean;
 
     procedure LogText(const Caption, Text: WideString);
     procedure SetHeaderText(const Text: WideString);
@@ -155,8 +171,8 @@ type
     function GetTrailerText: WideString;
     procedure SetAmountDecimalPlaces(const Value: Integer);
     procedure SetBaudRate(const Value: Integer);
-    function GetTranslationRus: TTranslation;
     function GetTranslation: TTranslation;
+    function GetTranslationRus: TTranslation;
   public
     PortName: string;
     DataBits: Integer;
@@ -165,6 +181,7 @@ type
     FlowControl: Integer;
     SerialTimeout: Integer;
     ReconnectPort: Boolean;
+    QRCode: Integer;
 
     constructor Create(ALogger: ILogFile);
     destructor Destroy; override;
@@ -214,6 +231,7 @@ type
     property TranslationName: WideString read FTranslationName write FTranslationName;
     property Translation: TTranslation read GetTranslation;
     property TranslationRus: TTranslation read GetTranslationRus;
+    property TranslationEnabled: Boolean read FTranslationEnabled write FTranslationEnabled;
   end;
 
 function QRSizeToWidth(QRSize: Integer): Integer;
@@ -301,6 +319,9 @@ begin
   SerialTimeout := DefSerialTimeout;
   DevicePollTime := DefDevicePollTime;
   ReceiptTemplate := DefReceiptTemplate;
+  QRCode := DefQRCode;
+  TranslationName := DefTranslationName;
+  TranslationEnabled := DefTranslationEnabled;
 end;
 
 procedure TPrinterParameters.LogText(const Caption, Text: WideString);
@@ -360,7 +381,7 @@ begin
   Logger.Debug('RemotePort: ' + IntToStr(RemotePort));
   Logger.Debug('ByteTimeout: ' + IntToStr(ByteTimeout));
   Logger.Debug('DevicePollTime: ' + IntToStr(DevicePollTime));
-
+  Logger.Debug('QRCode: ' + IntToStr(QRCode));
 
   // VatRates
   for i := 0 to VatRates.Count-1 do
@@ -563,6 +584,8 @@ var
   Index: Integer;
 begin
   Result := Text;
+  if not TranslationEnabled then Exit;
+
   if GetTranslation = nil then Exit;
   if GetTranslationRus = nil then Exit;
   Index := GetTranslationRus.Items.IndexOf(Text);
@@ -574,11 +597,10 @@ function TPrinterParameters.GetTranslationRus: TTranslation;
 begin
   if FTranslationRus = nil then
   begin
-    FTranslationRus := Translations.Find('RUS');
+    FTranslationRus := Translations.Find(TranslationNameRus);
     if FTranslationRus = nil then
     begin
-      FTranslationRus := TTranslation.Create(Translations);
-      //FTranslationRus.FName := 'RUS'; !!!
+      FTranslationRus := Translations.Add(TranslationNameRus);
     end;
   end;
   Result := FTranslationRus;
@@ -589,6 +611,10 @@ begin
   if FTranslation = nil then
   begin
     FTranslation := Translations.Find(FTranslationName);
+    if FTranslation = nil then
+    begin
+      FTranslation := Translations.Add(FTranslationName);
+    end;
   end;
   Result := FTranslation;
 end;

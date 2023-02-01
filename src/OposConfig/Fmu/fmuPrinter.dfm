@@ -259,7 +259,7 @@ object fmPrinter: TfmPrinter
         Width = 113
         Height = 21
         Style = csDropDownList
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 0
         OnChange = ModifiedClick
       end
@@ -316,7 +316,7 @@ object fmPrinter: TfmPrinter
         Width = 113
         Height = 21
         Style = csDropDownList
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 4
         OnChange = ModifiedClick
       end

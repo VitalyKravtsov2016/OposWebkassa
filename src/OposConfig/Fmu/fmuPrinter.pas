@@ -74,9 +74,6 @@ type
     procedure UpdateObject; override;
   end;
 
-var
-  fmPrinter: TfmPrinter;
-
 implementation
 
 {$R *.dfm}

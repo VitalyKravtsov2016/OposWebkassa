@@ -7,9 +7,11 @@ uses
   Windows, SysUtils, Classes,
   // DUnit
   TestFramework,
+  // Tnt
+  TntClasses,
   // This
   PrinterParameters, PrinterParametersX, PrinterParametersReg, LogFile,
-  StringUtils;
+  StringUtils, FileUtils;
 
 type
   { TPrinterParametersTest }
@@ -18,8 +20,11 @@ type
   private
     FLogger: ILogFile;
     FParams: TPrinterParameters;
+
     procedure SetNonDefaultParams;
     procedure CheckNonDefaultParams;
+
+    property Params: TPrinterParameters read FParams;
   protected
     procedure Setup; override;
     procedure TearDown; override;
@@ -28,6 +33,7 @@ type
     procedure CheckLoadParams;
     procedure CheckSetDefaults;
     procedure CheckDefaultParams;
+    procedure CheckGetTranslationText;
   end;
 
 implementation
@@ -72,6 +78,7 @@ begin
   FParams.PaymentType4 := 0;
   FParams.RoundType := 1;
   FParams.VATNumber := '1234';
+  FParams.TranslationEnabled := True;
 end;
 
 procedure TPrinterParametersTest.CheckNonDefaultParams;
@@ -100,6 +107,7 @@ begin
   CheckEquals(0, FParams.PaymentType4, 'PaymentType4');
   CheckEquals(1, FParams.RoundType, 'RoundType');
   CheckEquals('1234', FParams.VATNumber, 'VATNumber');
+  CheckEquals(True, FParams.TranslationEnabled, 'TranslationEnabled');
 end;
 
 
@@ -128,6 +136,7 @@ begin
   CheckEquals(3, FParams.PaymentType4, 'PaymentType4');
   CheckEquals(DefRoundType, FParams.RoundType, 'RoundType');
   CheckEquals(DefVATNumber, FParams.VATNumber, 'VATNumber');
+  CheckEquals(False, FParams.TranslationEnabled, 'TranslationEnabled');
 end;
 
 procedure TPrinterParametersTest.CheckSetDefaults;
@@ -154,6 +163,35 @@ begin
   FParams.SetDefaults;
   LoadParameters(FParams, 'DeviceName', FLogger);
   CheckNonDefaultParams;
+end;
+
+procedure TPrinterParametersTest.CheckGetTranslationText;
+var
+  i: Integer;
+  Text: WideString;
+  FileName: WideString;
+  LinesRus: TTntStrings;
+  LinesKaz: TTntStrings;
+begin
+  Params.TranslationEnabled := True;
+  LinesRus := TTntStringList.Create;
+  LinesKaz := TTntStringList.Create;
+  try
+    FileName := GetModulePath + 'Translation\OposWebkassa';
+    LinesRus.LoadFromFile(FileName + '.RUS');
+    LinesKaz.LoadFromFile(FileName + '.KAZ');
+
+    CheckEquals(15, LinesRus.Count, 'LinesRus.Count');
+    CheckEquals(15, LinesKaz.Count, 'LinesKaz.Count');
+    for i := 0 to LinesRus.Count-1 do
+    begin
+      Text := Params.GetTranslationText(LinesRus[i]);
+      CheckEquals(LinesKaz[i], Text, 'Line ' + IntToStr(i));
+    end;
+  finally
+    LinesRus.Free;
+    LinesKaz.Free;
+  end;
 end;
 
 initialization

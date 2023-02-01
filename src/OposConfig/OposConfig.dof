@@ -115,7 +115,7 @@ AutoIncBuild=1
 MajorVer=1
 MinorVer=13
 Release=0
-Build=709
+Build=32
 Debug=0
 PreRelease=0
 Special=0
@@ -125,17 +125,15 @@ Locale=1033
 CodePage=1252
 [Version Info Keys]
 CompanyName=SHTRIH-M
-FileDescription=OPOS setup utility
-FileVersion=1.13.0.709
-InternalName=OPOS setup
+FileDescription=WebKassa OPOS setup utility
+FileVersion=1.13.0.32
+InternalName=WebKassa OPOS setup
 LegalCopyright=SHTRIH-M © 2013
 LegalTrademarks=
 OriginalFilename=OposConfig.exe
-ProductName=OPOS drivers
+ProductName=WebKassa OPOS driver
 ProductVersion=1.13
 Comments=http://www.shtrih-m.ru
-[Excluded Packages]
-C:\Program Files (x86)\Borland\Delphi7\Projects\Bpl\PngComponentsD7.bpl=Png components
 [HistoryLists\hlConditionals]
 Count=1
 Item0=DEBUG
