@@ -80,7 +80,8 @@ uses
   duPosEscPrinter in 'units\duPosEscPrinter.pas',
   RawPrinterPort in '..\..\src\Shared\RawPrinterPort.pas',
   Translation in '..\..\src\Shared\Translation.pas',
-  duPrinterParameters in 'units\duPrinterParameters.pas';
+  duPrinterParameters in 'units\duPrinterParameters.pas',
+  DirectIOAPI in '..\..\src\OposWebkassa\units\DirectIOAPI.pas';
 
 {$R *.RES}
 

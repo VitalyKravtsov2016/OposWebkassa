@@ -830,14 +830,10 @@ function TWebkassaImpl.DirectIO(Command: Integer; var pData: Integer;
 begin
   try
     FOposDevice.CheckOpened;
-    if Command = DIO_SET_DRIVER_PARAMETER then
+
+    if Receipt.IsOpened then
     begin
-      case pData of
-        DriverParameterBarcode,
-        DriverParameterExternalCheckNumber,
-        DriverParameterFiscalSign:
-          Receipt.DirectIO(Command, pData, pString);
-      end;
+      Receipt.DirectIO(Command, pData, pString);
     end;
     Result := ClearResult;
   except
@@ -2675,9 +2671,9 @@ begin
     Command.Request.Change := Receipt.Change;
     Command.Request.RoundType := FParams.RoundType;
     Command.Request.ExternalCheckNumber := Receipt.ExternalCheckNumber;
-    Command.Request.CustomerEmail := '';
-    Command.Request.CustomerPhone := '';
-    Command.Request.CustomerXin := '';
+    Command.Request.CustomerEmail := Receipt.CustomerEmail;
+    Command.Request.CustomerPhone := Receipt.CustomerPhone;
+    Command.Request.CustomerXin := Receipt.CustomerINN;
 
     // Items
     for i := 0 to Receipt.Items.Count-1 do

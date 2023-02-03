@@ -574,7 +574,7 @@ const
   Barcode = 'http://dev.kofd.kz/consumer?i=925871425876&f=211030200207&s=15443.72&t=20220826T210014';
 begin
   OpenClaimEnable;
-  Driver.PrintQRCode(Barcode);
+  Driver.PrintQRCodeAsGraphics(Barcode);
 end;
 
 procedure TWebkassaImplTest.TestGetData;

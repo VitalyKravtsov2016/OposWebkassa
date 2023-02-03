@@ -248,10 +248,6 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    { !!! }
-    property CustomerEmail: WideString read FCustomerEmail write FCustomerEmail;
-    property CustomerPhone: WideString read FCustomerPhone write FCustomerPhone;
-    property CustomerXin: WideString read FCustomerXin write FCustomerXin;
   published
     property Token: WideString read FToken write FToken;
     property CashboxUniqueNumber: WideString read FCashboxUniqueNumber write FCashboxUniqueNumber;
@@ -262,6 +258,9 @@ type
     property Change: Currency read FChange write FChange;
     property RoundType: Integer read FRoundType write FRoundType;
     property ExternalCheckNumber: WideString read FExternalCheckNumber write FExternalCheckNumber;
+    property CustomerEmail: WideString read FCustomerEmail write FCustomerEmail;
+    property CustomerPhone: WideString read FCustomerPhone write FCustomerPhone;
+    property CustomerXin: WideString read FCustomerXin write FCustomerXin;
   end;
 
   { TSendReceiptCommandResponse }

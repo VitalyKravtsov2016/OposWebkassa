@@ -250,10 +250,12 @@ end;
 
 procedure TSalesReceipt.BeginFiscalReceipt(PrintHeader: Boolean);
 begin
+  FIsOpened := True;
 end;
 
 procedure TSalesReceipt.EndFiscalReceipt(APrintHeader: Boolean);
 begin
+  FIsOpened := False;
   FPrintHeader := APrintHeader;
 end;
 

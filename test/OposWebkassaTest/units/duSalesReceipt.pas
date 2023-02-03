@@ -10,7 +10,7 @@ uses
   // Opos
   OposFptr,
   // This
-  LogFile, SalesReceipt, ReceiptItem;
+  LogFile, SalesReceipt, ReceiptItem, DirectIOAPI;
 
 type
   { TSalesReceiptTest }
@@ -18,6 +18,7 @@ type
   TSalesReceiptTest = class(TTestCase)
   private
     FReceipt: TSalesReceipt;
+    property Receipt: TSalesReceipt read FReceipt;
   protected
     procedure SetUp; override;
     procedure TearDown; override;
@@ -28,6 +29,7 @@ type
     procedure TestItemAdjustment;
     procedure TestSubtotalAdjustment;
     procedure TestReceiptWithChange;
+    procedure TestDirectIO;
   end;
 
 implementation
@@ -167,6 +169,37 @@ begin
   FReceipt.PrintRecTotal(578, 578, '1');
   CheckEquals(0, FReceipt.Change, 'Receipt.Change');
   FReceipt.EndFiscalReceipt(False);
+end;
+
+procedure TSalesReceiptTest.TestDirectIO;
+var
+  pData: Integer;
+  pString: WideString;
+begin
+  CheckEquals('', Receipt.CustomerINN, 'Receipt.CustomerINN');
+  CheckEquals('', Receipt.CustomerEmail, 'Receipt.CustomerEmail');
+  CheckEquals('', Receipt.CustomerPhone, 'Receipt.CustomerPhone');
+
+  pData := 1228;
+  pString := 'CustomerINN';
+  Receipt.DirectIO(DIO_WRITE_FS_STRING_TAG_OP, pData, pString);
+  CheckEquals('', Receipt.CustomerEmail, 'Receipt.CustomerEmail');
+  CheckEquals('', Receipt.CustomerPhone, 'Receipt.CustomerPhone');
+  CheckEquals('CustomerINN', Receipt.CustomerINN, 'Receipt.CustomerINN');
+
+  pData := 1008;
+  pString := 'Customer@Email';
+  Receipt.DirectIO(DIO_WRITE_FS_STRING_TAG_OP, pData, pString);
+  CheckEquals('Customer@Email', Receipt.CustomerEmail, 'Receipt.CustomerEMail');
+  CheckEquals('CustomerINN', Receipt.CustomerINN, 'Receipt.CustomerINN');
+  CheckEquals('', Receipt.CustomerPhone, 'Receipt.CustomerPhone');
+
+  pData := 1008;
+  pString := '+727834657823';
+  Receipt.DirectIO(DIO_WRITE_FS_STRING_TAG_OP, pData, pString);
+  CheckEquals('CustomerINN', Receipt.CustomerINN, 'Receipt.CustomerINN');
+  CheckEquals('Customer@Email', Receipt.CustomerEmail, 'Receipt.CustomerEMail');
+  CheckEquals('+727834657823', Receipt.CustomerPhone, 'Receipt.CustomerPhone');
 end;
 
 initialization

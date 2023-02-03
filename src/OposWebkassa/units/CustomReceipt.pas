@@ -8,15 +8,9 @@ uses
   // Tnt
   TntClasses,
   // This
-  gnugettext, StringUtils;
+  gnugettext, StringUtils, DirectIOAPI;
 
 const
-  DIO_SET_DRIVER_PARAMETER        = 30; // write internal driver parameter
-  DIO_WRITE_FS_STRING_TAG_OP      = 65; // Write string tag bound to operation
-  DIO_READ_FS_PARAMETER           = 41; // Read fiscal storage parameter
-  DIO_FS_PARAMETER_LAST_DOC_NUM2  = 11; // Document number
-  DriverParameterBarcode                  = 80;
-
   DriverParameterExternalCheckNumber = 300;
   DriverParameterFiscalSign          = 301;
 
@@ -25,6 +19,7 @@ type
 
   TCustomReceipt = class
   protected
+    FIsOpened: Boolean;
     FIsVoided: Boolean;
     FLines: TTntStrings;
     FTrailer: TTntStrings;
@@ -33,11 +28,18 @@ type
     FExternalCheckNumber: WideString;
     FFiscalSign: WideString;
     FPrintHeader: Boolean;
+    FCustomerINN: WideString;
+    FCustomerEmail: WideString;
+    FCustomerPhone: WideString;
   public
     procedure CheckNotVoided;
     function GetTotal: Currency; virtual;
     function GetPayment: Currency; virtual;
     property IsVoided: Boolean read FIsVoided;
+    property IsOpened: Boolean read FIsOpened;
+    property CustomerINN: WideString read FCustomerINN;
+    property CustomerEmail: WideString read FCustomerEmail;
+    property CustomerPhone: WideString read FCustomerPhone;
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -345,9 +347,6 @@ end;
 
 procedure TCustomReceipt.DirectIO(Command: Integer; var pData: Integer;
   var pString: WideString);
-const
-  DIO_SET_DRIVER_PARAMETER        = 30; // write internal driver parameter
-  DriverParameterBarcode          = 80;
 begin
   if Command = DIO_SET_DRIVER_PARAMETER then
   begin
@@ -359,6 +358,19 @@ begin
           FExternalCheckNumber := pString;
       end;
       DriverParameterFiscalSign: FFiscalSign := pString;
+    end;
+  end;
+  if Command = DIO_WRITE_FS_STRING_TAG_OP then
+  begin
+    case pData of
+      1228: FCustomerINN := pString;
+      1008:
+      begin
+        if Pos('@', pString) <> 0 then
+          FCustomerEmail := pString
+        else
+          FCustomerPhone := pString;
+      end;
     end;
   end;
 end;

@@ -39,7 +39,7 @@ uses
   SmIniFile in '..\Shared\SmIniFile.pas',
   StringUtils in '..\Shared\StringUtils.pas',
   RegExpr in '..\Shared\RegExpr.pas',
-  fmuTranslation in 'Fmu\fmuTranslation.pas' {fmTranslation},
+  fmuFptrReceipt in 'Fmu\fmuFptrReceipt.pas' {fmFptrReceipt},
   fmuFptrTrailer in 'Fmu\fmuFptrTrailer.pas' {fmFptrTrailer},
   WebkassaClient in '..\OposWebkassa\units\WebkassaClient.pas',
   JsonUtils in '..\Shared\JsonUtils.pas',
@@ -92,7 +92,9 @@ uses
   RawPrinterPort in '..\Shared\RawPrinterPort.pas',
   Translation in '..\Shared\Translation.pas',
   fmuFptrBarcode in 'Fmu\fmuFptrBarcode.pas' {fmFptrBarcode},
-  fmuFptrHeader in 'Fmu\fmuFptrHeader.pas' {fmFptrHeader};
+  fmuFptrHeader in 'Fmu\fmuFptrHeader.pas' {fmFptrHeader},
+  fmuTranslation in 'Fmu\fmuTranslation.pas' {fmTranslation},
+  DirectIOAPI in '..\OposWebkassa\units\DirectIOAPI.pas';
 
 {$R *.RES}
 {$R WindowsXP.RES}

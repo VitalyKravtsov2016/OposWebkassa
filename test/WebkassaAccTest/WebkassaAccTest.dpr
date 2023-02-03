@@ -79,7 +79,8 @@ uses
   duWebkassaImpl in 'units\duWebkassaImpl.pas',
   MockPrinterPort in '..\..\src\Shared\MockPrinterPort.pas',
   RawPrinterPort in '..\..\src\Shared\RawPrinterPort.pas',
-  Translation in '..\..\src\Shared\Translation.pas';
+  Translation in '..\..\src\Shared\Translation.pas',
+  DirectIOAPI in '..\..\src\OposWebkassa\units\DirectIOAPI.pas';
 
 {$R *.RES}
 

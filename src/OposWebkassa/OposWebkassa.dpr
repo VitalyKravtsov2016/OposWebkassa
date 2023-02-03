@@ -72,7 +72,8 @@ uses
   ReceiptTemplate in 'units\ReceiptTemplate.pas',
   MockPrinterPort in '..\Shared\MockPrinterPort.pas',
   RawPrinterPort in '..\Shared\RawPrinterPort.pas',
-  Translation in '..\Shared\Translation.pas';
+  Translation in '..\Shared\Translation.pas',
+  DirectIOAPI in 'units\DirectIOAPI.pas';
 
 exports
   DllGetClassObject,
