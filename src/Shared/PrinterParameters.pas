@@ -190,8 +190,10 @@ type
     procedure CheckPrameters;
     procedure WriteLogParameters;
     function SerialPortNames: string;
-    function BaudRateIndex(const Value: Integer): Integer;
+    procedure Load(const DeviceName: WideString);
+    procedure Save(const DeviceName: WideString);
     procedure Assign(Source: TPersistent); override;
+    function BaudRateIndex(const Value: Integer): Integer;
     function GetTranslationText(const Text: WideString): WideString;
 
     property Logger: ILogFile read FLogger;
@@ -617,6 +619,16 @@ begin
     end;
   end;
   Result := FTranslation;
+end;
+
+procedure TPrinterParameters.Load(const DeviceName: WideString);
+begin
+  ReceiptTemplate := ReadFileData(GetModulePath + 'Receipt.xml');
+end;
+
+procedure TPrinterParameters.Save(const DeviceName: WideString);
+begin
+  WriteFileData(GetModulePath + 'Receipt.xml', ReceiptTemplate);
 end;
 
 end.

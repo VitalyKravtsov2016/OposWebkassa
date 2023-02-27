@@ -46,11 +46,11 @@ type
     procedure TestJournalReport;
     procedure TestReadCahiers;
     procedure TestReadReceipt;
-    //procedure TestSendReceipt;
     procedure TestReadReceiptText;
     procedure TestReadUnits;
     procedure TestUploadOrder;
     procedure TestMoneyOperation;
+    procedure TestSendReceipt;
   end;
 
 implementation
@@ -568,9 +568,9 @@ begin
   end;
 end;
 
-(*
 procedure TWebkassaClientTest.TestSendReceipt;
 var
+  JsonText: string;
   CommandJson: string;
   Command: TSendReceiptCommand;
 begin
@@ -578,22 +578,21 @@ begin
   try
     Command.Request.CashboxUniqueNumber := 'SWKO0030586';
     Command.Request.Token := '6a4eaa2e5f764950blelce3712110d3d';
-    Command.Request.Number := '445113829';
-    Command.Request.ShiftNumber := 16;
+    Command.Request.CustomerXin := '123';
 
-    FClient.TestMode := True;
-    FClient.AnswerJson := ReadFileData(GetModulePath + 'SendReceiptAnswer.txt');
-    CheckEquals(True, FClient.SendReceipt(Command), 'FClient.SendReceipt');
+    JsonText := ObjectToJson(Command.Request);
     CommandJson := ReadFileData(GetModulePath + 'SendReceiptRequest.txt');
-    if CommandJson <> FClient.CommandJson then
-      WriteFileData(GetModulePath + 'SendReceiptRequestError.txt', FClient.CommandJson);
-    CheckEquals(CommandJson, FClient.CommandJson, 'CommandJson');
+    if CommandJson <> JsonText then
+    begin
+      WriteFileData(GetModulePath + 'SendReceiptRequestError.txt', JsonText);
+      CheckEquals(CommandJson, JsonText);
+    end;
   finally
     Command.Free;
   end;
 end;
 
-
+(*
 function TWebkassaClient.CheckForError(const JsonText: WideString): Boolean;
 var
   Item: TErrorItem;

@@ -9,12 +9,17 @@ uses
 type
   TChars = set of Char;
 
+  TJsonPersistent = class(TPersistent)
+  public
+    function IsRequiredField(const Field: string): Boolean; virtual;
+  end;
+
   { TJsonWriter }
 
   TJsonWriter = class
   private
     FStream: TStream;
-    function WriteProperty(Instance: TPersistent; PropInfo: PPropInfo;
+    function WriteProperty(Instance: TJsonPersistent; PropInfo: PPropInfo;
       const Prefix: string): Boolean;
     procedure WriteWideString(const Value: WideString);
     procedure WriteMinStr(const LocaleStr: string;
@@ -22,10 +27,10 @@ type
     procedure Write(const Buf; Count: Integer);
     procedure WriteStr(Value: string);
     procedure WriteCollection(Value: TCollection; const Prefix: string);
-    procedure WriteProperties(Instance: TPersistent; const Prefix: string);
+    procedure WriteProperties(Instance: TJsonPersistent; const Prefix: string);
   public
     constructor Create(AStream: TStream);
-    procedure WriteObject(Instance: TPersistent);
+    procedure WriteObject(Instance: TJsonPersistent);
   end;
 
   { TJsonReader }
@@ -41,8 +46,8 @@ type
     function ReadForChars(Chars: TChars): WideString;
     function ReadForChar(ExpectedChar: Char): WideString;
 
-    procedure ReadProperty(Instance: TPersistent);
-    procedure ReadPropValue(Instance: TPersistent; PropInfo: Pointer);
+    procedure ReadProperty(Instance: TJsonPersistent);
+    procedure ReadPropValue(Instance: TJsonPersistent; PropInfo: Pointer);
     procedure ReadCollection(Collection: TCollection);
     procedure ReadStrings(Strings: TStrings);
     function ReadChar: Char;
@@ -53,12 +58,12 @@ type
     procedure SkipPropValue;
   public
     constructor Create(AStream: TStream);
-    procedure ReadObject(Instance: TPersistent);
+    procedure ReadObject(Instance: TJsonPersistent);
     procedure StepBack;
   end;
 
-function ObjectToJson(Instance: TPersistent): string;
-procedure JsonToObject(const Text: string; Instance: TPersistent);
+function ObjectToJson(Instance: TJsonPersistent): string;
+procedure JsonToObject(const Text: string; Instance: TJsonPersistent);
 
 implementation
 
@@ -69,7 +74,7 @@ const
   CRLF = '';
   Indentation = '';
 
-function ObjectToJson(Instance: TPersistent): string;
+function ObjectToJson(Instance: TJsonPersistent): string;
 var
   Writer: TJsonWriter;
   Stream: TMemoryStream;
@@ -87,7 +92,7 @@ begin
   end;
 end;
 
-procedure JsonToObject(const Text: string; Instance: TPersistent);
+procedure JsonToObject(const Text: string; Instance: TJsonPersistent);
 var
   Reader: TJsonReader;
   Stream: TMemoryStream;
@@ -116,14 +121,14 @@ begin
   FStream := AStream;
 end;
 
-procedure TJsonWriter.WriteObject(Instance: TPersistent);
+procedure TJsonWriter.WriteObject(Instance: TJsonPersistent);
 begin
   WriteStr('{' + CRLF);
   WriteProperties(Instance, Indentation);
   WriteStr('}');
 end;
 
-procedure TJsonWriter.WriteProperties(Instance: TPersistent; const Prefix: string);
+procedure TJsonWriter.WriteProperties(Instance: TJsonPersistent; const Prefix: string);
 var
   I, Count: Integer;
   PropInfo: PPropInfo;
@@ -187,7 +192,7 @@ begin
     for I := 0 to Value.Count - 1 do
     begin
       WriteStr(Prefix + '{' + CRLF);
-      WriteProperties(Value.Items[I], Prefix + Indentation);
+      WriteProperties(TJsonPersistent(Value.Items[I]), Prefix + Indentation);
       WriteStr(Prefix + '}');
       if i <> (Value.Count - 1) then
       begin
@@ -229,7 +234,7 @@ begin
   end;
 end;
 
-function TJsonWriter.WriteProperty(Instance: TPersistent; PropInfo: PPropInfo;
+function TJsonWriter.WriteProperty(Instance: TJsonPersistent; PropInfo: PPropInfo;
   const Prefix: string): Boolean;
 var
   i: Integer;
@@ -249,10 +254,13 @@ begin
   case PropType^.Kind of
     tkString, tkLString, tkWString:
     begin
-      WriteStr(Prefix + '"' + PropName + '":');
       Text := GetWideStrProp(Instance, PropInfo);
-      WriteWideString('"' + Text + '"');
-      Result := True;
+      if Instance.IsRequiredField(PropName) or (Text <> '') then
+      begin
+        WriteStr(Prefix + '"' + PropName + '":');
+        WriteWideString('"' + Text + '"');
+        Result := True;
+      end;
     end;
 
     tkClass:
@@ -286,10 +294,10 @@ begin
           Result := True;
         end else
         begin
-          if Value is TPersistent then
+          if Value is TJsonPersistent then
           begin
             WriteStr(Prefix + '"' + PropName + '":{' + CRLF);
-            WriteProperties(TPersistent(Value), Prefix + Indentation);
+            WriteProperties(TJsonPersistent(Value), Prefix + Indentation);
             WriteStr(Prefix + '}');
             Result := True;
           end;
@@ -312,7 +320,7 @@ begin
   FStream := AStream;
 end;
 
-procedure TJsonReader.ReadObject(Instance: TPersistent);
+procedure TJsonReader.ReadObject(Instance: TJsonPersistent);
 begin
   FLevel := 0;
   while not EOF do
@@ -442,7 +450,7 @@ begin
   FStream.Seek(-1, 1);
 end;
 
-procedure TJsonReader.ReadProperty(Instance: TPersistent);
+procedure TJsonReader.ReadProperty(Instance: TJsonPersistent);
 var
   PropName: string;
   PropInfo: PPropInfo;
@@ -472,7 +480,7 @@ begin
   FStream.Seek(-1, 1);
 end;
 
-procedure TJsonReader.ReadPropValue(Instance: TPersistent; PropInfo: Pointer);
+procedure TJsonReader.ReadPropValue(Instance: TJsonPersistent; PropInfo: Pointer);
 var
   Item: TObject;
   PropType: PTypeInfo;
@@ -514,7 +522,7 @@ begin
       end
       else
         //SetObjectIdent(Instance, PropInfo, ReadIdent);
-        ReadProperty(TPersistent(GetOrdProp(Instance, PropInfo)));
+        ReadProperty(TJsonPersistent(GetOrdProp(Instance, PropInfo)));
       end;
   end;
 end;
@@ -540,7 +548,7 @@ begin
     while not EOF do
     begin
       if EndOfCollection then Break;
-      ReadProperty(Collection.Add);
+      ReadProperty(TJsonPersistent(Collection.Add));
     end;
   finally
     Collection.EndUpdate;
@@ -564,6 +572,13 @@ begin
   finally
     Strings.EndUpdate;
   end;
+end;
+
+{ TJsonPersistent }
+
+function TJsonPersistent.IsRequiredField(const Field: string): Boolean;
+begin
+  Result := True;
 end;
 
 end.

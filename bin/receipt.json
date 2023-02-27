@@ -1,0 +1,39 @@
+{
+	"Token": "f70e4ae69712449fb0cd2fbcc9030ca0",
+	"CashboxUniqueNumber": "SWK00033059",
+	"OperationType": 2,
+	"Positions": [
+		{
+			"Count": 1,
+			"Price": 1180,
+			"TaxPercent": 0,
+			"Tax": 0,
+			"TaxType": 0,
+			"PositionName": "ШОКОЛАДНЫЙ БАТОНЧИК SNICKERS 50ГР.",
+			"PositionCode": "1",
+			"Discount": 0,
+			"Markup": 0,
+			"SectionCode": 0,
+			"IsStorno": false,
+			"MarkupDeleted": false,
+			"DiscountDeleted": false,
+			"UnitCode": 796,
+			"Mark": "",
+			"GTIN": "",
+			"Productld": 0,
+			"WarehouseType": 0
+		}
+	],
+	"Payments": [
+		{
+			"Sum": 1180,
+			"PaymentType": 0
+		}
+	],
+	"Change": 0,
+	"RoundType": 2,
+	"ExternalCheckNumber": "29379",
+	"CustomerEmail": "",
+	"CustomerPhone": "",
+	"CustomerXin": ""
+}

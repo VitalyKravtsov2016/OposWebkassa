@@ -79,6 +79,7 @@ begin
   Reader := TPrinterParametersReg.Create(Item, Logger);
   try
     Reader.Load(DeviceName);
+    Item.Load(DeviceName);
   finally
     Reader.Free;
   end;
@@ -92,6 +93,7 @@ begin
   Writer := TPrinterParametersReg.Create(Item, Logger);
   try
     Writer.Save(DeviceName);
+    Item.Save(DeviceName);
   finally
     Writer.Free;
   end;

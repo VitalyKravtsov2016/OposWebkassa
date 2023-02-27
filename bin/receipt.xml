@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ConfigItems>
+   <TemplateItem logicalName="ShtrihFptr">
+        <prop name="portClass" type="String" value="com.shtrih.fiscalprinter.port.SerialPrinterPort"/>
+		<TemplateItem logicalName="ShtrihFptr">
+		
+    </TemplateItem> 
+</TemplateItems>

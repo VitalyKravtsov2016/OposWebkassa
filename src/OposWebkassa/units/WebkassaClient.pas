@@ -101,7 +101,7 @@ type
 
   { TErrorResult }
 
-  TErrorResult = class(TPersistent)
+  TErrorResult = class(TJsonPersistent)
   private
     FErrors: TErrorItems;
     procedure SetErrors(const Value: TErrorItems);
@@ -115,7 +115,7 @@ type
 
   { TErrorItems }
 
-  TErrorItems = class(TCollection)
+  TErrorItems = class(TJsonCollection)
   published
     function GetItem(Index: Integer): TErrorItem;
   public
@@ -137,7 +137,7 @@ type
 
   { TWebkassaCommand }
 
-  TWebkassaCommand = class(TPersistent)
+  TWebkassaCommand = class(TJsonPersistent)
   public
     function Encode: WideString; virtual; abstract;
     function GetAddress: WideString; virtual; abstract;
@@ -146,7 +146,7 @@ type
 
   { TAuthRequest }
 
-  TAuthRequest = class(TPersistent)
+  TAuthRequest = class(TJsonPersistent)
   private
     FLogin: WideString;
     FPassword: WideString;
@@ -157,7 +157,7 @@ type
 
   { TAuthResponse }
 
-  TAuthResponse = class(TPersistent)
+  TAuthResponse = class(TJsonPersistent)
   private
     FToken: WideString;
   published
@@ -186,7 +186,7 @@ type
 
   { TChangeTokenCommand }
 
-  TChangeTokenCommand = class(TPersistent)
+  TChangeTokenCommand = class(TJsonPersistent)
   private
     FData: Boolean;
     FRequest: TChangeTokenRequest;
@@ -200,7 +200,7 @@ type
 
   { TChangeTokenRequest }
 
-  TChangeTokenRequest = class(TPersistent)
+  TChangeTokenRequest = class(TJsonPersistent)
   private
     FToken: WideString;
     FCashboxUniqueNumber: WideString;
@@ -213,7 +213,7 @@ type
 
   { TSendReceiptCommand }
 
-  TSendReceiptCommand = class(TPersistent)
+  TSendReceiptCommand = class(TJsonPersistent)
   private
     FData: TSendReceiptCommandResponse;
     FRequest: TSendReceiptCommandRequest;
@@ -228,7 +228,7 @@ type
 
   { TSendReceiptCommandRequest }
 
-  TSendReceiptCommandRequest = class(TPersistent)
+  TSendReceiptCommandRequest = class(TJsonPersistent)
   private
     FToken: WideString;
     FCashboxUniqueNumber: WideString;
@@ -248,6 +248,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
+    function IsRequiredField(const Field: string): Boolean; override;
   published
     property Token: WideString read FToken write FToken;
     property CashboxUniqueNumber: WideString read FCashboxUniqueNumber write FCashboxUniqueNumber;
@@ -265,7 +266,7 @@ type
 
   { TSendReceiptCommandResponse }
 
-  TSendReceiptCommandResponse = class(TPersistent)
+  TSendReceiptCommandResponse = class(TJsonPersistent)
   private
 		FCheckNumber: WideString;
 		FDateTime: WideString;
@@ -307,7 +308,7 @@ type
 
   { TPayments }
 
-  TPayments = class(TCollection)
+  TPayments = class(TJsonCollection)
   private
     function GetItem(Index: Integer): TPayment;
   public
@@ -334,7 +335,7 @@ type
 
   { TTicketModifiers }
 
-  TTicketModifiers = class(TCollection)
+  TTicketModifiers = class(TJsonCollection)
   private
     function GetItem(Index: Integer): TTicketModifier;
   public
@@ -387,7 +388,7 @@ type
 
   { TTicketItems }
 
-  TTicketItems = class(TCollection)
+  TTicketItems = class(TJsonCollection)
   private
     function GetItem(Index: Integer): TTicketItem;
   public
@@ -399,7 +400,7 @@ type
 
   { TOfdInformation }
 
-  TOfdInformation = class(TPersistent)
+  TOfdInformation = class(TJsonPersistent)
   private
     FCode: Integer;
     FHost: WideString;
@@ -414,7 +415,7 @@ type
 
   { TCashboxParameters }
 
-  TCashboxParameters = class(TPersistent)
+  TCashboxParameters = class(TJsonPersistent)
   private
     FUniqueNumber: WideString;
     FRegistrationNumber: WideString;
@@ -436,7 +437,7 @@ type
 
   { TMoneyOperationRequest }
 
-  TMoneyOperationRequest = class(TPersistent)
+  TMoneyOperationRequest = class(TJsonPersistent)
   private
     FToken: WideString;
     FCashboxUniqueNumber: WideString;
@@ -453,7 +454,7 @@ type
 
   { TMoneyOperationResponse }
 
-  TMoneyOperationResponse = class(TPersistent)
+  TMoneyOperationResponse = class(TJsonPersistent)
   private
     FOfflineMode: Boolean;
     FCashboxOfflineMode: Boolean;
@@ -493,7 +494,7 @@ type
 
   { TCashboxRequest }
 
-  TCashboxRequest = class(TPersistent)
+  TCashboxRequest = class(TJsonPersistent)
   private
     FToken: WideString;
     FCashboxUniqueNumber: WideString;
@@ -504,7 +505,7 @@ type
 
   { TZXReportResponse }
 
-  TZXReportResponse = class(TPersistent)
+  TZXReportResponse = class(TJsonPersistent)
   private
     FReportNumber: Int64;
     FTaxPayerName: WideString;
@@ -589,7 +590,7 @@ type
 
   { TOperationTypeSummary }
 
-  TOperationTypeSummary = class(TPersistent)
+  TOperationTypeSummary = class(TJsonPersistent)
   private
     FPayments: TPaymentsByType;
     FDiscount: Currency;
@@ -614,7 +615,7 @@ type
 
   { TPaymentsByType }
 
-  TPaymentsByType = class(TCollection)
+  TPaymentsByType = class(TJsonCollection)
   private
     function GetItem(Index: Integer): TPaymentByType;
     procedure SetItem(Index: Integer; const Value: TPaymentByType);
@@ -635,7 +636,7 @@ type
 
   { TNonNullable }
 
-  TNonNullable = class(TPersistent)
+  TNonNullable = class(TJsonPersistent)
   private
     FSell: Currency;
     FBuy: Currency;
@@ -650,7 +651,7 @@ type
 
   { TZXReportCommand }
 
-  TZXReportCommand = class(TPersistent)
+  TZXReportCommand = class(TJsonPersistent)
   private
     FData: TZXReportResponse;
     FRequest: TCashboxRequest;
@@ -665,7 +666,7 @@ type
 
   { TJournalReportCommand }
 
-  TJournalReportCommand = class(TPersistent)
+  TJournalReportCommand = class(TJsonPersistent)
   private
     FData: TCollection;
     FRequest: TJournalReportRequest;
@@ -680,7 +681,7 @@ type
 
   { TJournalReportRequest }
 
-  TJournalReportRequest = class(TPersistent)
+  TJournalReportRequest = class(TJsonPersistent)
   private
     FToken: WideString;
     FCashboxUniqueNumber: WideString;
@@ -714,7 +715,7 @@ type
 
   { TTokenRequest }
 
-  TTokenRequest = class(TPersistent)
+  TTokenRequest = class(TJsonPersistent)
   private
     FToken: WideString;
   published
@@ -723,7 +724,7 @@ type
 
   { TCashboxesResponse }
 
-  TCashboxesResponse = class(TPersistent)
+  TCashboxesResponse = class(TJsonPersistent)
   private
     FList: TCashBoxes;
     procedure SetList(const Value: TCashBoxes);
@@ -761,7 +762,7 @@ type
 
   { TCashBoxes }
 
-  TCashBoxes = class(TCollection)
+  TCashBoxes = class(TJsonCollection)
   published
     function GetItem(Index: Integer): TCashBox;
     function ItemByUniqueNumber(const Value: WideString): TCashBox;
@@ -771,7 +772,7 @@ type
 
   { TCashboxesCommand }
 
-  TCashboxesCommand = class(TPersistent)
+  TCashboxesCommand = class(TJsonPersistent)
   private
     FData: TCashboxesResponse;
     FRequest: TTokenRequest;
@@ -786,7 +787,7 @@ type
 
   { TShiftRequest }
 
-  TShiftRequest = class(TPersistent)
+  TShiftRequest = class(TJsonPersistent)
   private
     FCashboxUniqueNumber: WideString;
     FToken: WideString;
@@ -801,7 +802,7 @@ type
 
   { TShiftResponse }
 
-  TShiftResponse = class(TPersistent)
+  TShiftResponse = class(TJsonPersistent)
   private
     FCashboxUniqueNumber: WideString;
     FSkip: Integer;
@@ -835,7 +836,7 @@ type
 
   { TShiftCommand }
 
-  TShiftCommand = class(TPersistent)
+  TShiftCommand = class(TJsonPersistent)
   private
     FData: TShiftResponse;
     FRequest: TShiftRequest;
@@ -868,7 +869,7 @@ type
 
   { TCashiers }
 
-  TCashiers = class(TCollection)
+  TCashiers = class(TJsonCollection)
   private
     function GetItem(Index: Integer): TCashier;
   public
@@ -879,7 +880,7 @@ type
 
   { TCashierCommand }
 
-  TCashierCommand = class(TPersistent)
+  TCashierCommand = class(TJsonPersistent)
   private
     FData: TCashiers;
     FRequest: TTokenRequest;
@@ -894,7 +895,7 @@ type
 
   { TReceiptRequest }
 
-  TReceiptRequest = class(TPersistent)
+  TReceiptRequest = class(TJsonPersistent)
   private
     FCashboxUniqueNumber: WideString;
     FToken: WideString;
@@ -920,7 +921,7 @@ type
 
   { TPaymentItems }
 
-  TPaymentItems = class(TCollection)
+  TPaymentItems = class(TJsonCollection)
   private
     function GetItem(Index: Integer): TPaymentItem;
   public
@@ -971,7 +972,7 @@ type
 
   { TPositionItems }
 
-  TPositionItems = class(TCollection)
+  TPositionItems = class(TJsonCollection)
   private
     function GetItem(Index: Integer): TPositionItem;
   public
@@ -982,7 +983,7 @@ type
   { TReceiptResponse }
 
 
-  TReceiptResponse = class(TPersistent)
+  TReceiptResponse = class(TJsonPersistent)
   private
     FCashboxUniqueNumber: WideString;
     FCashboxRegistrationNumber: WideString;
@@ -1054,7 +1055,7 @@ type
 
   { TReceiptCommand }
 
-  TReceiptCommand = class(TPersistent)
+  TReceiptCommand = class(TJsonPersistent)
   private
     FData: TReceiptResponse;
     FRequest: TReceiptRequest;
@@ -1069,7 +1070,7 @@ type
 
   { TReceiptTextRequest }
 
-  TReceiptTextRequest = class(TPersistent)
+  TReceiptTextRequest = class(TJsonPersistent)
   private
     FCashboxUniqueNumber: WideString;
     FExternalCheckNumber: WideString;
@@ -1086,7 +1087,7 @@ type
 
   { TReceiptTextAnswer }
 
-  TReceiptTextAnswer = class(TPersistent)
+  TReceiptTextAnswer = class(TJsonPersistent)
   private
     FLines: TCollection;
     procedure SetLines(const Value: TCollection);
@@ -1117,7 +1118,7 @@ type
 
   { TReceiptTextCommand }
 
-  TReceiptTextCommand = class(TPersistent)
+  TReceiptTextCommand = class(TJsonPersistent)
   private
     FData: TReceiptTextAnswer;
     FRequest: TReceiptTextRequest;
@@ -1132,7 +1133,7 @@ type
 
   { TReadUnitsCommand }
 
-  TReadUnitsCommand = class(TPersistent)
+  TReadUnitsCommand = class(TJsonPersistent)
   private
     FData: TUnitItems;
     FRequest: TTokenRequest;
@@ -1164,7 +1165,7 @@ type
 
   { TUnitItems }
 
-  TUnitItems = class(TCollection)
+  TUnitItems = class(TJsonCollection)
   private
     function GetItem(Index: Integer): TUnitItem;
   public
@@ -1174,7 +1175,7 @@ type
 
   { TUploadOrderCommand }
 
-  TUploadOrderCommand = class(TPersistent)
+  TUploadOrderCommand = class(TJsonPersistent)
   private
     FData: Boolean;
     FRequest: TUploadOrderRequest;
@@ -1188,7 +1189,7 @@ type
 
   { TUploadOrderRequest }
 
-  TUploadOrderRequest = class(TPersistent)
+  TUploadOrderRequest = class(TJsonPersistent)
   private
     FToken: WideString;
     FOrderNumber: WideString;
@@ -3012,6 +3013,21 @@ begin
   inherited Destroy;
 end;
 
+function TSendReceiptCommandRequest.IsRequiredField(const Field: string): Boolean;
+const
+  RequiredFields: array [0..8] of string = (
+  'Token', 'CashboxUniqueNumber', 'OperationType', 'Positions',
+  'TicketModifiers', 'Payments', 'Change', 'RoundType', 'ExternalCheckNumber');
+var
+  i: Integer;
+begin
+  for i := Low(RequiredFields) to High(RequiredFields) do
+  begin
+    Result := AnsiCompareText(Field, RequiredFields[i]) = 0;
+    if Result then Break;
+  end;
+end;
+
 procedure TSendReceiptCommandRequest.SetPayments(const Value: TPayments);
 begin
   FPayments.Assign(Value);
@@ -3254,7 +3270,49 @@ end;
 505
 RSHTTPHTTPVersionNotSupported = 'HTTP version not supported';
 
+function TWebkassaClient.SendReceipt2(Command: TSendReceiptCommand): Boolean;
+var
+  i: Integer;
+  Json: TlkJSON;
+  Root: TlkJSONbase;
+  Positions: TlkJSONbase;
+  JsonText: WideString;
+begin
+  Json := TlkJSON.Create;
+  Root := TlkJSONbase.Create;
+  try
+    Root.Field['Token'].Value := Command.Request.Token;
+    Root.Field['CashboxUniqueNumber'].Value := Command.Request.CashboxUniqueNumber;
+    Root.Field['OperationType'].Value := Command.Request.OperationType;
+    Positions := Root.Field['Positions'];
+    for i := 0 to
+    Command.Request.
+
+
+    property Positions: TTicketItems read FPositions write SetPositions;
+    property TicketModifiers: TTicketModifiers read FTicketModifiers write SetTicketModifiers;
+    property Payments: TPayments read FPayments write SetPayments;
+    property Change: Currency read FChange write FChange;
+    property RoundType: Integer read FRoundType write FRoundType;
+    property ExternalCheckNumber: WideString read FExternalCheckNumber write FExternalCheckNumber;
+    property CustomerEmail: WideString read FCustomerEmail write FCustomerEmail;
+    property CustomerPhone: WideString read FCustomerPhone write FCustomerPhone;
+    property CustomerXin: WideString read FCustomerXin write FCustomerXin;
+
+    JsonText := Json.GenerateText(Root);
+    JsonText := Post(GetAddress + 'api/Check', JsonText);
+    Result := CheckLastError;
+    if Result then
+    begin
+      JsonToObject(JsonText, Command);
+    end;
+  finally
+    Json.Free;
+    Root.Free;
+  end;
+end;
 *)
+
 
 initialization
   DecimalSeparator := '.';
