@@ -4,14 +4,88 @@ interface
 
 uses
   // VCL
-  Windows, Classes, SysUtils, Variants, TypInfo, Types, ObjAuto;
+  Windows, Classes, SysUtils, Variants, TypInfo, Types, ObjAuto, RTLConsts;
 
 type
   TChars = set of Char;
 
+  { TJsonPersistent }
+
   TJsonPersistent = class(TPersistent)
   public
     function IsRequiredField(const Field: string): Boolean; virtual;
+  end;
+
+  TJsonCollection = class;
+
+  TJsonCollectionItem = class(TJsonPersistent)
+  private
+    FCollection: TJsonCollection;
+    FID: Integer;
+    function GetIndex: Integer;
+  protected
+    procedure Changed(AllItems: Boolean);
+    function GetOwner: TPersistent; override;
+    function GetDisplayName: string; virtual;
+    procedure SeTJsonCollection(Value: TJsonCollection); virtual;
+    procedure SetIndex(Value: Integer); virtual;
+    procedure SetDisplayName(const Value: string); virtual;
+  public
+    constructor Create(Collection: TJsonCollection); virtual;
+    destructor Destroy; override;
+    function GetNamePath: string; override;
+    property Collection: TJsonCollection read FCollection write SeTJsonCollection;
+    property ID: Integer read FID;
+    property Index: Integer read GetIndex write SetIndex;
+    property DisplayName: string read GetDisplayName write SetDisplayName;
+  end;
+
+  TJsonCollectionItemClass = class of TJsonCollectionItem;
+  TJsonCollectionNotification = (cnAdded, cnExtracting, cnDeleting);
+
+  TJsonCollection = class(TJsonPersistent)
+  private
+    FItemClass: TJsonCollectionItemClass;
+    FItems: TList;
+    FUpdateCount: Integer;
+    FNextID: Integer;
+    FPropName: string;
+    function GetCount: Integer;
+    function GetPropName: string;
+    procedure InsertItem(Item: TJsonCollectionItem);
+    procedure RemoveItem(Item: TJsonCollectionItem);
+  protected
+    procedure Added(var Item: TJsonCollectionItem); virtual; deprecated;
+    procedure Deleting(Item: TJsonCollectionItem); virtual; deprecated;
+    property NextID: Integer read FNextID;
+    procedure Notify(Item: TJsonCollectionItem; Action: TJsonCollectionNotification); virtual;
+    { Design-time editor support }
+    function GetAttrCount: Integer; dynamic;
+    function GetAttr(Index: Integer): string; dynamic;
+    function GetItemAttr(Index, ItemIndex: Integer): string; dynamic;
+    procedure Changed;
+    function GetItem(Index: Integer): TJsonCollectionItem;
+    procedure SetItem(Index: Integer; Value: TJsonCollectionItem);
+    procedure SetItemName(Item: TJsonCollectionItem); virtual;
+    procedure Update(Item: TJsonCollectionItem); virtual;
+    property PropName: string read GetPropName write FPropName;
+    property UpdateCount: Integer read FUpdateCount;
+  public
+    constructor Create(ItemClass: TJsonCollectionItemClass);
+    destructor Destroy; override;
+    function Owner: TPersistent;
+    function Add: TJsonCollectionItem;
+    procedure Assign(Source: TPersistent); override;
+    procedure BeginUpdate; virtual;
+    procedure Clear;
+    procedure Delete(Index: Integer);
+    procedure EndUpdate; virtual;
+    function FindItemID(ID: Integer): TJsonCollectionItem;
+    function GetNamePath: string; override;
+    function Insert(Index: Integer): TJsonCollectionItem;
+    property Count: Integer read GetCount;
+    property ItemClass: TJsonCollectionItemClass read FItemClass;
+    property Items[Index: Integer]: TJsonCollectionItem read GetItem write SetItem;
   end;
 
   { TJsonWriter }
@@ -26,7 +100,7 @@ type
       const UTF8Str: UTF8String);
     procedure Write(const Buf; Count: Integer);
     procedure WriteStr(Value: string);
-    procedure WriteCollection(Value: TCollection; const Prefix: string);
+    procedure WriteCollection(Value: TJsonCollection; const Prefix: string);
     procedure WriteProperties(Instance: TJsonPersistent; const Prefix: string);
   public
     constructor Create(AStream: TStream);
@@ -48,7 +122,7 @@ type
 
     procedure ReadProperty(Instance: TJsonPersistent);
     procedure ReadPropValue(Instance: TJsonPersistent; PropInfo: Pointer);
-    procedure ReadCollection(Collection: TCollection);
+    procedure ReadCollection(Collection: TJsonCollection);
     procedure ReadStrings(Strings: TStrings);
     function ReadChar: Char;
     function NextValue: Char;
@@ -112,6 +186,300 @@ begin
   end;
 end;
 
+{ TJsonCollectionItem }
+
+constructor TJsonCollectionItem.Create(Collection: TJsonCollection);
+begin
+  SeTJsonCollection(Collection);
+end;
+
+destructor TJsonCollectionItem.Destroy;
+begin
+  SeTJsonCollection(nil);
+  inherited Destroy;
+end;
+
+procedure TJsonCollectionItem.Changed(AllItems: Boolean);
+var
+  Item: TJsonCollectionItem;
+begin
+  if (FCollection <> nil) and (FCollection.FUpdateCount = 0) then
+  begin
+    if AllItems then Item := nil else Item := Self;
+    FCollection.Update(Item);
+  end;
+end;
+
+function TJsonCollectionItem.GetIndex: Integer;
+begin
+  if FCollection <> nil then
+    Result := FCollection.FItems.IndexOf(Self) else
+    Result := -1;
+end;
+
+function TJsonCollectionItem.GetDisplayName: string;
+begin
+  Result := ClassName;
+end;
+
+function TJsonCollectionItem.GetNamePath: string;
+begin
+  if FCollection <> nil then
+    Result := Format('%s[%d]',[FCollection.GetNamePath, Index])
+  else
+    Result := ClassName;
+end;
+
+function TJsonCollectionItem.GetOwner: TPersistent;
+begin
+  Result := FCollection;
+end;
+
+procedure TJsonCollectionItem.SeTJsonCollection(Value: TJsonCollection);
+begin
+  if FCollection <> Value then
+  begin
+    if FCollection <> nil then FCollection.RemoveItem(Self);
+    if Value <> nil then Value.InsertItem(Self);
+  end;
+end;
+
+procedure TJsonCollectionItem.SetDisplayName(const Value: string);
+begin
+  Changed(False);
+end;
+
+procedure TJsonCollectionItem.SetIndex(Value: Integer);
+var
+  CurIndex: Integer;
+begin
+  CurIndex := GetIndex;
+  if (CurIndex >= 0) and (CurIndex <> Value) then
+  begin
+    FCollection.FItems.Move(CurIndex, Value);
+    Changed(True);
+  end;
+end;
+
+{ TJsonCollection }
+
+constructor TJsonCollection.Create(ItemClass: TJsonCollectionItemClass);
+begin
+  FItemClass := ItemClass;
+  FItems := TList.Create;
+end;
+
+destructor TJsonCollection.Destroy;
+begin
+  FUpdateCount := 1;
+  if FItems <> nil then
+    Clear;
+  FItems.Free;
+  inherited Destroy;
+end;
+
+function TJsonCollection.Add: TJsonCollectionItem;
+begin
+  Result := FItemClass.Create(Self);
+  Added(Result);
+end;
+
+procedure TJsonCollection.Assign(Source: TPersistent);
+var
+  I: Integer;
+begin
+  if Source is TJsonCollection then
+  begin
+    BeginUpdate;
+    try
+      Clear;
+      for I := 0 to TJsonCollection(Source).Count - 1 do
+        Add.Assign(TJsonCollection(Source).Items[I]);
+    finally
+      EndUpdate;
+    end;
+    Exit;
+  end;
+  inherited Assign(Source);
+end;
+
+procedure TJsonCollection.BeginUpdate;
+begin
+  Inc(FUpdateCount);
+end;
+
+procedure TJsonCollection.Changed;
+begin
+  if FUpdateCount = 0 then Update(nil);
+end;
+
+procedure TJsonCollection.Clear;
+begin
+  if FItems.Count > 0 then
+  begin
+    BeginUpdate;
+    try
+      while FItems.Count > 0 do
+        TJsonCollectionItem(FItems.Last).Free;
+    finally
+      EndUpdate;
+    end;
+  end;
+end;
+
+procedure TJsonCollection.EndUpdate;
+begin
+  Dec(FUpdateCount);
+  Changed;
+end;
+
+function TJsonCollection.FindItemID(ID: Integer): TJsonCollectionItem;
+var
+  I: Integer;
+begin
+  for I := 0 to FItems.Count-1 do
+  begin
+    Result := TJsonCollectionItem(FItems[I]);
+    if Result.ID = ID then Exit;
+  end;
+  Result := nil;
+end;
+
+function TJsonCollection.GetAttrCount: Integer;
+begin
+  Result := 0;
+end;
+
+function TJsonCollection.GetAttr(Index: Integer): string;
+begin
+  Result := '';
+end;
+
+function TJsonCollection.GetItemAttr(Index, ItemIndex: Integer): string;
+begin
+  Result := Items[ItemIndex].DisplayName;
+end;
+
+function TJsonCollection.GetCount: Integer;
+begin
+  Result := FItems.Count;
+end;
+
+function TJsonCollection.GetItem(Index: Integer): TJsonCollectionItem;
+begin
+  Result := FItems[Index];
+end;
+
+function TJsonCollection.GetNamePath: string;
+var
+  S, P: string;
+begin
+  Result := ClassName;
+  if GetOwner = nil then Exit;
+  S := GetOwner.GetNamePath;
+  if S = '' then Exit;
+  P := PropName;
+  if P = '' then Exit;
+  Result := S + '.' + P;
+end;
+
+function TJsonCollection.GetPropName: string;
+var
+  I: Integer;
+  Props: PPropList;
+  TypeData: PTypeData;
+  Owner: TPersistent;
+begin
+  Result := FPropName;
+  Owner := GetOwner;
+  if (Result <> '') or (Owner = nil) or (Owner.ClassInfo = nil) then Exit;
+  TypeData := GetTypeData(Owner.ClassInfo);
+  if (TypeData = nil) or (TypeData^.PropCount = 0) then Exit;
+  GetMem(Props, TypeData^.PropCount * sizeof(Pointer));
+  try
+    GetPropInfos(Owner.ClassInfo, Props);
+    for I := 0 to TypeData^.PropCount-1 do
+    begin
+      with Props^[I]^ do
+        if (PropType^^.Kind = tkClass) and
+          (GetOrdProp(Owner, Props^[I]) = Integer(Self)) then
+          FPropName := Name;
+    end;
+  finally
+    Freemem(Props);
+  end;
+  Result := FPropName;
+end;
+
+function TJsonCollection.Insert(Index: Integer): TJsonCollectionItem;
+begin
+  Result := Add;
+  Result.Index := Index;
+end;
+
+procedure TJsonCollection.InsertItem(Item: TJsonCollectionItem);
+begin
+  if not (Item is FItemClass) then TList.Error(@SInvalidProperty, 0);
+  FItems.Add(Item);
+  Item.FCollection := Self;
+  Item.FID := FNextID;
+  Inc(FNextID);
+  SetItemName(Item);
+  Notify(Item, cnAdded);
+  Changed;
+end;
+
+procedure TJsonCollection.RemoveItem(Item: TJsonCollectionItem);
+begin
+  Notify(Item, cnExtracting);
+  if Item = FItems.Last then
+    FItems.Delete(FItems.Count - 1)
+  else
+    FItems.Remove(Item);
+  Item.FCollection := nil;
+  Changed;
+end;
+
+procedure TJsonCollection.SetItem(Index: Integer; Value: TJsonCollectionItem);
+begin
+  TJsonCollectionItem(FItems[Index]).Assign(Value);
+end;
+
+procedure TJsonCollection.SetItemName(Item: TJsonCollectionItem);
+begin
+end;
+
+procedure TJsonCollection.Update(Item: TJsonCollectionItem);
+begin
+end;
+
+procedure TJsonCollection.Delete(Index: Integer);
+begin
+  Notify(TJsonCollectionItem(FItems[Index]), cnDeleting);
+  TJsonCollectionItem(FItems[Index]).Free;
+end;
+
+function TJsonCollection.Owner: TPersistent;
+begin
+  Result := GetOwner;
+end;
+
+procedure TJsonCollection.Added(var Item: TJsonCollectionItem);
+begin
+end;
+
+procedure TJsonCollection.Deleting(Item: TJsonCollectionItem);
+begin
+end;
+
+procedure TJsonCollection.Notify(Item: TJsonCollectionItem;
+  Action: TJsonCollectionNotification);
+begin
+  case Action of
+    cnAdded: Added(Item);
+    cnDeleting: Deleting(Item);
+  end;
+end;
 
 { TJsonWriter }
 
@@ -181,7 +549,7 @@ begin
   Write(Value[1], L);
 end;
 
-procedure TJsonWriter.WriteCollection(Value: TCollection; const Prefix: string);
+procedure TJsonWriter.WriteCollection(Value: TJsonCollection; const Prefix: string);
 var
   I: Integer;
 begin
@@ -268,12 +636,12 @@ begin
       Value := TObject(GetOrdProp(Instance, PropInfo));
       if Value = nil then Exit;
 
-      if Value is TCollection then
+      if Value is TJsonCollection then
       begin
-        if TCollection(Value).Count > 0 then
+        if TJsonCollection(Value).Count > 0 then
         begin
           WriteStr(Prefix + '"' + PropName + '":[' + CRLF);
-          WriteCollection(TCollection(Value), Prefix + Indentation);
+          WriteCollection(TJsonCollection(Value), Prefix + Indentation);
           WriteStr(Prefix + ']');
           Result := True;
         end;
@@ -511,9 +879,9 @@ begin
       if NextValue = '[' then
       begin
         ReadChar;
-        if Item is TCollection then
+        if Item is TJsonCollection then
         begin
-          ReadCollection(TCollection(Item));
+          ReadCollection(TJsonCollection(Item));
         end;
         if Item is TStrings then
         begin
@@ -539,7 +907,7 @@ begin
   if Result then ReadChar;
 end;
 
-procedure TJsonReader.ReadCollection(Collection: TCollection);
+procedure TJsonReader.ReadCollection(Collection: TJsonCollection);
 begin
   Collection.BeginUpdate;
   try

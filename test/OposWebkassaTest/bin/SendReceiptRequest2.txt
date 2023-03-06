@@ -1,0 +1,1 @@
+{"Token":"6a4eaa2e5f764950blelce3712110d3d","CashboxUniqueNumber":"SWKO0030586","OperationType":0,"Change":0,"RoundType":0,"ExternalCheckNumber":"","CustomerEmail":"test@test.com","CustomerPhone":"+7934857938457",}

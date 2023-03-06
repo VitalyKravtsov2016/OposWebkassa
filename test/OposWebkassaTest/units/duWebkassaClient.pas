@@ -51,6 +51,7 @@ type
     procedure TestUploadOrder;
     procedure TestMoneyOperation;
     procedure TestSendReceipt;
+    procedure TestSendReceipt2;
   end;
 
 implementation
@@ -585,6 +586,32 @@ begin
     if CommandJson <> JsonText then
     begin
       WriteFileData(GetModulePath + 'SendReceiptRequestError.txt', JsonText);
+      CheckEquals(CommandJson, JsonText);
+    end;
+  finally
+    Command.Free;
+  end;
+end;
+
+procedure TWebkassaClientTest.TestSendReceipt2;
+var
+  JsonText: string;
+  CommandJson: string;
+  Command: TSendReceiptCommand;
+begin
+  Command := TSendReceiptCommand.Create;
+  try
+    Command.Request.CashboxUniqueNumber := 'SWKO0030586';
+    Command.Request.Token := '6a4eaa2e5f764950blelce3712110d3d';
+    Command.Request.CustomerEmail := 'test@test.com';
+    Command.Request.CustomerPhone := '+7934857938457';
+    Command.Request.CustomerXin := '';
+
+    JsonText := ObjectToJson(Command.Request);
+    CommandJson := ReadFileData(GetModulePath + 'SendReceiptRequest2.txt');
+    if CommandJson <> JsonText then
+    begin
+      WriteFileData(GetModulePath + 'SendReceiptRequestError2.txt', JsonText);
       CheckEquals(CommandJson, JsonText);
     end;
   finally

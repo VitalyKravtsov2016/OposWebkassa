@@ -17,6 +17,7 @@ type
   TWebkassaTest = class(TTestCase)
   private
     FLogger: ILogFile;
+    FShiftNumber: Integer;
     FClient: TWebkassaClient;
   protected
     procedure SetUp; override;
@@ -68,13 +69,15 @@ begin
 
   FClient := TWebkassaClient.Create(FLogger);
   FClient.Address := 'https://devkkm.webkassa.kz';
-  //FClient.Login := 'webkassa4@softit.kz';
-  //FClient.Password := 'Kassa123';
+  FClient.Login := 'webkassa4@softit.kz';
+  FClient.Password := 'Kassa123';
+  FClient.CashboxNumber := 'SWK00033059';
+  FClient.RaiseErrors := True;
+(*
   FClient.Login := 'Adilkhan.seilbekov@petroretail.kz';
   FClient.Password := 'Aa123456789!';
   FClient.CashboxNumber := 'SWK00032685';
-  //FClient.CashboxNumber := 'SWK00033059';
-  FClient.RaiseErrors := True;
+*)
 end;
 
 procedure TWebkassaTest.TearDown;
@@ -187,7 +190,7 @@ begin
     Command.Request.CashboxUniqueNumber := FClient.CashboxNumber;
     FClient.XReport(Command);
     WriteFileData(GetModulePath + 'XReportAnswer.txt', FClient.AnswerJson);
-
+    FShiftNumber := Command.Data.ShiftNumber;
   finally
     Command.Free;
   end;
@@ -205,7 +208,7 @@ begin
     Request.CashboxUniqueNumber := FClient.CashboxNumber;
 
     JsonText := ObjectToJson(Request);
-    JsonText := FClient.Post(FClient.Address + 'api/xreport/extended', JsonText);
+    JsonText := FClient.Post(FClient.GetAddress + 'api/xreport/extended', JsonText);
     WriteFileData(GetModulePath + 'XReportExtended.txt', FClient.AnswerJson);
   finally
     Request.Free;
@@ -224,7 +227,7 @@ begin
     Request.CashboxUniqueNumber := FClient.CashboxNumber;
 
     JsonText := ObjectToJson(Request);
-    JsonText := FClient.Post(FClient.Address + 'api/zreport/extended', JsonText);
+    JsonText := FClient.Post(FClient.GetAddress + 'api/zreport/extended', JsonText);
     WriteFileData(GetModulePath + 'ZReportExtended.txt', FClient.AnswerJson);
   finally
     Request.Free;
@@ -253,13 +256,15 @@ procedure TWebkassaTest.TestJournalReport;
 var
   Command: TJournalReportCommand;
 begin
+  // Read shift number
+  TestXReport;
+
   Command := TJournalReportCommand.Create;
   try
     FClient.Connect;
-
     Command.Request.Token := FClient.Token;
     Command.Request.CashboxUniqueNumber := FClient.CashboxNumber;
-    Command.Request.ShiftNumber := 148;
+    Command.Request.ShiftNumber := FShiftNumber;
     FClient.JournalReport(Command);
     WriteFileData(GetModulePath + 'JournalReport.txt', FClient.AnswerJson);
   finally

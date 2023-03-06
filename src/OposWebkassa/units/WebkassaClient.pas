@@ -124,7 +124,7 @@ type
 
   { TErrorItem }
 
-  TErrorItem = class(TCollectionItem)
+  TErrorItem = class(TJsonCollectionItem)
   private
     FCode: Integer;
     FText: WideString;
@@ -297,7 +297,7 @@ type
 
   { TPayment }
 
-  TPayment = class(TCollectionItem)
+  TPayment = class(TJsonCollectionItem)
   private
     FSum: Currency;
     FPaymentType: Integer;
@@ -318,7 +318,7 @@ type
 
   { TTicketModifier }
 
-  TTicketModifier = class(TCollectionItem)
+  TTicketModifier = class(TJsonCollectionItem)
   private
     FSum:	Currency;
 	  FText: WideString;
@@ -345,7 +345,7 @@ type
 
   { TTicketItem }
 
-  TTicketItem = class(TCollectionItem)
+  TTicketItem = class(TJsonCollectionItem)
   private
     FCount: Double;
     FPrice: Currency;
@@ -579,7 +579,7 @@ type
 
   { TReportSection }
 
-  TReportSection = class(TCollectionItem)
+  TReportSection = class(TJsonCollectionItem)
   private
     FCode: Integer;
     FName: WideString;
@@ -625,7 +625,7 @@ type
 
   { TPaymentByType }
 
-  TPaymentByType = class(TCollectionItem)
+  TPaymentByType = class(TJsonCollectionItem)
   private
     FSum: Currency;
     FType: Integer;
@@ -668,15 +668,15 @@ type
 
   TJournalReportCommand = class(TJsonPersistent)
   private
-    FData: TCollection;
+    FData: TJsonCollection;
     FRequest: TJournalReportRequest;
-    procedure setData(const Value: TCollection);
+    procedure setData(const Value: TJsonCollection);
   public
     constructor Create;
     destructor Destroy; override;
     property Request: TJournalReportRequest read FRequest;
   published
-    property Data: TCollection read FData write setData;
+    property Data: TJsonCollection read FData write setData;
   end;
 
   { TJournalReportRequest }
@@ -694,7 +694,7 @@ type
 
   { TJournalReportItem }
 
-  TJournalReportItem = class(TCollectionItem)
+  TJournalReportItem = class(TJsonCollectionItem)
   private
     FOperationTypeText: WideString;
     FSum: Currency;
@@ -737,7 +737,7 @@ type
 
   { TCashbox }
 
-  TCashbox = class(TCollectionItem)
+  TCashbox = class(TJsonCollectionItem)
   private
     FUniqueNumber: WideString;
     FRegistrationNumber: WideString;
@@ -808,8 +808,8 @@ type
     FSkip: Integer;
     FTake: Integer;
     FTotal: Integer;
-    FShifts: TCollection;
-    procedure SetShifts(const Value: TCollection);
+    FShifts: TJsonCollection;
+    procedure SetShifts(const Value: TJsonCollection);
   public
     constructor Create;
     destructor Destroy; override;
@@ -818,12 +818,12 @@ type
     property Skip: Integer read FSkip write FSkip;
     property Take: Integer read FTake write FTake;
     property Total: Integer read FTotal write FTotal;
-    property Shifts: TCollection read FShifts write SetShifts;
+    property Shifts: TJsonCollection read FShifts write SetShifts;
   end;
 
   { TShiftItem }
 
-  TShiftItem = class(TCollectionItem)
+  TShiftItem = class(TJsonCollectionItem)
   private
     FShiftNumber: Integer;
     FOpenDate: WideString;
@@ -851,14 +851,14 @@ type
 
   { TCashier }
 
-  TCashier = class(TCollectionItem)
+  TCashier = class(TJsonCollectionItem)
   private
     FFullName: WideString;
     FEmail: WideString;
     FCashboxes: TStrings;
     procedure SetCashboxes(const Value: TStrings);
   public
-    constructor Create(Collection: TCollection); override;
+    constructor Create(Collection: TJsonCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
   published
@@ -910,7 +910,7 @@ type
 
   { TPaymentItem }
 
-  TPaymentItem = class(TCollectionItem)
+  TPaymentItem = class(TJsonCollectionItem)
   private
     FSum: Currency;
     FPaymentTypeName: WideString;
@@ -931,7 +931,7 @@ type
 
   { TPositionItem }
 
-  TPositionItem = class(TCollectionItem)
+  TPositionItem = class(TJsonCollectionItem)
   private
     FPositionName: WideString;
     FPositionCode: WideString;
@@ -1089,19 +1089,19 @@ type
 
   TReceiptTextAnswer = class(TJsonPersistent)
   private
-    FLines: TCollection;
-    procedure SetLines(const Value: TCollection);
+    FLines: TJsonCollection;
+    procedure SetLines(const Value: TJsonCollection);
   public
     constructor Create;
     destructor Destroy; override;
     function GetText: WideString;
   published
-    property Lines: TCollection read FLines  write SetLines;
+    property Lines: TJsonCollection read FLines  write SetLines;
   end;
 
   { TReceiptTextItem }
 
-  TReceiptTextItem = class(TCollectionItem)
+  TReceiptTextItem = class(TJsonCollectionItem)
   private
     FOrder: Integer;
     FType: Integer;
@@ -1148,7 +1148,7 @@ type
 
   { TUnitItem }
 
-  TUnitItem  = class(TCollectionItem)
+  TUnitItem  = class(TJsonCollectionItem)
   private
     FCode: Integer;
     FNameRu: WideString; // Наименование на русском
@@ -1193,24 +1193,24 @@ type
   private
     FToken: WideString;
     FOrderNumber: WideString;
-    FPositions: TCollection;
+    FPositions: TJsonCollection;
 	  FCustomerEmail: WideString;
 	  FCustomerPhone: WideString;
-    procedure SetPositions(const Value: TCollection);
+    procedure SetPositions(const Value: TJsonCollection);
   public
     constructor Create;
     destructor Destroy; override;
   published
     property Token: WideString read FToken write FToken;
     property OrderNumber: WideString read FOrderNumber write FOrderNumber;
-    property Positions: TCollection read FPositions write SetPositions;
+    property Positions: TJsonCollection read FPositions write SetPositions;
 	  property CustomerEmail: WideString read FCustomerEmail write FCustomerEmail;
 	  property CustomerPhone: WideString read FCustomerPhone write FCustomerPhone;
   end;
 
   { TOrderItem }
 
-  TOrderItem = class(TCollectionItem)
+  TOrderItem = class(TJsonCollectionItem)
   private
     FCount: Integer;
     FPrice: Currency;
@@ -1258,12 +1258,11 @@ type
     FErrorResult: TErrorResult;
     FTestErrorResult: TErrorResult;
 
-    function GetAddress: WideString;
     function GetTransport: TIdHTTP;
     function CheckLastError: Boolean;
 
     property Transport: TIdHTTP read GetTransport;
-    function PostJson(const URL, Request: WideString): WideString;
+    function PostJson(const AURL, Request: WideString): WideString;
   protected
     procedure HTTPHeadersAvailable(Sender: TObject;
       AHeaders: TIdHeaderList; var VContinue: Boolean);
@@ -1274,14 +1273,12 @@ type
     procedure Connect;
     procedure Disconnect;
     procedure RaiseLastError;
-
+    function GetAddress: WideString;
     function Post(URL, Request: WideString): WideString;
     function Authenticate(Command: TAuthCommand): Boolean;
     function ChangeToken(Command: TChangeTokenCommand): Boolean;
     function SendReceipt(Command: TSendReceiptCommand): Boolean;
-
     function MoneyOperation(Command: TMoneyOperationCommand): Boolean;
-
     function ZReport(Command: TZXReportCommand): Boolean;
     function XReport(Command: TZXReportCommand): Boolean;
     function JournalReport(Command: TJournalReportCommand): Boolean;
@@ -1290,18 +1287,14 @@ type
     function ReadReceiptText(Command: TReceiptTextCommand): Boolean;
     function ReadUnits(Command: TReadUnitsCommand): Boolean;
     function UploadOrder(Command: TUploadOrderCommand): Boolean;
-
     function ReadCashboxes(Command: TCashboxesCommand): Boolean;
     function ReadCashboxStatus(Request: TCashboxRequest): Boolean;
     function ReadShiftHistory(Command: TShiftCommand): Boolean;
-
     function Execute(Command: TWebkassaCommand): Boolean;
-
 
     property Login: WideString read FLogin write FLogin;
     property Password: WideString read FPassword write FPassword;
     property ConnectTimeout: Integer read FConnectTimeout write FConnectTimeout;
-
     property Connected: Boolean read FConnected;
     property Token: WideString read FToken write FToken;
     property ErrorResult: TErrorResult read FErrorResult;
@@ -1656,13 +1649,15 @@ begin
   end;
 end;
 
-function TWebkassaClient.PostJson(const URL, Request: WideString): WideString;
+function TWebkassaClient.PostJson(const AURL, Request: WideString): WideString;
 var
   S: AnsiString;
-  Answer: AnsiString;
+  URL: WideString;
   Stream: TStream;
   DstStream: TStream;
+  Answer: AnsiString;
 begin
+  URL := LowerCase(AURL);
   FLogger.Debug('Post: ' + URL);
   FLogger.Debug('=> ' + UTF8Decode(Request));
 
@@ -1789,7 +1784,7 @@ var
   JsonText: WideString;
 begin
   JsonText := ObjectToJson(Command.Request);
-  JsonText := Post(GetAddress + 'api/Check', JsonText);
+  JsonText := Post(GetAddress + 'api/check', JsonText);
   Result := CheckLastError;
   if Result then
   begin
@@ -2567,7 +2562,7 @@ constructor TJournalReportCommand.Create;
 begin
   inherited Create;
   FRequest := TJournalReportRequest.Create;
-  FData := TCollection.Create(TJournalReportItem);
+  FData := TJsonCollection.Create(TJournalReportItem);
 end;
 
 destructor TJournalReportCommand.Destroy;
@@ -2577,7 +2572,7 @@ begin
   inherited Destroy;
 end;
 
-procedure TJournalReportCommand.setData(const Value: TCollection);
+procedure TJournalReportCommand.setData(const Value: TJsonCollection);
 begin
   FData.Assign(Value);
 end;
@@ -2627,7 +2622,7 @@ end;
 constructor TShiftResponse.Create;
 begin
   inherited Create;
-  FShifts := TCollection.Create(TShiftItem);
+  FShifts := TJsonCollection.Create(TShiftItem);
 end;
 
 destructor TShiftResponse.Destroy;
@@ -2636,7 +2631,7 @@ begin
   inherited Destroy;
 end;
 
-procedure TShiftResponse.SetShifts(const Value: TCollection);
+procedure TShiftResponse.SetShifts(const Value: TJsonCollection);
 begin
   FShifts.Assign(Value);
 end;
@@ -2664,7 +2659,7 @@ end;
 
 { TCashier }
 
-constructor TCashier.Create(Collection: TCollection);
+constructor TCashier.Create(Collection: TJsonCollection);
 begin
   inherited Create(Collection);
   FCashboxes := TStringList.Create;
@@ -2775,7 +2770,7 @@ end;
 constructor TReceiptTextAnswer.Create;
 begin
   inherited Create;
-  FLines := TCollection.Create(TReceiptTextItem);
+  FLines := TJsonCollection.Create(TReceiptTextItem);
 end;
 
 destructor TReceiptTextAnswer.Destroy;
@@ -2801,7 +2796,7 @@ begin
   end;
 end;
 
-procedure TReceiptTextAnswer.SetLines(const Value: TCollection);
+procedure TReceiptTextAnswer.SetLines(const Value: TJsonCollection);
 begin
   FLines.Assign(Value);
 end;
@@ -2915,7 +2910,7 @@ end;
 constructor TUploadOrderRequest.Create;
 begin
   inherited Create;
-  FPositions := TCollection.Create(TOrderItem);
+  FPositions := TJsonCollection.Create(TOrderItem);
 end;
 
 destructor TUploadOrderRequest.Destroy;
@@ -2924,7 +2919,7 @@ begin
   inherited Destroy;
 end;
 
-procedure TUploadOrderRequest.SetPositions(const Value: TCollection);
+procedure TUploadOrderRequest.SetPositions(const Value: TJsonCollection);
 begin
   FPositions.Assign(Value);
 end;
