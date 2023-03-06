@@ -1657,7 +1657,7 @@ var
   DstStream: TStream;
   Answer: AnsiString;
 begin
-  URL := LowerCase(AURL);
+  URL := AURL;
   FLogger.Debug('Post: ' + URL);
   FLogger.Debug('=> ' + UTF8Decode(Request));
 
@@ -3260,54 +3260,6 @@ begin
   end;
   Result := nil;
 end;
-
-(*
-505
-RSHTTPHTTPVersionNotSupported = 'HTTP version not supported';
-
-function TWebkassaClient.SendReceipt2(Command: TSendReceiptCommand): Boolean;
-var
-  i: Integer;
-  Json: TlkJSON;
-  Root: TlkJSONbase;
-  Positions: TlkJSONbase;
-  JsonText: WideString;
-begin
-  Json := TlkJSON.Create;
-  Root := TlkJSONbase.Create;
-  try
-    Root.Field['Token'].Value := Command.Request.Token;
-    Root.Field['CashboxUniqueNumber'].Value := Command.Request.CashboxUniqueNumber;
-    Root.Field['OperationType'].Value := Command.Request.OperationType;
-    Positions := Root.Field['Positions'];
-    for i := 0 to
-    Command.Request.
-
-
-    property Positions: TTicketItems read FPositions write SetPositions;
-    property TicketModifiers: TTicketModifiers read FTicketModifiers write SetTicketModifiers;
-    property Payments: TPayments read FPayments write SetPayments;
-    property Change: Currency read FChange write FChange;
-    property RoundType: Integer read FRoundType write FRoundType;
-    property ExternalCheckNumber: WideString read FExternalCheckNumber write FExternalCheckNumber;
-    property CustomerEmail: WideString read FCustomerEmail write FCustomerEmail;
-    property CustomerPhone: WideString read FCustomerPhone write FCustomerPhone;
-    property CustomerXin: WideString read FCustomerXin write FCustomerXin;
-
-    JsonText := Json.GenerateText(Root);
-    JsonText := Post(GetAddress + 'api/Check', JsonText);
-    Result := CheckLastError;
-    if Result then
-    begin
-      JsonToObject(JsonText, Command);
-    end;
-  finally
-    Json.Free;
-    Root.Free;
-  end;
-end;
-*)
-
 
 initialization
   DecimalSeparator := '.';
