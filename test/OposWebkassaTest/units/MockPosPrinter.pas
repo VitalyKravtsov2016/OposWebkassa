@@ -15,6 +15,7 @@ type
 
   TMockPOSPrinter = class(TComponent, IOPOSPOSPrinter)
   private
+    FText: WideString;
     FLines: TStringList;
   public
     FOpenResult: Integer;
@@ -1498,7 +1499,9 @@ function TMockPOSPrinter.PrintNormal(Station: Integer;
   const Data: WideString): Integer;
 begin
   Result := 0;
-  FLines.AddObject(Data, TObject(Station));
+  FText := FText + Data;
+  FLines.Text := FText;
+  //FLines.AddObject(Data, TObject(Station));
 end;
 
 function TMockPOSPrinter.PrintTwoNormal(Stations: Integer; const Data1,

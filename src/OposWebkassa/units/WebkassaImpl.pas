@@ -75,6 +75,8 @@ type
     FRecLineChars: Integer;
     FHeaderPrinted: Boolean;
     procedure PrintLine(Text: WideString);
+    function GetReceiptItemText(ReceiptItem: TReceiptItem;
+      Item: TTemplateItem): WideString;
   public
     procedure PrintDocumentSafe(Document: TTextDocument);
     procedure CheckCanPrint;
@@ -2654,6 +2656,8 @@ procedure TWebkassaImpl.Print(Receipt: TSalesReceipt);
 
 var
   i: Integer;
+  Json: TlkJSON;
+  JsonBase: TlkJSONbase;
   Payment: TPayment;
   Adjustment: TAdjustment;
   VatRate: TVatRate;
@@ -2757,7 +2761,22 @@ begin
     end;
     FClient.SendReceipt(Command);
     FCheckNumber := Command.Data.CheckNumber;
-    PrintReceipt(Receipt, Command);
+
+    if Params.TemplateEnabled then
+    begin
+      Json := TlkJSON.Create;
+      try
+        JsonBase := Json.ParseText(FClient.AnswerJson);
+        PrintReceipt2(Receipt, Command, Params.Template, JsonBase);
+      finally
+        Json.Free;
+      end;
+    end else
+    begin
+      PrintReceipt(Receipt, Command);
+    end;
+
+
   finally
     Command.Free;
   end;
@@ -2996,6 +3015,8 @@ begin
       Field := S;
     end;
     Root := Root.Field[Field];
+    if Root = nil then
+      raise Exception.CreateFmt('Field %s not found', [FieldName]);
   until P = 0;
   Result := Root.Value;
 end;
@@ -3005,22 +3026,59 @@ begin
   case Item.ItemType of
     TEMPLATE_TYPE_TEXT: Result := Item.Text;
     TEMPLATE_TYPE_FIELD: Result := GetJsonField(Json, Item.Text);
+    TEMPLATE_TYPE_PARAM: Result := Params.ItemByText(Item.Text);
+    TEMPLATE_TYPE_SEPARATOR: Result := StringOfChar('-', Document.LineChars);
+  else
+    Result := '';
   end;
+  if Item.FormatText <> '' then
+    Result := Format(Item.FormatText, [Result]);
+end;
+
+function TWebkassaImpl.GetReceiptItemText(ReceiptItem: TReceiptItem;
+  Item: TTemplateItem): WideString;
+begin
+  case Item.ItemType of
+    TEMPLATE_TYPE_TEXT: Result := Item.Text;
+    TEMPLATE_TYPE_PARAM: Result := ReceiptItem.ItemByText(Item.Text);
+    TEMPLATE_TYPE_SEPARATOR: Result := StringOfChar('-', Document.LineChars);
+  else
+    Result := '';
+  end;
+  if Item.FormatText <> '' then
+    Result := Format(Item.FormatText, [Result]);
 end;
 
 procedure TWebkassaImpl.PrintReceipt2(Receipt: TSalesReceipt;
   Command: TSendReceiptCommand; Template: TReceiptTemplate;
   Json: TlkJSONbase);
 var
-  i: Integer;
+  i, j: Integer;
   Text: WideString;
   Item: TTemplateItem;
 begin
   Document.PrintHeader := Receipt.PrintHeader;
   Document.LineChars := Printer.RecLineChars;
-  for i := 0 to Template.Items.Count-1 do
+  // Header
+  for i := 0 to Template.Header.Count-1 do
   begin
-    Item := Template.Items[i];
+    Item := Template.Header[i];
+    Text := GetTemplateItemText(Json, Item);
+    Document.Add(Text, Item.TextStyle);
+  end;
+  // Items
+  for i := 0 to Receipt.Items.Count-1 do
+  begin
+    for j := 0 to Template.RecItem.Count-1 do
+    begin
+      Text := GetTemplateItemText(Json, Item);
+      Document.Add(Text, Item.TextStyle);
+    end;
+  end;
+  // Trailer
+  for i := 0 to Template.Trailer.Count-1 do
+  begin
+    Item := Template.Trailer[i];
     Text := GetTemplateItemText(Json, Item);
     Document.Add(Text, Item.TextStyle);
   end;
@@ -3111,9 +3169,13 @@ begin
         if CapRecBold then
           Prefix := ESC_Bold;
       end;
-      PrintText(Prefix, Text, RecLineChars);
+      Text := Params.GetTranslationText(Text);
+      CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, Prefix + Text));
+
+      //PrintText(Prefix, Text, RecLineChars);
     end;
   end;
+
   PrintHeaderAndCut;
   if Printer.CapTransaction then
   begin

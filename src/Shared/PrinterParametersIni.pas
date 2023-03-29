@@ -186,6 +186,7 @@ begin
       FParameters.TranslationName := IniFile.ReadString(Section, 'TranslationName', DefTranslationName);
       FParameters.QRCode := IniFile.ReadInteger(Section, 'QRCode', DefQRCode);
       FParameters.TranslationEnabled := IniFile.ReadBool(Section, 'TranslationEnabled', DefTranslationEnabled);
+      FParameters.TemplateEnabled := IniFile.ReadBool(Section, 'TemplateEnabled', DefTemplateEnabled);
     end;
   finally
     IniFile.Free;
@@ -229,6 +230,7 @@ begin
     IniFile.WriteString(Section, 'TranslationName', FParameters.TranslationName);
     IniFile.WriteInteger(Section, 'QRCode', FParameters.QRCode);
     IniFile.WriteBool(Section, 'TranslationEnabled', FParameters.TranslationEnabled);
+    IniFile.WriteBool(Section, 'TemplateEnabled', FParameters.TemplateEnabled);
   finally
     IniFile.Free;
   end;

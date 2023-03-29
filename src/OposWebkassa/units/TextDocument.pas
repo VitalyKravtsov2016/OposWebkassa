@@ -157,7 +157,7 @@ begin
     Lines.Text := Text;
     for i := 0 to Lines.Count-1 do
     begin
-      Add(Lines[i]);
+      Add(Lines[i] + CRLF);
     end;
   finally
     Lines.Free;

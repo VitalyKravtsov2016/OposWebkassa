@@ -107,8 +107,8 @@ begin
     AddPage(fm, TfmFptrVatRate);
     AddPage(fm, TfmTranslation);
     AddPage(fm, TfmFptrBarcode);
-    //AddPage(fm, TfmFptrReceipt); !!!
     AddPage(fm, TfmFptrMiscParams);
+    AddPage(fm, TfmFptrReceipt);
 
     fm.Init;
     fm.UpdatePage;

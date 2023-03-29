@@ -11,7 +11,7 @@ uses
   Opos, Oposhi, OposException,
   // This
   WException, LogFile, FileUtils, VatRate, SerialPort, SerialPorts, ReceiptItem,
-  Translation;
+  Translation, ReceiptTemplate;
 
 const
   /////////////////////////////////////////////////////////////////////////////
@@ -95,6 +95,7 @@ const
   DefTranslationName = 'KAZ';
   DefQRCode = QRCodeEsc;
   DefTranslationEnabled = false;
+  DefTemplateEnabled = False;
 
   /////////////////////////////////////////////////////////////////////////////
   // Header and trailer parameters
@@ -159,8 +160,9 @@ type
     FByteTimeout: Integer;
     FBaudRate: Integer;
     FDevicePollTime: Integer;
-    FReceiptTemplate: WideString;
     FTranslationEnabled: Boolean;
+    FTemplateEnabled: Boolean;
+    FTemplate: TReceiptTemplate;
 
     procedure LogText(const Caption, Text: WideString);
     procedure SetHeaderText(const Text: WideString);
@@ -195,6 +197,7 @@ type
     procedure Assign(Source: TPersistent); override;
     function BaudRateIndex(const Value: Integer): Integer;
     function GetTranslationText(const Text: WideString): WideString;
+    function ItemByText(const ParamName: WideString): WideString;
 
     property Logger: ILogFile read FLogger;
     property Header: TTntStringList read FHeader;
@@ -228,12 +231,13 @@ type
     property ByteTimeout: Integer read FByteTimeout write FByteTimeout;
     property BaudRate: Integer read FBaudRate write SetBaudRate;
     property DevicePollTime: Integer read FDevicePollTime write FDevicePollTime;
-    property ReceiptTemplate: WideString read FReceiptTemplate write FReceiptTemplate;
     property Translations: TTranslations read FTranslations;
     property TranslationName: WideString read FTranslationName write FTranslationName;
     property Translation: TTranslation read GetTranslation;
     property TranslationRus: TTranslation read GetTranslationRus;
     property TranslationEnabled: Boolean read FTranslationEnabled write FTranslationEnabled;
+    property TemplateEnabled: Boolean read FTemplateEnabled write FTemplateEnabled;
+    property Template: TReceiptTemplate read FTemplate;
   end;
 
 function QRSizeToWidth(QRSize: Integer): Integer;
@@ -262,6 +266,8 @@ begin
   FHeader := TTntStringList.Create;
   FTrailer := TTntStringList.Create;
   FTranslations := TTranslations.Create;
+  FTemplate := TReceiptTemplate.Create;
+
   SetDefaults;
   Translations.Load;
 end;
@@ -271,6 +277,7 @@ begin
   FHeader.Free;
   FTrailer.Free;
   FVatRates.Free;
+  FTemplate.Free;
   FTranslations.Free;
   inherited Destroy;
 end;
@@ -320,10 +327,10 @@ begin
   ReconnectPort := DefReconnectPort;
   SerialTimeout := DefSerialTimeout;
   DevicePollTime := DefDevicePollTime;
-  ReceiptTemplate := DefReceiptTemplate;
   QRCode := DefQRCode;
   TranslationName := DefTranslationName;
   TranslationEnabled := DefTranslationEnabled;
+  TemplateEnabled := DefTemplateEnabled;
 end;
 
 procedure TPrinterParameters.LogText(const Caption, Text: WideString);
@@ -384,6 +391,7 @@ begin
   Logger.Debug('ByteTimeout: ' + IntToStr(ByteTimeout));
   Logger.Debug('DevicePollTime: ' + IntToStr(DevicePollTime));
   Logger.Debug('QRCode: ' + IntToStr(QRCode));
+  Logger.Debug('TemplateEnabled: ' + BoolToStr(TemplateEnabled));
 
   // VatRates
   for i := 0 to VatRates.Count-1 do
@@ -576,6 +584,7 @@ begin
     ReconnectPort := Src.ReconnectPort;
     VatRates.Assign(VatRates);
     DevicePollTime := Src.DevicePollTime;
+    TemplateEnabled := Src.TemplateEnabled;
   end else
     inherited Assign(Source);
 end;
@@ -622,13 +631,36 @@ begin
 end;
 
 procedure TPrinterParameters.Load(const DeviceName: WideString);
+var
+  Path: WideString;
 begin
-  ReceiptTemplate := ReadFileData(GetModulePath + 'Receipt.xml');
+  Path := GetModulePath + 'Params\' + DeviceName;
+  FTemplate.LoadFromXml(Path + '\Receipt.xml');
 end;
 
 procedure TPrinterParameters.Save(const DeviceName: WideString);
+var
+  Path: WideString;
 begin
-  WriteFileData(GetModulePath + 'Receipt.xml', ReceiptTemplate);
+  Path := GetModulePath + 'Params';
+  if not DirectoryExists(Path) then CreateDir(Path);
+  Path := Path + '\' + DeviceName;
+  if not DirectoryExists(Path) then CreateDir(Path);
+  FTemplate.SaveToXml(Path + '\Receipt.xml');
+end;
+
+function TPrinterParameters.ItemByText(const ParamName: WideString): WideString;
+begin
+  if AnsiCompareText(ParamName, 'VATSeries')=0 then
+  begin
+    Result := VATSeries;
+    Exit;
+  end;
+  if AnsiCompareText(ParamName, 'VATNumber')=0 then
+  begin
+    Result := VATNumber;
+    Exit;
+  end;
 end;
 
 end.

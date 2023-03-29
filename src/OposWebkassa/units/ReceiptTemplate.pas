@@ -39,11 +39,19 @@ type
 
   TReceiptTemplate = class
   private
-    FItems: TTemplateItems;
+    FHeader: TTemplateItems;
+    FTrailer: TTemplateItems;
+    FRecItem: TTemplateItems;
   public
     constructor Create;
     destructor Destroy; override;
-    property Items: TTemplateItems read FItems;
+    procedure Clear;
+    procedure SaveToXml(const FileName: string);
+    procedure LoadFromXml(const FileName: string);
+
+    property Header: TTemplateItems read FHeader;
+    property Trailer: TTemplateItems read FTrailer;
+    property RecItem: TTemplateItems read FRecItem;
   end;
 
   { TTemplateItems }
@@ -68,11 +76,13 @@ type
     FItemType: Integer;
     FTextStyle: Integer;
     FAlignment: Integer;
+    FFormatText: WideString;
   public
     property Text: WideString read FText write FText;
     property ItemType: Integer read FItemType write FItemType;
     property TextStyle: Integer read FTextStyle write FTextStyle;
     property Alignment: Integer read FAlignment write FAlignment;
+    property FormatText: WideString read FFormatText write FFormatText;
   end;
 
 implementation
@@ -82,13 +92,34 @@ implementation
 constructor TReceiptTemplate.Create;
 begin
   inherited Create;
-  FItems := TTemplateItems.Create(TTemplateItem);
+  FHeader := TTemplateItems.Create(TTemplateItem);
+  FTrailer := TTemplateItems.Create(TTemplateItem);
+  FRecItem := TTemplateItems.Create(TTemplateItem);
 end;
 
 destructor TReceiptTemplate.Destroy;
 begin
-  FItems.Free;
+  FHeader.Free;
+  FTrailer.Free;
+  FRecItem.Free;
   inherited Destroy;
+end;
+
+procedure TReceiptTemplate.Clear;
+begin
+  FHeader.Clear;
+  FTrailer.Clear;
+  FRecItem.Clear;
+end;
+
+procedure TReceiptTemplate.LoadFromXml(const FileName: string);
+begin
+  { !!! }
+end;
+
+procedure TReceiptTemplate.SaveToXml(const FileName: string);
+begin
+  { !!! }
 end;
 
 { TTemplateItems }

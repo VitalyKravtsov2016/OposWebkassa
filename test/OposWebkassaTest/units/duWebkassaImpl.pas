@@ -26,10 +26,11 @@ type
   TWebkassaImplTest = class(TTestCase, IOposEvents)
   private
     FLines: TStrings;
+    FWaitEvent: TEvent;
     FEvents: TOposEvents;
     FDriver: TWebkassaImpl;
     FPrinter: TMockPosPrinter;
-    FWaitEvent: TEvent;
+
     procedure WaitForEventsCount(Count: Integer);
     procedure CheckLines;
   protected
@@ -65,7 +66,6 @@ type
   public
     procedure PrintReceipt3;
     procedure TestXReport;
-    procedure TestReceiptTemplate; // !!!
     procedure PrintHeaderAndCut;
   published
     procedure TestZReport;
@@ -82,6 +82,8 @@ type
     procedure TestSetHeaderLines;
     procedure TestSetTrailerLines;
     procedure TestFiscalReceipt3;
+    procedure TestReceiptTemplate;
+    procedure TestGetJsonField;
   end;
 
 implementation
@@ -249,17 +251,6 @@ begin
   OpenService;
   ClaimDevice;
   EnableDevice;
-end;
-
-procedure TWebkassaImplTest.CheckLines;
-var
-  i: Integer;
-begin
-  //CheckEquals(FLines.Count, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
-  for i := 0 to FLines.Count-1 do
-  begin
-    CheckEquals(Trim(FLines[i]), Trim(FPrinter.Lines[i]), IntToStr(i));
-  end;
 end;
 
 procedure TWebkassaImplTest.TestCashIn;
@@ -439,8 +430,8 @@ const
     '            ÒÎÎ PetroRetail               ' + CRLF +
     'ÍÄÑ Ñåðèÿ VATSeries            ¹ VATNumber' + CRLF +
     '------------------------------------------' + CRLF +
-    '               CashBox.Name               ' + CRLF +
-    '                Ñìåíà 149                 ' + CRLF +
+    '               SWK00032685                ' + CRLF +
+    '                ÑÌÅÍÀ ¹149                ' + CRLF +
     'ÏÐÎÄÀÆÀ                                   ' + CRLF +
     '------------------------------------------' + CRLF +
     'Message 1                                 ' + CRLF +
@@ -710,59 +701,6 @@ begin
   CheckEquals('Trailer line 3', Driver.Params.Trailer[2]);
 end;
 
-procedure TWebkassaImplTest.TestReceiptTemplate;
-var
-  Json: TlkJSON;
-  JsonText: WideString;
-  JsonRoot: TlkJSONbase;
-  Template: TReceiptTemplate;
-  TemplateItem: TTemplateItem;
-  Receipt: TSalesReceipt;
-  Command: TSendReceiptCommand;
-begin
-  Json := TlkJSON.Create;
-  Receipt := TSalesReceipt.Create;
-  Template := TReceiptTemplate.Create;
-  Command := TSendReceiptCommand.Create;
-  try
-    JsonText := ReadFileData(GetModulePath + 'SendReceiptAnswer.txt');
-    JsonRoot := Json.ParseText(JsonText);
-    CheckEquals('923956785162', Driver.GetJsonField(JsonRoot, 'Data.CheckNumber'));
-    CheckEquals(false, Driver.GetJsonField(JsonRoot, 'Data.CashboxOfflineMode'));
-    CheckEquals(3, Driver.GetJsonField(JsonRoot, 'Data.Cashbox.Ofd.Code'));
-    CheckEquals('dev.kofd.kz/consumer', Driver.GetJsonField(JsonRoot, 'Data.Cashbox.Ofd.Host'));
-
-    // Line 1
-    Template.Items.AddText('ÍÄÑ Ñåðèÿ ');
-    Template.Items.AddParam('VATSeries');
-    Template.Items.AddText(' ¹ %s');
-    Template.Items.AddParam('VATNumber');
-    Template.Items.AddText(CRLF);
-    // Line2
-    Template.Items.AddSeparator;
-    // Line3
-    //Template.Items.AddField('CashBox.Name');
-    Template.Items.AddText(CRLF);
-    // Line4
-    TemplateItem := Template.Items.AddText('Ñìåíà ');
-    TemplateItem.Alignment := ALIGN_CENTER;
-    Template.Items.AddField('Data.ShiftNumber');
-    TemplateItem.Alignment := ALIGN_CENTER;
-    Template.Items.AddText(CRLF);
-    //
-    CheckEquals(0, Driver.Document.Items.Count, 'Driver.Document.Items.Count');
-    Driver.PrintReceipt2(Receipt, Command, Template, JsonRoot);
-
-    FLines.Text := Receipt3Text;
-    CheckLines;
-  finally
-    Json.Free;
-    Receipt.Free;
-    Template.Free;
-    Command.Free;
-  end;
-end;
-
 procedure TWebkassaImplTest.PrintHeaderAndCut;
 const
   Text: string =
@@ -778,6 +716,99 @@ begin
   CheckEquals(4, FPrinter.Lines.Count, 'Printer.Lines.Count');
   FLines.Text := Text;
   CheckLines;
+end;
+
+
+procedure TWebkassaImplTest.TestReceiptTemplate;
+var
+  Item: TTemplateItem;
+begin
+  Driver.Params.TemplateEnabled := True;
+  Driver.Params.Template.Clear;
+  // Line 1
+  Item := Driver.Params.Template.Header.Add;
+  Item.ItemType := TEMPLATE_TYPE_PARAM;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'VATSeries';
+  Item.FormatText := 'ÍÄÑ Ñåðèÿ %s';
+  Item.Alignment := ALIGN_LEFT;
+  //
+  Item := Driver.Params.Template.Header.Add;
+  Item.ItemType := TEMPLATE_TYPE_PARAM;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'VATNumber';
+  Item.FormatText := '            ¹ %s';
+  Item.Alignment := ALIGN_RIGHT;
+  Driver.Params.Template.Header.AddText(CRLF);
+  Driver.Params.Template.Header.AddSeparator;
+  Driver.Params.Template.Header.AddText(CRLF);
+  // Line3
+  Item := Driver.Params.Template.Header.Add;
+  Item.ItemType := TEMPLATE_TYPE_FIELD;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'Data.CashBox.UniqueNumber';
+  Item.FormatText := '               %s';
+  Item.Alignment := ALIGN_LEFT;
+  // Line2
+  Driver.Params.Template.Header.AddText(CRLF);
+  // Line4
+  Item := Driver.Params.Template.Header.Add;
+  Item.ItemType := TEMPLATE_TYPE_FIELD;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'Data.ShiftNumber';
+  Item.FormatText := 'ÑÌÅÍÀ ¹%s';
+  Item.Alignment := ALIGN_CENTER;
+  Driver.Params.Template.Header.AddText(CRLF);
+  //
+  Driver.Params.Template.Header.AddText('ÏÐÎÄÀÆÀ' + CRLF);
+  Driver.Params.Template.Header.AddSeparator;
+  Driver.Params.Template.Header.AddText(CRLF);
+
+  //10, expected: <Message 1> but was: <Message 4>
+
+
+
+  OpenClaimEnable;
+  PrintReceipt3;
+  FLines.Text := Receipt3Text;
+  CheckLines;
+end;
+
+procedure TWebkassaImplTest.CheckLines;
+var
+  i: Integer;
+begin
+  //CheckEquals(FLines.Count, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
+  for i := 0 to FLines.Count-1 do
+  begin
+    CheckEquals(Trim(FLines[i]), Trim(FPrinter.Lines[i]), IntToStr(i));
+  end;
+end;
+
+procedure TWebkassaImplTest.TestGetJsonField;
+var
+  V: Variant;
+  Json: TlkJSON;
+  JsonText: WideString;
+  JsonRoot: TlkJSONbase;
+  Item: TlkJSONbase;
+begin
+  Json := TlkJSON.Create;
+  try
+    JsonText := ReadFileData(GetModulePath + 'SendReceiptAnswer.txt');
+    JsonRoot := Json.ParseText(JsonText);
+    Item := JsonRoot.Field['Data'];
+    Check(Item <> nil, 'Data');
+    CheckEquals('923956785162', Item.Field['CheckNumber'].Value, 'CheckNumber');
+    Item := Item.Field['CashBox'];
+    Check(Item <> nil, 'CashBox');
+    CheckEquals('SWK00032685', Item.Field['UniqueNumber'].Value, 'UniqueNumber');
+
+    V := Driver.GetJsonField(JsonRoot, 'Data.Cashbox.UniqueNumber');
+    CheckEquals('SWK00032685', V, 'UniqueNumber');
+  finally
+    Json.Free;
+  end;
 end;
 
 initialization

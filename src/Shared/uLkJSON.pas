@@ -1120,7 +1120,8 @@ begin
         begin
 //          mth := TlkJSONobjectmethod(FValue[i]);
           mth := TlkJSONobjectmethod(fList.Items[i]);
-          if mth.Name = aname then
+
+          if WideCompareText(mth.Name, aname) = 0 then
             begin
               result := i;
               break;
@@ -2553,16 +2554,18 @@ end;
 
 function TlkBalTree.IndexOf(const ws: WideString): Integer;
 var
+  rc: Integer;
   tk: PlkBalNode;
 begin
   result := -1;
   tk := froot;
   while (result=-1) and (tk<>fbottom) do
-    begin
-      if tk.nm = ws then result := tk.key
-      else if ws<tk.nm then tk := tk.left
-      else tk := tk.right;
-    end;
+  begin
+    rc := WideCompareText(ws, tk.nm);
+    if rc = 0 then result := tk.key
+    else if rc < 0 then tk := tk.left
+    else tk := tk.right;
+  end;
 end;
 
 function TlkBalTree.Insert(const ws: WideString; x: Integer): Boolean;
