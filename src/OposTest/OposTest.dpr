@@ -92,7 +92,8 @@ uses
   SerialPorts in '..\Shared\SerialPorts.pas',
   ReceiptItem in '..\OposWebkassa\units\ReceiptItem.pas',
   MathUtils in '..\OposWebkassa\units\MathUtils.pas',
-  Translation in '..\Shared\Translation.pas';
+  Translation in '..\Shared\Translation.pas',
+  ReceiptTemplate in '..\Shared\ReceiptTemplate.pas';
 
 {$R *.RES}
 {$R WindowsXP.RES}

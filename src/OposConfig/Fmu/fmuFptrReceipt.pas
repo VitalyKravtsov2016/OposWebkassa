@@ -32,12 +32,12 @@ implementation
 
 procedure TfmFptrReceipt.UpdatePage;
 begin
-  SynEdit.Lines.Text := Parameters.ReceiptTemplate;
+  SynEdit.Lines.Text := Parameters.TemplateText;
 end;
 
 procedure TfmFptrReceipt.UpdateObject;
 begin
-  Parameters.ReceiptTemplate := SynEdit.Lines.Text;
+  Parameters.TemplateText := SynEdit.Lines.Text;
 end;
 
 end.

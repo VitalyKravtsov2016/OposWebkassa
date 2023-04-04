@@ -87,7 +87,7 @@ uses
   uZintInterface in '..\Shared\uZintInterface.pas',
   SocketPort in '..\Shared\SocketPort.pas',
   RecPrinter in '..\OposWebkassa\units\RecPrinter.pas',
-  ReceiptTemplate in '..\OposWebkassa\units\ReceiptTemplate.pas',
+  ReceiptTemplate in '..\Shared\ReceiptTemplate.pas',
   MockPrinterPort in '..\Shared\MockPrinterPort.pas',
   RawPrinterPort in '..\Shared\RawPrinterPort.pas',
   Translation in '..\Shared\Translation.pas',

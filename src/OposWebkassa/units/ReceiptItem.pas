@@ -61,7 +61,6 @@ type
     destructor Destroy; override;
     function GetTotal: Currency; virtual;
     function GetTotalByVAT(AVatInfo: Integer): Currency; virtual;
-    function ItemByText(const Text: WideString): WideString; virtual;
   end;
 
   { TSalesReceiptItem }
@@ -90,7 +89,6 @@ type
     procedure Assign(Item: TSalesReceiptItem);
     function GetTotalAmount(RoundType: Integer): Currency;
     function GetTotalByVAT(AVatInfo: Integer): Currency; override;
-    function ItemByText(const Text: WideString): WideString; override;
 
     property Total: Currency read GetTotal;
     property Charges: TAdjustments read FCharges;
@@ -273,11 +271,6 @@ begin
   Result := 0;
 end;
 
-function TReceiptItem.ItemByText(const Text: WideString): WideString;
-begin
-  Result := '';
-end;
-
 { TSalesReceiptItem }
 
 constructor TSalesReceiptItem.Create(AOwner: TReceiptItems);
@@ -356,46 +349,6 @@ begin
   Result := 0;
   if VatInfo = AVatInfo then
     Result := GetTotal;
-end;
-
-function TSalesReceiptItem.ItemByText(const Text: WideString): WideString;
-begin
-  if WideCompareText(Text, 'Price') = 0 then
-  begin
-    Result := Format('%.2d', [Price]);
-    Exit;
-  end;
-  if WideCompareText(Text, 'VatInfo') = 0 then
-  begin
-    Result := IntToStr(VatInfo);
-    Exit;
-  end;
-  if WideCompareText(Text, 'Quantity') = 0 then
-  begin
-    Result := Format('%.3d', [Quantity]);
-    Exit;
-  end;
-  if WideCompareText(Text, 'UnitPrice') = 0 then
-  begin
-    Result := Format('%.2d', [UnitPrice]);
-    Exit;
-  end;
-  if WideCompareText(Text, 'UnitName') = 0 then
-  begin
-    Result := UnitName;
-    Exit;
-  end;
-  if WideCompareText(Text, 'Description') = 0 then
-  begin
-    Result := Description;
-    Exit;
-  end;
-  if WideCompareText(Text, 'MarkCode') = 0 then
-  begin
-    Result := MarkCode;
-    Exit;
-  end;
-  raise Exception.Create('');
 end;
 
 { TAdjustment }

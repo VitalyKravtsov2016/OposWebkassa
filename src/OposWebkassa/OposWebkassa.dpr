@@ -69,7 +69,7 @@ uses
   TextReport in '..\Shared\TextReport.pas',
   SocketPort in '..\Shared\SocketPort.pas',
   SerialPorts in '..\Shared\SerialPorts.pas',
-  ReceiptTemplate in 'units\ReceiptTemplate.pas',
+  ReceiptTemplate in '..\Shared\ReceiptTemplate.pas',
   MockPrinterPort in '..\Shared\MockPrinterPort.pas',
   RawPrinterPort in '..\Shared\RawPrinterPort.pas',
   Translation in '..\Shared\Translation.pas',

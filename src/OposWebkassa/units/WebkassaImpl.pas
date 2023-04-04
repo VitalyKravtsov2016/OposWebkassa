@@ -75,7 +75,9 @@ type
     FRecLineChars: Integer;
     FHeaderPrinted: Boolean;
     procedure PrintLine(Text: WideString);
-    function GetReceiptItemText(ReceiptItem: TReceiptItem;
+    function GetReceiptItemText(ReceiptItem: TSalesReceiptItem;
+      Item: TTemplateItem): WideString;
+    function ReceiptItemByText(ReceiptItem: TSalesReceiptItem;
       Item: TTemplateItem): WideString;
   public
     procedure PrintDocumentSafe(Document: TTextDocument);
@@ -670,6 +672,8 @@ begin
     CheckEnabled;
     CheckState(FPTR_PS_MONITOR);
     SetPrinterState(FPTR_PS_FISCAL_DOCUMENT);
+    Document.LineChars := Printer.RecLineChars;
+
     Result := ClearResult;
   except
     on E: Exception do
@@ -687,7 +691,9 @@ begin
     FReceipt.Free;
     FReceipt := CreateReceipt(FFiscalReceiptType);
     FReceipt.BeginFiscalReceipt(PrintHeader);
+
     Document.Clear;
+    Document.LineChars := Printer.RecLineChars;
     if PrintHeader then
     begin
       Document.AddText(Params.HeaderText);
@@ -3035,18 +3041,79 @@ begin
     Result := Format(Item.FormatText, [Result]);
 end;
 
-function TWebkassaImpl.GetReceiptItemText(ReceiptItem: TReceiptItem;
+function TWebkassaImpl.GetReceiptItemText(ReceiptItem: TSalesReceiptItem;
   Item: TTemplateItem): WideString;
 begin
   case Item.ItemType of
     TEMPLATE_TYPE_TEXT: Result := Item.Text;
-    TEMPLATE_TYPE_PARAM: Result := ReceiptItem.ItemByText(Item.Text);
+    TEMPLATE_TYPE_FIELD: Result := ReceiptItemByText(ReceiptItem, Item);
+    TEMPLATE_TYPE_PARAM: Result := Params.ItemByText(Item.Text);
     TEMPLATE_TYPE_SEPARATOR: Result := StringOfChar('-', Document.LineChars);
   else
     Result := '';
   end;
   if Item.FormatText <> '' then
     Result := Format(Item.FormatText, [Result]);
+
+  case Item.Alignment of
+    ALIGN_RIGHT: Result := StringOfChar(' ', Document.LineChars-Length(Result)) + Result;
+  end;
+end;
+
+function TWebkassaImpl.ReceiptItemByText(ReceiptItem: TSalesReceiptItem;
+  Item: TTemplateItem): WideString;
+begin
+  if WideCompareText(Item.Text, 'Price') = 0 then
+  begin
+    Result := Format('%.2f', [ReceiptItem.Price]);
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'VatInfo') = 0 then
+  begin
+    Result := IntToStr(ReceiptItem.VatInfo);
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'Quantity') = 0 then
+  begin
+    Result := Format('%.3f', [ReceiptItem.Quantity]);
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'UnitPrice') = 0 then
+  begin
+    Result := Format('%.2f', [ReceiptItem.UnitPrice]);
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'UnitName') = 0 then
+  begin
+    Result := ReceiptItem.UnitName;
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'Description') = 0 then
+  begin
+    Result := ReceiptItem.Description;
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'MarkCode') = 0 then
+  begin
+    Result := ReceiptItem.MarkCode;
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'Discount') = 0 then
+  begin
+    Result := Format('%.2f', [Abs(ReceiptItem.Discounts.GetTotal)]);
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'Charge') = 0 then
+  begin
+    Result := Format('%.2f', [Abs(ReceiptItem.Charges.GetTotal)]);
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'Total') = 0 then
+  begin
+    Result := Format('%.2f', [Abs(ReceiptItem.GetTotalAmount(Params.RoundType))]);
+    Exit;
+  end;
+  raise Exception.CreateFmt('Receipt item %s not found', [Item.Text]);
 end;
 
 procedure TWebkassaImpl.PrintReceipt2(Receipt: TSalesReceipt;
@@ -3056,6 +3123,8 @@ var
   i, j: Integer;
   Text: WideString;
   Item: TTemplateItem;
+  ReceiptItem: TReceiptItem;
+  RecTexItem: TRecTexItem;
 begin
   Document.PrintHeader := Receipt.PrintHeader;
   Document.LineChars := Printer.RecLineChars;
@@ -3069,10 +3138,21 @@ begin
   // Items
   for i := 0 to Receipt.Items.Count-1 do
   begin
-    for j := 0 to Template.RecItem.Count-1 do
+    ReceiptItem := Receipt.Items[i];
+    if ReceiptItem is TRecTexItem then
     begin
-      Text := GetTemplateItemText(Json, Item);
-      Document.Add(Text, Item.TextStyle);
+      RecTexItem := ReceiptItem as TRecTexItem;
+      Document.Add(RecTexItem.Text + CRLF, RecTexItem.Style);
+    end;
+    if ReceiptItem is TSalesReceiptItem then
+    begin
+      for j := 0 to Template.RecItem.Count-1 do
+      begin
+        Item := Template.RecItem[j];
+        Text := GetReceiptItemText(ReceiptItem as TSalesReceiptItem, Item);
+
+        Document.Add(Text, Item.TextStyle);
+      end;
     end;
   end;
   // Trailer

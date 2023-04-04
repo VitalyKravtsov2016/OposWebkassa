@@ -120,7 +120,7 @@ begin
   FDriver.Params.NumTrailerLines := 3;
   FDriver.Params.RoundType := RoundTypeNone;
   FDriver.Params.HeaderText :=
-    ' ' + CRLF +
+    '                                       ' + CRLF +
     '   Восточно-Казастанская область, город' + CRLF +
     '    Усть-Каменогорск, ул. Грейдерная, 1/10' + CRLF +
     '            ТОО PetroRetail';
@@ -128,7 +128,6 @@ begin
     '           Callцентр 039458039850 ' + CRLF +
     '          Горячая линия 20948802934' + CRLF +
     '            СПАСИБО ЗА ПОКУПКУ';
-
 
   FDriver.Logger.CloseFile;
   DeleteFile(FDriver.Logger.FileName);
@@ -763,9 +762,53 @@ begin
   Driver.Params.Template.Header.AddText('ПРОДАЖА' + CRLF);
   Driver.Params.Template.Header.AddSeparator;
   Driver.Params.Template.Header.AddText(CRLF);
-
-  //10, expected: <Message 1> but was: <Message 4>
-
+  // Description
+  Item := Driver.Params.Template.RecItem.Add;
+  Item.ItemType := TEMPLATE_TYPE_FIELD;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'Description';
+  Item.FormatText := '';
+  Item.Alignment := ALIGN_LEFT;
+  Driver.Params.Template.RecItem.AddText(CRLF);
+  // Quantity
+  Item := Driver.Params.Template.RecItem.Add;
+  Item.ItemType := TEMPLATE_TYPE_FIELD;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'Quantity';
+  Item.FormatText := '   %s кг x ';
+  Item.Alignment := ALIGN_LEFT;
+  // Price
+  Item := Driver.Params.Template.RecItem.Add;
+  Item.ItemType := TEMPLATE_TYPE_FIELD;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'Price';
+  Item.FormatText := '%s';
+  Item.Alignment := ALIGN_LEFT;
+  Driver.Params.Template.RecItem.AddText(CRLF);
+  // Discount
+  Item := Driver.Params.Template.RecItem.Add;
+  Item.ItemType := TEMPLATE_TYPE_FIELD;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'Discount';
+  Item.FormatText := '   Скидка                           -%s';
+  Item.Alignment := ALIGN_LEFT;
+  Driver.Params.Template.RecItem.AddText(CRLF);
+  // Charge
+  Item := Driver.Params.Template.RecItem.Add;
+  Item.ItemType := TEMPLATE_TYPE_FIELD;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'Charge';
+  Item.FormatText := '   Наценка                          +%s';
+  Item.Alignment := ALIGN_LEFT;
+  Driver.Params.Template.RecItem.AddText(CRLF);
+  // Total
+  Item := Driver.Params.Template.RecItem.Add;
+  Item.ItemType := TEMPLATE_TYPE_FIELD;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'Total';
+  Item.FormatText := '   Стоимость                        %s';
+  Item.Alignment := ALIGN_LEFT;
+  Driver.Params.Template.RecItem.AddText(CRLF);
 
 
   OpenClaimEnable;
@@ -773,6 +816,26 @@ begin
   FLines.Text := Receipt3Text;
   CheckLines;
 end;
+
+(*
+
+    '------------------------------------------' + CRLF +
+    'Message 1                                 ' + CRLF +
+    'Сер. № 5                                  ' + CRLF +
+    'ШОКОЛАДНАЯ ПЛИТКА MILKA BUBBLES МОЛОЧНЫЙ  ' + CRLF +
+    '   1.000 кг x 123.45                      ' + CRLF +
+    '   Скидка                           -22.35' + CRLF +
+    '   Наценка                          +11.17' + CRLF +
+    '   Стоимость                        112.27' + CRLF +
+    'Message 2                                 ' + CRLF +
+    'Item 2                                    ' + CRLF +
+    '   1.000 кг x 1.45                        ' + CRLF +
+    '   Скидка                            -0.45' + CRLF +
+    '   Стоимость                          1.00' + CRLF +
+    'Message 3                                 ' + CRLF +
+    '------------------------------------------' + CRLF +
+
+*)
 
 procedure TWebkassaImplTest.CheckLines;
 var

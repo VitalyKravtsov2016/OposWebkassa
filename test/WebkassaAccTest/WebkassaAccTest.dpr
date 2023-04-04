@@ -75,7 +75,7 @@ uses
   SocketPort in '..\..\src\Shared\SocketPort.pas',
   duPOSPrinter in 'units\duPOSPrinter.pas',
   SerialPorts in '..\..\src\Shared\SerialPorts.pas',
-  ReceiptTemplate in '..\..\src\OposWebkassa\units\ReceiptTemplate.pas',
+  ReceiptTemplate in '..\..\src\Shared\ReceiptTemplate.pas',
   duWebkassaImpl in 'units\duWebkassaImpl.pas',
   MockPrinterPort in '..\..\src\Shared\MockPrinterPort.pas',
   RawPrinterPort in '..\..\src\Shared\RawPrinterPort.pas',

@@ -29,6 +29,7 @@ type
     FItems: TTextItems;
     FLineChars: Integer;
     FPrintHeader: Boolean;
+    procedure Add2(const Line: string; Style: Integer);
   public
     constructor Create;
     destructor Destroy; override;
@@ -42,7 +43,7 @@ type
     procedure Add(Index: Integer; const Line: string); overload;
     procedure AddLines(const Line1, Line2: string); overload;
     procedure AddLines(const Line1, Line2: string; Style: Integer); overload;
-    procedure Add(const Line: string; Style: Integer); overload;
+    procedure Add(const ALine: string; Style: Integer); overload;
     function AlignCenter(const Line: WideString): WideString;
     function ConcatLines(const Line1, Line2: string; LineChars: Integer): WideString;
 
@@ -111,7 +112,31 @@ begin
   Add(Line, STYLE_NORMAL);
 end;
 
-procedure TTextDocument.Add(const Line: string; Style: Integer);
+procedure TTextDocument.Add(const ALine: string; Style: Integer);
+var
+  Text: WideString;
+  Line: WideString;
+begin
+  if LineChars = 0 then
+  begin
+    Add2(ALine, Style);
+    Exit;
+  end;
+
+  Text := ALine;
+  while True do
+  begin
+    Line := Copy(Text, 1, LineChars);
+    if Length(Line) = LineChars then
+      Line := Line + CRLF;
+
+    Add2(Line, Style);
+    Text := Copy(Text, LineChars + 1, Length(Text));
+    if Length(Text) = 0 then Break;
+  end;
+end;
+
+procedure TTextDocument.Add2(const Line: string; Style: Integer);
 var
   Item: TTextItem;
 begin

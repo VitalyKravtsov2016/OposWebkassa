@@ -163,6 +163,7 @@ type
     FTranslationEnabled: Boolean;
     FTemplateEnabled: Boolean;
     FTemplate: TReceiptTemplate;
+    FTemplateText: WideString;
 
     procedure LogText(const Caption, Text: WideString);
     procedure SetHeaderText(const Text: WideString);
@@ -238,6 +239,7 @@ type
     property TranslationEnabled: Boolean read FTranslationEnabled write FTranslationEnabled;
     property TemplateEnabled: Boolean read FTemplateEnabled write FTemplateEnabled;
     property Template: TReceiptTemplate read FTemplate;
+    property TemplateText: WideString read FTemplateText write FTemplateText;
   end;
 
 function QRSizeToWidth(QRSize: Integer): Integer;
@@ -632,10 +634,11 @@ end;
 
 procedure TPrinterParameters.Load(const DeviceName: WideString);
 var
-  Path: WideString;
+  FileName: WideString;
 begin
-  Path := GetModulePath + 'Params\' + DeviceName;
-  FTemplate.LoadFromXml(Path + '\Receipt.xml');
+  FileName := GetModulePath + 'Params\' + DeviceName + '\Receipt.xml';
+  TemplateText := ReadFileData(FileName);
+  FTemplate.LoadFromXml(FileName);
 end;
 
 procedure TPrinterParameters.Save(const DeviceName: WideString);
@@ -646,7 +649,8 @@ begin
   if not DirectoryExists(Path) then CreateDir(Path);
   Path := Path + '\' + DeviceName;
   if not DirectoryExists(Path) then CreateDir(Path);
-  FTemplate.SaveToXml(Path + '\Receipt.xml');
+  //FTemplate.SaveToXml(Path + '\Receipt.xml');
+  WriteFileData(Path + '\Receipt.xml', TemplateText);
 end;
 
 function TPrinterParameters.ItemByText(const ParamName: WideString): WideString;
