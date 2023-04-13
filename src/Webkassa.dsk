@@ -4,35 +4,20 @@ File_1=SourceModule,'D:\projects\WebKassa\src\Shared\FileUtils.pas',0,1,41,1,60,
 File_2=SourceModule,'D:\projects\WebKassa\test\WebkassaAccTest\units\duWebkassaImpl.pas',0,81,563,174,578,0,0
 
 [Modules]
-Module0=D:\projects\WebKassa\src\OposWebkassa\units\TextDocument.pas
-Module1=D:\projects\WebKassa\test\OposWebkassaTest\units\duWebkassaImpl.pas
+Module0=D:\projects\WebKassa\test\OposWebkassaTest\units\duWebkassaImpl.pas
+Module1=D:\projects\WebKassa\src\Shared\ReceiptTemplate.pas
 Module2=D:\projects\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas
-Module3=D:\projects\WebKassa\src\OposWebkassa\units\SalesReceipt.pas
-Module4=D:\projects\WebKassa\src\Shared\ReceiptTemplate.pas
+Module3=D:\projects\WebKassa\src\OposWebkassa\units\ReceiptItem.pas
+Module4=D:\projects\WebKassa\src\OposWebkassa\units\SalesReceipt.pas
 Module5=D:\projects\WebKassa\test\OposWebkassaTest\units\MockPosPrinter.pas
-Module6=D:\projects\WebKassa\src\OposWebkassa\units\ReceiptItem.pas
+Module6=D:\projects\WebKassa\src\OposWebkassa\units\TextDocument.pas
 Module7=D:\projects\WebKassa\src\Shared\PrinterParameters.pas
 Module8=D:\projects\WebKassa\src\Opos\POSPrinterLog.pas
 Count=9
 EditWindowCount=1
 TypeLibWindowCount=1
 
-[D:\projects\WebKassa\src\OposWebkassa\units\TextDocument.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
 [D:\projects\WebKassa\test\OposWebkassaTest\units\duWebkassaImpl.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[D:\projects\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[D:\projects\WebKassa\src\OposWebkassa\units\SalesReceipt.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -42,12 +27,27 @@ ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[D:\projects\WebKassa\test\OposWebkassaTest\units\MockPosPrinter.pas]
+[D:\projects\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
 [D:\projects\WebKassa\src\OposWebkassa\units\ReceiptItem.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[D:\projects\WebKassa\src\OposWebkassa\units\SalesReceipt.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[D:\projects\WebKassa\test\OposWebkassaTest\units\MockPosPrinter.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[D:\projects\WebKassa\src\OposWebkassa\units\TextDocument.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -96,7 +96,7 @@ FormOnTop=0
 
 [EditWindow0]
 ViewCount=9
-CurrentView=5
+CurrentView=0
 View0=0
 View1=1
 View2=2
@@ -123,29 +123,29 @@ ClientWidth=1920
 ClientHeight=902
 LeftPanelSize=0
 RightPanelSize=0
-BottomPanelSize=157
+BottomPanelSize=0
 BottomPanelClients=MessageView@EditWindow0
-BottomPanelData=000004000000000000000000000000000000000000000000000100000000000000000B0000004D65737361676556696577FFFFFFFF
+BottomPanelData=00000400010000000B0000004D657373616765566965778007000000000000029D00000000000000010000000000000000000000000100000000800700000B0000004D65737361676556696577FFFFFFFF
 
 [View0]
 Module=D:\projects\WebKassa\test\OposWebkassaTest\units\duWebkassaImpl.pas
-CursorX=45
-CursorY=124
-TopLine=109
+CursorX=22
+CursorY=793
+TopLine=774
 LeftCol=1
 
 [View1]
 Module=D:\projects\WebKassa\src\Shared\ReceiptTemplate.pas
 CursorX=1
-CursorY=161
-TopLine=144
+CursorY=115
+TopLine=106
 LeftCol=1
 
 [View2]
 Module=D:\projects\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas
-CursorX=65
-CursorY=3166
-TopLine=3138
+CursorX=1
+CursorY=3056
+TopLine=3035
 LeftCol=1
 
 [View3]
@@ -164,15 +164,15 @@ LeftCol=1
 
 [View5]
 Module=D:\projects\WebKassa\src\OposWebkassa\units\TextDocument.pas
-CursorX=1
-CursorY=120
-TopLine=112
+CursorX=165
+CursorY=115
+TopLine=108
 LeftCol=1
 
 [View6]
 Module=D:\projects\WebKassa\test\OposWebkassaTest\units\MockPosPrinter.pas
-CursorX=141
-CursorY=1494
+CursorX=1
+CursorY=1502
 TopLine=1486
 LeftCol=1
 
@@ -232,8 +232,7 @@ LRDockWidth=320
 Dockable=1
 
 [Breakpoints]
-Count=1
-Breakpoint0='D:\projects\WebKassa\src\OposWebkassa\units\TextDocument.pas',185,'',0,1,'',1,0,0,'',1,'','',''
+Count=0
 
 [AddressBreakpoints]
 Count=0
@@ -504,7 +503,7 @@ Dockable=1
 
 [MessageView@EditWindow0]
 Create=1
-Visible=1
+Visible=0
 State=0
 Left=12
 Top=0
@@ -524,7 +523,7 @@ DockHostCount=1
 [DockSite0]
 DockSiteType=0
 Create=1
-Visible=1
+Visible=0
 State=0
 Left=901
 Top=216

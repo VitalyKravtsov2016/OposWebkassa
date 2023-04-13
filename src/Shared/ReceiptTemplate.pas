@@ -30,6 +30,12 @@ const
   ALIGN_CENTER  = 1;
   ALIGN_RIGHT   = 2;
 
+  /////////////////////////////////////////////////////////////////////////////
+  // Enabled constants
+
+  Enabled           = 0;
+  EnabledIfNotZero  = 1;
+
 
 type
   TTemplateItem = class;
@@ -73,12 +79,14 @@ type
   TTemplateItem  = class(TCollectionItem)
   private
     FText: WideString;
+    FEnabled: Integer;
     FItemType: Integer;
     FTextStyle: Integer;
     FAlignment: Integer;
     FFormatText: WideString;
   public
     property Text: WideString read FText write FText;
+    property Enabled: Integer read FEnabled write FEnabled;
     property ItemType: Integer read FItemType write FItemType;
     property TextStyle: Integer read FTextStyle write FTextStyle;
     property Alignment: Integer read FAlignment write FAlignment;

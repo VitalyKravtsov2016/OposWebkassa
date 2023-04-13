@@ -114,9 +114,11 @@ end;
 
 procedure TTextDocument.Add(const ALine: string; Style: Integer);
 var
+  IsCRLF: Boolean;
   Text: WideString;
   Line: WideString;
 begin
+  IsCRLF := False;
   if LineChars = 0 then
   begin
     Add2(ALine, Style);
@@ -124,12 +126,21 @@ begin
   end;
 
   Text := ALine;
+  if Pos(CRLF, Text) = (Length(Text)-1) then
+  begin
+    IsCRLF := True;
+    Text := Copy(Text, 1, Length(Text)-2);
+  end;
+
   while True do
   begin
     Line := Copy(Text, 1, LineChars);
-    if Length(Line) = LineChars then
+    if IsCRLF or (Length(Line) < Length(Text)) then
+    begin
       Line := Line + CRLF;
+    end;
 
+    if Length(Line) = 0 then Break;
     Add2(Line, Style);
     Text := Copy(Text, LineChars + 1, Length(Text));
     if Length(Text) = 0 then Break;

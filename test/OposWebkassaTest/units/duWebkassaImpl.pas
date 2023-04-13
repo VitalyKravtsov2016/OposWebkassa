@@ -786,21 +786,25 @@ begin
   Item.Alignment := ALIGN_LEFT;
   Driver.Params.Template.RecItem.AddText(CRLF);
   // Discount
+  Driver.Params.Template.RecItem.AddText('   Скидка');
   Item := Driver.Params.Template.RecItem.Add;
   Item.ItemType := TEMPLATE_TYPE_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Discount';
-  Item.FormatText := '   Скидка                           -%s';
-  Item.Alignment := ALIGN_LEFT;
+  Item.Enabled := EnabledIfNotZero;
+  Item.FormatText := '-%s';
+  Item.Alignment := ALIGN_RIGHT;
   Driver.Params.Template.RecItem.AddText(CRLF);
   // Charge
+  Driver.Params.Template.RecItem.AddText('   Наценка');
   Item := Driver.Params.Template.RecItem.Add;
   Item.ItemType := TEMPLATE_TYPE_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Charge';
-  Item.FormatText := '   Наценка                          +%s';
-  Item.Alignment := ALIGN_LEFT;
+  Item.FormatText := '+%s';
+  Item.Alignment := ALIGN_RIGHT;
   Driver.Params.Template.RecItem.AddText(CRLF);
+
   // Total
   Item := Driver.Params.Template.RecItem.Add;
   Item.ItemType := TEMPLATE_TYPE_FIELD;
@@ -818,22 +822,8 @@ begin
 end;
 
 (*
-
-    '------------------------------------------' + CRLF +
-    'Message 1                                 ' + CRLF +
-    'Сер. № 5                                  ' + CRLF +
-    'ШОКОЛАДНАЯ ПЛИТКА MILKA BUBBLES МОЛОЧНЫЙ  ' + CRLF +
-    '   1.000 кг x 123.45                      ' + CRLF +
-    '   Скидка                           -22.35' + CRLF +
-    '   Наценка                          +11.17' + CRLF +
-    '   Стоимость                        112.27' + CRLF +
-    'Message 2                                 ' + CRLF +
-    'Item 2                                    ' + CRLF +
-    '   1.000 кг x 1.45                        ' + CRLF +
-    '   Скидка                            -0.45' + CRLF +
-    '   Стоимость                          1.00' + CRLF +
-    'Message 3                                 ' + CRLF +
-    '------------------------------------------' + CRLF +
+Скидка                           -22.35
+Скидка                                    -22.35
 
 *)
 
@@ -874,7 +864,9 @@ begin
   end;
 end;
 
+
 initialization
   RegisterTest('', TWebkassaImplTest.Suite);
+
 
 end.

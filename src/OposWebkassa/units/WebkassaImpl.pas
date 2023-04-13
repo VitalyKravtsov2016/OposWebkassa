@@ -76,7 +76,7 @@ type
     FHeaderPrinted: Boolean;
     procedure PrintLine(Text: WideString);
     function GetReceiptItemText(ReceiptItem: TSalesReceiptItem;
-      Item: TTemplateItem): WideString;
+      Item: TTemplateItem; const Line: WideString): WideString;
     function ReceiptItemByText(ReceiptItem: TSalesReceiptItem;
       Item: TTemplateItem): WideString;
   public
@@ -3042,7 +3042,7 @@ begin
 end;
 
 function TWebkassaImpl.GetReceiptItemText(ReceiptItem: TSalesReceiptItem;
-  Item: TTemplateItem): WideString;
+  Item: TTemplateItem; const Line: WideString): WideString;
 begin
   case Item.ItemType of
     TEMPLATE_TYPE_TEXT: Result := Item.Text;
@@ -3056,7 +3056,7 @@ begin
     Result := Format(Item.FormatText, [Result]);
 
   case Item.Alignment of
-    ALIGN_RIGHT: Result := StringOfChar(' ', Document.LineChars-Length(Result)) + Result;
+    ALIGN_RIGHT: Result := StringOfChar(' ', Document.LineChars-Length(Result)-Length(Line)) + Result;
   end;
 end;
 
@@ -3116,16 +3116,31 @@ begin
   raise Exception.CreateFmt('Receipt item %s not found', [Item.Text]);
 end;
 
+function GetLastLine(const Line: WideString): WideString;
+var
+  P: Integer;
+begin
+  Result := Line;
+  while True do
+  begin
+    P := Pos(CRLF, Result);
+    if P <= 0 then Break;
+    Result := Copy(Result, P+2, Length(Result));
+  end;
+end;
+
 procedure TWebkassaImpl.PrintReceipt2(Receipt: TSalesReceipt;
   Command: TSendReceiptCommand; Template: TReceiptTemplate;
   Json: TlkJSONbase);
 var
   i, j: Integer;
   Text: WideString;
+  Line: WideString;
   Item: TTemplateItem;
   ReceiptItem: TReceiptItem;
   RecTexItem: TRecTexItem;
 begin
+  Line := '';
   Document.PrintHeader := Receipt.PrintHeader;
   Document.LineChars := Printer.RecLineChars;
   // Header
@@ -3149,8 +3164,8 @@ begin
       for j := 0 to Template.RecItem.Count-1 do
       begin
         Item := Template.RecItem[j];
-        Text := GetReceiptItemText(ReceiptItem as TSalesReceiptItem, Item);
-
+        Text := GetReceiptItemText(ReceiptItem as TSalesReceiptItem, Item, Line);
+        Line := GetLastLine(Line + Text);
         Document.Add(Text, Item.TextStyle);
       end;
     end;
