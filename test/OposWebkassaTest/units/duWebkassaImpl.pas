@@ -738,9 +738,9 @@ begin
   Item.Text := 'VATNumber';
   Item.FormatText := '            № %s';
   Item.Alignment := ALIGN_RIGHT;
-  Driver.Params.Template.Header.AddText(CRLF);
+  Driver.Params.Template.Header.NewLine;
   Driver.Params.Template.Header.AddSeparator;
-  Driver.Params.Template.Header.AddText(CRLF);
+  Driver.Params.Template.Header.NewLine;
   // Line3
   Item := Driver.Params.Template.Header.Add;
   Item.ItemType := TEMPLATE_TYPE_FIELD;
@@ -749,7 +749,7 @@ begin
   Item.FormatText := '               %s';
   Item.Alignment := ALIGN_LEFT;
   // Line2
-  Driver.Params.Template.Header.AddText(CRLF);
+  Driver.Params.Template.Header.NewLine;
   // Line4
   Item := Driver.Params.Template.Header.Add;
   Item.ItemType := TEMPLATE_TYPE_FIELD;
@@ -757,11 +757,11 @@ begin
   Item.Text := 'Data.ShiftNumber';
   Item.FormatText := 'СМЕНА №%s';
   Item.Alignment := ALIGN_CENTER;
-  Driver.Params.Template.Header.AddText(CRLF);
+  Driver.Params.Template.Header.NewLine;
   //
   Driver.Params.Template.Header.AddText('ПРОДАЖА' + CRLF);
   Driver.Params.Template.Header.AddSeparator;
-  Driver.Params.Template.Header.AddText(CRLF);
+  Driver.Params.Template.Header.NewLine;
   // Description
   Item := Driver.Params.Template.RecItem.Add;
   Item.ItemType := TEMPLATE_TYPE_FIELD;
@@ -769,7 +769,7 @@ begin
   Item.Text := 'Description';
   Item.FormatText := '';
   Item.Alignment := ALIGN_LEFT;
-  Driver.Params.Template.RecItem.AddText(CRLF);
+  Driver.Params.Template.RecItem.NewLine;
   // Quantity
   Item := Driver.Params.Template.RecItem.Add;
   Item.ItemType := TEMPLATE_TYPE_FIELD;
@@ -784,17 +784,17 @@ begin
   Item.Text := 'Price';
   Item.FormatText := '%s';
   Item.Alignment := ALIGN_LEFT;
-  Driver.Params.Template.RecItem.AddText(CRLF);
+  Driver.Params.Template.RecItem.NewLine;
   // Discount
   Driver.Params.Template.RecItem.AddText('   Скидка');
   Item := Driver.Params.Template.RecItem.Add;
   Item.ItemType := TEMPLATE_TYPE_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Discount';
-  Item.Enabled := EnabledIfNotZero;
   Item.FormatText := '-%s';
   Item.Alignment := ALIGN_RIGHT;
-  Driver.Params.Template.RecItem.AddText(CRLF);
+  Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
+  Driver.Params.Template.RecItem.NewLine;
   // Charge
   Driver.Params.Template.RecItem.AddText('   Наценка');
   Item := Driver.Params.Template.RecItem.Add;
@@ -803,17 +803,17 @@ begin
   Item.Text := 'Charge';
   Item.FormatText := '+%s';
   Item.Alignment := ALIGN_RIGHT;
-  Driver.Params.Template.RecItem.AddText(CRLF);
-
+  Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
+  Driver.Params.Template.RecItem.NewLine;
   // Total
+  Driver.Params.Template.RecItem.AddText('   Стоимость');
   Item := Driver.Params.Template.RecItem.Add;
   Item.ItemType := TEMPLATE_TYPE_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Total';
-  Item.FormatText := '   Стоимость                        %s';
-  Item.Alignment := ALIGN_LEFT;
-  Driver.Params.Template.RecItem.AddText(CRLF);
-
+  Item.FormatText := '';
+  Item.Alignment := ALIGN_RIGHT;
+  Driver.Params.Template.RecItem.NewLine;
 
   OpenClaimEnable;
   PrintReceipt3;
@@ -822,10 +822,10 @@ begin
 end;
 
 (*
-Скидка                           -22.35
-Скидка                                    -22.35
-
+Стоимость                          1.00
+Наценка                           +0.00
 *)
+
 
 procedure TWebkassaImplTest.CheckLines;
 var

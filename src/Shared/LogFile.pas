@@ -263,7 +263,7 @@ end;
 procedure ODS(const S: AnsiString);
 begin
 {$IFDEF DEBUG}
-  OutputDebugString(PChar(S));
+  //OutputDebugString(PChar(S));
 {$ENDIF}
 end;
 

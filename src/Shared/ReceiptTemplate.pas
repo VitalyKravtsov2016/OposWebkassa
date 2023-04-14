@@ -22,6 +22,7 @@ const
   TEMPLATE_TYPE_PARAM     = 1;
   TEMPLATE_TYPE_FIELD     = 2;
   TEMPLATE_TYPE_SEPARATOR = 3;
+  TEMPLATE_TYPE_NEWLINE   = 4;
 
   /////////////////////////////////////////////////////////////////////////////
   // Alignment constants
@@ -33,8 +34,8 @@ const
   /////////////////////////////////////////////////////////////////////////////
   // Enabled constants
 
-  Enabled           = 0;
-  EnabledIfNotZero  = 1;
+  TEMPLATE_ITEM_ENABLED             = 0;
+  TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO = 1;
 
 
 type
@@ -67,6 +68,7 @@ type
     function GetItem(Index: Integer): TTemplateItem;
   public
     function Add: TTemplateItem;
+    function NewLine: TTemplateItem;
     function AddSeparator: TTemplateItem;
     function AddText(const Text: WideString): TTemplateItem;
     function AddParam(const Text: WideString): TTemplateItem;
@@ -78,6 +80,7 @@ type
 
   TTemplateItem  = class(TCollectionItem)
   private
+    FValue: WideString;
     FText: WideString;
     FEnabled: Integer;
     FItemType: Integer;
@@ -85,6 +88,7 @@ type
     FAlignment: Integer;
     FFormatText: WideString;
   public
+    property Value: WideString read FValue write FValue;
     property Text: WideString read FText write FText;
     property Enabled: Integer read FEnabled write FEnabled;
     property ItemType: Integer read FItemType write FItemType;
@@ -135,6 +139,12 @@ end;
 function TTemplateItems.Add: TTemplateItem;
 begin
   Result := TTemplateItem.Create(Self);
+end;
+
+function TTemplateItems.NewLine: TTemplateItem;
+begin
+  Result := TTemplateItem.Create(Self);
+  Result.ItemType := TEMPLATE_TYPE_NEWLINE;
 end;
 
 function TTemplateItems.AddText(const Text: WideString): TTemplateItem;

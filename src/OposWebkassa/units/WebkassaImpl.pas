@@ -76,9 +76,10 @@ type
     FHeaderPrinted: Boolean;
     procedure PrintLine(Text: WideString);
     function GetReceiptItemText(ReceiptItem: TSalesReceiptItem;
-      Item: TTemplateItem; const Line: WideString): WideString;
+      Item: TTemplateItem): WideString;
     function ReceiptItemByText(ReceiptItem: TSalesReceiptItem;
       Item: TTemplateItem): WideString;
+    procedure AddItems(Items: TList);
   public
     procedure PrintDocumentSafe(Document: TTextDocument);
     procedure CheckCanPrint;
@@ -3034,6 +3035,7 @@ begin
     TEMPLATE_TYPE_FIELD: Result := GetJsonField(Json, Item.Text);
     TEMPLATE_TYPE_PARAM: Result := Params.ItemByText(Item.Text);
     TEMPLATE_TYPE_SEPARATOR: Result := StringOfChar('-', Document.LineChars);
+    TEMPLATE_TYPE_NEWLINE: Result := CRLF;
   else
     Result := '';
   end;
@@ -3042,30 +3044,31 @@ begin
 end;
 
 function TWebkassaImpl.GetReceiptItemText(ReceiptItem: TSalesReceiptItem;
-  Item: TTemplateItem; const Line: WideString): WideString;
+  Item: TTemplateItem): WideString;
 begin
   case Item.ItemType of
     TEMPLATE_TYPE_TEXT: Result := Item.Text;
     TEMPLATE_TYPE_FIELD: Result := ReceiptItemByText(ReceiptItem, Item);
     TEMPLATE_TYPE_PARAM: Result := Params.ItemByText(Item.Text);
     TEMPLATE_TYPE_SEPARATOR: Result := StringOfChar('-', Document.LineChars);
+    TEMPLATE_TYPE_NEWLINE: Result := CRLF;
   else
     Result := '';
-  end;
-  if Item.FormatText <> '' then
-    Result := Format(Item.FormatText, [Result]);
-
-  case Item.Alignment of
-    ALIGN_RIGHT: Result := StringOfChar(' ', Document.LineChars-Length(Result)-Length(Line)) + Result;
   end;
 end;
 
 function TWebkassaImpl.ReceiptItemByText(ReceiptItem: TSalesReceiptItem;
   Item: TTemplateItem): WideString;
+var
+  Amount: Currency;
 begin
+  Result := '';
   if WideCompareText(Item.Text, 'Price') = 0 then
   begin
-    Result := Format('%.2f', [ReceiptItem.Price]);
+    if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(ReceiptItem.Price <> 0) then
+    begin
+      Result := Format('%.2f', [ReceiptItem.Price]);
+    end;
     Exit;
   end;
   if WideCompareText(Item.Text, 'VatInfo') = 0 then
@@ -3080,7 +3083,10 @@ begin
   end;
   if WideCompareText(Item.Text, 'UnitPrice') = 0 then
   begin
-    Result := Format('%.2f', [ReceiptItem.UnitPrice]);
+    if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(ReceiptItem.UnitPrice <> 0) then
+    begin
+      Result := Format('%.2f', [ReceiptItem.UnitPrice]);
+    end;
     Exit;
   end;
   if WideCompareText(Item.Text, 'UnitName') = 0 then
@@ -3100,17 +3106,25 @@ begin
   end;
   if WideCompareText(Item.Text, 'Discount') = 0 then
   begin
-    Result := Format('%.2f', [Abs(ReceiptItem.Discounts.GetTotal)]);
+    Amount := Abs(ReceiptItem.Discounts.GetTotal);
+    if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
+    begin
+      Result := Format('%.2f', [Amount]);
+    end;
     Exit;
   end;
   if WideCompareText(Item.Text, 'Charge') = 0 then
   begin
-    Result := Format('%.2f', [Abs(ReceiptItem.Charges.GetTotal)]);
+    Amount := Abs(ReceiptItem.Charges.GetTotal);
+    if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
+    Result := Format('%.2f', [Amount]);
     Exit;
   end;
   if WideCompareText(Item.Text, 'Total') = 0 then
   begin
-    Result := Format('%.2f', [Abs(ReceiptItem.GetTotalAmount(Params.RoundType))]);
+    Amount := Abs(ReceiptItem.GetTotalAmount(Params.RoundType));
+    if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
+      Result := Format('%.2f', [Amount]);
     Exit;
   end;
   raise Exception.CreateFmt('Receipt item %s not found', [Item.Text]);
@@ -3135,52 +3149,99 @@ procedure TWebkassaImpl.PrintReceipt2(Receipt: TSalesReceipt;
 var
   i, j: Integer;
   Text: WideString;
-  Line: WideString;
   Item: TTemplateItem;
+  LineItems: TList;
   ReceiptItem: TReceiptItem;
   RecTexItem: TRecTexItem;
 begin
-  Line := '';
-  Document.PrintHeader := Receipt.PrintHeader;
-  Document.LineChars := Printer.RecLineChars;
-  // Header
-  for i := 0 to Template.Header.Count-1 do
-  begin
-    Item := Template.Header[i];
-    Text := GetTemplateItemText(Json, Item);
-    Document.Add(Text, Item.TextStyle);
-  end;
-  // Items
-  for i := 0 to Receipt.Items.Count-1 do
-  begin
-    ReceiptItem := Receipt.Items[i];
-    if ReceiptItem is TRecTexItem then
+  LineItems := TList.Create;
+  try
+    Document.PrintHeader := Receipt.PrintHeader;
+    Document.LineChars := Printer.RecLineChars;
+    // Header
+    for i := 0 to Template.Header.Count-1 do
     begin
-      RecTexItem := ReceiptItem as TRecTexItem;
-      Document.Add(RecTexItem.Text + CRLF, RecTexItem.Style);
+      Item := Template.Header[i];
+      Text := GetTemplateItemText(Json, Item);
+      Document.Add(Text, Item.TextStyle);
     end;
-    if ReceiptItem is TSalesReceiptItem then
+    // Items
+    for i := 0 to Receipt.Items.Count-1 do
     begin
-      for j := 0 to Template.RecItem.Count-1 do
+      ReceiptItem := Receipt.Items[i];
+      if ReceiptItem is TRecTexItem then
       begin
-        Item := Template.RecItem[j];
-        Text := GetReceiptItemText(ReceiptItem as TSalesReceiptItem, Item, Line);
-        Line := GetLastLine(Line + Text);
-        Document.Add(Text, Item.TextStyle);
+        RecTexItem := ReceiptItem as TRecTexItem;
+        Document.Add(RecTexItem.Text + CRLF, RecTexItem.Style);
+      end;
+      if ReceiptItem is TSalesReceiptItem then
+      begin
+        for j := 0 to Template.RecItem.Count-1 do
+        begin
+          Item := Template.RecItem[j];
+          if Item.ItemType = TEMPLATE_TYPE_NEWLINE then
+          begin
+            Item.Value := CRLF;
+            LineItems.Add(Item);
+            AddItems(LineItems);
+            LineItems.Clear;
+          end else
+          begin
+            LineItems.Add(Item);
+            Item.Value := GetReceiptItemText(ReceiptItem as TSalesReceiptItem, Item);
+            if Item.Value = '' then
+            begin
+              LineItems.Clear;
+            end;
+          end;
+        end;
       end;
     end;
+    AddItems(LineItems);
+    LineItems.Clear;
+    // Trailer
+    for i := 0 to Template.Trailer.Count-1 do
+    begin
+      Item := Template.Trailer[i];
+      Text := GetTemplateItemText(Json, Item);
+      Document.Add(Text, Item.TextStyle);
+    end;
+    Document.AddText(Receipt.Trailer.Text);
+    PrintDocumentSafe(Document);
+    Printer.RecLineChars := FRecLineChars;
+  finally
+    LineItems.Free;
   end;
-  // Trailer
-  for i := 0 to Template.Trailer.Count-1 do
-  begin
-    Item := Template.Trailer[i];
-    Text := GetTemplateItemText(Json, Item);
-    Document.Add(Text, Item.TextStyle);
-  end;
-  Document.AddText(Receipt.Trailer.Text);
-  PrintDocumentSafe(Document);
-  Printer.RecLineChars := FRecLineChars;
 end;
+
+procedure TWebkassaImpl.AddItems(Items: TList);
+var
+  i: Integer;
+  Line: WideString;
+  Item: TTemplateItem;
+begin
+  Line := '';
+  for i := 0 to Items.Count-1 do
+  begin
+    Item := TTemplateItem(Items[i]);
+    if Item.Value = '' then Exit;
+    if Item.FormatText <> '' then
+      Item.Value := Format(Item.FormatText, [Item.Value]);
+
+    case Item.Alignment of
+      ALIGN_RIGHT: Item.Value := StringOfChar(' ', Document.LineChars-Length(Item.Value)-Length(Line)) + Item.Value;
+    end;
+
+    Line := Line + Item.Value;
+  end;
+
+  for i := 0 to Items.Count-1 do
+  begin
+    Item := TTemplateItem(Items[i]);
+    Document.Add(Item.Value, Item.ItemType);
+  end;
+end;
+
 
 procedure TWebkassaImpl.CheckCanPrint;
 begin

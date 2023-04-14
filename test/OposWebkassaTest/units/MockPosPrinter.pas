@@ -8,7 +8,7 @@ uses
   // Mock
   PascalMock,
   // Opos
-  OposPOSPrinter_CCO_TLB;
+  OposPOSPrinter_CCO_TLB, DebugUtils;
 
 type
   { TMockPOSPrinter }
@@ -1501,6 +1501,7 @@ begin
   Result := 0;
   FText := FText + Data;
   FLines.Text := FText;
+  ODS(Data);
   //FLines.AddObject(Data, TObject(Station));
 end;
 
