@@ -13,7 +13,7 @@ type
 
   TJsonPersistent = class(TPersistent)
   public
-    function IsRequiredField(const Field: string): Boolean; virtual;
+    function IsRequiredField(const Field: WideString): Boolean; virtual;
   end;
 
   TJsonCollection = class;
@@ -944,7 +944,7 @@ end;
 
 { TJsonPersistent }
 
-function TJsonPersistent.IsRequiredField(const Field: string): Boolean;
+function TJsonPersistent.IsRequiredField(const Field: WideString): Boolean;
 begin
   Result := True;
 end;

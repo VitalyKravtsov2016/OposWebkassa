@@ -1499,9 +1499,11 @@ function TMockPOSPrinter.PrintNormal(Station: Integer;
   const Data: WideString): Integer;
 begin
   Result := 0;
+  (*
   FText := FText + Data;
   FLines.Text := FText;
-  //FLines.AddObject(Data, TObject(Station));
+  *)
+  FLines.AddObject(Data, TObject(Station));
 end;
 
 function TMockPOSPrinter.PrintTwoNormal(Stations: Integer; const Data1,

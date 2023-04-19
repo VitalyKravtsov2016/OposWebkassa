@@ -248,7 +248,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    function IsRequiredField(const Field: string): Boolean; override;
+    function IsRequiredField(const Field: WideString): Boolean; override;
   published
     property Token: WideString read FToken write FToken;
     property CashboxUniqueNumber: WideString read FCashboxUniqueNumber write FCashboxUniqueNumber;
@@ -874,7 +874,7 @@ type
     function GetItem(Index: Integer): TCashier;
   public
     constructor Create;
-    function ItemByEMail(const email: string): TCashier;
+    function ItemByEMail(const email: WideString): TCashier;
     property Items[Index: Integer]: TCashier read GetItem; default;
   end;
 
@@ -1481,9 +1481,9 @@ procedure TWebkassaClient.HTTPHeadersAvailable(Sender: TObject;
   AHeaders: TIdHeaderList; var VContinue: Boolean);
 var
   i: Integer;
-  DomainName: string;
+  DomainName: WideString;
   DomainNames: TStrings;
-  DomainNamesText: string;
+  DomainNamesText: WideString;
 begin
   VContinue := False;
   DomainNamesText := AHeaders.Values['AlternativeDomainNames'];
@@ -3008,9 +3008,9 @@ begin
   inherited Destroy;
 end;
 
-function TSendReceiptCommandRequest.IsRequiredField(const Field: string): Boolean;
+function TSendReceiptCommandRequest.IsRequiredField(const Field: WideString): Boolean;
 const
-  RequiredFields: array [0..8] of string = (
+  RequiredFields: array [0..8] of WideString = (
   'Token', 'CashboxUniqueNumber', 'OperationType', 'Positions',
   'TicketModifiers', 'Payments', 'Change', 'RoundType', 'ExternalCheckNumber');
 var
@@ -3101,14 +3101,14 @@ end;
 
 (*
 
-	public const string kwmbvk = "/api/authorize";
-	public const string kwmbvl = "/api/check";
-	public const string kwmbvm = "/api/moneyoperation";
-	public const string kwmbvn = "/api/xreport/extended";
-	public const string kwmbvo = "/api/zreport/extended";
-	public const string kwmbvp = "/api/cashbox/state";
-	public const string kwmbvq = "/api/offlineOperation";
-	public const string kwmbvr = "/api/ping";
+	public const WideString kwmbvk = "/api/authorize";
+	public const WideString kwmbvl = "/api/check";
+	public const WideString kwmbvm = "/api/moneyoperation";
+	public const WideString kwmbvn = "/api/xreport/extended";
+	public const WideString kwmbvo = "/api/zreport/extended";
+	public const WideString kwmbvp = "/api/cashbox/state";
+	public const WideString kwmbvq = "/api/offlineOperation";
+	public const WideString kwmbvr = "/api/ping";
 }
 
 *)
@@ -3249,7 +3249,7 @@ begin
   Result := inherited Items[Index] as TCashier;
 end;
 
-function TCashiers.ItemByEMail(const email: string): TCashier;
+function TCashiers.ItemByEMail(const email: WideString): TCashier;
 var
   i: Integer;
 begin

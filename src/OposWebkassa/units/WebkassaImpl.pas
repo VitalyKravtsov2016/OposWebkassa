@@ -131,7 +131,7 @@ type
     procedure CheckPtr(AResultCode: Integer);
     function CreateReceipt(FiscalReceiptType: Integer): TCustomReceipt;
     function GetPrinter: IOPOSPOSPrinter;
-    function GetUnitCode(const UnitName: string): Integer;
+    function GetUnitCode(const UnitName: WideString): Integer;
     procedure PrinterErrorEvent(ASender: TObject; ResultCode,
       ResultCodeExtended, ErrorLocus: Integer;
       var pErrorResponse: Integer);
@@ -404,7 +404,6 @@ end;
 
 constructor TWebkassaImpl.Create(AOwner: TComponent);
 begin
-  ODS('TWebkassaImpl.Create');
   inherited Create(AOwner);
   FLogger := TLogFile.Create;
   FDocument := TTextDocument.Create;
@@ -423,7 +422,6 @@ begin
   FClient.RaiseErrors := True;
   FCashboxStatusJson := TlkJSON.Create;
   FLines := TTntStringList.Create;
-  ODS('TWebkassaImpl.Create: OK');
 end;
 
 destructor TWebkassaImpl.Destroy;
@@ -1750,11 +1748,11 @@ end;
 procedure TWebkassaImpl.PrintXZReport(IsZReport: Boolean);
 var
   i: Integer;
-  Line1: string;
-  Line2: string;
-  Text: string;
+  Line1: WideString;
+  Line2: WideString;
+  Text: WideString;
   Total: Currency;
-  Separator: string;
+  Separator: WideString;
   Command: TZXReportCommand;
 
   Json: TlkJSON;
@@ -2433,9 +2431,9 @@ begin
   Result := OPOSError.ResultCode;
 end;
 
-function GetMaxRecLine(const RecLineCharsList: string): Integer;
+function GetMaxRecLine(const RecLineCharsList: WideString): Integer;
 var
-  S: string;
+  S: WideString;
   K: Integer;
   N: Integer;
 begin
@@ -2550,7 +2548,7 @@ begin
   end;
 end;
 
-function TWebkassaImpl.GetUnitCode(const UnitName: string): Integer;
+function TWebkassaImpl.GetUnitCode(const UnitName: WideString): Integer;
 var
   i: Integer;
   Item: TUnitItem;
@@ -2853,7 +2851,7 @@ end;
 procedure TWebkassaImpl.PrintReceipt(Receipt: TSalesReceipt;
   Command: TSendReceiptCommand);
 
-  function OperationTypeToText(OperationType: Integer): string;
+  function OperationTypeToText(OperationType: Integer): WideString;
   begin
     Result := '';
     case OperationType of
@@ -2883,7 +2881,7 @@ begin
     Format('№ %s', [Params.VATNumber]));
   Document.AddSeparator;
   Document.Add(Document.AlignCenter(FCashBox.Name));
-  Document.Add(Document.AlignCenter(Format('Смена %d', [Command.Data.ShiftNumber])));
+  Document.Add(Document.AlignCenter(Format('СМЕНА №%d', [Command.Data.ShiftNumber])));
   Document.Add(OperationTypeToText(Command.Request.OperationType));
 
   //Document.Add(AlignCenter(Format('Порядковый номер чека №%d', [Command.Data.DocumentNumber])));
@@ -3314,7 +3312,7 @@ var
   RecLineChars: Integer;
   Item: TTextItem;
   TickCount: DWORD;
-  Prefix: string;
+  Prefix: WideString;
 begin
   Logger.Debug('PrintDocument');
   TickCount := GetTickCount;
@@ -3544,7 +3542,7 @@ end;
 
 procedure TWebkassaImpl.PrintQRCodeAsGraphics(const BarcodeData: WideString);
 var
-  Data: string;
+  Data: WideString;
   Bitmap: TBitmap;
   Render: TZintBarcode;
   Stream: TMemoryStream;

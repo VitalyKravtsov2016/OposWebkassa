@@ -5,6 +5,8 @@ interface
 uses
   // VCL
   Classes, SysUtils, TntSysUtils,
+  // Tnt
+  TntClasses,
   // This
   StringUtils;
 
@@ -29,7 +31,7 @@ type
     FItems: TTextItems;
     FLineChars: Integer;
     FPrintHeader: Boolean;
-    procedure Add2(const Line: string; Style: Integer);
+    procedure Add2(const Line: WideString; Style: Integer);
   public
     constructor Create;
     destructor Destroy; override;
@@ -37,15 +39,15 @@ type
     procedure Save;
     procedure Clear;
     procedure AddSeparator;
-    procedure AddText(const Text: string); overload;
-    procedure AddText(Index: Integer; const Text: string); overload;
-    procedure Add(const Line: string); overload;
-    procedure Add(Index: Integer; const Line: string); overload;
-    procedure AddLines(const Line1, Line2: string); overload;
-    procedure AddLines(const Line1, Line2: string; Style: Integer); overload;
-    procedure Add(const ALine: string; Style: Integer); overload;
+    procedure AddText(const Text: WideString); overload;
+    procedure AddText(Index: Integer; const Text: WideString); overload;
+    procedure Add(const Line: WideString); overload;
+    procedure Add(Index: Integer; const Line: WideString); overload;
+    procedure AddLines(const Line1, Line2: WideString); overload;
+    procedure AddLines(const Line1, Line2: WideString; Style: Integer); overload;
+    procedure Add(const ALine: WideString; Style: Integer); overload;
     function AlignCenter(const Line: WideString): WideString;
-    function ConcatLines(const Line1, Line2: string; LineChars: Integer): WideString;
+    function ConcatLines(const Line1, Line2: WideString; LineChars: Integer): WideString;
 
     procedure Assign(Source: TTextDocument);
 
@@ -107,12 +109,12 @@ begin
   inherited Destroy;
 end;
 
-procedure TTextDocument.Add(const Line: string);
+procedure TTextDocument.Add(const Line: WideString);
 begin
   Add(Line, STYLE_NORMAL);
 end;
 
-procedure TTextDocument.Add(const ALine: string; Style: Integer);
+procedure TTextDocument.Add(const ALine: WideString; Style: Integer);
 var
   IsCRLF: Boolean;
   Text: WideString;
@@ -147,7 +149,7 @@ begin
   end;
 end;
 
-procedure TTextDocument.Add2(const Line: string; Style: Integer);
+procedure TTextDocument.Add2(const Line: WideString; Style: Integer);
 var
   Item: TTextItem;
 begin
@@ -156,7 +158,7 @@ begin
   Item.FStyle := Style;
 end;
 
-procedure TTextDocument.Add(Index: Integer; const Line: string);
+procedure TTextDocument.Add(Index: Integer; const Line: WideString);
 var
   Item: TTextItem;
 begin
@@ -165,30 +167,30 @@ begin
   Item.FStyle := STYLE_NORMAL;
 end;
 
-function TTextDocument.ConcatLines(const Line1, Line2: string; LineChars: Integer): WideString;
+function TTextDocument.ConcatLines(const Line1, Line2: WideString; LineChars: Integer): WideString;
 begin
   Result := Line1 + StringOfChar(' ', LineChars-Length(Line1)-Length(Line2)) + Line2;
 end;
 
-procedure TTextDocument.AddLines(const Line1, Line2: string; Style: Integer);
+procedure TTextDocument.AddLines(const Line1, Line2: WideString; Style: Integer);
 var
-  Text: string;
+  Text: WideString;
 begin
   Text := ConcatLines(Line1, Line2, LineChars);
   Add(Text, Style);
 end;
 
-procedure TTextDocument.AddLines(const Line1, Line2: string);
+procedure TTextDocument.AddLines(const Line1, Line2: WideString);
 begin
   AddLines(Line1, Line2, STYLE_NORMAL);
 end;
 
-procedure TTextDocument.AddText(const Text: string);
+procedure TTextDocument.AddText(const Text: WideString);
 var
   i: Integer;
-  Lines: TStrings;
+  Lines: TTntStrings;
 begin
-  Lines := TStringList.Create;
+  Lines := TTntStringList.Create;
   try
     Lines.Text := Text;
     for i := 0 to Lines.Count-1 do
@@ -200,12 +202,12 @@ begin
   end;
 end;
 
-procedure TTextDocument.AddText(Index: Integer; const Text: string);
+procedure TTextDocument.AddText(Index: Integer; const Text: WideString);
 var
   i: Integer;
-  Lines: TStrings;
+  Lines: TTntStrings;
 begin
-  Lines := TStringList.Create;
+  Lines := TTntStringList.Create;
   try
     Lines.Text := Text;
     for i := 0 to Lines.Count-1 do

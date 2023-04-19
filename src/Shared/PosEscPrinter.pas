@@ -22,7 +22,7 @@ type
 
   TEscToken = record
     IsEsc: Boolean;
-    Text: string;
+    Text: WideString;
   end;
 
   { TPosEscPrinter }
@@ -197,8 +197,8 @@ type
     procedure StartDeviceThread;
     procedure StopDeviceThread;
 
-    function GetToken(var Text: string; var Token: TEscToken): Boolean;
-    procedure PrintText(Text: string);
+    function GetToken(var Text: WideString; var Token: TEscToken): Boolean;
+    procedure PrintText(Text: WideString);
     procedure InitializeDevice;
     procedure CheckPaperPresent;
     procedure CheckCoverClosed;
@@ -1867,7 +1867,7 @@ function TPosEscPrinter.PrintMemoryBitmap(Station: Integer;
   const Data: WideString; Type_, Width, Alignment: Integer): Integer;
 var
   Bitmap: TBitmap;
-  BinaryData: string;
+  BinaryData: WideString;
   Stream: TMemoryStream;
 begin
   Bitmap := TBitmap.Create;
@@ -2429,7 +2429,7 @@ begin
 
 end;
 
-function TPosEscPrinter.GetToken(var Text: string; var Token: TEscToken): Boolean;
+function TPosEscPrinter.GetToken(var Text: WideString; var Token: TEscToken): Boolean;
 var
   P: Integer;
 begin
@@ -2457,7 +2457,7 @@ begin
   end;
 end;
 
-procedure TPosEscPrinter.PrintText(Text: string);
+procedure TPosEscPrinter.PrintText(Text: WideString);
 var
   Token: TEscToken;
   PrintMode: TPrintModes;

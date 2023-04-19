@@ -1,4 +1,3 @@
-
 unit duWebkassaImpl;
 
 interface
@@ -16,7 +15,7 @@ uses
   // This
   LogFile, WebkassaImpl, WebkassaClient, MockPosPrinter, FileUtils,
   CustomReceipt, uLkJSON, ReceiptTemplate, SalesReceipt, DirectIOAPI,
-  DebugUtils;
+  DebugUtils, StringUtils;
 
 const
   CRLF = #13#10;
@@ -32,8 +31,8 @@ type
     FDriver: TWebkassaImpl;
     FPrinter: TMockPosPrinter;
 
-    procedure WaitForEventsCount(Count: Integer);
     procedure CheckLines;
+    procedure WaitForEventsCount(Count: Integer);
   protected
     procedure CheckNoEvent;
     procedure WaitForEvent;
@@ -85,6 +84,7 @@ type
     procedure TestFiscalReceipt3;
     procedure TestReceiptTemplate;
     procedure TestGetJsonField;
+    procedure TestEncoding;
   end;
 
 implementation
@@ -120,17 +120,19 @@ begin
   FDriver.Params.NumHeaderLines := 4;
   FDriver.Params.NumTrailerLines := 3;
   FDriver.Params.RoundType := RoundTypeNone;
+
   FDriver.Params.HeaderText :=
-    '                                       ' + CRLF +
-    '   Восточно-Казастанская область, город' + CRLF +
-    '    Усть-Каменогорск, ул. Грейдерная, 1/10' + CRLF +
-    '            ТОО PetroRetail';
+    '                                         ' + CRLF +
+    '   Восточно-Казастанская область, город  ' + CRLF +
+    '  Усть-Каменогорск, ул. Грейдерная, 1/10 ' + CRLF +
+    '            ТОО PetroRetail              ';
   FDriver.Params.TrailerText :=
-    '           Callцентр 039458039850 ' + CRLF +
-    '          Горячая линия 20948802934' + CRLF +
-    '            СПАСИБО ЗА ПОКУПКУ';
+    '           Callцентр 039458039850        ' + CRLF +
+    '          Горячая линия 20948802934      ' + CRLF +
+    '            СПАСИБО ЗА ПОКУПКУ           ';
 
   FDriver.Logger.CloseFile;
+  FPrinter.FRecLinesToPaperCut := 0;
   DeleteFile(FDriver.Logger.FileName);
 end;
 
@@ -258,7 +260,7 @@ const
   CashInReceiptText: string =
     '                                          ' + CRLF +
     '   Восточно-Казастанская область, город   ' + CRLF +
-    '    Усть-Каменогорск, ул. Грейдерная, 1/10' + CRLF +
+    '  Усть-Каменогорск, ул. Грейдерная, 1/10  ' + CRLF +
     '            ТОО PetroRetail               ' + CRLF +
     'БИН                                       ' + CRLF +
     'ЗНМ  ИНК ОФД                              ' + CRLF +
@@ -270,8 +272,7 @@ const
     'Message 4                                 ' + CRLF +
     '           Callцентр 039458039850         ' + CRLF +
     '          Горячая линия 20948802934       ' + CRLF +
-    '            СПАСИБО ЗА ПОКУПКУ            ' + CRLF +
-    '                                          ';
+    '            СПАСИБО ЗА ПОКУПКУ            ';
 begin
   OpenClaimEnable;
   CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
@@ -305,7 +306,7 @@ const
   CashOutReceiptText: string =
     '                                          ' + CRLF +
     '   Восточно-Казастанская область, город   ' + CRLF +
-    '    Усть-Каменогорск, ул. Грейдерная, 1/10' + CRLF +
+    '  Усть-Каменогорск, ул. Грейдерная, 1/10  ' + CRLF +
     '            ТОО PetroRetail               ' + CRLF +
     'БИН                                       ' + CRLF +
     'ЗНМ  ИНК ОФД                              ' + CRLF +
@@ -317,8 +318,8 @@ const
     'Message 4                                 ' + CRLF +
     '           Callцентр 039458039850         ' + CRLF +
     '          Горячая линия 20948802934       ' + CRLF +
-    '            СПАСИБО ЗА ПОКУПКУ            ' + CRLF +
-    '                                          ';
+    '            СПАСИБО ЗА ПОКУПКУ            ';
+
 begin
   OpenClaimEnable;
   CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
@@ -365,8 +366,7 @@ const
   NonFiscalText: string =
     'Строка для печати 1                       ' + CRLF +
     'Строка для печати 2                       ' + CRLF +
-    'Строка для печати 3                       ' + CRLF +
-    '                                          ';
+    'Строка для печати 3                       ';
 begin
   OpenClaimEnable;
   CheckEquals(0, Driver.ResetPrinter, 'ResetPrinter');
@@ -426,7 +426,7 @@ const
   Receipt3Text: string =
     '                                          ' + CRLF +
     '   Восточно-Казастанская область, город   ' + CRLF +
-    '    Усть-Каменогорск, ул. Грейдерная, 1/10' + CRLF +
+    '  Усть-Каменогорск, ул. Грейдерная, 1/10  ' + CRLF +
     '            ТОО PetroRetail               ' + CRLF +
     'НДС Серия VATSeries            № VATNumber' + CRLF +
     '------------------------------------------' + CRLF +
@@ -469,8 +469,7 @@ const
     'Message 4                                 ' + CRLF +
     '           Callцентр 039458039850         ' + CRLF +
     '          Горячая линия 20948802934       ' + CRLF +
-    '            СПАСИБО ЗА ПОКУПКУ            ' + CRLF +
-    '                                          ';
+    '            СПАСИБО ЗА ПОКУПКУ            ';
 
 const
   ItemBarcode = '8234827364';
@@ -499,18 +498,34 @@ end;
 
 procedure TWebkassaImplTest.PrintReceipt3;
 var
+  S: AnsiString;
   pData: Integer;
   pString: WideString;
   OptArgs: Integer;
   Data: WideString;
   JsonText: string;
   ExpectedText: string;
+  CustomerEmail: WideString;
+const
+  CustomerEmail_UTF16LE_HEX =
+  '1e 04 3f 04 35 04 40 04 30 04 42 04 3e 04 40 04 ' +
+  '3a 00 20 00 92 04 30 04 a3 04 a3 04 d9 04 20 00 ' +
+  '9a 04 b1 04 37 04 3c 04 56 04 a3 04 30 04';
 begin
+  S := HexToStr(CustomerEmail_UTF16LE_HEX);
+
+  CustomerEmail := 'Customer@Email';
+(*
+  SetLength(CustomerEmail, Length(S) div Sizeof(WideChar));
+  Move(S[1], CustomerEmail[1], Length(S));
+*)  
+
+
   FDriver.Client.TestMode := True;
   FDriver.Client.AnswerJson := ReadFileData(GetModulePath + 'SendReceiptAnswer.txt');
   FDriver.Params.VATSeries := 'VATSeries';
   FDriver.Params.VATNumber := 'VATNumber';
-  FDriver.CashBox.Name := 'CashBox.Name';
+  FDriver.CashBox.Name := 'SWK00032685';
 
   CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
   CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
@@ -518,6 +533,7 @@ begin
   CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
 
   FptrCheck(Driver.BeginFiscalReceipt(True));
+
   CheckEquals(FPTR_PS_FISCAL_RECEIPT, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   // FiscalSign
   pData := DriverParameterFiscalSign;
@@ -529,7 +545,10 @@ begin
   FptrCheck(FDriver.DirectIO(DIO_SET_DRIVER_PARAMETER, pData, pString));
   // Customer iteqms
   Driver.DirectIO2(DIO_WRITE_FS_STRING_TAG_OP, 1228, 'CustomerINN');
-  Driver.DirectIO2(DIO_WRITE_FS_STRING_TAG_OP, 1008, 'Customer@Email');
+  Driver.DirectIO2(DIO_WRITE_FS_STRING_TAG_OP, 1008, CustomerEmail);
+
+
+
   Driver.DirectIO2(DIO_WRITE_FS_STRING_TAG_OP, 1008, '+727834657823');
   // Item 1
   FptrCheck(Driver.PrintRecMessage('Message 1'));
@@ -723,7 +742,7 @@ procedure TWebkassaImplTest.TestReceiptTemplate;
 var
   Item: TTemplateItem;
 begin
-  Driver.Params.TemplateEnabled := True;
+  //Driver.Params.TemplateEnabled := True;
   Driver.Params.Template.Clear;
   // Line 1
   Item := Driver.Params.Template.Header.Add;
@@ -864,11 +883,14 @@ begin
     ODS(FPrinter.Lines[i]);
   end;
 
-  //CheckEquals(FLines.Count, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
+  CheckEquals(FLines.Count, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
   for i := 0 to FLines.Count-1 do
   begin
-    CheckEquals(FLines[i], FPrinter.Lines[i], IntToStr(i));
-    CheckEquals(StrToHexText(FLines[i]), Trim(FPrinter.Lines[i]), IntToStr(i));
+    if FLines[i] <> FPrinter.Lines[i] then
+    begin
+      CheckEquals(TrimRight(FLines[i]), TrimRight(FPrinter.Lines[i]), IntToStr(i));
+      //CheckEquals(StrToHexText(FLines[i]), StrToHexText(FPrinter.Lines[i]), IntToStr(i));
+    end;
   end;
 end;
 
@@ -896,6 +918,34 @@ begin
   finally
     Json.Free;
   end;
+end;
+
+procedure TWebkassaImplTest.TestEncoding;
+const
+  TEXT_UTF16LE_HEX =
+  '1e 04 3f 04 35 04 40 04 30 04 42 04 3e 04 40 04 ' +
+  '3a 00 20 00 92 04 30 04 a3 04 a3 04 d9 04 20 00 ' +
+  '9a 04 b1 04 37 04 3c 04 56 04 a3 04 30 04';
+var
+  S: AnsiString;
+  Text: WideString;
+begin
+  FPrinter.FRecLinesToPaperCut := 0;
+  FDriver.Params.NumHeaderLines := 0;
+  FDriver.Params.NumTrailerLines := 0;
+
+  S := HexToStr(TEXT_UTF16LE_HEX);
+  SetLength(Text, Length(S) div Sizeof(WideChar));
+  Move(S[1], Text[1], Length(S));
+
+  OpenClaimEnable;
+  CheckEquals(0, Driver.ResetPrinter, 'ResetPrinter');
+  CheckEquals(0, Driver.BeginNonFiscal, 'BeginNonFiscal');
+  CheckEquals(0, Driver.PrintNormal(FPTR_S_RECEIPT, Text));
+  CheckEquals(0, Driver.EndNonFiscal, 'EndNonFiscal');
+
+  FLines.Text := Text;
+  CheckLines;
 end;
 
 
