@@ -18,11 +18,12 @@ const
   /////////////////////////////////////////////////////////////////////////////
   // Template item types
 
-  TEMPLATE_TYPE_TEXT      = 0;
-  TEMPLATE_TYPE_PARAM     = 1;
-  TEMPLATE_TYPE_FIELD     = 2;
-  TEMPLATE_TYPE_SEPARATOR = 3;
-  TEMPLATE_TYPE_NEWLINE   = 4;
+  TEMPLATE_TYPE_TEXT          = 0;
+  TEMPLATE_TYPE_PARAM         = 1;
+  TEMPLATE_TYPE_ITEM_FIELD    = 2;
+  TEMPLATE_TYPE_JSON_FIELD    = 3;
+  TEMPLATE_TYPE_SEPARATOR     = 4;
+  TEMPLATE_TYPE_NEWLINE       = 5;
 
   /////////////////////////////////////////////////////////////////////////////
   // Alignment constants
@@ -166,7 +167,7 @@ end;
 function TTemplateItems.AddField(const Text: WideString): TTemplateItem;
 begin
   Result := TTemplateItem.Create(Self);
-  Result.FItemType := TEMPLATE_TYPE_FIELD;
+  Result.FItemType := TEMPLATE_TYPE_ITEM_FIELD;
   Result.FTextStyle := STYLE_NORMAL;
   Result.FText := Text;
 end;

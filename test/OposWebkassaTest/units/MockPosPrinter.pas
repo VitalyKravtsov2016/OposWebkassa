@@ -1501,7 +1501,6 @@ begin
   Result := 0;
   FText := FText + Data;
   FLines.Text := FText;
-  ODS(Data);
   //FLines.AddObject(Data, TObject(Station));
 end;
 

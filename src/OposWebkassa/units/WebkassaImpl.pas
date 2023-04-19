@@ -79,6 +79,8 @@ type
       Item: TTemplateItem): WideString;
     function ReceiptItemByText(ReceiptItem: TSalesReceiptItem;
       Item: TTemplateItem): WideString;
+    function ReceiptFieldByText(Receipt: TSalesReceipt;
+      Item: TTemplateItem): WideString;
     procedure AddItems(Items: TList);
   public
     procedure PrintDocumentSafe(Document: TTextDocument);
@@ -104,8 +106,8 @@ type
       Json: TlkJSONbase);
     function GetJsonField(Json: TlkJSONbase;
       const FieldName: WideString): Variant;
-    function GetTemplateItemText(Json: TlkJSONbase;
-      Item: TTemplateItem): WideString;
+    function GetHeaderItemText(Receipt: TSalesReceipt;
+      Json: TlkJSONbase; Item: TTemplateItem): WideString;
 
     procedure Initialize;
     procedure CheckEnabled;
@@ -2927,7 +2929,7 @@ begin
         Document.AddLines('   ' + Adjustment.Name,
           '+' + AmountToStr(Abs(Adjustment.Amount)));
       end;
-      Document.AddLines('   Стоимость', AmountToStr(RecItem.GetTotalAmount(Params.RoundType)));
+      Document.AddLines('   Стоимость', AmountToStr(RecItem.GetTotalAmount(Receipt.RoundType)));
     end;
     // Text
     if ReceiptItem is TRecTexItem then
@@ -3028,11 +3030,13 @@ begin
   Result := Root.Value;
 end;
 
-function TWebkassaImpl.GetTemplateItemText(Json: TlkJSONbase; Item: TTemplateItem): WideString;
+function TWebkassaImpl.GetHeaderItemText(Receipt: TSalesReceipt;
+  Json: TlkJSONbase; Item: TTemplateItem): WideString;
 begin
   case Item.ItemType of
     TEMPLATE_TYPE_TEXT: Result := Item.Text;
-    TEMPLATE_TYPE_FIELD: Result := GetJsonField(Json, Item.Text);
+    TEMPLATE_TYPE_ITEM_FIELD: Result := ReceiptFieldByText(Receipt, Item);
+    TEMPLATE_TYPE_JSON_FIELD: Result := GetJsonField(Json, Item.Text);
     TEMPLATE_TYPE_PARAM: Result := Params.ItemByText(Item.Text);
     TEMPLATE_TYPE_SEPARATOR: Result := StringOfChar('-', Document.LineChars);
     TEMPLATE_TYPE_NEWLINE: Result := CRLF;
@@ -3048,7 +3052,7 @@ function TWebkassaImpl.GetReceiptItemText(ReceiptItem: TSalesReceiptItem;
 begin
   case Item.ItemType of
     TEMPLATE_TYPE_TEXT: Result := Item.Text;
-    TEMPLATE_TYPE_FIELD: Result := ReceiptItemByText(ReceiptItem, Item);
+    TEMPLATE_TYPE_ITEM_FIELD: Result := ReceiptItemByText(ReceiptItem, Item);
     TEMPLATE_TYPE_PARAM: Result := Params.ItemByText(Item.Text);
     TEMPLATE_TYPE_SEPARATOR: Result := StringOfChar('-', Document.LineChars);
     TEMPLATE_TYPE_NEWLINE: Result := CRLF;
@@ -3130,6 +3134,38 @@ begin
   raise Exception.CreateFmt('Receipt item %s not found', [Item.Text]);
 end;
 
+function TWebkassaImpl.ReceiptFieldByText(Receipt: TSalesReceipt;
+  Item: TTemplateItem): WideString;
+var
+  Amount: Currency;
+begin
+  Result := '';
+  if WideCompareText(Item.Text, 'Discount') = 0 then
+  begin
+    Amount := Abs(Receipt.Discounts.GetTotal);
+    if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
+    begin
+      Result := Format('%.2f', [Amount]);
+    end;
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'Charge') = 0 then
+  begin
+    Amount := Abs(Receipt.Charges.GetTotal);
+    if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
+    Result := Format('%.2f', [Amount]);
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'Total') = 0 then
+  begin
+    Amount := Abs(Receipt.GetTotal);
+    if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
+      Result := Format('%.2f', [Amount]);
+    Exit;
+  end;
+  raise Exception.CreateFmt('Receipt field %s not found', [Item.Text]);
+end;
+
 function GetLastLine(const Line: WideString): WideString;
 var
   P: Integer;
@@ -3148,12 +3184,14 @@ procedure TWebkassaImpl.PrintReceipt2(Receipt: TSalesReceipt;
   Json: TlkJSONbase);
 var
   i, j: Integer;
+  IsValid: Boolean;
   Text: WideString;
   Item: TTemplateItem;
   LineItems: TList;
   ReceiptItem: TReceiptItem;
   RecTexItem: TRecTexItem;
 begin
+  IsValid := True;
   LineItems := TList.Create;
   try
     Document.PrintHeader := Receipt.PrintHeader;
@@ -3162,7 +3200,7 @@ begin
     for i := 0 to Template.Header.Count-1 do
     begin
       Item := Template.Header[i];
-      Text := GetTemplateItemText(Json, Item);
+      Text := GetHeaderItemText(Receipt, Json, Item);
       Document.Add(Text, Item.TextStyle);
     end;
     // Items
@@ -3182,17 +3220,18 @@ begin
           if Item.ItemType = TEMPLATE_TYPE_NEWLINE then
           begin
             Item.Value := CRLF;
-            LineItems.Add(Item);
-            AddItems(LineItems);
+            if IsValid then
+            begin
+              LineItems.Add(Item);
+              AddItems(LineItems);
+            end;
             LineItems.Clear;
+            IsValid := True;
           end else
           begin
             LineItems.Add(Item);
             Item.Value := GetReceiptItemText(ReceiptItem as TSalesReceiptItem, Item);
-            if Item.Value = '' then
-            begin
-              LineItems.Clear;
-            end;
+            IsValid := Item.Value <> '';
           end;
         end;
       end;
@@ -3203,7 +3242,7 @@ begin
     for i := 0 to Template.Trailer.Count-1 do
     begin
       Item := Template.Trailer[i];
-      Text := GetTemplateItemText(Json, Item);
+      Text := GetHeaderItemText(Receipt, Json, Item);
       Document.Add(Text, Item.TextStyle);
     end;
     Document.AddText(Receipt.Trailer.Text);
