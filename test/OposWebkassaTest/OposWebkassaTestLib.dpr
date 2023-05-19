@@ -64,7 +64,7 @@ uses
   uZintBarcode in '..\..\src\Shared\uZintBarcode.pas',
   uZintInterface in '..\..\src\Shared\uZintInterface.pas',
   POSPrinterLog in '..\..\src\Opos\POSPrinterLog.pas',
-  duWebkassaImpl in 'units\duWebkassaImpl.pas',
+  duTextDocument in 'units\duTextDocument.pas',
   EscPrinter in '..\..\src\Shared\EscPrinter.pas',
   ByteUtils in '..\..\src\Shared\ByteUtils.pas',
   PosWinPrinter in '..\..\src\Shared\PosWinPrinter.pas',

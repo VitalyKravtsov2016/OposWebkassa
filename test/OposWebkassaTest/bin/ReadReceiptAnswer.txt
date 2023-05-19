@@ -1,17 +1,17 @@
 {
 	"Data": {
 		"CashboxUniqueNumber": "SWK00030586",
-		"CashboxRegistrationNuiriber": "170420180002",
+		"CashboxRegistrationNumber": "170420180002",
 		"CashboxIdentityNumber": 1941,
 		"Address": "ул. Пушкина 17, оф.521",
-		"Number": "4 4 511382 9",
+		"Number": "445113829",
 		"OrderNumber": 2,
 		"RegistratedOn": "11.04.2019 17:42:37",
 		"EmployeeName": "Тестирование",
 		"EmployeeCode": 31,
 		"ShiftNumber": 16,
 		"DocumentNumber": 39,
-		" OperationType": 2,
+		"OperationType": 2,
 		"OperationTypeText": "Продажа",
 		"Payments": [
 			{
@@ -26,7 +26,7 @@
 		"MarkupPercent": 0,
 		"Markup": 0,
 		"TaxPercent": 12,
-		"Tax": 631.5,
+		"Tax": 12.14,
 		"VATPayer": true,
 		"Positions": [
 			{

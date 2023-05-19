@@ -83,6 +83,8 @@ type
     procedure TestSetTrailerLines;
     procedure TestFiscalReceipt3;
     procedure TestReceiptTemplate;
+    procedure TestReceiptTemplate2;
+    procedure TestReceiptTemplate3;
     procedure TestGetJsonField;
     procedure TestEncoding;
   end;
@@ -102,6 +104,8 @@ begin
   FEvents := TOposEvents.Create;
   FPrinter := TMockPosPrinter.Create(nil);
   FPrinter.RecLineChars := 42;
+  FPrinter.FCapRecBold := False;
+  FPrinter.FCapRecDwideDhigh := False;
 
   FDriver := TWebkassaImpl.Create(nil);
   FDriver.TestMode := True;
@@ -122,14 +126,14 @@ begin
   FDriver.Params.RoundType := RoundTypeNone;
 
   FDriver.Params.HeaderText :=
-    '                                         ' + CRLF +
-    '   Восточно-Казастанская область, город  ' + CRLF +
-    '  Усть-Каменогорск, ул. Грейдерная, 1/10 ' + CRLF +
-    '            ТОО PetroRetail              ';
+    '                                          ' + CRLF +
+    '   Восточно-Казастанская область, город   ' + CRLF +
+    '  Усть-Каменогорск, ул. Грейдерная, 1/10  ' + CRLF +
+    '            ТОО PetroRetail               ';
   FDriver.Params.TrailerText :=
-    '           Callцентр 039458039850        ' + CRLF +
-    '          Горячая линия 20948802934      ' + CRLF +
-    '            СПАСИБО ЗА ПОКУПКУ           ';
+    '           Callцентр 039458039850         ' + CRLF +
+    '          Горячая линия 20948802934       ' + CRLF +
+    '            СПАСИБО ЗА ПОКУПКУ            ';
 
   FDriver.Logger.CloseFile;
   FPrinter.FRecLinesToPaperCut := 0;
@@ -264,15 +268,17 @@ const
     '            ТОО PetroRetail               ' + CRLF +
     'БИН                                       ' + CRLF +
     'ЗНМ  ИНК ОФД                              ' + CRLF +
+    'Дата:                                     ' + CRLF +
     'Message 1                                 ' + CRLF +
     'Message 2                                 ' + CRLF +
-    ESC_Bold + 'ВНЕСЕНИЕ ДЕНЕГ В КАССУ              =60.00' + CRLF +
-    ESC_Bold + 'НАЛИЧНЫХ В КАССЕ                     =0.00' + CRLF +
+    'ВНЕСЕНИЕ ДЕНЕГ В КАССУ              =60.00' + CRLF +
+    'НАЛИЧНЫХ В КАССЕ                     =0.00' + CRLF +
     'Message 3                                 ' + CRLF +
     'Message 4                                 ' + CRLF +
     '           Callцентр 039458039850         ' + CRLF +
     '          Горячая линия 20948802934       ' + CRLF +
     '            СПАСИБО ЗА ПОКУПКУ            ';
+
 begin
   OpenClaimEnable;
   CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
@@ -310,10 +316,11 @@ const
     '            ТОО PetroRetail               ' + CRLF +
     'БИН                                       ' + CRLF +
     'ЗНМ  ИНК ОФД                              ' + CRLF +
+    'Дата:                                     ' + CRLF +
     'Message 1                                 ' + CRLF +
     'Message 2                                 ' + CRLF +
-    ESC_Bold + 'ИЗЪЯТИЕ ДЕНЕГ ИЗ КАССЫ              =60.00' + CRLF +
-    ESC_Bold + 'НАЛИЧНЫХ В КАССЕ                     =0.00' + CRLF +
+    'ИЗЪЯТИЕ ДЕНЕГ ИЗ КАССЫ              =60.00' + CRLF +
+    'НАЛИЧНЫХ В КАССЕ                     =0.00' + CRLF +
     'Message 3                                 ' + CRLF +
     'Message 4                                 ' + CRLF +
     '           Callцентр 039458039850         ' + CRLF +
@@ -450,7 +457,8 @@ const
     '------------------------------------------' + CRLF +
     'Скидка:                              10.00' + CRLF +
     'Наценка:                              5.00' + CRLF +
-    ESC_DoubleHighWide + 'ИТОГ          =108.27' + CRLF +
+    //'ИТОГ                               =108.27' + CRLF +
+    'ИТОГ          =108.27' + CRLF +
     'Банковская карта:                  =123.45' + CRLF +
     '  СДАЧА                             =15.18' + CRLF +
     'в т.ч. НДС 12%                      =12.14' + CRLF +
@@ -523,6 +531,7 @@ begin
 
   FDriver.Client.TestMode := True;
   FDriver.Client.AnswerJson := ReadFileData(GetModulePath + 'SendReceiptAnswer.txt');
+  FDriver.ReceiptJson := ReadFileData(GetModulePath + 'ReadReceiptAnswer.txt');
   FDriver.Params.VATSeries := 'VATSeries';
   FDriver.Params.VATNumber := 'VATNumber';
   FDriver.CashBox.Name := 'SWK00032685';
@@ -594,9 +603,11 @@ begin
   CheckEquals(1, Driver.GetPropertyNumber(PIDXFptr_CapDuplicateReceipt), 'CapDuplicateReceipt');
   Driver.SetPropertyNumber(PIDXFptr_DuplicateReceipt, 1);
   PrintReceipt3;
-  FLines.Assign(FPrinter.Lines);
+  FLines.AddStrings(FPrinter.Lines);
+  FLines.AddStrings(FPrinter.Lines);
   FPrinter.Lines.Clear;
   CheckEquals(OPOS_SUCCESS, Driver.PrintDuplicateReceipt, 'PrintDuplicateReceipt');
+
   CheckLines;
 end;
 
@@ -737,12 +748,44 @@ begin
   CheckLines;
 end;
 
+(*
+ |bC№
+*)
 
 procedure TWebkassaImplTest.TestReceiptTemplate;
+begin
+  Driver.Params.Template.Clear;
+  Driver.Params.TemplateEnabled := True;
+
+  Driver.Params.HeaderText := '';
+  Driver.Params.TrailerText := '';
+  FDriver.Params.NumHeaderLines := 0;
+  FDriver.Params.NumTrailerLines := 0;
+
+  Driver.Params.Template.Header.AddSeparator;
+  OpenClaimEnable;
+
+  CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
+  CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
+  CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
+
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+  CheckEquals(FPTR_PS_FISCAL_RECEIPT, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+  FptrCheck(Driver.PrintRecItem('Сер. № 5 ШОКОЛАДНАЯ ПЛИТКА MILKA BUBBLES МОЛОЧНЫЙ', 123.45, 1000, 1, 123.45, 'кг'));
+  FptrCheck(Driver.PrintRecTotal(123.45, 123.45, '1'));
+  CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+  CheckEquals(OPOS_SUCCESS, Driver.EndFiscalReceipt(False));
+
+  CheckEquals(1, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
+  CheckEquals('------------------------------------------', FPrinter.Lines[0], 'FPrinter.Lines[0]');
+end;
+
+procedure TWebkassaImplTest.TestReceiptTemplate2;
 var
   Item: TTemplateItem;
 begin
-  //Driver.Params.TemplateEnabled := True;
+  Driver.Params.TemplateEnabled := True;
   Driver.Params.Template.Clear;
   // Line 1
   Item := Driver.Params.Template.Header.Add;
@@ -756,14 +799,14 @@ begin
   Item.ItemType := TEMPLATE_TYPE_PARAM;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'VATNumber';
-  Item.FormatText := '            № %s';
+  Item.FormatText := '№ %s';
   Item.Alignment := ALIGN_RIGHT;
   Driver.Params.Template.Header.NewLine;
+  // Line 2
   Driver.Params.Template.Header.AddSeparator;
-  Driver.Params.Template.Header.NewLine;
   // Line3
   Item := Driver.Params.Template.Header.Add;
-  Item.ItemType := TEMPLATE_TYPE_JSON_FIELD;
+  Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Data.CashBox.UniqueNumber';
   Item.FormatText := '               %s';
@@ -772,7 +815,7 @@ begin
   Driver.Params.Template.Header.NewLine;
   // Line4
   Item := Driver.Params.Template.Header.Add;
-  Item.ItemType := TEMPLATE_TYPE_JSON_FIELD;
+  Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Data.ShiftNumber';
   Item.FormatText := 'СМЕНА №%s';
@@ -781,7 +824,6 @@ begin
   //
   Driver.Params.Template.Header.AddText('ПРОДАЖА' + CRLF);
   Driver.Params.Template.Header.AddSeparator;
-  Driver.Params.Template.Header.NewLine;
   // Description
   Item := Driver.Params.Template.RecItem.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
@@ -836,14 +878,13 @@ begin
   Driver.Params.Template.RecItem.NewLine;
   // Separator
   Driver.Params.Template.Trailer.AddSeparator;
-  Driver.Params.Template.Trailer.NewLine;
   // Discount
   Driver.Params.Template.Trailer.AddText('Скидка:');
   Item := Driver.Params.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Discount';
-  Item.FormatText := '-%s';
+  Item.FormatText := '%s';
   Item.Alignment := ALIGN_RIGHT;
   Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
   Driver.Params.Template.Trailer.NewLine;
@@ -853,19 +894,160 @@ begin
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Charge';
-  Item.FormatText := '+%s';
+  Item.FormatText := '%s';
   Item.Alignment := ALIGN_RIGHT;
   Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
   Driver.Params.Template.Trailer.NewLine;
   // Total
-  Driver.Params.Template.Trailer.AddText('ИТОГ');
+  Item := Driver.Params.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_TEXT;
+  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.Alignment := ALIGN_LEFT;
+  Item.Text := 'ИТОГ';
   Item := Driver.Params.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
-  Item.TextStyle := STYLE_NORMAL;
+  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
   Item.Text := 'Total';
   Item.FormatText := '=%s';
   Item.Alignment := ALIGN_RIGHT;
   Item.Enabled := TEMPLATE_ITEM_ENABLED;
+  Driver.Params.Template.Trailer.NewLine;
+  // Payment0
+  Driver.Params.Template.Trailer.AddText('Наличные:');
+  Item := Driver.Params.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'Payment0';
+  Item.FormatText := '=%s';
+  Item.Alignment := ALIGN_RIGHT;
+  Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
+  Driver.Params.Template.Trailer.NewLine;
+  // Payment1
+  Driver.Params.Template.Trailer.AddText('Банковская карта:');
+  Item := Driver.Params.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'Payment1';
+  Item.FormatText := '=%s';
+  Item.Alignment := ALIGN_RIGHT;
+  Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
+  Driver.Params.Template.Trailer.NewLine;
+  // Payment2
+  Driver.Params.Template.Trailer.AddText('Кредит:');
+  Item := Driver.Params.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'Payment2';
+  Item.FormatText := '=%s';
+  Item.Alignment := ALIGN_RIGHT;
+  Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
+  Driver.Params.Template.Trailer.NewLine;
+  // Payment3
+  Driver.Params.Template.Trailer.AddText('Оплата тарой:');
+  Item := Driver.Params.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'Payment3';
+  Item.FormatText := '=%s';
+  Item.Alignment := ALIGN_RIGHT;
+  Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
+  Driver.Params.Template.Trailer.NewLine;
+  // Change
+  Driver.Params.Template.Trailer.AddText('  СДАЧА');
+  Item := Driver.Params.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'Change';
+  Item.FormatText := '=%s';
+  Item.Alignment := ALIGN_RIGHT;
+  Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
+  Driver.Params.Template.Trailer.NewLine;
+  // Taxes
+  Driver.Params.Template.Trailer.AddText('в т.ч. НДС 12%');
+  Item := Driver.Params.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_JSON_REC_FIELD;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'Data.Tax';
+  Item.FormatText := '=%s';
+  Item.Alignment := ALIGN_RIGHT;
+  Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
+  Driver.Params.Template.Trailer.NewLine;
+  // Separator
+  Driver.Params.Template.Trailer.AddSeparator;
+  // Fiscal sign
+  Driver.Params.Template.Trailer.AddText('Фискальный признак: ');
+  Item := Driver.Params.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'Data.CheckNumber';
+  Item.FormatText := '';
+  Item.Alignment := ALIGN_LEFT;
+  Item.Enabled := TEMPLATE_ITEM_ENABLED;
+  Driver.Params.Template.Trailer.NewLine;
+  // Time
+  Driver.Params.Template.Trailer.AddText('Время: ');
+  Item := Driver.Params.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'Data.DateTime';
+  Item.FormatText := '';
+  Item.Alignment := ALIGN_LEFT;
+  Item.Enabled := TEMPLATE_ITEM_ENABLED;
+  Driver.Params.Template.Trailer.NewLine;
+  // Fiscal data operator
+  Driver.Params.Template.Trailer.AddText('Оператор фискальных данных:');
+  Driver.Params.Template.Trailer.NewLine;
+  Item := Driver.Params.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'Data.Cashbox.Ofd.Name';
+  Item.FormatText := '';
+  Item.Alignment := ALIGN_LEFT;
+  Item.Enabled := TEMPLATE_ITEM_ENABLED;
+  Driver.Params.Template.Trailer.NewLine;
+  // Ticket URL
+  Driver.Params.Template.Trailer.AddText('Для проверки чека зайдите на сайт:');
+  Driver.Params.Template.Trailer.NewLine;
+  Item := Driver.Params.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'Data.Cashbox.Ofd.Host';
+  Item.FormatText := '';
+  Item.Alignment := ALIGN_LEFT;
+  Item.Enabled := TEMPLATE_ITEM_ENABLED;
+  Driver.Params.Template.Trailer.NewLine;
+  // Separator
+  Driver.Params.Template.Trailer.AddSeparator;
+  // Fiscal receipt
+  Item := Driver.Params.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_TEXT;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'ФИСКАЛЬНЫЙ ЧЕK';
+  Item.Alignment := ALIGN_CENTER;
+  Driver.Params.Template.Trailer.NewLine;
+  // Fiscal receipt
+  Item := Driver.Params.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'Data.Cashbox.IdentityNumber';
+  Item.FormatText := 'ИНК ОФД: %s';
+  Item.Alignment := ALIGN_CENTER;
+  Driver.Params.Template.Trailer.NewLine;
+  // Registration number
+  Item := Driver.Params.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'Data.Cashbox.RegistrationNumber';
+  Item.FormatText := 'Код ККМ КГД (РНМ): %s';
+  Item.Alignment := ALIGN_CENTER;
+  Driver.Params.Template.Trailer.NewLine;
+  // Unique number
+  Item := Driver.Params.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'Data.Cashbox.UniqueNumber';
+  Item.FormatText := 'ЗНМ: %s';
+  Item.Alignment := ALIGN_CENTER;
   Driver.Params.Template.Trailer.NewLine;
 
   OpenClaimEnable;
@@ -874,22 +1056,75 @@ begin
   CheckLines;
 end;
 
+procedure TWebkassaImplTest.TestReceiptTemplate3;
+var
+  Item: TTemplateItem;
+const
+  Receipt4Text: string =
+    'ИТОГ          =108.27' + CRLF;
+begin
+  Driver.Params.TemplateEnabled := True;
+  Driver.Params.Template.Clear;
+  FDriver.Params.NumHeaderLines := 0;
+  FDriver.Params.NumTrailerLines := 0;
+  FDriver.Params.HeaderText := '';
+  FDriver.Params.TrailerText := '';
+  // Total
+  Item := Driver.Params.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_TEXT;
+  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.Alignment := ALIGN_LEFT;
+  Item.Text := 'ИТОГ';
+  Item := Driver.Params.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.Text := 'Total';
+  Item.FormatText := '=%s';
+  Item.Alignment := ALIGN_RIGHT;
+  Item.Enabled := TEMPLATE_ITEM_ENABLED;
+  Driver.Params.Template.Trailer.NewLine;
+
+  OpenClaimEnable;
+
+  FDriver.Client.TestMode := True;
+  CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
+  CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+  CheckEquals(FPTR_PS_FISCAL_RECEIPT, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+  FptrCheck(Driver.PrintRecItem('Сер. № 5                                  ШОКОЛАДНАЯ ПЛИТКА MILKA BUBBLES МОЛОЧНЫЙ', 123.45, 1000, 1, 123.45, 'кг'));
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка 10', 10, 1));
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_SURCHARGE, 'Надбавка 5', 5, 1));
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_PERCENTAGE_DISCOUNT, 'Скидка 10%', 10, 1));
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_PERCENTAGE_SURCHARGE, 'Скидка 5%', 5, 1));
+  FptrCheck(Driver.PrintRecItem('Item 2', 1.45, 1000, 1, 1.45, 'кг'));
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка', 0.45, 1));
+  FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка 10', 10));
+  FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_AMOUNT_SURCHARGE, 'Надбавка 5', 5));
+  FptrCheck(Driver.PrintRecTotal(123.45, 123.45, '1'));
+  CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+  CheckEquals(OPOS_SUCCESS, Driver.EndFiscalReceipt(False));
+
+  FLines.Text := Receipt4Text;
+  CheckLines;
+end;
+
 procedure TWebkassaImplTest.CheckLines;
 var
   i: Integer;
 begin
+(*
   for i := 0 to FPrinter.Lines.Count-1 do
   begin
     ODS(FPrinter.Lines[i]);
   end;
-
+*)  
   CheckEquals(FLines.Count, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
   for i := 0 to FLines.Count-1 do
   begin
     if FLines[i] <> FPrinter.Lines[i] then
     begin
       CheckEquals(TrimRight(FLines[i]), TrimRight(FPrinter.Lines[i]), IntToStr(i));
-      //CheckEquals(StrToHexText(FLines[i]), StrToHexText(FPrinter.Lines[i]), IntToStr(i));
     end;
   end;
 end;
@@ -913,7 +1148,7 @@ begin
     Check(Item <> nil, 'CashBox');
     CheckEquals('SWK00032685', Item.Field['UniqueNumber'].Value, 'UniqueNumber');
 
-    V := Driver.GetJsonField(JsonRoot, 'Data.Cashbox.UniqueNumber');
+    V := Driver.GetJsonField(JsonText, 'Data.Cashbox.UniqueNumber');
     CheckEquals('SWK00032685', V, 'UniqueNumber');
   finally
     Json.Free;
@@ -947,7 +1182,6 @@ begin
   FLines.Text := Text;
   CheckLines;
 end;
-
 
 initialization
   RegisterTest('', TWebkassaImplTest.Suite);

@@ -6,14 +6,17 @@ uses
   // VCL
   Windows, SysUtils, Forms, Controls, Classes, Messages, Math,
   // Opos
-  Opos, OposFptrUtils, OposException, OposFptr,
+  Opos, OposFptrUtils, OposException, OposFptr, OposUtils,
   // Tnt
   TntClasses,
   // This
   CustomReceipt, ReceiptItem, gnugettext, WException, MathUtils, TextDocument;
 
+const
+  MaxPayments = 4;
+
 type
-  TPayments = array [0..4] of Currency;
+  TPayments = array [0..MaxPayments] of Currency;
   TRecType = (rtBuy, rtRetBuy, rtSell, rtRetSell);
 
   { TSalesReceipt }
@@ -45,6 +48,10 @@ type
     procedure SubtotalDiscount(Amount: Currency;
       const Description: WideString);
   public
+    ReguestJson: WideString;
+    AnswerJson: WideString;
+    ReceiptJson: WideString;
+
     constructor CreateReceipt(ARecType: TRecType;
       AAmountDecimalPlaces: Integer; ARoundType: Integer);
     destructor Destroy; override;

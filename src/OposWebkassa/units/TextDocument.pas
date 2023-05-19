@@ -7,6 +7,8 @@ uses
   Classes, SysUtils, TntSysUtils,
   // Tnt
   TntClasses,
+  // Opos
+  OposUtils, 
   // This
   StringUtils;
 
@@ -31,7 +33,9 @@ type
     FItems: TTextItems;
     FLineChars: Integer;
     FPrintHeader: Boolean;
-    procedure Add2(const Line: WideString; Style: Integer);
+    procedure AddItem(const Line: WideString; Style: Integer);
+    procedure Add(Index: Integer; const Line: WideString); overload;
+    procedure Add2(const ALine: WideString; Style: Integer);
   public
     constructor Create;
     destructor Destroy; override;
@@ -41,15 +45,17 @@ type
     procedure AddSeparator;
     procedure AddText(const Text: WideString); overload;
     procedure AddText(Index: Integer; const Text: WideString); overload;
-    procedure Add(const Line: WideString); overload;
-    procedure Add(Index: Integer; const Line: WideString); overload;
+
+    procedure AddLine(const Line: WideString); overload;
+    procedure AddLine(const ALine: WideString; Style: Integer); overload;
     procedure AddLines(const Line1, Line2: WideString); overload;
     procedure AddLines(const Line1, Line2: WideString; Style: Integer); overload;
-    procedure Add(const ALine: WideString; Style: Integer); overload;
     function AlignCenter(const Line: WideString): WideString;
     function ConcatLines(const Line1, Line2: WideString; LineChars: Integer): WideString;
 
     procedure Assign(Source: TTextDocument);
+    procedure Add(const ALine: WideString; Style: Integer); overload;
+    function GetLineLength(Style: Integer): Integer;
 
     property Items: TTextItems read FItems;
     property LineChars: Integer read FLineChars write FLineChars;
@@ -109,47 +115,74 @@ begin
   inherited Destroy;
 end;
 
-procedure TTextDocument.Add(const Line: WideString);
+procedure TTextDocument.AddLine(const Line: WideString);
 begin
-  Add(Line, STYLE_NORMAL);
+  Add(Line + CRLF, STYLE_NORMAL);
+end;
+
+function TTextDocument.GetLineLength(Style: Integer): Integer;
+begin
+  Result := LineChars;
+  if (Style = STYLE_DWIDTH)or(Style = STYLE_DWIDTH_HEIGHT) then
+    Result := LineChars div 2;
+end;
+
+procedure TTextDocument.AddLine(const ALine: WideString; Style: Integer);
+begin
+  Add(ALine + CRLF, Style);
 end;
 
 procedure TTextDocument.Add(const ALine: WideString; Style: Integer);
 var
-  IsCRLF: Boolean;
+  P: Integer;
   Text: WideString;
   Line: WideString;
 begin
-  IsCRLF := False;
-  if LineChars = 0 then
+  Text := ALine;
+  repeat
+    P := Pos(CRLF, Text);
+    if P <> 0 then
+    begin
+      Line := Copy(Text, 1, P + 1);
+      Text := Copy(Text, P + 2, Length(Text));
+    end  else
+    begin
+      Line := Text;
+      Text := '';
+    end;
+    Add2(Line, Style);
+  until Length(Text) = 0;
+end;
+
+procedure TTextDocument.Add2(const ALine: WideString; Style: Integer);
+var
+  Text: WideString;
+  Line: WideString;
+  LineLength: Integer;
+begin
+  LineLength := GetLineLength(Style);
+  if LineLength = 0 then
   begin
-    Add2(ALine, Style);
+    AddItem(ALine, Style);
     Exit;
   end;
 
   Text := ALine;
-  if Pos(CRLF, Text) = (Length(Text)-1) then
-  begin
-    IsCRLF := True;
-    Text := Copy(Text, 1, Length(Text)-2);
-  end;
-
-  while True do
-  begin
-    Line := Copy(Text, 1, LineChars);
-    if IsCRLF or (Length(Line) < Length(Text)) then
+  repeat
+    if (Length(Text) <= LineLength)or(Pos(CRLF, Text) = (LineLength + 1)) then
     begin
-      Line := Line + CRLF;
+      Line := Copy(Text, 1, LineLength + 2);
+      Text := Copy(Text, LineLength + 3, Length(Text));
+    end else
+    begin
+      Line := Copy(Text, 1, LineLength) + CRLF;
+      Text := Copy(Text, LineLength + 1, Length(Text));
     end;
-
-    if Length(Line) = 0 then Break;
-    Add2(Line, Style);
-    Text := Copy(Text, LineChars + 1, Length(Text));
-    if Length(Text) = 0 then Break;
-  end;
+    AddItem(Line, Style);
+  until Length(Text) = 0;
 end;
 
-procedure TTextDocument.Add2(const Line: WideString; Style: Integer);
+procedure TTextDocument.AddItem(const Line: WideString; Style: Integer);
 var
   Item: TTextItem;
 begin
@@ -176,7 +209,7 @@ procedure TTextDocument.AddLines(const Line1, Line2: WideString; Style: Integer)
 var
   Text: WideString;
 begin
-  Text := ConcatLines(Line1, Line2, LineChars);
+  Text := ConcatLines(Line1, Line2, LineChars) + CRLF;
   Add(Text, Style);
 end;
 
@@ -195,7 +228,7 @@ begin
     Lines.Text := Text;
     for i := 0 to Lines.Count-1 do
     begin
-      Add(Lines[i] + CRLF);
+      AddLine(Lines[i]);
     end;
   finally
     Lines.Free;
@@ -232,7 +265,7 @@ end;
 
 procedure TTextDocument.AddSeparator;
 begin
-  Add(StringOfChar('-', LineChars));
+  AddLine(StringOfChar('-', LineChars));
 end;
 
 function TTextDocument.AlignCenter(const Line: WideString): WideString;

@@ -82,6 +82,7 @@ type
     function ReceiptFieldByText(Receipt: TSalesReceipt;
       Item: TTemplateItem): WideString;
     procedure AddItems(Items: TList);
+    function ReadReceiptJson(RecCommand: TSendReceiptCommand): WideString;
   public
     procedure PrintDocumentSafe(Document: TTextDocument);
     procedure CheckCanPrint;
@@ -101,13 +102,9 @@ type
     function CreatePrinter: IOPOSPOSPrinter;
     function CreateSerialPort: TSerialPort;
   public
-    procedure PrintReceipt2(Receipt: TSalesReceipt;
-      Command: TSendReceiptCommand; Template: TReceiptTemplate;
-      Json: TlkJSONbase);
-    function GetJsonField(Json: TlkJSONbase;
-      const FieldName: WideString): Variant;
-    function GetHeaderItemText(Receipt: TSalesReceipt;
-      Json: TlkJSONbase; Item: TTemplateItem): WideString;
+    procedure PrintReceipt2(Receipt: TSalesReceipt; Template: TReceiptTemplate);
+    function GetJsonField(JsonText: WideString; const FieldName: WideString): Variant;
+    function GetHeaderItemText(Receipt: TSalesReceipt; Item: TTemplateItem): WideString;
 
     procedure Initialize;
     procedure CheckEnabled;
@@ -237,6 +234,7 @@ type
     FUnitsUpdated: Boolean;
     FCashiersUpdated: Boolean;
     FCashBoxesUpdated: Boolean;
+    FReceiptJson: WideString;
 
     function DoCloseDevice: Integer;
     function DoOpen(const DeviceClass, DeviceName: WideString;
@@ -363,6 +361,7 @@ type
     property Params: TPrinterParameters read FParams;
     property TestMode: Boolean read FTestMode write FTestMode;
     property OposDevice: TOposServiceDevice19 read FOposDevice;
+    property ReceiptJson: WideString read FReceiptJson write FReceiptJson;
   end;
 
 implementation
@@ -1796,17 +1795,17 @@ begin
     Document.AddLines('ÇÍÌ', Command.Data.CashboxSN);
     Document.AddLines('Êîä ÊÊÌ ÊÃÄ (ĞÍÌ)', IntToStr(Command.Data.CashboxIN));
     if IsZReport then
-      Document.Add(Document.AlignCenter('Z-ÎÒ×ÅÒ'))
+      Document.AddLine(Document.AlignCenter('Z-ÎÒ×ÅÒ'))
     else
-      Document.Add(Document.AlignCenter('X-ÎÒ×ÅÒ'));
-    Document.Add(Document.AlignCenter(Format('ÑÌÅÍÀ ¹%d', [Command.Data.ShiftNumber])));
-    Document.Add(Document.AlignCenter(Format('%s-%s', [Command.Data.StartOn, Command.Data.ReportOn])));
+      Document.AddLine(Document.AlignCenter('X-ÎÒ×ÅÒ'));
+    Document.AddLine(Document.AlignCenter(Format('ÑÌÅÍÀ ¹%d', [Command.Data.ShiftNumber])));
+    Document.AddLine(Document.AlignCenter(Format('%s-%s', [Command.Data.StartOn, Command.Data.ReportOn])));
     Node := Doc.Get('Data').Get('Sections');
     if Node.Count > 0 then
     begin
-      Document.Add(Separator);
-      Document.Add(Document.AlignCenter('ÎÒ×ÅÒ ÏÎ ÑÅÊÖÈßÌ'));
-      Document.Add(Separator);
+      Document.AddLine(Separator);
+      Document.AddLine(Document.AlignCenter('ÎÒ×ÅÒ ÏÎ ÑÅÊÖÈßÌ'));
+      Document.AddLine(Separator);
       for i := 0 to Node.Count-1 do
       begin
         Count := Node.Child[i].Get('Code').Value;
@@ -1824,52 +1823,52 @@ begin
         end;
       end;
     end;
-    Document.Add(Separator);
+    Document.AddLine(Separator);
     if IsZReport then
-      Document.Add(Document.AlignCenter('ÎÒ×ÅÒ Ñ ÃÀØÅÍÈÅÌ'))
+      Document.AddLine(Document.AlignCenter('ÎÒ×ÅÒ Ñ ÃÀØÅÍÈÅÌ'))
     else
-      Document.Add(Document.AlignCenter('ÎÒ×ÅÒ ÁÅÇ ÃÀØÅÍÈß'));
-    Document.Add(Separator);
-    Document.Add('ÍÅÎÁÍÓË. ÑÓÌÌÛ ÍÀ ÍÀ×ÀËÎ ÑÌÅÍÛ');
+      Document.AddLine(Document.AlignCenter('ÎÒ×ÅÒ ÁÅÇ ÃÀØÅÍÈß'));
+    Document.AddLine(Separator);
+    Document.AddLine('ÍÅÎÁÍÓË. ÑÓÌÌÛ ÍÀ ÍÀ×ÀËÎ ÑÌÅÍÛ');
     Document.AddLines('ÏĞÎÄÀÆ', AmountToStr(Command.Data.StartNonNullable.Sell));
     Document.AddLines('ÏÎÊÓÏÎÊ', AmountToStr(Command.Data.StartNonNullable.Buy));
     Document.AddLines('ÂÎÇÂĞÀÒÎÂ ÏĞÎÄÀÆ', AmountToStr(Command.Data.StartNonNullable.ReturnSell));
     Document.AddLines('ÂÎÇÂĞÀÒÎÂ ÏÎÊÓÏÎÊ', AmountToStr(Command.Data.StartNonNullable.ReturnBuy));
 
-    Document.Add('×ÅÊÎÂ ÏĞÎÄÀÆ');
+    Document.AddLine('×ÅÊÎÂ ÏĞÎÄÀÆ');
     Line1 := Format('%.4d', [Command.Data.Sell.Count]);
     Line2 := AmountToStr(Total);
     Text := Line1 + StringOfChar(' ', (Document.LineChars div 2)-Length(Line1)-Length(Line2)) + Line2;
-    Document.Add(Text, STYLE_DWIDTH_HEIGHT);
+    Document.AddLine(Text, STYLE_DWIDTH_HEIGHT);
     AddPayments(Document, Command.Data.Sell.PaymentsByTypesApiModel);
 
-    Document.Add('×ÅÊÎÂ ÏÎÊÓÏÎÊ');
+    Document.AddLine('×ÅÊÎÂ ÏÎÊÓÏÎÊ');
     Line1 := Format('%.4d', [Command.Data.Buy.Count]);
     Line2 := AmountToStr(Command.Data.Buy.Taken);
     Text := Line1 + StringOfChar(' ', (Document.LineChars div 2)-Length(Line1)-Length(Line2)) + Line2;
-    Document.Add(Text, STYLE_DWIDTH_HEIGHT);
+    Document.AddLine(Text, STYLE_DWIDTH_HEIGHT);
     AddPayments(Document, Command.Data.Buy.PaymentsByTypesApiModel);
 
-    Document.Add('×ÅÊÎÂ ÂÎÇÂĞÀÒÎÂ ÏĞÎÄÀÆ');
+    Document.AddLine('×ÅÊÎÂ ÂÎÇÂĞÀÒÎÂ ÏĞÎÄÀÆ');
     Line1 := Format('%.4d', [Command.Data.ReturnSell.Count]);
     Line2 := AmountToStr(Command.Data.ReturnSell.Taken);
     Text := Line1 + StringOfChar(' ', (Document.LineChars div 2)-Length(Line1)-Length(Line2)) + Line2;
-    Document.Add(Text, STYLE_DWIDTH_HEIGHT);
+    Document.AddLine(Text, STYLE_DWIDTH_HEIGHT);
     AddPayments(Document, Command.Data.ReturnSell.PaymentsByTypesApiModel);
 
-    Document.Add('×ÅÊÎÂ ÂÎÇÂĞÀÒÎÂ ÏÎÊÓÏÎÊ');
+    Document.AddLine('×ÅÊÎÂ ÂÎÇÂĞÀÒÎÂ ÏÎÊÓÏÎÊ');
     Line1 := Format('%.4d', [Command.Data.ReturnBuy.Count]);
     Line2 := AmountToStr(Command.Data.ReturnBuy.Taken);
     Text := Line1 + StringOfChar(' ', (Document.LineChars div 2)-Length(Line1)-Length(Line2)) + Line2;
-    Document.Add(Text, STYLE_DWIDTH_HEIGHT);
+    Document.AddLine(Text, STYLE_DWIDTH_HEIGHT);
     AddPayments(Document, Command.Data.ReturnBuy.PaymentsByTypesApiModel);
 
-    Document.Add('ÂÍÅÑÅÍÈÉ');
+    Document.AddLine('ÂÍÅÑÅÍÈÉ');
     Node := Doc.Get('Data').Get('MoneyPlacementOperations').Get('Deposit');
     Count := Node.Get('Count').Value;
     Amount := Node.Get('Amount').Value;
     Document.AddLines(Format('%.4d', [Count]), AmountToStr(Amount));
-    Document.Add('ÈÇÚßÒÈÉ');
+    Document.AddLine('ÈÇÚßÒÈÉ');
     Node := Doc.Get('Data').Get('MoneyPlacementOperations').Get('WithDrawal');
     Count := Node.Get('Count').Value;
     Amount := Node.Get('Amount').Value;
@@ -1877,7 +1876,7 @@ begin
 
     Document.AddLines('ÍÀËÈ×ÍÛÕ Â ÊÀÑÑÅ', AmountToStr(Command.Data.SumInCashbox));
     Document.AddLines('ÂÛĞÓ×ÊÀ', AmountToStr(Total));
-    Document.Add('ÍÅÎÁÍÓË. ÑÓÌÌÛ ÍÀ ÊÎÍÅÖ ÑÌÅÍÛ');
+    Document.AddLine('ÍÅÎÁÍÓË. ÑÓÌÌÛ ÍÀ ÊÎÍÅÖ ÑÌÅÍÛ');
     Document.AddLines('ÏĞÎÄÀÆ', AmountToStr(Command.Data.EndNonNullable.Sell));
     Document.AddLines('ÏÎÊÓÏÎÊ', AmountToStr(Command.Data.EndNonNullable.Buy));
     Document.AddLines('ÂÎÇÂĞÀÒÎÂ ÏĞÎÄÀÆ', AmountToStr(Command.Data.EndNonNullable.ReturnSell));
@@ -2503,10 +2502,10 @@ begin
     // Create Document
     Document.PrintHeader := Receipt.PrintHeader;
     Document.LineChars := Printer.RecLineChars;
-    Document.Add('ÁÈÍ ' + Command.Data.Cashbox.RegistrationNumber);
-    Document.Add(Format('ÇÍÌ %s ÈÍÊ ÎÔÄ %s', [Command.Data.Cashbox.UniqueNumber,
+    Document.AddLine('ÁÈÍ ' + Command.Data.Cashbox.RegistrationNumber);
+    Document.AddLine(Format('ÇÍÌ %s ÈÍÊ ÎÔÄ %s', [Command.Data.Cashbox.UniqueNumber,
       Command.Data.Cashbox.IdentityNumber]));
-    Document.Add(Command.Data.DateTime);
+    Document.AddLine('Äàòà: ' + Command.Data.DateTime);
     Document.AddText(Receipt.Lines.Text);
     Document.AddLines('ÂÍÅÑÅÍÈÅ ÄÅÍÅÃ Â ÊÀÑÑÓ', AmountToStrEq(Receipt.GetTotal), STYLE_BOLD);
     Document.AddLines('ÍÀËÈ×ÍÛÕ Â ÊÀÑÑÅ', AmountToStrEq(Command.Data.Sum), STYLE_BOLD);
@@ -2533,10 +2532,10 @@ begin
     //
     Document.PrintHeader := Receipt.PrintHeader;
     Document.LineChars := Printer.RecLineChars;
-    Document.Add('ÁÈÍ ' + Command.Data.Cashbox.RegistrationNumber);
-    Document.Add(Format('ÇÍÌ %s ÈÍÊ ÎÔÄ %s', [Command.Data.Cashbox.UniqueNumber,
+    Document.AddLine('ÁÈÍ ' + Command.Data.Cashbox.RegistrationNumber);
+    Document.AddLine(Format('ÇÍÌ %s ÈÍÊ ÎÔÄ %s', [Command.Data.Cashbox.UniqueNumber,
       Command.Data.Cashbox.IdentityNumber]));
-    Document.Add(Command.Data.DateTime);
+    Document.AddLine('Äàòà: ' + Command.Data.DateTime);
     Document.AddText(Receipt.Lines.Text);
     Document.AddLines('ÈÇÚßÒÈÅ ÄÅÍÅÃ ÈÇ ÊÀÑÑÛ', AmountToStrEq(Receipt.GetTotal), STYLE_BOLD);
     Document.AddLines('ÍÀËÈ×ÍÛÕ Â ÊÀÑÑÅ', AmountToStrEq(Command.Data.Sum), STYLE_BOLD);
@@ -2663,8 +2662,6 @@ procedure TWebkassaImpl.Print(Receipt: TSalesReceipt);
 
 var
   i: Integer;
-  Json: TlkJSON;
-  JsonBase: TlkJSONbase;
   Payment: TPayment;
   Adjustment: TAdjustment;
   VatRate: TVatRate;
@@ -2771,19 +2768,37 @@ begin
 
     if Params.TemplateEnabled then
     begin
-      Json := TlkJSON.Create;
-      try
-        JsonBase := Json.ParseText(FClient.AnswerJson);
-        PrintReceipt2(Receipt, Command, Params.Template, JsonBase);
-      finally
-        Json.Free;
-      end;
+      Receipt.ReguestJson := FClient.CommandJson;
+      Receipt.AnswerJson := FClient.AnswerJson;
+      Receipt.ReceiptJson := ReadReceiptJson(Command);
+      PrintReceipt2(Receipt, Params.Template);
     end else
     begin
       PrintReceipt(Receipt, Command);
     end;
+  finally
+    Command.Free;
+  end;
+end;
 
+function TWebkassaImpl.ReadReceiptJson(RecCommand: TSendReceiptCommand): WideString;
+var
+  Command: TReceiptCommand;
+begin
+  if FTestMode then
+  begin
+    Result := FReceiptJson;
+    Exit;
+  end;
 
+  Command := TReceiptCommand.Create;
+  try
+    Command.Request.Token := Client.Token;
+    Command.Request.CashboxUniqueNumber := Params.CashboxNumber;
+    Command.Request.Number := RecCommand.Data.CheckNumber;
+    Command.Request.ShiftNumber := RecCommand.Data.ShiftNumber;
+    FClient.ReadReceipt(Command);
+    Result := FClient.AnswerJson;
   finally
     Command.Free;
   end;
@@ -2880,14 +2895,14 @@ begin
   Document.Addlines(Format('ÍÄÑ Ñåğèÿ %s', [Params.VATSeries]),
     Format('¹ %s', [Params.VATNumber]));
   Document.AddSeparator;
-  Document.Add(Document.AlignCenter(FCashBox.Name));
-  Document.Add(Document.AlignCenter(Format('ÑÌÅÍÀ ¹%d', [Command.Data.ShiftNumber])));
-  Document.Add(OperationTypeToText(Command.Request.OperationType));
+  Document.AddLine(Document.AlignCenter(FCashBox.Name));
+  Document.AddLine(Document.AlignCenter(Format('ÑÌÅÍÀ ¹%d', [Command.Data.ShiftNumber])));
+  Document.AddLine(OperationTypeToText(Command.Request.OperationType));
 
-  //Document.Add(AlignCenter(Format('Ïîğÿäêîâûé íîìåğ ÷åêà ¹%d', [Command.Data.DocumentNumber])));
-  //Document.Add(Format('×åê ¹%s', [Command.Data.CheckNumber]));
-  //Document.Add(Format('Êàññèğ %s', [Command.Data.EmployeeName]));
-  //Document.Add(UpperCase(Command.Data.OperationTypeText));
+  //Document.AddLine(AlignCenter(Format('Ïîğÿäêîâûé íîìåğ ÷åêà ¹%d', [Command.Data.DocumentNumber])));
+  //Document.AddLine(Format('×åê ¹%s', [Command.Data.CheckNumber]));
+  //Document.AddLine(Format('Êàññèğ %s', [Command.Data.EmployeeName]));
+  //Document.AddLine(UpperCase(Command.Data.OperationTypeText));
   Document.AddSeparator;
 
 
@@ -2897,8 +2912,8 @@ begin
     if ReceiptItem is TSalesReceiptItem then
     begin
       RecItem := ReceiptItem as TSalesReceiptItem;
-      //Document.Add(Format('%3d. %s', [RecItem.Number, RecItem.Description]));
-      Document.Add(RecItem.Description);
+      //Document.AddLine(Format('%3d. %s', [RecItem.Number, RecItem.Description]));
+      Document.AddLine(RecItem.Description);
 
       ItemQuantity := 1;
       UnitPrice := RecItem.Price;
@@ -2907,7 +2922,7 @@ begin
         ItemQuantity := RecItem.Quantity;
         UnitPrice := RecItem.UnitPrice;
       end;
-      Document.Add(Format('   %.3f %s x %s', [ItemQuantity,
+      Document.AddLine(Format('   %.3f %s x %s', [ItemQuantity,
         RecItem.UnitName, AmountToStr(UnitPrice)]));
       // Ñêèäêà
       Adjustment := RecItem.GetDiscount;
@@ -2933,7 +2948,7 @@ begin
     if ReceiptItem is TRecTexItem then
     begin
       TextItem := ReceiptItem as TRecTexItem;
-      Document.Add(TextItem.Text, TextItem.Style);
+      Document.AddLine(TextItem.Text, TextItem.Style);
     end;
   end;
   Document.AddSeparator;
@@ -2951,7 +2966,7 @@ begin
   end;
   // ÈÒÎÃ
   Text := Document.ConcatLines('ÈÒÎÃ', AmountToStrEq(Receipt.GetTotal), Document.LineChars div 2);
-  Document.Add(Text, STYLE_DWIDTH_HEIGHT);
+  Document.AddLine(Text, STYLE_DWIDTH_HEIGHT);
   // Payments
   for i := Low(Receipt.Payments) to High(Receipt.Payments) do
   begin
@@ -2983,66 +2998,78 @@ begin
   begin
     Receipt.FiscalSign := Command.Data.CheckNumber;
   end;
-  Document.Add('Ôèñêàëüíûé ïğèçíàê: ' + Receipt.FiscalSign);
-  Document.Add('Âğåìÿ: ' + Command.Data.DateTime);
-  Document.Add('Îïåğàòîğ ôèñêàëüíûõ äàííûõ:');
-  Document.Add(Command.Data.Cashbox.Ofd.Name);
-  Document.Add('Äëÿ ïğîâåğêè ÷åêà çàéäèòå íà ñàéò:');
-  Document.Add(Command.Data.Cashbox.Ofd.Host);
+  Document.AddLine('Ôèñêàëüíûé ïğèçíàê: ' + Receipt.FiscalSign);
+  Document.AddLine('Âğåìÿ: ' + Command.Data.DateTime);
+  Document.AddLine('Îïåğàòîğ ôèñêàëüíûõ äàííûõ:');
+  Document.AddLine(Command.Data.Cashbox.Ofd.Name);
+  Document.AddLine('Äëÿ ïğîâåğêè ÷åêà çàéäèòå íà ñàéò:');
+  Document.AddLine(Command.Data.Cashbox.Ofd.Host);
   Document.AddSeparator;
-  Document.Add(Document.AlignCenter('ÔÈÑÊÀËÜÍÛÉ ×ÅK'));
-  Document.Add(Command.Data.TicketUrl, STYLE_QR_CODE);
-  Document.Add(Document.AlignCenter('ÈÍÊ ÎÔÄ: ' + Command.Data.Cashbox.IdentityNumber));
-  Document.Add(Document.AlignCenter('Êîä ÊÊÌ ÊÃÄ (ĞÍÌ): ' + Command.Data.Cashbox.RegistrationNumber));
-  Document.Add(Document.AlignCenter('ÇÍÌ: ' + Command.Data.Cashbox.UniqueNumber));
+  Document.AddLine(Document.AlignCenter('ÔÈÑÊÀËÜÍÛÉ ×ÅK'));
+  Document.AddLine(Command.Data.TicketUrl, STYLE_QR_CODE);
+  Document.AddLine(Document.AlignCenter('ÈÍÊ ÎÔÄ: ' + Command.Data.Cashbox.IdentityNumber));
+  Document.AddLine(Document.AlignCenter('Êîä ÊÊÌ ÊÃÄ (ĞÍÌ): ' + Command.Data.Cashbox.RegistrationNumber));
+  Document.AddLine(Document.AlignCenter('ÇÍÌ: ' + Command.Data.Cashbox.UniqueNumber));
   Document.AddText(Receipt.Trailer.Text);
 
   PrintDocumentSafe(Document);
   Printer.RecLineChars := FRecLineChars;
 end;
 
-function TWebkassaImpl.GetJsonField(Json: TlkJSONbase; const FieldName: WideString): Variant;
+function TWebkassaImpl.GetJsonField(JsonText: WideString;
+  const FieldName: WideString): Variant;
 var
   P: Integer;
   S: WideString;
-  Field: WideString;
+  Json: TlkJSON;
   Root: TlkJSONbase;
+  Field: WideString;
 begin
-  Root := Json;
-  S := FieldName;
-  Result := '';
-  repeat
-    P := Pos('.', S);
-    if P <> 0 then
-    begin
-      Field := Copy(S, 1, P-1);
-      S := Copy(S, P+1, Length(S));
-    end else
-    begin
-      Field := S;
-    end;
-    Root := Root.Field[Field];
-    if Root = nil then
-      raise Exception.CreateFmt('Field %s not found', [FieldName]);
-  until P = 0;
-  Result := Root.Value;
+  Json := TlkJSON.Create;
+  try
+    Root := Json.ParseText(JsonText);
+    S := FieldName;
+    Result := '';
+    repeat
+      P := Pos('.', S);
+      if P <> 0 then
+      begin
+        Field := Copy(S, 1, P-1);
+        S := Copy(S, P+1, Length(S));
+      end else
+      begin
+        Field := S;
+      end;
+      Root := Root.Field[Field];
+      if Root = nil then
+      begin
+        Result := '';
+        Exit;
+        { !!! }
+        //raise Exception.CreateFmt('Field %s not found', [FieldName]);
+      end;
+    until P = 0;
+    Result := Root.Value;
+  finally
+    Json.Free;
+  end;
 end;
 
 function TWebkassaImpl.GetHeaderItemText(Receipt: TSalesReceipt;
-  Json: TlkJSONbase; Item: TTemplateItem): WideString;
+  Item: TTemplateItem): WideString;
 begin
   case Item.ItemType of
     TEMPLATE_TYPE_TEXT: Result := Item.Text;
-    TEMPLATE_TYPE_ITEM_FIELD: Result := ReceiptFieldByText(Receipt, Item);
-    TEMPLATE_TYPE_JSON_FIELD: Result := GetJsonField(Json, Item.Text);
     TEMPLATE_TYPE_PARAM: Result := Params.ItemByText(Item.Text);
+    TEMPLATE_TYPE_ITEM_FIELD: Result := ReceiptFieldByText(Receipt, Item);
     TEMPLATE_TYPE_SEPARATOR: Result := StringOfChar('-', Document.LineChars);
+    TEMPLATE_TYPE_JSON_REQ_FIELD: Result := GetJsonField(Receipt.ReguestJson, Item.Text);
+    TEMPLATE_TYPE_JSON_ANS_FIELD: Result := GetJsonField(Receipt.AnswerJson, Item.Text);
+    TEMPLATE_TYPE_JSON_REC_FIELD: Result := GetJsonField(Receipt.ReceiptJson, Item.Text);
     TEMPLATE_TYPE_NEWLINE: Result := CRLF;
   else
     Result := '';
   end;
-  if Item.FormatText <> '' then
-    Result := Format(Item.FormatText, [Result]);
 end;
 
 function TWebkassaImpl.GetReceiptItemText(ReceiptItem: TSalesReceiptItem;
@@ -3161,6 +3188,41 @@ begin
       Result := Format('%.2f', [Amount]);
     Exit;
   end;
+  if WideCompareText(Item.Text, 'Payment0') = 0 then
+  begin
+    Amount := Abs(Receipt.Payments[0]);
+    if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
+      Result := Format('%.2f', [Amount]);
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'Payment1') = 0 then
+  begin
+    Amount := Abs(Receipt.Payments[1]);
+    if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
+      Result := Format('%.2f', [Amount]);
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'Payment2') = 0 then
+  begin
+    Amount := Abs(Receipt.Payments[2]);
+    if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
+      Result := Format('%.2f', [Amount]);
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'Payment3') = 0 then
+  begin
+    Amount := Abs(Receipt.Payments[3]);
+    if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
+      Result := Format('%.2f', [Amount]);
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'Change') = 0 then
+  begin
+    Amount := Abs(Receipt.Change);
+    if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
+      Result := Format('%.2f', [Amount]);
+    Exit;
+  end;
   raise Exception.CreateFmt('Receipt field %s not found', [Item.Text]);
 end;
 
@@ -3178,12 +3240,10 @@ begin
 end;
 
 procedure TWebkassaImpl.PrintReceipt2(Receipt: TSalesReceipt;
-  Command: TSendReceiptCommand; Template: TReceiptTemplate;
-  Json: TlkJSONbase);
+  Template: TReceiptTemplate);
 var
   i, j: Integer;
   IsValid: Boolean;
-  Text: WideString;
   Item: TTemplateItem;
   LineItems: TList;
   ReceiptItem: TReceiptItem;
@@ -3195,12 +3255,15 @@ begin
     Document.PrintHeader := Receipt.PrintHeader;
     Document.LineChars := Printer.RecLineChars;
     // Header
+    LineItems.Clear;
     for i := 0 to Template.Header.Count-1 do
     begin
       Item := Template.Header[i];
-      Text := GetHeaderItemText(Receipt, Json, Item);
-      Document.Add(Text, Item.TextStyle);
+      Item.Value := GetHeaderItemText(Receipt, Item);
+      LineItems.Add(Item);
     end;
+    AddItems(LineItems);
+    LineItems.Clear;
     // Items
     for i := 0 to Receipt.Items.Count-1 do
     begin
@@ -3208,8 +3271,10 @@ begin
       if ReceiptItem is TRecTexItem then
       begin
         RecTexItem := ReceiptItem as TRecTexItem;
-        Document.Add(RecTexItem.Text + CRLF, RecTexItem.Style);
+        Document.AddLine(RecTexItem.Text, RecTexItem.Style);
       end;
+
+
       if ReceiptItem is TSalesReceiptItem then
       begin
         for j := 0 to Template.RecItem.Count-1 do
@@ -3236,13 +3301,15 @@ begin
     end;
     AddItems(LineItems);
     LineItems.Clear;
-    // Trailer
     for i := 0 to Template.Trailer.Count-1 do
     begin
       Item := Template.Trailer[i];
-      Text := GetHeaderItemText(Receipt, Json, Item);
-      Document.Add(Text, Item.TextStyle);
+      Item.Value := GetHeaderItemText(Receipt, Item);
+      LineItems.Add(Item);
     end;
+    AddItems(LineItems);
+    LineItems.Clear;
+
     Document.AddText(Receipt.Trailer.Text);
     PrintDocumentSafe(Document);
     Printer.RecLineChars := FRecLineChars;
@@ -3252,30 +3319,77 @@ begin
 end;
 
 procedure TWebkassaImpl.AddItems(Items: TList);
+
+  procedure AddListItems(Items: TList);
+  var
+    i: Integer;
+    Item: TTemplateItem;
+  begin
+    for i := 0 to Items.Count-1 do
+    begin
+      Item := TTemplateItem(Items[i]);
+      Document.Add(Item.Value, Item.TextStyle);
+    end;
+  end;
+
 var
   i: Integer;
+  Len: Integer;
+  List: TList;
+  Valid: Boolean;
   Line: WideString;
   Item: TTemplateItem;
 begin
   Line := '';
-  for i := 0 to Items.Count-1 do
-  begin
-    Item := TTemplateItem(Items[i]);
-    if Item.Value = '' then Exit;
-    if Item.FormatText <> '' then
-      Item.Value := Format(Item.FormatText, [Item.Value]);
+  Valid := True;
+  List := TList.Create;
+  try
+    for i := 0 to Items.Count-1 do
+    begin
+      Item := TTemplateItem(Items[i]);
 
-    case Item.Alignment of
-      ALIGN_RIGHT: Item.Value := StringOfChar(' ', Document.LineChars-Length(Item.Value)-Length(Line)) + Item.Value;
+      if (Item.Enabled = TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO) then
+      begin
+        if Item.Value = '' then
+        begin
+          List.Clear;
+          Line := '';
+          Valid := False;
+        end;
+      end;
+
+      if Item.FormatText <> '' then
+        Item.Value := Format(Item.FormatText, [Item.Value]);
+
+      case Item.Alignment of
+        ALIGN_RIGHT:
+        begin
+          Len := Document.GetLineLength(Item.TextStyle)-Length(Item.Value)-Length(Line);
+          Item.Value := StringOfChar(' ', Len) + Item.Value;
+        end;
+
+        ALIGN_CENTER:
+        begin
+          Len := (Document.LineChars-Length(Item.Value)-Length(Line)) div 2;
+          Item.Value := StringOfChar(' ', Len) + Item.Value;
+        end;
+      end;
+      Line := Line + Item.Value;
+      List.Add(Item);
+      if Item.ItemType = TEMPLATE_TYPE_NEWLINE then
+      begin
+        if Valid then
+        begin
+          AddListItems(List);
+        end;
+        Line := '';
+        List.Clear;
+        Valid := True;
+      end;
     end;
-
-    Line := Line + Item.Value;
-  end;
-
-  for i := 0 to Items.Count-1 do
-  begin
-    Item := TTemplateItem(Items[i]);
-    Document.Add(Item.Value, Item.ItemType);
+    AddListItems(List);
+  finally
+    List.Free;
   end;
 end;
 
@@ -3309,7 +3423,6 @@ var
   Text: WideString;
   CapRecBold: Boolean;
   CapRecDwideDhigh: Boolean;
-  RecLineChars: Integer;
   Item: TTextItem;
   TickCount: DWORD;
   Prefix: WideString;
@@ -3329,7 +3442,6 @@ begin
   end;
   for i := 0 to Document.Items.Count-1 do
   begin
-    RecLineChars := Printer.RecLineChars;
     Item := Document.Items[i] as TTextItem;
     case Item.Style of
       STYLE_QR_CODE:
@@ -3352,7 +3464,6 @@ begin
       // DWDH
       if Item.Style = STYLE_DWIDTH_HEIGHT then
       begin
-        RecLineChars := RecLineChars div 2;
         if CapRecDwideDhigh then
           Prefix := ESC_DoubleHighWide;
       end;

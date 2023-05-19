@@ -18,12 +18,14 @@ const
   /////////////////////////////////////////////////////////////////////////////
   // Template item types
 
-  TEMPLATE_TYPE_TEXT          = 0;
-  TEMPLATE_TYPE_PARAM         = 1;
-  TEMPLATE_TYPE_ITEM_FIELD    = 2;
-  TEMPLATE_TYPE_JSON_FIELD    = 3;
-  TEMPLATE_TYPE_SEPARATOR     = 4;
-  TEMPLATE_TYPE_NEWLINE       = 5;
+  TEMPLATE_TYPE_TEXT            = 0;
+  TEMPLATE_TYPE_PARAM           = 1;
+  TEMPLATE_TYPE_ITEM_FIELD      = 2;
+  TEMPLATE_TYPE_JSON_REQ_FIELD  = 3;
+  TEMPLATE_TYPE_JSON_ANS_FIELD  = 4;
+  TEMPLATE_TYPE_JSON_REC_FIELD  = 5;
+  TEMPLATE_TYPE_SEPARATOR       = 6;
+  TEMPLATE_TYPE_NEWLINE         = 7;
 
   /////////////////////////////////////////////////////////////////////////////
   // Alignment constants
@@ -48,8 +50,8 @@ type
   TReceiptTemplate = class
   private
     FHeader: TTemplateItems;
-    FTrailer: TTemplateItems;
     FRecItem: TTemplateItems;
+    FTrailer: TTemplateItems;
   public
     constructor Create;
     destructor Destroy; override;
@@ -70,7 +72,7 @@ type
   public
     function Add: TTemplateItem;
     function NewLine: TTemplateItem;
-    function AddSeparator: TTemplateItem;
+    procedure AddSeparator;
     function AddText(const Text: WideString): TTemplateItem;
     function AddParam(const Text: WideString): TTemplateItem;
     function AddField(const Text: WideString): TTemplateItem;
@@ -177,12 +179,17 @@ begin
   Result := inherited Items[Index] as TTemplateItem;
 end;
 
-function TTemplateItems.AddSeparator: TTemplateItem;
+procedure TTemplateItems.AddSeparator;
+var
+  Item: TTemplateItem;
 begin
-  Result := TTemplateItem.Create(Self);
-  Result.FItemType := TEMPLATE_TYPE_SEPARATOR;
-  Result.FTextStyle := STYLE_NORMAL;
-  Result.FText := '';
+  Item := TTemplateItem.Create(Self);
+  Item.FItemType := TEMPLATE_TYPE_SEPARATOR;
+  Item.FTextStyle := STYLE_NORMAL;
+  Item.FText := '';
+
+  Item := TTemplateItem.Create(Self);
+  Item.ItemType := TEMPLATE_TYPE_NEWLINE;
 end;
 
 end.
