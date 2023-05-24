@@ -1074,6 +1074,7 @@ begin
   Item.ItemType := TEMPLATE_TYPE_TEXT;
   Item.TextStyle := STYLE_DWIDTH_HEIGHT;
   Item.Alignment := ALIGN_LEFT;
+  Item.LineChars := 56;
   Item.Text := 'хрнц';
   Item := Driver.Params.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;

@@ -83,6 +83,7 @@ type
       Item: TTemplateItem): WideString;
     procedure AddItems(Items: TList);
     function ReadReceiptJson(RecCommand: TSendReceiptCommand): WideString;
+    procedure BeginDocument(APrintHeader: boolean);
   public
     procedure PrintDocumentSafe(Document: TTextDocument);
     procedure CheckCanPrint;
@@ -449,6 +450,19 @@ begin
   inherited Destroy;
 end;
 
+procedure TWebkassaImpl.BeginDocument(APrintHeader: boolean);
+begin
+  Document.Clear;
+  Document.LineChars := Printer.RecLineChars;
+  Document.LineHeight := Printer.RecLineHeight;
+  Document.LineSpacing := Printer.RecLineSpacing;
+
+  if APrintHeader then
+  begin
+    Document.AddText(Params.HeaderText);
+  end;
+end;
+
 function TWebkassaImpl.AmountToStr(Value: Currency): AnsiString;
 begin
   if Params.AmountDecimalPlaces = 0 then
@@ -692,12 +706,7 @@ begin
     FReceipt := CreateReceipt(FFiscalReceiptType);
     FReceipt.BeginFiscalReceipt(PrintHeader);
 
-    Document.Clear;
-    Document.LineChars := Printer.RecLineChars;
-    if PrintHeader then
-    begin
-      Document.AddText(Params.HeaderText);
-    end;
+    BeginDocument(PrintHeader);
     Result := ClearResult;
   except
     on E: Exception do
@@ -727,9 +736,7 @@ begin
     CheckEnabled;
     CheckState(FPTR_PS_MONITOR);
     SetPrinterState(FPTR_PS_NONFISCAL);
-
-    Document.Clear;
-    Document.LineChars := Printer.RecLineChars;
+    BeginDocument(False);
     Result := ClearResult;
   except
     on E: Exception do
@@ -1783,13 +1790,8 @@ begin
       (Command.Data.EndNonNullable.ReturnSell - Command.Data.StartNonNullable.ReturnSell) +
       (Command.Data.EndNonNullable.ReturnBuy - Command.Data.StartNonNullable.ReturnBuy);
 
-    Document.Clear;
-    if not FHeaderPrinted then
-    begin
-      Document.AddText(Params.HeaderText);
-    end;
+    BeginDocument(not FHeaderPrinted);
     Document.PrintHeader := False;
-    Document.LineChars := Printer.RecLineChars;
     Separator := StringOfChar('-', Document.LineChars);
     Document.AddLines('»ÕÕ/¡»Õ', Command.Data.CashboxRN);
     Document.AddLines('«ÕÃ', Command.Data.CashboxSN);
@@ -3062,7 +3064,7 @@ begin
     TEMPLATE_TYPE_TEXT: Result := Item.Text;
     TEMPLATE_TYPE_PARAM: Result := Params.ItemByText(Item.Text);
     TEMPLATE_TYPE_ITEM_FIELD: Result := ReceiptFieldByText(Receipt, Item);
-    TEMPLATE_TYPE_SEPARATOR: Result := StringOfChar('-', Document.LineChars);
+    TEMPLATE_TYPE_SEPARATOR: Result := StringOfChar('-', Item.LineChars);
     TEMPLATE_TYPE_JSON_REQ_FIELD: Result := GetJsonField(Receipt.ReguestJson, Item.Text);
     TEMPLATE_TYPE_JSON_ANS_FIELD: Result := GetJsonField(Receipt.AnswerJson, Item.Text);
     TEMPLATE_TYPE_JSON_REC_FIELD: Result := GetJsonField(Receipt.ReceiptJson, Item.Text);
@@ -3426,6 +3428,9 @@ var
   Item: TTextItem;
   TickCount: DWORD;
   Prefix: WideString;
+  LineChars: Integer;
+  LineHeight: Integer;
+  LineSpacing: Integer;
 begin
   Logger.Debug('PrintDocument');
   TickCount := GetTickCount;
@@ -3436,6 +3441,10 @@ begin
   CapRecDwideDhigh := Printer.CapRecDwideDhigh;
   CapRecBold := Printer.CapRecBold;
 
+  LineChars := Printer.RecLineChars;
+  LineHeight := Printer.RecLineHeight;
+  LineSpacing := Printer.RecLineSpacing;
+
   if Printer.CapTransaction then
   begin
     CheckPtr(Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_TRANSACTION));
@@ -3443,6 +3452,24 @@ begin
   for i := 0 to Document.Items.Count-1 do
   begin
     Item := Document.Items[i] as TTextItem;
+
+    if (Item.LineChars <> 0)and(Item.LineChars <> LineChars) then
+    begin
+      Printer.RecLineChars := Item.LineChars;
+      LineChars := Item.LineChars;
+    end;
+    if (Item.LineHeight <> 0)and(Item.LineHeight <> Printer.RecLineHeight) then
+    begin
+      Printer.RecLineHeight := Item.LineHeight;
+      LineHeight := Item.LineHeight;
+    end;
+    if (Item.LineSpacing <> 0)and(Item.LineSpacing <> Printer.RecLineSpacing) then
+    begin
+      Printer.RecLineSpacing := Item.LineSpacing;
+      LineSpacing := Item.LineSpacing;
+    end;
+
+
     case Item.Style of
       STYLE_QR_CODE:
       begin
@@ -3473,7 +3500,9 @@ begin
         if CapRecBold then
           Prefix := ESC_Bold;
       end;
+
       Text := Params.GetTranslationText(Text);
+
       CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, Prefix + Text));
 
       //PrintText(Prefix, Text, RecLineChars);

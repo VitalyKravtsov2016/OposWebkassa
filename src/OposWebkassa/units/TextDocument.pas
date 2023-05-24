@@ -32,8 +32,9 @@ type
   private
     FItems: TTextItems;
     FLineChars: Integer;
+    FLineHeight: Integer;
+    FLineSpacing: Integer;
     FPrintHeader: Boolean;
-    procedure AddItem(const Line: WideString; Style: Integer);
     procedure Add(Index: Integer; const Line: WideString); overload;
     procedure Add2(const ALine: WideString; Style: Integer);
   public
@@ -52,6 +53,7 @@ type
     procedure AddLines(const Line1, Line2: WideString; Style: Integer); overload;
     function AlignCenter(const Line: WideString): WideString;
     function ConcatLines(const Line1, Line2: WideString; LineChars: Integer): WideString;
+    function AddItem(const Line: WideString; Style: Integer): TTextItem;
 
     procedure Assign(Source: TTextDocument);
     procedure Add(const ALine: WideString; Style: Integer); overload;
@@ -59,6 +61,8 @@ type
 
     property Items: TTextItems read FItems;
     property LineChars: Integer read FLineChars write FLineChars;
+    property LineHeight: Integer read FLineHeight write FLineHeight;
+    property LineSpacing: Integer read FLineSpacing write FLineSpacing;
     property PrintHeader: Boolean read FPrintHeader write FPrintHeader;
   end;
 
@@ -78,10 +82,17 @@ type
   private
     FStyle: Integer;
     FText: WideString;
+    FLineChars: Integer;
+    FLineHeight: Integer;
+    FLineSpacing: Integer;
   public
+    procedure Assign(Source: TPersistent); override;
+
     property Style: Integer read FStyle;
     property Text: WideString read FText;
-    procedure Assign(Source: TPersistent); override;
+    property LineChars: Integer read FLineChars;
+    property LineHeight: Integer read FLineHeight;
+    property LineSpacing: Integer read FLineSpacing;
   end;
 
 function AlignCenter2(const Line: WideString; LineWidth: Integer): WideString;
@@ -182,13 +193,17 @@ begin
   until Length(Text) = 0;
 end;
 
-procedure TTextDocument.AddItem(const Line: WideString; Style: Integer);
+function TTextDocument.AddItem(const Line: WideString; Style: Integer): TTextItem;
 var
   Item: TTextItem;
 begin
   Item := FItems.Add;
   Item.FText := Line;
   Item.FStyle := Style;
+  Item.FLineChars := LineChars;
+  Item.FLineHeight := LineHeight;
+  Item.FLineSpacing := LineSpacing;
+  Result := Item;
 end;
 
 procedure TTextDocument.Add(Index: Integer; const Line: WideString);

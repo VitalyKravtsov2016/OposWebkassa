@@ -6,6 +6,9 @@ uses
   Classes;
 
 const
+  /////////////////////////////////////////////////////////////////////////////
+  // Template item style
+
   STYLE_NORMAL        = 0;
   STYLE_BOLD          = 1;
   STYLE_ITALIC        = 2;
@@ -90,6 +93,8 @@ type
     FTextStyle: Integer;
     FAlignment: Integer;
     FFormatText: WideString;
+    FLineChars: Integer;
+    FLineSpacing: Integer;
   public
     property Value: WideString read FValue write FValue;
     property Text: WideString read FText write FText;
@@ -98,6 +103,8 @@ type
     property TextStyle: Integer read FTextStyle write FTextStyle;
     property Alignment: Integer read FAlignment write FAlignment;
     property FormatText: WideString read FFormatText write FFormatText;
+    property LineChars: Integer read FLineChars write FLineChars;
+    property LineSpacing: Integer read FLineSpacing write FLineSpacing;
   end;
 
 implementation

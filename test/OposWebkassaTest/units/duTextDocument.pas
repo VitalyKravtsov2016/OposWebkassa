@@ -26,6 +26,7 @@ type
     procedure TearDown; override;
   published
     procedure TestAdd;
+    procedure TestAddItem;
   end;
 
 implementation
@@ -59,6 +60,29 @@ begin
   CheckEquals(Length(Line), Length(FDocument.Items[1].Text), 'Length(Line)');
   CheckEquals(Line, FDocument.Items[1].Text, 'FDocument.Items[1].Text');
 end;
+
+procedure TTextDocumentTest.TestAddItem;
+var
+  Item: TTextItem;
+begin
+  CheckEquals(0, FDocument.Items.Count, 'FDocument.Items.Count');
+  FDocument.Items.Add;
+  CheckEquals(1, FDocument.Items.Count, 'FDocument.Items.Count');
+  FDocument.Clear;
+  CheckEquals(0, FDocument.Items.Count, 'FDocument.Items.Count');
+
+
+  FDocument.LineChars := 23;
+  FDocument.LineHeight := 15;
+  FDocument.LineSpacing := 10;
+  Item := FDocument.AddItem('Test', STYLE_DHEIGHT);
+  CheckEquals('Test', Item.Text, 'Item.Text');
+  CheckEquals(STYLE_DHEIGHT, Item.Style, 'Item.Style');
+  CheckEquals(FDocument.LineChars, Item.LineChars, 'Item.LineChars');
+  CheckEquals(FDocument.LineHeight, Item.LineHeight, 'Item.LineHeight');
+  CheckEquals(FDocument.LineSpacing, Item.LineSpacing, 'Item.LineSpacing');
+end;
+
 
 initialization
   RegisterTest('', TTextDocumentTest.Suite);

@@ -1,23 +1,22 @@
 [Closed Files]
-File_0=SourceModule,'D:\projects\WebKassa\src\OposWebkassa\units\WebkassaClient.pas',0,1,1,31,1667,0,0
-File_1=SourceModule,'D:\projects\WebKassa\src\Shared\ReceiptTemplate.pas',0,1,132,1,159,0,0
-File_2=SourceModule,'c:\program files (x86)\borland\delphi7\Comp\dunit\src\TestFramework.pas',0,1,46,28,71,0,0
-File_3=SourceModule,'D:\projects\WebKassa\src\Opos\OposUtils.pas',0,1,1,14,2,0,0
-File_4=SourceModule,'D:\projects\WebKassa\src\OposWebkassa\units\SalesReceipt.pas',0,1,616,5,642,0,0
-File_5=SourceModule,'D:\projects\WebKassa\src\Shared\DriverError.pas',0,1,26,66,35,0,0
+File_0=SourceModule,'D:\projects\WebKassa\src\OposWebkassa\units\TextDocument.pas',0,1,1,15,21,0,0
+File_1=SourceModule,'D:\projects\WebKassa\test\OposWebkassaTest\units\MockPosPrinter.pas',0,1,1,12,26,0,0
+File_2=SourceModule,'D:\projects\WebKassa\src\Shared\DebugUtils.pas',0,1,1,15,12,0,0
+File_3=SourceModule,'D:\projects\WebKassa\test\OposWebkassaTest\units\duWebkassaImpl.pas',0,1,1083,39,1088,0,0
+File_4=SourceModule,'c:\program files (x86)\borland\delphi7\Comp\TntUnicodeControls_2.3.0\Source\TntClasses.pas',0,1,1181,1,1200,0,0
+File_5=SourceModule,'D:\projects\WebKassa\src\OposWebkassa\units\SalesReceipt.pas',0,1,185,1,208,0,0
+File_6=SourceModule,'D:\projects\WebKassa\test\WebkassaAccTest\units\duWebkassaImpl.pas',0,1,1,92,22,0,0
+File_7=SourceModule,'D:\projects\WebKassa\src\Shared\PrinterParameters.pas',0,1,485,1,505,0,0
 
 [Modules]
-Module0=D:\projects\WebKassa\test\OposWebkassaTest\units\duWebkassaImpl.pas
+Module0=D:\projects\WebKassa\test\OposWebkassaTest\units\duTextDocument.pas
 Module1=D:\projects\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas
-Module2=D:\projects\WebKassa\src\OposWebkassa\units\TextDocument.pas
-Module3=c:\program files (x86)\borland\delphi7\Comp\TntUnicodeControls_2.3.0\Source\TntClasses.pas
-Module4=D:\projects\WebKassa\src\Shared\PrinterParameters.pas
-Module5=D:\projects\WebKassa\test\OposWebkassaTest\units\duTextDocument.pas
-Count=6
+Module2=D:\projects\WebKassa\src\Shared\ReceiptTemplate.pas
+Count=3
 EditWindowCount=1
 TypeLibWindowCount=1
 
-[D:\projects\WebKassa\test\OposWebkassaTest\units\duWebkassaImpl.pas]
+[D:\projects\WebKassa\test\OposWebkassaTest\units\duTextDocument.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -27,22 +26,7 @@ ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[D:\projects\WebKassa\src\OposWebkassa\units\TextDocument.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[c:\program files (x86)\borland\delphi7\Comp\TntUnicodeControls_2.3.0\Source\TntClasses.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[D:\projects\WebKassa\src\Shared\PrinterParameters.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[D:\projects\WebKassa\test\OposWebkassaTest\units\duTextDocument.pas]
+[D:\projects\WebKassa\src\Shared\ReceiptTemplate.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -80,14 +64,11 @@ FormState=0
 FormOnTop=0
 
 [EditWindow0]
-ViewCount=6
+ViewCount=3
 CurrentView=1
 View0=0
 View1=1
 View2=2
-View3=3
-View4=4
-View5=5
 CodeExplorer=CodeExplorer@EditWindow0
 MessageView=MessageView@EditWindow0
 Create=1
@@ -95,7 +76,7 @@ Visible=1
 State=2
 Left=484
 Top=140
-Width=1302
+Width=1436
 Height=682
 MaxLeft=-8
 MaxTop=107
@@ -107,50 +88,29 @@ LeftPanelSize=0
 LeftPanelClients=CodeExplorer@EditWindow0
 LeftPanelData=00000400010000000C000000436F64654578706C6F7265720000000000000000000000000000000000FFFFFFFF
 RightPanelSize=0
-BottomPanelSize=223
+BottomPanelSize=0
 BottomPanelClients=MessageView@EditWindow0
-BottomPanelData=000004000000000000000000000000000000000000000000000100000000000000000B0000004D65737361676556696577FFFFFFFF
+BottomPanelData=00000400010000000B0000004D657373616765566965778007000000000000025500000000000000010000000000000000000000000100000000800700000B0000004D65737361676556696577FFFFFFFF
 
 [View0]
-Module=D:\projects\WebKassa\test\OposWebkassaTest\units\duTextDocument.pas
-CursorX=20
-CursorY=32
-TopLine=19
+Module=D:\projects\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas
+CursorX=26
+CursorY=3477
+TopLine=3454
 LeftCol=1
 
 [View1]
-Module=D:\projects\WebKassa\test\OposWebkassaTest\units\duWebkassaImpl.pas
-CursorX=73
-CursorY=766
-TopLine=752
+Module=D:\projects\WebKassa\test\OposWebkassaTest\units\duTextDocument.pas
+CursorX=116
+CursorY=69
+TopLine=56
 LeftCol=1
 
 [View2]
-Module=D:\projects\WebKassa\src\OposWebkassa\units\TextDocument.pas
-CursorX=63
-CursorY=167
-TopLine=152
-LeftCol=1
-
-[View3]
-Module=c:\program files (x86)\borland\delphi7\Comp\TntUnicodeControls_2.3.0\Source\TntClasses.pas
+Module=D:\projects\WebKassa\src\Shared\ReceiptTemplate.pas
 CursorX=1
-CursorY=1200
-TopLine=1181
-LeftCol=1
-
-[View4]
-Module=D:\projects\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas
-CursorX=34
-CursorY=704
-TopLine=683
-LeftCol=1
-
-[View5]
-Module=D:\projects\WebKassa\src\Shared\PrinterParameters.pas
-CursorX=1
-CursorY=505
-TopLine=485
+CursorY=1
+TopLine=1
 LeftCol=1
 
 [TypeLibEditWindow0]
@@ -195,8 +155,7 @@ LRDockWidth=320
 Dockable=1
 
 [Breakpoints]
-Count=1
-Breakpoint0='D:\projects\WebKassa\test\OposWebkassaTest\units\duWebkassaImpl.pas',754,'',0,1,'',1,0,0,'',1,'','',''
+Count=0
 
 [AddressBreakpoints]
 Count=0
@@ -285,7 +244,7 @@ HiddenCategories=
 
 [BreakpointWindow]
 Create=1
-Visible=1
+Visible=0
 State=0
 Left=231
 Top=235
@@ -359,7 +318,7 @@ Dockable=1
 
 [DebugLogView]
 Create=1
-Visible=1
+Visible=0
 State=0
 Left=1477
 Top=120
@@ -467,17 +426,17 @@ Dockable=1
 
 [MessageView@EditWindow0]
 Create=1
-Visible=1
+Visible=0
 State=0
 Left=12
 Top=0
 Width=1908
-Height=223
+Height=85
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1908
-ClientHeight=223
-TBDockHeight=223
+ClientHeight=85
+TBDockHeight=85
 LRDockWidth=443
 Dockable=1
 
@@ -487,7 +446,7 @@ DockHostCount=1
 [DockSite0]
 DockSiteType=0
 Create=1
-Visible=1
+Visible=0
 State=0
 Left=901
 Top=216
