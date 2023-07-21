@@ -8,29 +8,33 @@
   resources were bound to the produced executable.
 */
 
-#define SynEditStrConst_SYNS_ScrollInfoFmt 65200
-#define SynEditStrConst_SYNS_ScrollInfoFmtTop 65201
-#define SynEditStrConst_SYNS_EDuplicateShortcut 65202
-#define SynEditStrConst_SYNS_FilterXML 65203
-#define SynEditStrConst_SYNS_LangXML 65204
-#define SynEditTextBuffer_SListIndexOutOfBounds 65205
-#define SynEditTextBuffer_SInvalidCapacity 65206
+#define SynEditStrConst_SYNS_AttrProcessingInstr 65200
+#define SynEditStrConst_SYNS_AttrSymbol 65201
+#define SynEditStrConst_SYNS_AttrText 65202
+#define SynEditStrConst_SYNS_AttrWhitespace 65203
+#define SynEditStrConst_SYNS_ScrollInfoFmt 65204
+#define SynEditStrConst_SYNS_ScrollInfoFmtTop 65205
+#define SynEditStrConst_SYNS_EDuplicateShortcut 65206
+#define SynEditStrConst_SYNS_FilterXML 65207
+#define SynEditStrConst_SYNS_LangXML 65208
+#define SynEditTextBuffer_SListIndexOutOfBounds 65209
+#define SynEditTextBuffer_SInvalidCapacity 65210
 #define OleConst_SInvalidLicense 65216
 #define OleConst_SNotLicensed 65217
 #define OleConst_sNoRunningObject 65218
-#define SynEditStrConst_SYNS_AttrAttributeName 65219
-#define SynEditStrConst_SYNS_AttrAttributeValue 65220
-#define SynEditStrConst_SYNS_AttrCDATASection 65221
-#define SynEditStrConst_SYNS_AttrComment 65222
-#define SynEditStrConst_SYNS_AttrDOCTYPESection 65223
-#define SynEditStrConst_SYNS_AttrElementName 65224
-#define SynEditStrConst_SYNS_AttrEntityReference 65225
-#define SynEditStrConst_SYNS_AttrNamespaceAttrName 65226
-#define SynEditStrConst_SYNS_AttrNamespaceAttrValue 65227
-#define SynEditStrConst_SYNS_AttrProcessingInstr 65228
-#define SynEditStrConst_SYNS_AttrSymbol 65229
-#define SynEditStrConst_SYNS_AttrText 65230
-#define SynEditStrConst_SYNS_AttrWhitespace 65231
+#define XMLConst_SDuplicateRegistration 65219
+#define XMLConst_SDOMNotSupported 65220
+#define XMLConst_SNodeExpected 65221
+#define XMLConst_SMSDOMNotInstalled 65222
+#define SynEditStrConst_SYNS_AttrAttributeName 65223
+#define SynEditStrConst_SYNS_AttrAttributeValue 65224
+#define SynEditStrConst_SYNS_AttrCDATASection 65225
+#define SynEditStrConst_SYNS_AttrComment 65226
+#define SynEditStrConst_SYNS_AttrDOCTYPESection 65227
+#define SynEditStrConst_SYNS_AttrElementName 65228
+#define SynEditStrConst_SYNS_AttrEntityReference 65229
+#define SynEditStrConst_SYNS_AttrNamespaceAttrName 65230
+#define SynEditStrConst_SYNS_AttrNamespaceAttrValue 65231
 #define ComStrs_sNeedAllowNone 65232
 #define ComStrs_sFailSetCalDateTime 65233
 #define ComStrs_sFailSetCalMaxSelRange 65234
@@ -337,6 +341,10 @@
 #define SysConst_SRangeError 65535
 STRINGTABLE
 BEGIN
+	SynEditStrConst_SYNS_AttrProcessingInstr,	"Processing Instruction"
+	SynEditStrConst_SYNS_AttrSymbol,	"Symbol"
+	SynEditStrConst_SYNS_AttrText,	"Text"
+	SynEditStrConst_SYNS_AttrWhitespace,	"Whitespace"
 	SynEditStrConst_SYNS_ScrollInfoFmt,	"%d - %d"
 	SynEditStrConst_SYNS_ScrollInfoFmtTop,	"Top Line: %d"
 	SynEditStrConst_SYNS_EDuplicateShortcut,	"Shortcut already exists"
@@ -347,6 +355,10 @@ BEGIN
 	OleConst_SInvalidLicense,	"License information for %s is invalid"
 	OleConst_SNotLicensed,	"License information for %s not found. You cannot use this control in design mode"
 	OleConst_sNoRunningObject,	"Unable to retrieve a pointer to a running object registered with OLE for %s/%s"
+	XMLConst_SDuplicateRegistration,	"\"%s\" DOMImplementation already registered"
+	XMLConst_SDOMNotSupported,	"Property or Method \"%s\" is not supported by DOM Vendor \"%s\""
+	XMLConst_SNodeExpected,	"Node cannot be null"
+	XMLConst_SMSDOMNotInstalled,	"Microsoft MSXML is not installed"
 	SynEditStrConst_SYNS_AttrAttributeName,	"Attribute Name"
 	SynEditStrConst_SYNS_AttrAttributeValue,	"Attribute Value"
 	SynEditStrConst_SYNS_AttrCDATASection,	"CDATA Section"
@@ -356,10 +368,6 @@ BEGIN
 	SynEditStrConst_SYNS_AttrEntityReference,	"Entity Reference"
 	SynEditStrConst_SYNS_AttrNamespaceAttrName,	"Namespace Attribute Name"
 	SynEditStrConst_SYNS_AttrNamespaceAttrValue,	"Namespace Attribute Value"
-	SynEditStrConst_SYNS_AttrProcessingInstr,	"Processing Instruction"
-	SynEditStrConst_SYNS_AttrSymbol,	"Symbol"
-	SynEditStrConst_SYNS_AttrText,	"Text"
-	SynEditStrConst_SYNS_AttrWhitespace,	"Whitespace"
 	ComStrs_sNeedAllowNone,	"You must be in ShowCheckbox mode to set to this date"
 	ComStrs_sFailSetCalDateTime,	"Failed to set calendar date or time"
 	ComStrs_sFailSetCalMaxSelRange,	"Failed to set maximum selection range"

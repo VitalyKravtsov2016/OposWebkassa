@@ -649,7 +649,7 @@ begin
   FJrnCurrentCartridge := 0;
   FJrnEmpty := False;
   FJrnLetterQuality := False;
-  FJrnLineChars := 0;
+  FJrnLineChars := 42;
   FJrnLineCharsList := '';
   FJrnLineHeight := 0;
   FJrnLineSpacing := 0;

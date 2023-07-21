@@ -54,10 +54,10 @@ type
     function AlignCenter(const Line: WideString): WideString;
     function ConcatLines(const Line1, Line2: WideString; LineChars: Integer): WideString;
     function AddItem(const Line: WideString; Style: Integer): TTextItem;
+    function GetLineLength(Style: Integer): Integer;
 
     procedure Assign(Source: TTextDocument);
     procedure Add(const ALine: WideString; Style: Integer); overload;
-    function GetLineLength(Style: Integer): Integer;
 
     property Items: TTextItems read FItems;
     property LineChars: Integer read FLineChars write FLineChars;
@@ -118,6 +118,9 @@ constructor TTextDocument.Create;
 begin
   inherited Create;
   FItems := TTextItems.Create(TTextItem);
+  LineChars := 42;
+  LineHeight := 12;
+  LineSpacing := 10;
 end;
 
 destructor TTextDocument.Destroy;
@@ -129,13 +132,6 @@ end;
 procedure TTextDocument.AddLine(const Line: WideString);
 begin
   Add(Line + CRLF, STYLE_NORMAL);
-end;
-
-function TTextDocument.GetLineLength(Style: Integer): Integer;
-begin
-  Result := LineChars;
-  if (Style = STYLE_DWIDTH)or(Style = STYLE_DWIDTH_HEIGHT) then
-    Result := LineChars div 2;
 end;
 
 procedure TTextDocument.AddLine(const ALine: WideString; Style: Integer);
@@ -163,6 +159,13 @@ begin
     end;
     Add2(Line, Style);
   until Length(Text) = 0;
+end;
+
+function TTextDocument.GetLineLength(Style: Integer): Integer;
+begin
+  Result := LineChars;
+  if (Style = STYLE_DWIDTH) or (Style = STYLE_DWIDTH_HEIGHT) then
+    Result := LineChars div 2;
 end;
 
 procedure TTextDocument.Add2(const ALine: WideString; Style: Integer);

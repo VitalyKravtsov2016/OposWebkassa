@@ -79,7 +79,7 @@ begin
   Reader := TPrinterParametersReg.Create(Item, Logger);
   try
     Reader.Load(DeviceName);
-    Item.Load(DeviceName);
+    Item.Load(DeviceName);     
   finally
     Reader.Free;
   end;

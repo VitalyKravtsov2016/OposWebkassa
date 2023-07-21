@@ -94,7 +94,8 @@ uses
   fmuFptrBarcode in 'Fmu\fmuFptrBarcode.pas' {fmFptrBarcode},
   fmuFptrHeader in 'Fmu\fmuFptrHeader.pas' {fmFptrHeader},
   fmuTranslation in 'Fmu\fmuTranslation.pas' {fmTranslation},
-  DirectIOAPI in '..\OposWebkassa\units\DirectIOAPI.pas';
+  DirectIOAPI in '..\OposWebkassa\units\DirectIOAPI.pas',
+  xmlParser in '..\Shared\XMLParser.pas';
 
 {$R *.RES}
 {$R WindowsXP.RES}

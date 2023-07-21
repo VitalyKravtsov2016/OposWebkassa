@@ -64,7 +64,7 @@ uses
   uZintBarcode in '..\..\src\Shared\uZintBarcode.pas',
   uZintInterface in '..\..\src\Shared\uZintInterface.pas',
   POSPrinterLog in '..\..\src\Opos\POSPrinterLog.pas',
-  duTextDocument in 'units\duTextDocument.pas',
+  duReceiptTemplate in 'units\duReceiptTemplate.pas',
   EscPrinter in '..\..\src\Shared\EscPrinter.pas',
   ByteUtils in '..\..\src\Shared\ByteUtils.pas',
   PosWinPrinter in '..\..\src\Shared\PosWinPrinter.pas',
@@ -82,7 +82,9 @@ uses
   Translation in '..\..\src\Shared\Translation.pas',
   duPrinterParameters in 'units\duPrinterParameters.pas',
   DirectIOAPI in '..\..\src\OposWebkassa\units\DirectIOAPI.pas',
-  duWebkassaImpl in 'units\duWebkassaImpl.pas';
+  duWebkassaImpl in 'units\duWebkassaImpl.pas',
+  duTextDocument in 'units\duTextDocument.pas',
+  xmlParser in '..\..\src\Shared\XMLParser.pas';
 
 {$R *.RES}
 

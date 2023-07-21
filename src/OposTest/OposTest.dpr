@@ -93,7 +93,8 @@ uses
   ReceiptItem in '..\OposWebkassa\units\ReceiptItem.pas',
   MathUtils in '..\OposWebkassa\units\MathUtils.pas',
   Translation in '..\Shared\Translation.pas',
-  ReceiptTemplate in '..\Shared\ReceiptTemplate.pas';
+  ReceiptTemplate in '..\Shared\ReceiptTemplate.pas',
+  xmlParser in '..\Shared\XMLParser.pas';
 
 {$R *.RES}
 {$R WindowsXP.RES}

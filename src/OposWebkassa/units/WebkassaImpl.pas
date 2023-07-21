@@ -84,6 +84,7 @@ type
     procedure AddItems(Items: TList);
     function ReadReceiptJson(RecCommand: TSendReceiptCommand): WideString;
     procedure BeginDocument(APrintHeader: boolean);
+    procedure UpdateTemplateItem(Item: TTemplateItem);
   public
     procedure PrintDocumentSafe(Document: TTextDocument);
     procedure CheckCanPrint;
@@ -103,7 +104,7 @@ type
     function CreatePrinter: IOPOSPOSPrinter;
     function CreateSerialPort: TSerialPort;
   public
-    procedure PrintReceipt2(Receipt: TSalesReceipt; Template: TReceiptTemplate);
+    procedure PrintReceiptTemplate(Receipt: TSalesReceipt; Template: TReceiptTemplate);
     function GetJsonField(JsonText: WideString; const FieldName: WideString): Variant;
     function GetHeaderItemText(Receipt: TSalesReceipt; Item: TTemplateItem): WideString;
 
@@ -2503,7 +2504,6 @@ begin
     FClient.Execute(Command);
     // Create Document
     Document.PrintHeader := Receipt.PrintHeader;
-    Document.LineChars := Printer.RecLineChars;
     Document.AddLine('¡»Õ ' + Command.Data.Cashbox.RegistrationNumber);
     Document.AddLine(Format('«ÕÃ %s »Õ  Œ‘ƒ %s', [Command.Data.Cashbox.UniqueNumber,
       Command.Data.Cashbox.IdentityNumber]));
@@ -2533,7 +2533,6 @@ begin
     FClient.Execute(Command);
     //
     Document.PrintHeader := Receipt.PrintHeader;
-    Document.LineChars := Printer.RecLineChars;
     Document.AddLine('¡»Õ ' + Command.Data.Cashbox.RegistrationNumber);
     Document.AddLine(Format('«ÕÃ %s »Õ  Œ‘ƒ %s', [Command.Data.Cashbox.UniqueNumber,
       Command.Data.Cashbox.IdentityNumber]));
@@ -2773,11 +2772,13 @@ begin
       Receipt.ReguestJson := FClient.CommandJson;
       Receipt.AnswerJson := FClient.AnswerJson;
       Receipt.ReceiptJson := ReadReceiptJson(Command);
-      PrintReceipt2(Receipt, Params.Template);
+      PrintReceiptTemplate(Receipt, Params.Template);
     end else
     begin
       PrintReceipt(Receipt, Command);
     end;
+    PrintDocumentSafe(Document);
+    Printer.RecLineChars := FRecLineChars;
   finally
     Command.Free;
   end;
@@ -2892,7 +2893,6 @@ var
   Adjustment: TAdjustmentRec;
 begin
   Document.PrintHeader := Receipt.PrintHeader;
-  Document.LineChars := Printer.RecLineChars;
 
   Document.Addlines(Format('Õƒ— —ÂËˇ %s', [Params.VATSeries]),
     Format('π %s', [Params.VATNumber]));
@@ -3013,9 +3013,6 @@ begin
   Document.AddLine(Document.AlignCenter(' Ó‰   Ã  √ƒ (–ÕÃ): ' + Command.Data.Cashbox.RegistrationNumber));
   Document.AddLine(Document.AlignCenter('«ÕÃ: ' + Command.Data.Cashbox.UniqueNumber));
   Document.AddText(Receipt.Trailer.Text);
-
-  PrintDocumentSafe(Document);
-  Printer.RecLineChars := FRecLineChars;
 end;
 
 function TWebkassaImpl.GetJsonField(JsonText: WideString;
@@ -3027,6 +3024,10 @@ var
   Root: TlkJSONbase;
   Field: WideString;
 begin
+  Result := '';
+  if JsonText = '' then Exit;
+  if FieldName = '' then Exit;
+
   Json := TlkJSON.Create;
   try
     Root := Json.ParseText(JsonText);
@@ -3241,7 +3242,7 @@ begin
   end;
 end;
 
-procedure TWebkassaImpl.PrintReceipt2(Receipt: TSalesReceipt;
+procedure TWebkassaImpl.PrintReceiptTemplate(Receipt: TSalesReceipt;
   Template: TReceiptTemplate);
 var
   i, j: Integer;
@@ -3255,12 +3256,12 @@ begin
   LineItems := TList.Create;
   try
     Document.PrintHeader := Receipt.PrintHeader;
-    Document.LineChars := Printer.RecLineChars;
     // Header
     LineItems.Clear;
     for i := 0 to Template.Header.Count-1 do
     begin
       Item := Template.Header[i];
+      UpdateTemplateItem(Item);
       Item.Value := GetHeaderItemText(Receipt, Item);
       LineItems.Add(Item);
     end;
@@ -3282,6 +3283,7 @@ begin
         for j := 0 to Template.RecItem.Count-1 do
         begin
           Item := Template.RecItem[j];
+          UpdateTemplateItem(Item);
           if Item.ItemType = TEMPLATE_TYPE_NEWLINE then
           begin
             Item.Value := CRLF;
@@ -3306,17 +3308,27 @@ begin
     for i := 0 to Template.Trailer.Count-1 do
     begin
       Item := Template.Trailer[i];
+      UpdateTemplateItem(Item);
       Item.Value := GetHeaderItemText(Receipt, Item);
       LineItems.Add(Item);
     end;
     AddItems(LineItems);
     LineItems.Clear;
-
     Document.AddText(Receipt.Trailer.Text);
-    PrintDocumentSafe(Document);
-    Printer.RecLineChars := FRecLineChars;
   finally
     LineItems.Free;
+  end;
+end;
+
+procedure TWebkassaImpl.UpdateTemplateItem(Item: TTemplateItem);
+begin
+  if Item.LineChars = 0 then
+  begin
+    Item.LineChars := Document.LineChars;
+  end;
+  if Item.LineSpacing = 0 then
+  begin
+    Item.LineSpacing := Document.LineSpacing;
   end;
 end;
 
@@ -3330,6 +3342,8 @@ procedure TWebkassaImpl.AddItems(Items: TList);
     for i := 0 to Items.Count-1 do
     begin
       Item := TTemplateItem(Items[i]);
+      Document.LineChars := Item.LineChars;
+      Document.LineSpacing := Item.LineSpacing;
       Document.Add(Item.Value, Item.TextStyle);
     end;
   end;
@@ -3366,13 +3380,13 @@ begin
       case Item.Alignment of
         ALIGN_RIGHT:
         begin
-          Len := Document.GetLineLength(Item.TextStyle)-Length(Item.Value)-Length(Line);
+          Len := Item.GetLineLength - Length(Item.Value) - Length(Line);
           Item.Value := StringOfChar(' ', Len) + Item.Value;
         end;
 
         ALIGN_CENTER:
         begin
-          Len := (Document.LineChars-Length(Item.Value)-Length(Line)) div 2;
+          Len := (Item.GetLineLength-Length(Item.Value)-Length(Line)) div 2;
           Item.Value := StringOfChar(' ', Len) + Item.Value;
         end;
       end;
@@ -3458,12 +3472,12 @@ begin
       Printer.RecLineChars := Item.LineChars;
       LineChars := Item.LineChars;
     end;
-    if (Item.LineHeight <> 0)and(Item.LineHeight <> Printer.RecLineHeight) then
+    if (Item.LineHeight <> 0)and(Item.LineHeight <> LineHeight) then
     begin
       Printer.RecLineHeight := Item.LineHeight;
       LineHeight := Item.LineHeight;
     end;
-    if (Item.LineSpacing <> 0)and(Item.LineSpacing <> Printer.RecLineSpacing) then
+    if (Item.LineSpacing <> 0)and(Item.LineSpacing <> LineSpacing) then
     begin
       Printer.RecLineSpacing := Item.LineSpacing;
       LineSpacing := Item.LineSpacing;

@@ -34,6 +34,7 @@ type
     procedure CheckLines;
     procedure WaitForEventsCount(Count: Integer);
   protected
+    procedure ShowLines;
     procedure CheckNoEvent;
     procedure WaitForEvent;
     procedure ClaimDevice;
@@ -777,8 +778,8 @@ begin
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   CheckEquals(OPOS_SUCCESS, Driver.EndFiscalReceipt(False));
 
-  CheckEquals(1, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
-  CheckEquals('------------------------------------------', FPrinter.Lines[0], 'FPrinter.Lines[0]');
+  FLines.Text := '------------------------------------------';
+  CheckLines;
 end;
 
 procedure TWebkassaImplTest.TestReceiptTemplate2;
@@ -1049,6 +1050,7 @@ begin
   Item.FormatText := 'гмл: %s';
   Item.Alignment := ALIGN_CENTER;
   Driver.Params.Template.Trailer.NewLine;
+  Driver.Params.Template.SaveToFile('Receipt3.xml');
 
   OpenClaimEnable;
   PrintReceipt3;
@@ -1061,7 +1063,7 @@ var
   Item: TTemplateItem;
 const
   Receipt4Text: string =
-    'хрнц          =108.27' + CRLF;
+    'хрнц                 =108.27' + CRLF;
 begin
   Driver.Params.TemplateEnabled := True;
   Driver.Params.Template.Clear;
@@ -1076,6 +1078,7 @@ begin
   Item.Alignment := ALIGN_LEFT;
   Item.LineChars := 56;
   Item.Text := 'хрнц';
+
   Item := Driver.Params.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
   Item.TextStyle := STYLE_DWIDTH_HEIGHT;
@@ -1083,6 +1086,8 @@ begin
   Item.FormatText := '=%s';
   Item.Alignment := ALIGN_RIGHT;
   Item.Enabled := TEMPLATE_ITEM_ENABLED;
+  Item.LineChars := 56;
+
   Driver.Params.Template.Trailer.NewLine;
 
   OpenClaimEnable;
@@ -1110,16 +1115,21 @@ begin
   CheckLines;
 end;
 
+procedure TWebkassaImplTest.ShowLines;
+var
+  i: Integer;
+begin
+  for i := 0 to FPrinter.Lines.Count-1 do
+  begin
+    ODS(Format('%d, %s', [i, FPrinter.Lines[i]]));
+  end;
+end;
+
 procedure TWebkassaImplTest.CheckLines;
 var
   i: Integer;
 begin
-(*
-  for i := 0 to FPrinter.Lines.Count-1 do
-  begin
-    ODS(FPrinter.Lines[i]);
-  end;
-*)  
+  //ShowLines;
   CheckEquals(FLines.Count, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
   for i := 0 to FLines.Count-1 do
   begin

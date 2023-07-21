@@ -120,7 +120,6 @@ const
   TranslationNameRus = 'RUS';
   TranslationNameKaz = 'KAZ';
 
-
 type
   { TPrinterParameters }
 
@@ -163,7 +162,6 @@ type
     FTranslationEnabled: Boolean;
     FTemplateEnabled: Boolean;
     FTemplate: TReceiptTemplate;
-    FTemplateText: WideString;
 
     procedure LogText(const Caption, Text: WideString);
     procedure SetHeaderText(const Text: WideString);
@@ -199,6 +197,8 @@ type
     function BaudRateIndex(const Value: Integer): Integer;
     function GetTranslationText(const Text: WideString): WideString;
     function ItemByText(const ParamName: WideString): WideString;
+    function GetTemplateXml: WideString;
+    procedure SetTemplateXml(const Value: WideString);
 
     property Logger: ILogFile read FLogger;
     property Header: TTntStringList read FHeader;
@@ -239,7 +239,7 @@ type
     property TranslationEnabled: Boolean read FTranslationEnabled write FTranslationEnabled;
     property TemplateEnabled: Boolean read FTemplateEnabled write FTemplateEnabled;
     property Template: TReceiptTemplate read FTemplate;
-    property TemplateText: WideString read FTemplateText write FTemplateText;
+    //property TemplateXml: WideString read GetTemplateXml write SetTemplateXml;
   end;
 
 function QRSizeToWidth(QRSize: Integer): Integer;
@@ -268,7 +268,7 @@ begin
   FHeader := TTntStringList.Create;
   FTrailer := TTntStringList.Create;
   FTranslations := TTranslations.Create;
-  FTemplate := TReceiptTemplate.Create;
+  FTemplate := TReceiptTemplate.Create(ALogger);
 
   SetDefaults;
   Translations.Load;
@@ -282,6 +282,16 @@ begin
   FTemplate.Free;
   FTranslations.Free;
   inherited Destroy;
+end;
+
+function TPrinterParameters.GetTemplateXml: WideString;
+begin
+  Result := Template.AsXML;
+end;
+
+procedure TPrinterParameters.SetTemplateXml(const Value: WideString);
+begin
+  Template.AsXML := Value;
 end;
 
 procedure TPrinterParameters.SetDefaults;
@@ -333,6 +343,7 @@ begin
   TranslationName := DefTranslationName;
   TranslationEnabled := DefTranslationEnabled;
   TemplateEnabled := DefTemplateEnabled;
+  Template.SetDefaults;
 end;
 
 procedure TPrinterParameters.LogText(const Caption, Text: WideString);
@@ -637,8 +648,10 @@ var
   FileName: WideString;
 begin
   FileName := GetModulePath + 'Params\' + DeviceName + '\Receipt.xml';
-  TemplateText := ReadFileData(FileName);
-  FTemplate.LoadFromXml(FileName);
+  if FileExists(FileName) then
+  begin
+    FTemplate.LoadFromFile(FileName);
+  end;
 end;
 
 procedure TPrinterParameters.Save(const DeviceName: WideString);
@@ -649,8 +662,7 @@ begin
   if not DirectoryExists(Path) then CreateDir(Path);
   Path := Path + '\' + DeviceName;
   if not DirectoryExists(Path) then CreateDir(Path);
-  //FTemplate.SaveToXml(Path + '\Receipt.xml');
-  WriteFileData(Path + '\Receipt.xml', TemplateText);
+  FTemplate.SaveToFile(Path + '\Receipt.xml');
 end;
 
 function TPrinterParameters.ItemByText(const ParamName: WideString): WideString;

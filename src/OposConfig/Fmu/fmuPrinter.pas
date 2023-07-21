@@ -62,6 +62,7 @@ type
   private
     procedure UpdateFontNames;
     procedure UpdateDeviceNames;
+    
     procedure UpdateBaudRates;
     procedure UpdatePortNames;
     procedure UpdateStopBits;
@@ -86,8 +87,9 @@ begin
   cbPrinterName.Text := Parameters.PrinterName;
   cbFontName.Text := Parameters.FontName;
 
-  UpdateDeviceNames;
-  UpdateFontNames;
+  //UpdateDeviceNames; !!!
+  //UpdateFontNames;
+
   UpdatePortNames;
   UpdateBaudRates;
   UpdateDataBits;

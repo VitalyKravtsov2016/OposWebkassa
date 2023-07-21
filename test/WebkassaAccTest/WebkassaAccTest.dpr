@@ -80,7 +80,8 @@ uses
   MockPrinterPort in '..\..\src\Shared\MockPrinterPort.pas',
   RawPrinterPort in '..\..\src\Shared\RawPrinterPort.pas',
   Translation in '..\..\src\Shared\Translation.pas',
-  DirectIOAPI in '..\..\src\OposWebkassa\units\DirectIOAPI.pas';
+  DirectIOAPI in '..\..\src\OposWebkassa\units\DirectIOAPI.pas',
+  xmlParser in '..\..\src\Shared\XMLParser.pas';
 
 {$R *.RES}
 

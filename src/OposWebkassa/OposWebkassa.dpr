@@ -73,7 +73,8 @@ uses
   MockPrinterPort in '..\Shared\MockPrinterPort.pas',
   RawPrinterPort in '..\Shared\RawPrinterPort.pas',
   Translation in '..\Shared\Translation.pas',
-  DirectIOAPI in 'units\DirectIOAPI.pas';
+  DirectIOAPI in 'units\DirectIOAPI.pas',
+  xmlParser in '..\Shared\XMLParser.pas';
 
 exports
   DllGetClassObject,
