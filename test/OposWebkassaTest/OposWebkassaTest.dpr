@@ -55,7 +55,7 @@ uses
   VatRate in '..\..\src\Shared\VatRate.pas',
   duTranslation in 'units\duTranslation.pas',
   duOposUtils in 'units\duOposUtils.pas',
-  MockPosPrinter in 'units\MockPosPrinter.pas',
+  MockPosPrinter2 in 'units\MockPosPrinter2.pas',
   OposPtrUtils in '..\..\src\Opos\OposPtrUtils.pas',
   OposPtrhi in '..\..\src\Opos\OposPtrhi.pas',
   RCSEvents in 'units\RCSEvents.pas',
@@ -82,9 +82,11 @@ uses
   Translation in '..\..\src\Shared\Translation.pas',
   duPrinterParameters in 'units\duPrinterParameters.pas',
   DirectIOAPI in '..\..\src\OposWebkassa\units\DirectIOAPI.pas',
-  duWebkassaImpl in 'units\duWebkassaImpl.pas',
+  duWebkassaImpl2 in 'units\duWebkassaImpl2.pas',
   duTextDocument in 'units\duTextDocument.pas',
-  xmlParser in '..\..\src\Shared\XMLParser.pas';
+  xmlParser in '..\..\src\Shared\XMLParser.pas',
+  MockPosPrinter in 'units\MockPosPrinter.pas',
+  duWebkassaImpl in 'units\duWebkassaImpl.pas';
 
 {$R *.RES}
 

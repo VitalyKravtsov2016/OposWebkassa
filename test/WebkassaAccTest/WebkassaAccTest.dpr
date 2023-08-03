@@ -58,7 +58,7 @@ uses
   OposPtrUtils in '..\..\src\Opos\OposPtrUtils.pas',
   OposPtrhi in '..\..\src\Opos\OposPtrhi.pas',
   duPrinterTest in 'units\duPrinterTest.pas',
-  MockPosPrinter in '..\OposWebkassaTest\units\MockPosPrinter.pas',
+  MockPosPrinter2 in '..\OposWebkassaTest\units\MockPosPrinter2.pas',
   PosEscPrinter in '..\..\src\Shared\PosEscPrinter.pas',
   uZintBarcode in '..\..\src\Shared\uZintBarcode.pas',
   uZintInterface in '..\..\src\Shared\uZintInterface.pas',

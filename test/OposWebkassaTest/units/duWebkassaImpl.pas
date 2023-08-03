@@ -40,6 +40,7 @@ type
     procedure ClaimDevice;
     procedure EnableDevice;
     procedure OpenService;
+    procedure SetTemplateDefault;
     procedure FptrCheck(Code: Integer);
 
     property Events: TOposEvents read FEvents;
@@ -782,7 +783,7 @@ begin
   CheckLines;
 end;
 
-procedure TWebkassaImplTest.TestReceiptTemplate2;
+procedure TWebkassaImplTest.SetTemplateDefault;
 var
   Item: TTemplateItem;
 begin
@@ -1051,7 +1052,12 @@ begin
   Item.Alignment := ALIGN_CENTER;
   Driver.Params.Template.Trailer.NewLine;
   Driver.Params.Template.SaveToFile('Receipt3.xml');
+end;
 
+procedure TWebkassaImplTest.TestReceiptTemplate2;
+begin
+  Driver.Params.TemplateEnabled := True;
+  Driver.Params.Template.SetDefaults;
   OpenClaimEnable;
   PrintReceipt3;
   FLines.Text := Receipt3Text;

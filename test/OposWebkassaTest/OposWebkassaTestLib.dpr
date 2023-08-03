@@ -55,7 +55,7 @@ uses
   VatRate in '..\..\src\Shared\VatRate.pas',
   duTranslation in 'units\duTranslation.pas',
   duOposUtils in 'units\duOposUtils.pas',
-  MockPosPrinter in 'units\MockPosPrinter.pas',
+  MockPosPrinter2 in 'units\MockPosPrinter2.pas',
   OposPtrUtils in '..\..\src\Opos\OposPtrUtils.pas',
   OposPtrhi in '..\..\src\Opos\OposPtrhi.pas',
   RCSEvents in 'units\RCSEvents.pas',

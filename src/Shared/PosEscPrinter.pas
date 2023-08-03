@@ -36,7 +36,6 @@ type
     FDevice: TOposServiceDevice19;
     FLastPrintMode: TPrintModes;
 
-    //FTransaction: Boolean; !!!
     FFontName: WideString;
     FDevicePollTime: Integer;
 

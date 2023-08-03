@@ -2266,10 +2266,8 @@ begin
     begin
       FPrinter := CreatePrinter;
     end;
-    //FRecLineChars := StrToInt(Params.FontName); !!!
-    FRecLineChars := FPrinter.RecLineChars;
-
     CheckPtr(Printer.Open(FParams.PrinterName));
+    FRecLineChars := StrToIntDef(Params.FontName, 0);
 
     Logger.Debug(Logger.Separator);
     Logger.Debug('LOG START');
@@ -2463,17 +2461,22 @@ begin
       UpdateCashBoxes;
       UpdateCashiers;
       UpdateUnits;
+
+      Printer.DeviceEnabled := True;
+      CheckPtr(Printer.ResultCode);
+      if FRecLineChars <> 0 then
+      begin
+        Printer.RecLineChars := FRecLineChars;
+      end;
     end else
     begin
       FClient.Disconnect;
+      Printer.DeviceEnabled := False;
     end;
     FDeviceEnabled := Value;
     FUnitsUpdated := False;
     FCashBoxesUpdated := False;
     FOposDevice.DeviceEnabled := Value;
-    Printer.DeviceEnabled := Value;
-    CheckPtr(Printer.ResultCode);
-    Printer.RecLineChars := FRecLineChars;
   end;
 end;
 
@@ -3448,7 +3451,6 @@ var
 begin
   Logger.Debug('PrintDocument');
   TickCount := GetTickCount;
-
 
   CheckPtr(Printer.CheckHealth(OPOS_CH_INTERNAL));
   CheckCanPrint;
