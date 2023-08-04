@@ -14,15 +14,19 @@ object fmFptrReceipt: TfmFptrReceipt
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
+  DesignSize = (
+    581
+    450)
   PixelsPerInch = 96
   TextHeight = 13
   object PageControl1: TPageControl
     Left = 0
     Top = 0
     Width = 581
-    Height = 450
+    Height = 417
     ActivePage = tsReceipt
-    Align = alClient
+    Align = alTop
+    Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 0
     object tsReceipt: TTabSheet
       Caption = #1042#1080#1076' '#1095#1077#1082#1072
@@ -30,7 +34,7 @@ object fmFptrReceipt: TfmFptrReceipt
         Left = 0
         Top = 0
         Width = 573
-        Height = 422
+        Height = 389
         Align = alClient
         Font.Charset = RUSSIAN_CHARSET
         Font.Color = clWindowText
@@ -68,6 +72,15 @@ object fmFptrReceipt: TfmFptrReceipt
         OnChange = ReceiptChange
       end
     end
+  end
+  object chbTemplateEnabled: TCheckBox
+    Left = 8
+    Top = 424
+    Width = 361
+    Height = 17
+    Anchors = [akLeft, akBottom]
+    Caption = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1092#1086#1088#1084#1072#1090' '#1095#1077#1082#1072
+    TabOrder = 1
   end
   object SynXMLSyn: TSynXMLSyn
     WantBracesParsed = False

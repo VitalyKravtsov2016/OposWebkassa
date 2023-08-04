@@ -239,7 +239,6 @@ type
     property TranslationEnabled: Boolean read FTranslationEnabled write FTranslationEnabled;
     property TemplateEnabled: Boolean read FTemplateEnabled write FTemplateEnabled;
     property Template: TReceiptTemplate read FTemplate;
-    //property TemplateXml: WideString read GetTemplateXml write SetTemplateXml;
   end;
 
 function QRSizeToWidth(QRSize: Integer): Integer;

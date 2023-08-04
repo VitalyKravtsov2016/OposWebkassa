@@ -24,6 +24,7 @@ type
     tsXmlTemplate: TTabSheet;
     reReceipt: TRichEdit;
     seTemplate: TSynEdit;
+    chbTemplateEnabled: TCheckBox;
     procedure ReceiptChange(Sender: TObject);
   public
     procedure UpdatePage; override;
@@ -150,12 +151,15 @@ end;
 
 procedure TfmFptrReceipt.UpdatePage;
 begin
+  chbTemplateEnabled.Checked := Parameters.TemplateEnabled;
   seTemplate.Lines.Text := Parameters.Template.AsXML;
   UpdateReceiptText2(Parameters.Template.AsXML);
+
 end;
 
 procedure TfmFptrReceipt.UpdateObject;
 begin
+  Parameters.TemplateEnabled := chbTemplateEnabled.Checked;
   Parameters.Template.AsXML := seTemplate.Lines.Text;
 end;
 

@@ -84,11 +84,10 @@ implementation
 procedure TfmPrinter.UpdatePage;
 begin
   cbPrinterType.ItemIndex := Parameters.PrinterType;
+  UpdateDeviceNames;
   cbPrinterName.Text := Parameters.PrinterName;
+  UpdateFontNames;
   cbFontName.Text := Parameters.FontName;
-
-  //UpdateDeviceNames; !!!
-  //UpdateFontNames;
 
   UpdatePortNames;
   UpdateBaudRates;

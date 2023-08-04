@@ -254,7 +254,8 @@ end;
 
 procedure TOposServiceDevice19.ReleaseDevice;
 begin
-  CheckClaimed;
+  if not FClaimed then Exit;
+
   DeviceEnabled := False;
   FSemaphore.Release;
   FClaimed := False;
