@@ -15,8 +15,10 @@ type
 
   TfmFptrBarcode = class(TFptrPage)
     rgQRCode: TRadioGroup;
-    rbQRCodeAsESC: TRadioButton;
-    rbQRCodeAsGraphics: TRadioButton;
+    rbQRCodeESC: TRadioButton;
+    rbQRCodeGraphics: TRadioButton;
+    rbQRCodeText: TRadioButton;
+    rbQRCodeNone: TRadioButton;
     procedure ModifiedClick(Sender: TObject);
   public
     procedure UpdatePage; override;
@@ -36,16 +38,22 @@ end;
 
 procedure TfmFptrBarcode.UpdatePage;
 begin
-  rbQRCodeAsESC.Checked := Parameters.QRCode = QRCodeESC;
-  rbQRCodeAsGraphics.Checked := Parameters.QRCode = QRCodeGraphics;
+  rbQRCodeESC.Checked := Parameters.QRCode = QRCodeESC;
+  rbQRCodeGraphics.Checked := Parameters.QRCode = QRCodeGraphics;
+  rbQRCodeText.Checked := Parameters.QRCode = QRCodeText;
+  rbQRCodeNone.Checked := Parameters.QRCode = QRCodeNone;
 end;
 
 procedure TfmFptrBarcode.UpdateObject;
 begin
-  if rbQRCodeAsESC.Checked  then
+  if rbQRCodeESC.Checked  then
     Parameters.QRCode := QRCodeESC;
-  if rbQRCodeAsGraphics.Checked then
+  if rbQRCodeGraphics.Checked then
     Parameters.QRCode := QRCodeGraphics;
+  if rbQRCodeText.Checked then
+    Parameters.QRCode := QRCodeText;
+  if rbQRCodeNone.Checked then
+    Parameters.QRCode := QRCodeNone;
 end;
 
 end.

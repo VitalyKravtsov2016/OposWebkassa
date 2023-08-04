@@ -80,7 +80,7 @@ type
     procedure CheckOnline;
 
     procedure FireEvent(Event: TOposEvent);
-    function TextToBinary(const Data: string): string;
+    function TextToBinary(const Data: AnsiString): AnsiString;
     procedure StatusUpdateEvent(Data: Integer);
     procedure ErrorEvent(ResultCode, ResultCodeExtended, ErrorLocus: Integer);
     function ClearResult: Integer;
@@ -407,16 +407,16 @@ begin
   end;
 end;
 
-function TOposServiceDevice19.TextToBinary(const Data: string): string;
+function TOposServiceDevice19.TextToBinary(const Data: AnsiString): AnsiString;
 
   // First character = 0x30 + bits 7-4 of the data byte.
   // Second character = 0x30 + bits 3-0 of the data byte.
 
-  function NibbleConversion(const Data: WideString): WideString;
+  function NibbleConversion(const Data: AnsiString): AnsiString;
   var
     C: Char;
-    Item: WideString;
-    Text: WideString;
+    Item: AnsiString;
+    Text: AnsiString;
   begin
     Result := '';
     Text := Data;
@@ -429,10 +429,10 @@ function TOposServiceDevice19.TextToBinary(const Data: string): string;
     until False;
   end;
 
-  function DecimalConversion(const Data: WideString): WideString;
+  function DecimalConversion(const Data: AnsiString): AnsiString;
   var
-    Item: WideString;
-    Text: WideString;
+    Item: AnsiString;
+    Text: AnsiString;
   begin
     Result := '';
     Text := Data;

@@ -54,7 +54,7 @@ uses
   uLkJSON in '..\..\src\Shared\uLkJSON.pas',
   VatRate in '..\..\src\Shared\VatRate.pas',
   duTranslation in 'units\duTranslation.pas',
-  duOposUtils in 'units\duOposUtils.pas',
+  duOposDevice in 'units\duOposDevice.pas',
   MockPosPrinter2 in 'units\MockPosPrinter2.pas',
   OposPtrUtils in '..\..\src\Opos\OposPtrUtils.pas',
   OposPtrhi in '..\..\src\Opos\OposPtrhi.pas',
@@ -86,7 +86,8 @@ uses
   duTextDocument in 'units\duTextDocument.pas',
   xmlParser in '..\..\src\Shared\XMLParser.pas',
   MockPosPrinter in 'units\MockPosPrinter.pas',
-  duWebkassaImpl in 'units\duWebkassaImpl.pas';
+  duWebkassaImpl in 'units\duWebkassaImpl.pas',
+  duOposUtils in 'units\duOposUtils.pas';
 
 {$R *.RES}
 

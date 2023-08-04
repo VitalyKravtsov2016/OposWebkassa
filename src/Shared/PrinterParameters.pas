@@ -19,6 +19,8 @@ const
 
   QRCodeESC       = 0;
   QRCodeGraphics  = 1;
+  QRCodeText      = 2;
+  QRCodeNone      = 3;
 
   /////////////////////////////////////////////////////////////////////////////
   // Valid baudrates

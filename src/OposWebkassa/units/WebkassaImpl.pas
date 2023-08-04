@@ -85,6 +85,7 @@ type
     function ReadReceiptJson(RecCommand: TSendReceiptCommand): WideString;
     procedure BeginDocument(APrintHeader: boolean);
     procedure UpdateTemplateItem(Item: TTemplateItem);
+    procedure PrintQRCodeItem(const Item: TTextItem);
   public
     procedure PrintDocumentSafe(Document: TTextDocument);
     procedure CheckCanPrint;
@@ -3487,20 +3488,7 @@ begin
 
 
     case Item.Style of
-      STYLE_QR_CODE:
-      begin
-        if Printer.CapRecBarcode and (Params.QRCode = QRCodeEsc) then
-        begin
-          if Printer.PrintBarCode(PTR_S_RECEIPT, Item.Text, PTR_BCS_QRCODE, 0, 4,
-            PTR_BC_CENTER, PTR_BC_TEXT_NONE) <> OPOS_SUCCESS then
-          begin
-            PrintQRCodeAsGraphics(Item.Text);
-          end;
-        end else
-        begin
-          PrintQRCodeAsGraphics(Item.Text);
-        end;
-      end;
+      STYLE_QR_CODE: PrintQRCodeItem(Item);
     else
       Text := Item.Text;
       Prefix := '';
@@ -3518,7 +3506,6 @@ begin
       end;
 
       Text := Params.GetTranslationText(Text);
-
       CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, Prefix + Text));
 
       //PrintText(Prefix, Text, RecLineChars);
@@ -3532,6 +3519,41 @@ begin
   end;
   CheckPtr(Printer.CheckHealth(OPOS_CH_INTERNAL));
   Logger.Debug(Format('PrintDocument, time=%d ms', [GetTickCount-TickCount]));
+end;
+
+procedure TWebkassaImpl.PrintQRCodeItem(const Item: TTextItem);
+begin
+  try
+    case Params.QRCode of
+      QRCodeEsc:
+      if Printer.CapRecBarcode then
+      begin
+        if Printer.PrintBarCode(PTR_S_RECEIPT, Item.Text, PTR_BCS_QRCODE, 0, 4,
+          PTR_BC_CENTER, PTR_BC_TEXT_NONE) <> OPOS_SUCCESS then
+        begin
+          PrintQRCodeAsGraphics(Item.Text);
+        end;
+      end else
+      begin
+        PrintQRCodeAsGraphics(Item.Text);
+      end;
+
+      QRCodeGraphics:
+      begin
+        PrintQRCodeAsGraphics(Item.Text);
+      end;
+
+      QRCodeText:
+      begin
+        CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, Item.Text));
+      end;
+    end;
+  except
+    on E: Exception do
+    begin
+      Logger.Error('PrintQRCodeItem: ' + E.Message);
+    end;
+  end;
 end;
 
 procedure TWebkassaImpl.PrintText(Prefix, Text: WideString; RecLineChars: Integer);
@@ -3723,10 +3745,10 @@ begin
     ScaleBitmap(Bitmap, 2);
     Bitmap.SaveToStream(Stream);
 
-    Stream.Position := 0;
     if Stream.Size > 0 then
     begin
       SetLength(Data, Stream.Size);
+      Stream.Position := 0;
       Stream.ReadBuffer(Data[1], Stream.Size);
 
       Printer.BinaryConversion := OPOS_BC_NIBBLE;

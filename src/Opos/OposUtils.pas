@@ -32,8 +32,8 @@ function BinaryConversionToStr(Value: Integer): WideString;
 function StateToStr(Value: Integer): WideString;
 function PowerReportingToStr(Value: Integer): WideString;
 function PowerNotifyToStr(Value: Integer): WideString;
-function OposStrToNibble(const Data: string): string;
-function OposNibbleToStr(const Data: string): string;
+function OposStrToNibble(const Data: AnsiString): AnsiString;
+function OposNibbleToStr(const Data: AnsiString): AnsiString;
 function IsValidOposStatusUpdateEvent(Code: Integer): Boolean;
 
 const
@@ -246,7 +246,7 @@ begin
   end;
 end;
 
-function OposStrToNibble(const Data: string): string;
+function OposStrToNibble(const Data: AnsiString): AnsiString;
 var
   B: Byte;
   i: Integer;
@@ -260,7 +260,7 @@ begin
   end;
 end;
 
-function OposNibbleToStr(const Data: string): string;
+function OposNibbleToStr(const Data: AnsiString): AnsiString;
 var
   B: Byte;
   i: Integer;

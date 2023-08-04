@@ -89,6 +89,7 @@ type
     procedure TestReceiptTemplate3;
     procedure TestGetJsonField;
     procedure TestEncoding;
+    procedure TestBarcode;
   end;
 
 implementation
@@ -1198,6 +1199,14 @@ begin
 
   FLines.Text := Text;
   CheckLines;
+end;
+
+procedure TWebkassaImplTest.TestBarcode;
+const
+  BarcodeData = 'http://dev.kofd.kz/consumer?i=925871425876&f=211030200207&s=15443.72&t=20220826T210014';
+begin
+  Driver.PrintQRCodeAsGraphics(BarcodeData);
+
 end;
 
 initialization

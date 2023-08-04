@@ -12,7 +12,7 @@ uses
   OposPOSPrinter_CCO_TLB, WException, OposPtrUtils,
   // This
   LogFile, DriverError, EscPrinter, PrinterPort, NotifyThread,
-  RegExpr, SerialPort;
+  RegExpr, SerialPort, Jpeg, GifImage;
 
 type
   TPrintMode = (pmBold, pmDoubleWide, pmDoubleHigh, pmUnderlined);
@@ -28,7 +28,7 @@ type
   { TPosEscPrinter }
 
   TPosEscPrinter = class(TComponent, IOPOSPOSPrinter, IOposEvents)
-  private
+  public
     FLogger: ILogFile;
     FPort: IPrinterPort;
     FPrinter: TEscPrinter;
@@ -202,6 +202,7 @@ type
     procedure CheckPaperPresent;
     procedure CheckCoverClosed;
     procedure SetPowerState(PowerState: Integer);
+    procedure LoadMemoryGraphic(Graphic: TGraphic; const Data: AnsiString);
   public
     constructor Create2(AOwner: TComponent; APort: IPrinterPort; ALogger: ILogFile);
     destructor Destroy; override;
@@ -1862,39 +1863,50 @@ begin
   FPrinter.PrintBmp(BMP_MODE_NORMAL);
 end;
 
+procedure TPosEscPrinter.LoadMemoryGraphic(Graphic: TGraphic;
+  const Data: AnsiString);
+var
+  BinaryData: AnsiString;
+  Stream: TMemoryStream;
+begin
+  Stream := TMemoryStream.Create;
+  try
+    BinaryData := FDevice.TextToBinary(Data);
+    if Length(BinaryData) <= 0 then Exit;
+
+    Stream.Write(BinaryData[1], Length(BinaryData));
+    Stream.Position := 0;
+    Graphic.LoadFromStream(Stream);
+  finally
+    Stream.Free;
+  end;
+end;
+
 function TPosEscPrinter.PrintMemoryBitmap(Station: Integer;
   const Data: WideString; Type_, Width, Alignment: Integer): Integer;
 var
-  Bitmap: TBitmap;
-  BinaryData: WideString;
-  Stream: TMemoryStream;
+  Graphic: TGraphic;
 begin
-  Bitmap := TBitmap.Create;
-  Stream := TMemoryStream.Create;
-  try
-    CheckRecStation(Station);
-    BinaryData := FDevice.TextToBinary(Data);
-    if Length(BinaryData) > 0 then
-    begin
-      Stream.Write(BinaryData[1], Length(BinaryData));
+  CheckRecStation(Station);
 
-      Stream.Position := 0;
-      case Type_ of
-        PTR_BMT_BMP: Bitmap.LoadFromStream(Stream);
-        //PTR_BMT_JPEG:
-        //PTR_BMT_GIF:
-      else
-        raiseIllegalError('Only BMP supported');
-      end;
-      PrintGraphics(Bitmap, Width, Alignment);
+  Graphic := nil;
+  try
+    case Type_ of
+      PTR_BMT_BMP: Graphic := TBitmap.Create;
+      PTR_BMT_JPEG: Graphic := TJpegImage.Create;
+      PTR_BMT_GIF: Graphic := TGifImage.Create;
+    else
+      raiseIllegalError('Only BMP supported');
     end;
+
+    LoadMemoryGraphic(Graphic, Data);
+    PrintGraphics(Graphic, Width, Alignment);
     Result := ClearResult;
   except
     on E: Exception do
       Result := HandleException(E);
   end;
-  Bitmap.Free;
-  Stream.Free;
+  Graphic.Free;
 end;
 
 procedure TPosEscPrinter.CheckRecStation(Station: Integer);
