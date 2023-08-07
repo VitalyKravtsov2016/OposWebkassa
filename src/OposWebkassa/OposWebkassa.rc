@@ -1,6 +1,6 @@
 VS_VERSION_INFO VERSIONINFO
-FILEVERSION 1,13,0,36
-PRODUCTVERSION 1,13,0,36 
+FILEVERSION 1,13,0,37
+PRODUCTVERSION 1,13,0,37 
 FILEFLAGSMASK 0x3fL
 FILEFLAGS 0x0L
 FILEOS 0x4L
@@ -13,7 +13,7 @@ BEGIN
     BEGIN
       VALUE "CompanyName", "SHTRIH-M\0"
       VALUE "FileDescription", "WebKassa OPOS fiscal printer service\0"
-      VALUE "FileVersion", "1.13.0.36\0"
+      VALUE "FileVersion", "1.13.0.37\0"
       VALUE "InternalName", "WebKassa OPOS fiscal printer driver\0"
       VALUE "LegalCopyright", "SHTRIH-M \251 2022 \0"
       VALUE "OriginalFilename", "OposWebkassa.dll\0"

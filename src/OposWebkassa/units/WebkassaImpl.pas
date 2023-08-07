@@ -356,7 +356,8 @@ type
 
     function DecodeString(const Text: WideString): WideString;
     function EncodeString(const S: WideString): WideString;
-    procedure PrintQRCodeAsGraphics(const BarcodeData: WideString);
+    procedure PrintQRCodeAsGraphics(const BarcodeData: AnsiString);
+    function RenderQRCode(const BarcodeData: AnsiString): AnsiString;
 
     property Logger: ILogFile read FLogger;
     property CashBox: TCashBox read FCashBox;
@@ -3718,16 +3719,13 @@ begin
   end;
 end;
 
-procedure TWebkassaImpl.PrintQRCodeAsGraphics(const BarcodeData: WideString);
+function TWebkassaImpl.RenderQRCode(const BarcodeData: AnsiString): AnsiString;
 var
-  Data: WideString;
   Bitmap: TBitmap;
   Render: TZintBarcode;
   Stream: TMemoryStream;
-  BitmapData: WideString;
 begin
-  if not Printer.CapRecBitmap then Exit;
-
+  Result := '';
   Bitmap := TBitmap.Create;
   Render := TZintBarcode.Create;
   Stream := TMemoryStream.Create;
@@ -3747,23 +3745,30 @@ begin
 
     if Stream.Size > 0 then
     begin
-      SetLength(Data, Stream.Size);
       Stream.Position := 0;
-      Stream.ReadBuffer(Data[1], Stream.Size);
-
-      Printer.BinaryConversion := OPOS_BC_NIBBLE;
-      try
-        BitmapData := OposStrToNibble(Data);
-        CheckPtr(Printer.PrintMemoryBitmap(PTR_S_RECEIPT, BitmapData,
-          PTR_BMT_BMP, PTR_BM_ASIS, PTR_BM_CENTER));
-      finally
-        Printer.BinaryConversion := OPOS_BC_NONE;
-      end;
+      SetLength(Result, Stream.Size);
+      Stream.ReadBuffer(Result[1], Stream.Size);
     end;
   finally
     Render.Free;
     Bitmap.Free;
     Stream.Free;
+  end;
+end;
+
+procedure TWebkassaImpl.PrintQRCodeAsGraphics(const BarcodeData: AnsiString);
+var
+  Data: AnsiString;
+begin
+  if not Printer.CapRecBitmap then Exit;
+  Printer.BinaryConversion := OPOS_BC_NIBBLE;
+  try
+    Data := RenderQRCode(BarcodeData);
+    Data := OposStrToNibble(Data);
+    CheckPtr(Printer.PrintMemoryBitmap(PTR_S_RECEIPT, Data,
+      PTR_BMT_BMP, PTR_BM_ASIS, PTR_BM_CENTER));
+  finally
+    Printer.BinaryConversion := OPOS_BC_NONE;
   end;
 end;
 

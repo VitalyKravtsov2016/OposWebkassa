@@ -4,7 +4,7 @@ interface
 
 uses
   // VCL
-  Windows, SysUtils, Classes, SyncObjs,
+  Windows, SysUtils, Classes, SyncObjs, Graphics,
   // DUnit
   TestFramework,
   // Mock
@@ -17,7 +17,7 @@ uses
   // This
   LogFile, WebkassaImpl, WebkassaClient, MockPosPrinter2, FileUtils,
   CustomReceipt, uLkJSON, ReceiptTemplate, SalesReceipt, DirectIOAPI,
-  DebugUtils, StringUtils;
+  DebugUtils, StringUtils, OposServiceDevice19;
 
 const
   CRLF = #13#10;
@@ -64,6 +64,7 @@ type
   public
     procedure TestNonFiscal;
     procedure TestReceiptTemplate; // !!!
+    procedure TestPrintQRCodeAsGraphics;
   published
     procedure TestMockMethod;
     procedure TestMockMethod2;
@@ -73,6 +74,7 @@ type
     procedure ClaimDevice;
     procedure EnableDevice;
     procedure OpenClaimEnable;
+    procedure TestRenderQRCode;
   end;
 
 implementation
@@ -500,6 +502,71 @@ begin
 
   finally
     Lines.Free;
+  end;
+end;
+
+procedure TWebkassaImplTest2.TestPrintQRCodeAsGraphics;
+const
+  BarcodeData = 'https://devkkm.webkassa.kz/Ticket?chb=SWK00033059&sh=100&extnum=92D51F08-13CF-428E-AF2F-67B6E8BDE994';
+  BitmapData =
+    '3?3?0000003>0028004:004:00010100003?00000000000200000000003?793?3?3?3?00003?3?3?'+
+    '3?00003?3<3?3?3?003?3<3?3?3?003?3?3?413?003?3?3?413?003?3?3?3?3?003?3?3?3?3?003?'+
+    '3?3?413?003?3?3?413?003?3?303?3?003?3?303?3?003?3?3?3?00003?3?3?3?00003?3?3?3?03'+
+    '003?3?3?3?03003?3?3?7500003?3?3?7500003?3?3?3?3?003?3?3?3?3?003?3?3?3?3?003?3?3?'+
+    '3?3?003?3?3?3?0?003?3?3?3?0?003?3?3?3?00003?3?3?3?00003?3?3?3?3?003?3?3?3?3?003?'+
+    '3?3?3?3?003?3?3?3?3?003?0?3?3?3?003?0?3?3?3?003?3?3?3?3?003?3?3?3?3?003?3?3?3?3?'+
+    '003?3?3?3?3?003?3?3?3?30003?3?3?3?30003?3?3?3?49003?3?3?3?49003?3?3?3?3?003?3?3?'+
+    '3?3?003?3?3?3?49003?3?3?3?49003?3?3?3?3?003?3?3?3?3?003?3?3?0003003?3?3?0003003?'+
+    '3?3?3?03003?3?3?3?03003?3?3?413?003?3?3?413?003<3?3?3?3?003<3?3?3?3?003?3?3?3?3?'+
+    '003?3?3?3?3?003?3?3?3?03003?3?3?3?03003?3?3?3?3?003?3?3?3?3?003?3?3?3?00003?3?3?'+
+    '3?00003?3?3?3?79003?3?3?3?79003?3?3?3?03003?3?3?3?03003?3?3?3?03003?3?3?3?03003?'+
+    '3?3?3?03003?3?3?3?03003?3?3?3?79003?3?3?3?79003?3?3?3?00003?3?3?3?00003132333434'+
+    '3535227=006=222<22437573746?6=657250686?6>65223:222;3737373731323334343535227=00'+
+    '09225461785061796572494>223:2022313331323430303130343739222<0=0:0909225461785061'+
+    '796572564154223:20747275652<0=0:09092254617850617965725641545365726961223:202230'+
+    '30303030222<0=0:09092254617850617965725641544>756=626572223:20223030303030303022'+
+    '2<0=0:0909225265706?72744>756=626572223:2031332<0=0:09092243617368626?78534>223:'+
+    '202253574;3030303332363835222<0=0:09092243617368626?78494>223:203237302<0=0:0909'+
+    '2243617368626?78524>223:2022323131303330323030323037222<0=0:09092253746172744?6>'+
+    '223:202230392>30382>323032322031393:34323:3430222<0=0:0909225265706?72744?6>223:'+
+    '202231322>30382>323032322031363:34393:3331222<0=0:090922436<6?73654?6>223:202231'+
+    '322>30382>323032322030313:34393:3037222<0=0:09092243617368696572436?6465223:2031'+
+    '2<0=0:09092253686966744>756=626572223:203135342<0=0:090922446?63756=656>74436?75'+
+    '6>74223:2031332<0=0:0909225075744=6?6>657953756=223:20302>30';
+begin
+  FPrinter.Expects('Get_CapRecBitmap').Returns(True);
+  FPrinter.Expects('Set_BinaryConversion').WithParams([OPOS_BC_NIBBLE]);
+  FPrinter.Expects('PrintMemoryBitmap').WithParams([PTR_S_RECEIPT, BitmapData,
+    PTR_BMT_BMP, PTR_BM_ASIS, PTR_BM_CENTER]).Returns(0);
+  FPrinter.Expects('Set_BinaryConversion').WithParams([OPOS_BC_NONE]);
+  Driver.PrintQRCodeAsGraphics(BarcodeData);
+  FPrinter.Verify('TestPrintQRCodeAsGraphics');
+end;
+
+
+procedure TWebkassaImplTest2.TestRenderQRCode;
+const
+  BarcodeData = 'https://devkkm.webkassa.kz/Ticket?chb=SWK00033059&sh=100&extnum=92D51F08-13CF-428E-AF2F-67B6E8BDE994';
+var
+  Data: AnsiString;
+  Graphic: TGraphic;
+  Stream: TMemoryStream;
+begin
+  Data := Driver.RenderQRCode(BarcodeData);
+
+  Graphic := TBitmap.Create;
+  Stream := TMemoryStream.Create;
+  try
+    Stream.Write(Data[1], Length(Data));
+    Stream.Position := 0;
+    Graphic.LoadFromStream(Stream);
+
+    CheckEquals(74, Graphic.Width, 'Graphic.Width');
+    CheckEquals(74, Graphic.Height, 'Graphic.Height');
+    Graphic.SaveToFile(GetModulePath + 'QRCodeBitmap.bmp');
+  finally
+    Stream.Free;
+    Graphic.Free;
   end;
 end;
 

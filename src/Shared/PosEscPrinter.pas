@@ -1866,15 +1866,11 @@ end;
 procedure TPosEscPrinter.LoadMemoryGraphic(Graphic: TGraphic;
   const Data: AnsiString);
 var
-  BinaryData: AnsiString;
   Stream: TMemoryStream;
 begin
   Stream := TMemoryStream.Create;
   try
-    BinaryData := FDevice.TextToBinary(Data);
-    if Length(BinaryData) <= 0 then Exit;
-
-    Stream.Write(BinaryData[1], Length(BinaryData));
+    Stream.Write(Data[1], Length(Data));
     Stream.Position := 0;
     Graphic.LoadFromStream(Stream);
   finally
@@ -1886,6 +1882,7 @@ function TPosEscPrinter.PrintMemoryBitmap(Station: Integer;
   const Data: WideString; Type_, Width, Alignment: Integer): Integer;
 var
   Graphic: TGraphic;
+  BinaryData: AnsiString;
 begin
   CheckRecStation(Station);
 
@@ -1898,8 +1895,8 @@ begin
     else
       raiseIllegalError('Only BMP supported');
     end;
-
-    LoadMemoryGraphic(Graphic, Data);
+    BinaryData := FDevice.TextToBinary(Data);
+    LoadMemoryGraphic(Graphic, BinaryData);
     PrintGraphics(Graphic, Width, Alignment);
     Result := ClearResult;
   except

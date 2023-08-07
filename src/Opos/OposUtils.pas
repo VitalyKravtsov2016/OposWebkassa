@@ -255,8 +255,8 @@ begin
   for i := 1 to Length(Data) do
   begin
     B := Ord(Data[i]);
-    Result := Result + WideChar($30 + ((B shr 4) and $0F));
-    Result := Result + WideChar($30 + (B and $0F));
+    Result := Result + Char($30 + ((B shr 4) and $0F));
+    Result := Result + Char($30 + (B and $0F));
   end;
 end;
 

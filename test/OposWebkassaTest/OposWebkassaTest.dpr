@@ -82,12 +82,13 @@ uses
   Translation in '..\..\src\Shared\Translation.pas',
   duPrinterParameters in 'units\duPrinterParameters.pas',
   DirectIOAPI in '..\..\src\OposWebkassa\units\DirectIOAPI.pas',
-  duWebkassaImpl2 in 'units\duWebkassaImpl2.pas',
+  duWebkassaImpl3 in 'units\duWebkassaImpl3.pas',
   duTextDocument in 'units\duTextDocument.pas',
   xmlParser in '..\..\src\Shared\XMLParser.pas',
   MockPosPrinter in 'units\MockPosPrinter.pas',
   duWebkassaImpl in 'units\duWebkassaImpl.pas',
-  duOposUtils in 'units\duOposUtils.pas';
+  duOposUtils in 'units\duOposUtils.pas',
+  duWebkassaImpl2 in 'units\duWebkassaImpl2.pas';
 
 {$R *.RES}
 
