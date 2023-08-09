@@ -3581,12 +3581,11 @@ begin
   if RecLineChars = 0 then
     raise Exception.Create('RecLineChars = 0');
 
-  Text := TrimRight(Text);
   while True do
   begin
-    Line := Prefix + TrimRight(Copy(Text, 1, RecLineChars));
+    Line := Prefix + Copy(Text, 1, RecLineChars);
     PrintLine(Line);
-    Text := TrimRight(Copy(Text, RecLineChars + 1, Length(Text)));
+    Text := Copy(Text, RecLineChars + 1, Length(Text));
     if Length(Text) = 0 then Break;
   end;
 end;
