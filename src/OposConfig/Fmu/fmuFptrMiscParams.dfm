@@ -4,7 +4,7 @@ object fmFptrMiscParams: TfmFptrMiscParams
   AutoScroll = False
   BorderIcons = [biSystemMenu]
   Caption = #1055#1088#1086#1095#1077#1077
-  ClientHeight = 181
+  ClientHeight = 329
   ClientWidth = 536
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -16,7 +16,7 @@ object fmFptrMiscParams: TfmFptrMiscParams
   Position = poScreenCenter
   DesignSize = (
     536
-    181)
+    329)
   PixelsPerInch = 96
   TextHeight = 13
   object lblRoundType: TTntLabel
@@ -46,6 +46,13 @@ object fmFptrMiscParams: TfmFptrMiscParams
     Width = 248
     Height = 13
     Caption = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1079#1085#1072#1082#1086#1074' '#1087#1086#1089#1083#1077' '#1079#1072#1087#1103#1090#1086#1081' '#1074' '#1082#1086#1083#1080#1095#1077#1089#1090#1074#1077':'
+  end
+  object lblCurrencyName: TTntLabel
+    Left = 8
+    Top = 144
+    Width = 95
+    Height = 13
+    Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1074#1072#1083#1102#1090#1099':'
   end
   object cbRoundType: TComboBox
     Left = 96
@@ -95,5 +102,15 @@ object fmFptrMiscParams: TfmFptrMiscParams
     Items.Strings = (
       '0'
       '2')
+  end
+  object edtCurrencyName: TEdit
+    Left = 128
+    Top = 144
+    Width = 402
+    Height = 21
+    Anchors = [akLeft, akTop, akRight]
+    TabOrder = 4
+    Text = 'edtCurrencyName'
+    OnChange = ModifiedClick
   end
 end

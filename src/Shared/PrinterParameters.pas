@@ -98,6 +98,7 @@ const
   DefQRCode = QRCodeEsc;
   DefTranslationEnabled = false;
   DefTemplateEnabled = False;
+  DefCurrencyName = 'עד';
 
   /////////////////////////////////////////////////////////////////////////////
   // Header and trailer parameters
@@ -164,6 +165,7 @@ type
     FTranslationEnabled: Boolean;
     FTemplateEnabled: Boolean;
     FTemplate: TReceiptTemplate;
+    FCurrencyName: string;
 
     procedure LogText(const Caption, Text: WideString);
     procedure SetHeaderText(const Text: WideString);
@@ -241,6 +243,7 @@ type
     property TranslationEnabled: Boolean read FTranslationEnabled write FTranslationEnabled;
     property TemplateEnabled: Boolean read FTemplateEnabled write FTemplateEnabled;
     property Template: TReceiptTemplate read FTemplate;
+    property CurrencyName: string read FCurrencyName write FCurrencyName;
   end;
 
 function QRSizeToWidth(QRSize: Integer): Integer;
@@ -345,6 +348,7 @@ begin
   TranslationEnabled := DefTranslationEnabled;
   TemplateEnabled := DefTemplateEnabled;
   Template.SetDefaults;
+  CurrencyName := DefCurrencyName;
 end;
 
 procedure TPrinterParameters.LogText(const Caption, Text: WideString);
@@ -406,6 +410,7 @@ begin
   Logger.Debug('DevicePollTime: ' + IntToStr(DevicePollTime));
   Logger.Debug('QRCode: ' + IntToStr(QRCode));
   Logger.Debug('TemplateEnabled: ' + BoolToStr(TemplateEnabled));
+  Logger.Debug('CurrencyName: ' + CurrencyName);
 
   // VatRates
   for i := 0 to VatRates.Count-1 do
@@ -599,6 +604,7 @@ begin
     VatRates.Assign(VatRates);
     DevicePollTime := Src.DevicePollTime;
     TemplateEnabled := Src.TemplateEnabled;
+    CurrencyName := Src.CurrencyName;
   end else
     inherited Assign(Source);
 end;
@@ -676,6 +682,11 @@ begin
   if AnsiCompareText(ParamName, 'VATNumber')=0 then
   begin
     Result := VATNumber;
+    Exit;
+  end;
+  if AnsiCompareText(ParamName, 'CurrencyName')=0 then
+  begin
+    Result := CurrencyName;
     Exit;
   end;
 end;

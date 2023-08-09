@@ -2929,8 +2929,8 @@ begin
         ItemQuantity := RecItem.Quantity;
         UnitPrice := RecItem.UnitPrice;
       end;
-      Document.AddLine(Format('   %.3f %s x %s', [ItemQuantity,
-        RecItem.UnitName, AmountToStr(UnitPrice)]));
+      Document.AddLine(Format('   %.3f %s x %s %s', [ItemQuantity,
+        RecItem.UnitName, AmountToStr(UnitPrice), Params.CurrencyName]));
       // Скидка
       Adjustment := RecItem.GetDiscount;
       if Adjustment.Amount <> 0 then

@@ -127,6 +127,7 @@ begin
   FDriver.Params.NumHeaderLines := 4;
   FDriver.Params.NumTrailerLines := 3;
   FDriver.Params.RoundType := RoundTypeNone;
+  FDriver.Params.CurrencyName := 'руб';
 
   FDriver.Params.HeaderText :=
     '                                          ' + CRLF +
@@ -447,13 +448,13 @@ const
     'Message 1                                 ' + CRLF +
     'Сер. № 5                                  ' + CRLF +
     'ШОКОЛАДНАЯ ПЛИТКА MILKA BUBBLES МОЛОЧНЫЙ  ' + CRLF +
-    '   1.000 кг x 123.45                      ' + CRLF +
+    '   1.000 кг x 123.45 руб                  ' + CRLF +
     '   Скидка                           -22.35' + CRLF +
     '   Наценка                          +11.17' + CRLF +
     '   Стоимость                        112.27' + CRLF +
     'Message 2                                 ' + CRLF +
     'Item 2                                    ' + CRLF +
-    '   1.000 кг x 1.45                        ' + CRLF +
+    '   1.000 кг x 1.45 руб                    ' + CRLF +
     '   Скидка                            -0.45' + CRLF +
     '   Стоимость                          1.00' + CRLF +
     'Message 3                                 ' + CRLF +
@@ -847,7 +848,14 @@ begin
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Price';
-  Item.FormatText := '%s';
+  Item.FormatText := '%s ';
+  Item.Alignment := ALIGN_LEFT;
+  // Currency name
+  Item := Driver.Params.Template.RecItem.Add;
+  Item.ItemType := TEMPLATE_TYPE_PARAM;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'CurrencyName';
+  Item.FormatText := '';
   Item.Alignment := ALIGN_LEFT;
   Driver.Params.Template.RecItem.NewLine;
   // Discount

@@ -269,6 +269,9 @@ begin
       if Reg.ValueExists('TemplateEnabled') then
         Parameters.TemplateEnabled := Reg.ReadBool('TemplateEnabled');
 
+      if Reg.ValueExists('CurrencyName') then
+        Parameters.CurrencyName := Reg.ReadString('CurrencyName');
+
       Reg.CloseKey;
     end;
     // VatRates
@@ -357,6 +360,7 @@ begin
     Reg.WriteInteger('QRCode', FParameters.QRCode);
     Reg.WriteBool('TranslationEnabled', FParameters.TranslationEnabled);
     Reg.WriteBool('TemplateEnabled', FParameters.TemplateEnabled);
+    Reg.WriteString('CurrencyName', FParameters.CurrencyName);
 
     Reg.CloseKey;
     // VatRates

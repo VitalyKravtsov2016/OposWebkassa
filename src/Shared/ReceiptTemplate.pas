@@ -359,7 +359,14 @@ begin
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Price';
-  Item.FormatText := '%s';
+  Item.FormatText := '%s ';
+  Item.Alignment := ALIGN_LEFT;
+  // Currency name
+  Item := RecItem.Add;
+  Item.ItemType := TEMPLATE_TYPE_PARAM;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'CurrencyName';
+  Item.FormatText := '';
   Item.Alignment := ALIGN_LEFT;
   RecItem.NewLine;
   // Discount

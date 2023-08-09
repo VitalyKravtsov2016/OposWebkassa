@@ -22,6 +22,8 @@ type
     lblVATNumber: TTntLabel;
     cbAmountDecimalPlaces: TComboBox;
     lblAmountDecimalPlaces: TTntLabel;
+    edtCurrencyName: TEdit;
+    lblCurrencyName: TTntLabel;
     procedure ModifiedClick(Sender: TObject);
   public
     procedure UpdatePage; override;
@@ -41,6 +43,7 @@ begin
   edtVATNumber.Text := Parameters.VATNumber;
   cbAmountDecimalPlaces.ItemIndex := cbAmountDecimalPlaces.Items.IndexOf(
     IntToStr(Parameters.AmountDecimalPlaces));
+  edtCurrencyName.Text := Parameters.CurrencyName;
 end;
 
 procedure TfmFptrMiscParams.UpdateObject;
@@ -49,6 +52,7 @@ begin
   Parameters.VATSeries := edtVATSeries.Text;
   Parameters.VATNumber := edtVATNumber.Text;
   Parameters.AmountDecimalPlaces := StrToInt(cbAmountDecimalPlaces.Text);
+  Parameters.CurrencyName := edtCurrencyName.Text;
 end;
 
 procedure TfmFptrMiscParams.ModifiedClick(Sender: TObject);
