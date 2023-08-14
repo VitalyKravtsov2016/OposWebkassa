@@ -99,6 +99,7 @@ const
   DefTranslationEnabled = false;
   DefTemplateEnabled = False;
   DefCurrencyName = 'עד';
+  DefLineSpacing = 30;
 
   /////////////////////////////////////////////////////////////////////////////
   // Header and trailer parameters
@@ -166,6 +167,7 @@ type
     FTemplateEnabled: Boolean;
     FTemplate: TReceiptTemplate;
     FCurrencyName: string;
+    FLineSpacing: Integer;
 
     procedure LogText(const Caption, Text: WideString);
     procedure SetHeaderText(const Text: WideString);
@@ -244,6 +246,7 @@ type
     property TemplateEnabled: Boolean read FTemplateEnabled write FTemplateEnabled;
     property Template: TReceiptTemplate read FTemplate;
     property CurrencyName: string read FCurrencyName write FCurrencyName;
+    property LineSpacing: Integer read FLineSpacing write FLineSpacing;
   end;
 
 function QRSizeToWidth(QRSize: Integer): Integer;
@@ -349,6 +352,7 @@ begin
   TemplateEnabled := DefTemplateEnabled;
   Template.SetDefaults;
   CurrencyName := DefCurrencyName;
+  LineSpacing := DefLineSpacing;
 end;
 
 procedure TPrinterParameters.LogText(const Caption, Text: WideString);
@@ -411,6 +415,7 @@ begin
   Logger.Debug('QRCode: ' + IntToStr(QRCode));
   Logger.Debug('TemplateEnabled: ' + BoolToStr(TemplateEnabled));
   Logger.Debug('CurrencyName: ' + CurrencyName);
+  Logger.Debug('LineSpacing: ' + IntToStr(LineSpacing));
 
   // VatRates
   for i := 0 to VatRates.Count-1 do

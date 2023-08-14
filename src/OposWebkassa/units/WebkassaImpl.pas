@@ -2470,6 +2470,10 @@ begin
       begin
         Printer.RecLineChars := FRecLineChars;
       end;
+      if Params.LineSpacing <> 0 then
+      begin
+        Printer.RecLineSpacing := Params.LineSpacing;
+      end;
     end else
     begin
       FClient.Disconnect;

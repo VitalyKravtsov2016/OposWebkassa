@@ -713,6 +713,7 @@ begin
   Send(#$1B#$32);
 end;
 
+
 procedure TEscPrinter.SetLineSpacing(n: Byte);
 begin
   Logger.Debug('TEscPrinter.SetLineSpacing');

@@ -18,16 +18,16 @@ object fmPrinter: TfmPrinter
   TextHeight = 13
   object lblResultCode: TTntLabel
     Left = 8
-    Top = 200
+    Top = 232
     Width = 55
     Height = 13
     Caption = #1056#1077#1079#1091#1083#1100#1090#1072#1090':'
   end
   object memResult: TMemo
     Left = 8
-    Top = 216
+    Top = 248
     Width = 441
-    Height = 73
+    Height = 41
     Anchors = [akLeft, akTop, akRight, akBottom]
     Color = clBtnFace
     Font.Charset = RUSSIAN_CHARSET
@@ -63,7 +63,7 @@ object fmPrinter: TfmPrinter
     Left = 8
     Top = 8
     Width = 441
-    Height = 185
+    Height = 217
     ActivePage = tsCommonParams
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 0
@@ -97,6 +97,13 @@ object fmPrinter: TfmPrinter
         Height = 13
         Caption = #1055#1077#1088#1080#1086#1076' '#1086#1087#1088#1086#1089#1072', '#1084#1089'.:'
       end
+      object lblLineSpacing: TTntLabel
+        Left = 8
+        Top = 152
+        Width = 124
+        Height = 13
+        Caption = #1052#1077#1078#1089#1090#1088#1086#1095#1085#1099#1081' '#1080#1085#1090#1077#1088#1074#1072#1083':'
+      end
       object cbPrinterName: TTntComboBox
         Left = 120
         Top = 56
@@ -104,7 +111,7 @@ object fmPrinter: TfmPrinter
         Height = 21
         Style = csDropDownList
         ItemHeight = 13
-        TabOrder = 0
+        TabOrder = 1
         OnChange = cbPrinterNameChange
       end
       object cbPrinterType: TTntComboBox
@@ -114,7 +121,7 @@ object fmPrinter: TfmPrinter
         Height = 21
         Style = csDropDownList
         ItemHeight = 13
-        TabOrder = 1
+        TabOrder = 0
         OnChange = cbPrinterTypeChange
         Items.Strings = (
           'OPOS '#1087#1088#1080#1085#1090#1077#1088
@@ -134,13 +141,24 @@ object fmPrinter: TfmPrinter
         OnChange = ModifiedClick
       end
       object seDevicePollTime: TSpinEdit
-        Left = 120
+        Left = 152
         Top = 120
         Width = 137
         Height = 22
         MaxValue = 0
         MinValue = 0
         TabOrder = 3
+        Value = 0
+        OnClick = ModifiedClick
+      end
+      object seLineSpacing: TSpinEdit
+        Left = 152
+        Top = 152
+        Width = 137
+        Height = 22
+        MaxValue = 0
+        MinValue = 0
+        TabOrder = 4
         Value = 0
         OnClick = ModifiedClick
       end

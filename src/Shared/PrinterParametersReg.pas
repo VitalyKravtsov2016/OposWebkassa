@@ -272,6 +272,9 @@ begin
       if Reg.ValueExists('CurrencyName') then
         Parameters.CurrencyName := Reg.ReadString('CurrencyName');
 
+      if Reg.ValueExists('LineSpacing') then
+        Parameters.LineSpacing := Reg.ReadInteger('LineSpacing');
+
       Reg.CloseKey;
     end;
     // VatRates
@@ -361,6 +364,7 @@ begin
     Reg.WriteBool('TranslationEnabled', FParameters.TranslationEnabled);
     Reg.WriteBool('TemplateEnabled', FParameters.TemplateEnabled);
     Reg.WriteString('CurrencyName', FParameters.CurrencyName);
+    Reg.WriteInteger('LineSpacing', FParameters.LineSpacing);
 
     Reg.CloseKey;
     // VatRates

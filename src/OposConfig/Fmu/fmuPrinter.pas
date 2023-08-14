@@ -54,6 +54,8 @@ type
     seSerialTimeout: TSpinEdit;
     lblDevicePollTime: TTntLabel;
     seDevicePollTime: TSpinEdit;
+    lblLineSpacing: TTntLabel;
+    seLineSpacing: TSpinEdit;
     procedure btnTestConnectionClick(Sender: TObject);
     procedure btnPrintReceiptClick(Sender: TObject);
     procedure cbPrinterTypeChange(Sender: TObject);
@@ -101,6 +103,7 @@ begin
   seByteTimeout.Value := Parameters.ByteTimeout;
   seSerialTimeout.Value := Parameters.SerialTimeout;
   seDevicePollTime.Value := Parameters.DevicePollTime;
+  seLineSpacing.Value := Parameters.LineSpacing;
 end;
 
 procedure TfmPrinter.UpdatePortNames;
@@ -203,6 +206,7 @@ begin
   Parameters.FontName := cbFontName.Text;
   Parameters.PortName := cbPortName.Text;
   Parameters.DevicePollTime := seDevicePollTime.Value;
+  Parameters.LineSpacing := seLineSpacing.Value;
   // Serial
   Parameters.BaudRate := Integer(cbBaudRate.Items.Objects[cbBaudRate.ItemIndex]);
   Parameters.DataBits := Integer(cbDataBits.Items.Objects[cbDataBits.ItemIndex]);

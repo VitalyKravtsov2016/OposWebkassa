@@ -2287,7 +2287,14 @@ end;
 
 procedure TPosEscPrinter.Set_RecLineSpacing(pRecLineSpacing: Integer);
 begin
-  FRecLineSpacing := pRecLineSpacing;
+  if pRecLineSpacing <> FRecLineSpacing then
+  begin
+    if (pRecLineSpacing >= 0)and(pRecLineSpacing <= $FF) then
+    begin
+      FPrinter.SetLineSpacing(pRecLineSpacing);
+    end;
+    FRecLineSpacing := pRecLineSpacing;
+  end;
 end;
 
 procedure TPosEscPrinter.Set_RotateSpecial(pRotateSpecial: Integer);
