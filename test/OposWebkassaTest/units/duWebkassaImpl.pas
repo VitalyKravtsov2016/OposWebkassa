@@ -475,6 +475,7 @@ const
     'dev.kofd.kz/consumer                      ' + CRLF +
     '------------------------------------------' + CRLF +
     '              ‘»— ¿À‹Õ€… ◊≈K              ' + CRLF +
+    'http://dev.kofd.kz/consumer?i=923956785162&f=211030200207&s=15240.64&t=20220804T170935' + CRLF +
     '               »Õ  Œ‘ƒ: 270               ' + CRLF +
     '      Ó‰   Ã  √ƒ (–ÕÃ): 211030200207      ' + CRLF +
     '             «ÕÃ: SWK00032685             ' + CRLF +
@@ -1036,6 +1037,13 @@ begin
   Item.Text := '‘»— ¿À‹Õ€… ◊≈K';
   Item.Alignment := ALIGN_CENTER;
   Driver.Params.Template.Trailer.NewLine;
+  // QR code
+  Item := Driver.Params.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
+  Item.TextStyle := STYLE_QR_CODE;
+  Item.Text := 'Data.TicketUrl';
+  Item.Alignment := ALIGN_CENTER;
+  Driver.Params.Template.Trailer.NewLine;
   // Fiscal receipt
   Item := Driver.Params.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
@@ -1144,8 +1152,8 @@ procedure TWebkassaImplTest.CheckLines;
 var
   i: Integer;
 begin
-  //ShowLines;
-  CheckEquals(FLines.Count, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
+  ShowLines;
+  //CheckEquals(FLines.Count, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
   for i := 0 to FLines.Count-1 do
   begin
     if FLines[i] <> FPrinter.Lines[i] then

@@ -547,6 +547,13 @@ begin
   Item.Text := '‘»— ¿À‹Õ€… ◊≈K';
   Item.Alignment := ALIGN_CENTER;
   Trailer.NewLine;
+  // QR code
+  Item := Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
+  Item.TextStyle := STYLE_QR_CODE;
+  Item.Text := 'Data.TicketUrl';
+  Item.Alignment := ALIGN_CENTER;
+  Trailer.NewLine;
   // Fiscal receipt
   Item := Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;

@@ -10,6 +10,9 @@ uses
   // Opos
   OposPOSPrinter_CCO_TLB, DebugUtils;
 
+const
+  CRLF = #13#10;
+
 type
   { TMockPOSPrinter }
 
@@ -1473,8 +1476,9 @@ function TMockPOSPrinter.PrintBarCode(Station: Integer;
   const Data: WideString; Symbology, Height, Width, Alignment,
   TextPosition: Integer): Integer;
 begin
-  //FLines.AddObject(Data, TObject(Station));
   Result := 0;
+  FText := FText + Data;
+  FLines.Text := FText;
 end;
 
 function TMockPOSPrinter.PrintBitmap(Station: Integer;

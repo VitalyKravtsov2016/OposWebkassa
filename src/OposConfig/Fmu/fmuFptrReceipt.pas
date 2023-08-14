@@ -5,6 +5,8 @@ interface
 uses
   // VCL
   StdCtrls, Controls, Classes, ComObj, SysUtils, Math, Graphics,
+  // JVCL
+  JvExStdCtrls, JvRichEdit,
   // Tnt
   TntSysUtils,
   // 3'd
@@ -133,7 +135,10 @@ begin
           reReceipt.SelAttributes.Style := [fsBold];
           reReceipt.SelText := TextItem.Text;
         end;
-        STYLE_QR_CODE: reReceipt.Lines.Add('  QRCODE: ' + TrimRight(TextItem.Text));
+        STYLE_QR_CODE:
+        begin
+          reReceipt.Lines.Add('  QRCODE: ' + TrimRight(TextItem.Text));
+        end;
         STYLE_IMAGE: reReceipt.Lines.Add('  IMAGE: ' + TrimRight(TextItem.Text));
       else
         reReceipt.SelAttributes.Size := FontSizeNormal;

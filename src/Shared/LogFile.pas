@@ -11,6 +11,7 @@ uses
   WException, TntSysUtils;
 
 const
+  CRLF = #13#10;
   MAX_FILES_COUNT     = 10;
   MAX_FILE_SIZE_IN_KB = 4194240;
 
@@ -495,8 +496,6 @@ begin
 end;
 
 procedure TLogFile.AddLine(const Data: AnsiString);
-const
-  CRLF = #13#10;
 var
   Line: AnsiString;
 begin

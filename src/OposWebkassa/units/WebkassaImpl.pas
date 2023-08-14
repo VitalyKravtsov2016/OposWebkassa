@@ -3013,7 +3013,8 @@ begin
   Document.AddLine(Command.Data.Cashbox.Ofd.Host);
   Document.AddSeparator;
   Document.AddLine(Document.AlignCenter('‘»— ¿À‹Õ€… ◊≈K'));
-  Document.AddLine(Command.Data.TicketUrl, STYLE_QR_CODE);
+  Document.AddItem(Command.Data.TicketUrl, STYLE_QR_CODE);
+  Document.AddLine('');
   Document.AddLine(Document.AlignCenter('»Õ  Œ‘ƒ: ' + Command.Data.Cashbox.IdentityNumber));
   Document.AddLine(Document.AlignCenter(' Ó‰   Ã  √ƒ (–ÕÃ): ' + Command.Data.Cashbox.RegistrationNumber));
   Document.AddLine(Document.AlignCenter('«ÕÃ: ' + Command.Data.Cashbox.UniqueNumber));
@@ -3349,7 +3350,11 @@ procedure TWebkassaImpl.AddItems(Items: TList);
       Item := TTemplateItem(Items[i]);
       Document.LineChars := Item.LineChars;
       Document.LineSpacing := Item.LineSpacing;
-      Document.Add(Item.Value, Item.TextStyle);
+      case Item.TextStyle of
+        STYLE_QR_CODE: Document.AddItem(Item.Value, Item.TextStyle);
+      else
+        Document.Add(Item.Value, Item.TextStyle);
+      end;
     end;
   end;
 

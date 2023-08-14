@@ -8,6 +8,84 @@
   resources were bound to the produced executable.
 */
 
+#define JvResources_RsClBtnShadow 64688
+#define JvResources_RsClGrayText 64689
+#define JvResources_RsClBtnText 64690
+#define JvResources_RsClInactiveCaptionText 64691
+#define JvResources_RsClBtnHighlight 64692
+#define JvResources_RsCl3DDkShadow 64693
+#define JvResources_RsCl3DLight 64694
+#define JvResources_RsClInfoText 64695
+#define JvResources_RsClInfoBk 64696
+#define JvResources_RsGradientActiveCaption 64697
+#define JvResources_RsGradientInactiveCaption 64698
+#define JvResources_RsHotLight 64699
+#define JvResources_RsMenuBar 64700
+#define JvResources_RsMenuHighlight 64701
+#define JvResources_RsClScrollBar 64704
+#define JvResources_RsClBackground 64705
+#define JvResources_RsClActiveCaption 64706
+#define JvResources_RsClInactiveCaption 64707
+#define JvResources_RsClMenu 64708
+#define JvResources_RsClWindow 64709
+#define JvResources_RsClWindowFrame 64710
+#define JvResources_RsClMenuText 64711
+#define JvResources_RsClWindowText 64712
+#define JvResources_RsClCaptionText 64713
+#define JvResources_RsClActiveBorder 64714
+#define JvResources_RsClInactiveBorder 64715
+#define JvResources_RsClAppWorkSpace 64716
+#define JvResources_RsClHighlight 64717
+#define JvResources_RsClHighlightText 64718
+#define JvResources_RsClBtnFace 64719
+#define JvResources_RsClLightBlue 64720
+#define JvResources_RsClViolet 64721
+#define JvResources_RsClGray40 64722
+#define JvResources_RsClPink 64723
+#define JvResources_RsClGold 64724
+#define JvResources_RsClBrightGreen 64725
+#define JvResources_RsClTurquoise 64726
+#define JvResources_RsClPlum 64727
+#define JvResources_RsClGray25 64728
+#define JvResources_RsClRose 64729
+#define JvResources_RsClTan 64730
+#define JvResources_RsClLightYellow 64731
+#define JvResources_RsClLightGreen 64732
+#define JvResources_RsClLightTurquoise 64733
+#define JvResources_RsClPaleBlue 64734
+#define JvResources_RsClLavender 64735
+#define JvResources_RsClCream 64736
+#define JvResources_RsClMedGray 64737
+#define JvResources_RsClBrown 64738
+#define JvResources_RsClOliveGreen 64739
+#define JvResources_RsClDarkGreen 64740
+#define JvResources_RsClDarkTeal 64741
+#define JvResources_RsClDarkBlue 64742
+#define JvResources_RsClIndigo 64743
+#define JvResources_RsClGray80 64744
+#define JvResources_RsClDarkRed 64745
+#define JvResources_RsClOrange 64746
+#define JvResources_RsClDarkYellow 64747
+#define JvResources_RsClBlueGray 64748
+#define JvResources_RsClGray50 64749
+#define JvResources_RsClLightOrange 64750
+#define JvResources_RsClSeaGreen 64751
+#define JvResources_RsClGreen 64752
+#define JvResources_RsClOlive 64753
+#define JvResources_RsClNavy 64754
+#define JvResources_RsClPurple 64755
+#define JvResources_RsClTeal 64756
+#define JvResources_RsClGray 64757
+#define JvResources_RsClSilver 64758
+#define JvResources_RsClRed 64759
+#define JvResources_RsClLime 64760
+#define JvResources_RsClYellow 64761
+#define JvResources_RsClBlue 64762
+#define JvResources_RsClFuchsia 64763
+#define JvResources_RsClAqua 64764
+#define JvResources_RsClWhite 64765
+#define JvResources_RsClMoneyGreen 64766
+#define JvResources_RsClSkyBlue 64767
 #define SynEditStrConst_SYNS_AttrEntityReference 64768
 #define SynEditStrConst_SYNS_AttrNamespaceAttrName 64769
 #define SynEditStrConst_SYNS_AttrNamespaceAttrValue 64770
@@ -22,6 +100,8 @@
 #define SynEditStrConst_SYNS_LangXML 64779
 #define SynEditTextBuffer_SListIndexOutOfBounds 64780
 #define SynEditTextBuffer_SInvalidCapacity 64781
+#define JvResources_RsClBlack 64782
+#define JvResources_RsClMaroon 64783
 #define JclResources_RsOSVersionWin81 64784
 #define JclResources_RsOSVersionWinServer2012R2 64785
 #define JclVclResources_RsSpoolerDocName 64786
@@ -776,6 +856,84 @@
 #define SysConst_SIntOverflow 65535
 STRINGTABLE
 BEGIN
+	JvResources_RsClBtnShadow,	"Button shadow"
+	JvResources_RsClGrayText,	"Dimmed text"
+	JvResources_RsClBtnText,	"Button text"
+	JvResources_RsClInactiveCaptionText,	"Inactive window title bar text"
+	JvResources_RsClBtnHighlight,	"Button highlight"
+	JvResources_RsCl3DDkShadow,	"Dark shadow 3D elements"
+	JvResources_RsCl3DLight,	"Highlight 3D elements"
+	JvResources_RsClInfoText,	"Tooltip text"
+	JvResources_RsClInfoBk,	"Tooltip background"
+	JvResources_RsGradientActiveCaption,	"Gradient Active Caption"
+	JvResources_RsGradientInactiveCaption,	"Gradient Inactive Caption"
+	JvResources_RsHotLight,	"Hot Light"
+	JvResources_RsMenuBar,	"Menu Bar"
+	JvResources_RsMenuHighlight,	"Menu Highlight"
+	JvResources_RsClScrollBar,	"Scrollbar"
+	JvResources_RsClBackground,	"Desktop background"
+	JvResources_RsClActiveCaption,	"Active window title bar"
+	JvResources_RsClInactiveCaption,	"Inactive window title bar"
+	JvResources_RsClMenu,	"Menu background"
+	JvResources_RsClWindow,	"Window background"
+	JvResources_RsClWindowFrame,	"Window frame"
+	JvResources_RsClMenuText,	"Menu text"
+	JvResources_RsClWindowText,	"Window text"
+	JvResources_RsClCaptionText,	"Active window title bar text"
+	JvResources_RsClActiveBorder,	"Active window border"
+	JvResources_RsClInactiveBorder,	"Inactive window border"
+	JvResources_RsClAppWorkSpace,	"Application workspace"
+	JvResources_RsClHighlight,	"Selection background"
+	JvResources_RsClHighlightText,	"Selection text"
+	JvResources_RsClBtnFace,	"Button face"
+	JvResources_RsClLightBlue,	"Light Blue"
+	JvResources_RsClViolet,	"Violet"
+	JvResources_RsClGray40,	"Gray 40%"
+	JvResources_RsClPink,	"Pink"
+	JvResources_RsClGold,	"Gold"
+	JvResources_RsClBrightGreen,	"Bright Green"
+	JvResources_RsClTurquoise,	"Turquoise"
+	JvResources_RsClPlum,	"Plum"
+	JvResources_RsClGray25,	"Gray 25%"
+	JvResources_RsClRose,	"Rose"
+	JvResources_RsClTan,	"Tan"
+	JvResources_RsClLightYellow,	"Light Yellow"
+	JvResources_RsClLightGreen,	"Light Green"
+	JvResources_RsClLightTurquoise,	"Light Turquoise"
+	JvResources_RsClPaleBlue,	"Pale Blue"
+	JvResources_RsClLavender,	"Lavender"
+	JvResources_RsClCream,	"Cream"
+	JvResources_RsClMedGray,	"Medium gray"
+	JvResources_RsClBrown,	"Brown"
+	JvResources_RsClOliveGreen,	"Olive Green"
+	JvResources_RsClDarkGreen,	"Dark Green"
+	JvResources_RsClDarkTeal,	"Dark Teal"
+	JvResources_RsClDarkBlue,	"Dark Blue"
+	JvResources_RsClIndigo,	"Indigo"
+	JvResources_RsClGray80,	"Gray 80%"
+	JvResources_RsClDarkRed,	"Dark Red"
+	JvResources_RsClOrange,	"Orange"
+	JvResources_RsClDarkYellow,	"Dark Yellow"
+	JvResources_RsClBlueGray,	"Blue Gray"
+	JvResources_RsClGray50,	"Gray 50%"
+	JvResources_RsClLightOrange,	"Light Orange"
+	JvResources_RsClSeaGreen,	"Sea Green"
+	JvResources_RsClGreen,	"Green"
+	JvResources_RsClOlive,	"Olive green"
+	JvResources_RsClNavy,	"Navy blue"
+	JvResources_RsClPurple,	"Purple"
+	JvResources_RsClTeal,	"Teal"
+	JvResources_RsClGray,	"Gray"
+	JvResources_RsClSilver,	"Silver"
+	JvResources_RsClRed,	"Red"
+	JvResources_RsClLime,	"Lime"
+	JvResources_RsClYellow,	"Yellow"
+	JvResources_RsClBlue,	"Blue"
+	JvResources_RsClFuchsia,	"Fuchsia"
+	JvResources_RsClAqua,	"Aqua"
+	JvResources_RsClWhite,	"White"
+	JvResources_RsClMoneyGreen,	"Money green"
+	JvResources_RsClSkyBlue,	"Sky blue"
 	SynEditStrConst_SYNS_AttrEntityReference,	"Entity Reference"
 	SynEditStrConst_SYNS_AttrNamespaceAttrName,	"Namespace Attribute Name"
 	SynEditStrConst_SYNS_AttrNamespaceAttrValue,	"Namespace Attribute Value"
@@ -790,6 +948,8 @@ BEGIN
 	SynEditStrConst_SYNS_LangXML,	"XML"
 	SynEditTextBuffer_SListIndexOutOfBounds,	"Invalid stringlist index %d"
 	SynEditTextBuffer_SInvalidCapacity,	"Stringlist capacity cannot be smaller than count"
+	JvResources_RsClBlack,	"Black"
+	JvResources_RsClMaroon,	"Maroon"
 	JclResources_RsOSVersionWin81,	"Windows 8.1"
 	JclResources_RsOSVersionWinServer2012R2,	"Windows Server 2012 R2"
 	JclVclResources_RsSpoolerDocName,	"My Document"
