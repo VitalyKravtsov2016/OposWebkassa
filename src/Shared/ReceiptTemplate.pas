@@ -352,7 +352,14 @@ begin
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Quantity';
-  Item.FormatText := '   %s Í„ x ';
+  Item.FormatText := '   %s';
+  Item.Alignment := ALIGN_LEFT;
+  // UnitName
+  Item := RecItem.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'UnitName';
+  Item.FormatText := ' %s x ';
   Item.Alignment := ALIGN_LEFT;
   // Price
   Item := RecItem.Add;

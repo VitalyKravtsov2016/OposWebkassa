@@ -448,7 +448,7 @@ const
     'Message 1                                 ' + CRLF +
     'Сер. № 5                                  ' + CRLF +
     'ШОКОЛАДНАЯ ПЛИТКА MILKA BUBBLES МОЛОЧНЫЙ  ' + CRLF +
-    '   1.000 кг x 123.45 руб                  ' + CRLF +
+    '   1.000 шт x 123.45 руб                  ' + CRLF +
     '   Скидка                           -22.35' + CRLF +
     '   Наценка                          +11.17' + CRLF +
     '   Стоимость                        112.27' + CRLF +
@@ -570,7 +570,7 @@ begin
   pData := DriverParameterBarcode;
   pString := ItemBarcode;
   FptrCheck(Driver.DirectIO(DIO_SET_DRIVER_PARAMETER, pData, pString));
-  FptrCheck(Driver.PrintRecItem('Сер. № 5                                  ШОКОЛАДНАЯ ПЛИТКА MILKA BUBBLES МОЛОЧНЫЙ', 123.45, 1000, 1, 123.45, 'кг'));
+  FptrCheck(Driver.PrintRecItem('Сер. № 5                                  ШОКОЛАДНАЯ ПЛИТКА MILKA BUBBLES МОЛОЧНЫЙ', 123.45, 1000, 1, 123.45, 'шт'));
   FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка 10', 10, 1));
   FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_SURCHARGE, 'Надбавка 5', 5, 1));
   FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_PERCENTAGE_DISCOUNT, 'Скидка 10%', 10, 1));
@@ -842,7 +842,14 @@ begin
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Quantity';
-  Item.FormatText := '   %s кг x ';
+  Item.FormatText := '   %s';
+  Item.Alignment := ALIGN_LEFT;
+  // UnitName
+  Item := Driver.Params.Template.RecItem.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'UnitName';
+  Item.FormatText := ' %s x ';
   Item.Alignment := ALIGN_LEFT;
   // Price
   Item := Driver.Params.Template.RecItem.Add;
