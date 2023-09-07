@@ -16,15 +16,15 @@ object fmFptrBarcode: TfmFptrBarcode
   Position = poScreenCenter
   PixelsPerInch = 96
   TextHeight = 13
-  object rgQRCode: TRadioGroup
+  object rgBarcode: TRadioGroup
     Left = 8
     Top = 8
     Width = 393
     Height = 209
-    Caption = #1055#1077#1095#1072#1090#1100' QR '#1082#1086#1076#1072
+    Caption = #1055#1077#1095#1072#1090#1100' '#1096#1090#1088#1080#1093#1082#1086#1076#1086#1074
     TabOrder = 0
   end
-  object rbQRCodeESC: TRadioButton
+  object rbBarcodeESCCommands: TRadioButton
     Left = 40
     Top = 40
     Width = 273
@@ -33,7 +33,7 @@ object fmFptrBarcode: TfmFptrBarcode
     TabOrder = 1
     OnClick = ModifiedClick
   end
-  object rbQRCodeGraphics: TRadioButton
+  object rbBarcodeGraphics: TRadioButton
     Left = 40
     Top = 72
     Width = 281
@@ -42,7 +42,7 @@ object fmFptrBarcode: TfmFptrBarcode
     TabOrder = 2
     OnClick = ModifiedClick
   end
-  object rbQRCodeText: TRadioButton
+  object rbBarcodeText: TRadioButton
     Left = 40
     Top = 104
     Width = 281
@@ -51,7 +51,7 @@ object fmFptrBarcode: TfmFptrBarcode
     TabOrder = 3
     OnClick = ModifiedClick
   end
-  object rbQRCodeNone: TRadioButton
+  object rbBarcodeNone: TRadioButton
     Left = 40
     Top = 136
     Width = 281

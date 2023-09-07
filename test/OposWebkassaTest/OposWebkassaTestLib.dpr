@@ -80,7 +80,11 @@ uses
   RawPrinterPort in '..\..\src\Shared\RawPrinterPort.pas',
   Translation in '..\..\src\Shared\Translation.pas',
   DirectIOAPI in '..\..\src\OposWebkassa\units\DirectIOAPI.pas',
-  xmlParser in '..\..\src\Shared\XMLParser.pas';
+  xmlParser in '..\..\src\Shared\XMLParser.pas',
+  DIOHandler in '..\..\src\Shared\DIOHandler.pas',
+  DriverContext in '..\..\src\Shared\DriverContext.pas',
+  PrinterTypes in '..\..\src\Shared\PrinterTypes.pas',
+  DIOHandlers in '..\..\src\Shared\DIOHandlers.pas';
 
 {$R *.RES}
 

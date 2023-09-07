@@ -1733,7 +1733,7 @@ begin
       PTR_BC_CENTER: FPrinter.SetJustification(JUSTIFICATION_CENTERING);
       PTR_BC_RIGHT: FPrinter.SetJustification(JUSTIFICATION_RIGHT);
     else
-      FPrinter.SetLeftMargin(Alignment);
+      FPrinter.SetJustification(JUSTIFICATION_CENTERING);
     end;
     // textPosition
     case TextPosition of
@@ -1769,6 +1769,7 @@ begin
       end;
     end else
     begin
+      BarcodeType := BARCODE2_CODE128;
       case Symbology of
         PTR_BCS_UPCA: BarcodeType := BARCODE2_UPC_A;
         PTR_BCS_UPCE: BarcodeType := BARCODE2_UPC_E;
@@ -1780,7 +1781,6 @@ begin
         PTR_BCS_Code93: BarcodeType := BARCODE2_CODE93;
         PTR_BCS_Code128: BarcodeType := BARCODE2_CODE128;
       else
-        BarcodeType := BARCODE2_CODE128;
         RaiseIllegalError('Symbology not supported');
       end;
       FPrinter.PrintBarcode2(BarcodeType, Data);

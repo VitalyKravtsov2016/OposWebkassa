@@ -1610,6 +1610,7 @@ function TPosWinPrinter.PrintBarCode(Station: Integer;
   const Data: WideString; Symbology, Height, Width, Alignment,
   TextPosition: Integer): Integer;
 begin
+
   Result := ClearResult;
 end;
 

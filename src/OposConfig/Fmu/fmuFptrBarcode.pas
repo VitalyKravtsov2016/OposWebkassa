@@ -14,11 +14,11 @@ type
   { TfmFptrBarcode }
 
   TfmFptrBarcode = class(TFptrPage)
-    rgQRCode: TRadioGroup;
-    rbQRCodeESC: TRadioButton;
-    rbQRCodeGraphics: TRadioButton;
-    rbQRCodeText: TRadioButton;
-    rbQRCodeNone: TRadioButton;
+    rgBarcode: TRadioGroup;
+    rbBarcodeESCCommands: TRadioButton;
+    rbBarcodeGraphics: TRadioButton;
+    rbBarcodeText: TRadioButton;
+    rbBarcodeNone: TRadioButton;
     procedure ModifiedClick(Sender: TObject);
   public
     procedure UpdatePage; override;
@@ -38,22 +38,22 @@ end;
 
 procedure TfmFptrBarcode.UpdatePage;
 begin
-  rbQRCodeESC.Checked := Parameters.QRCode = QRCodeESC;
-  rbQRCodeGraphics.Checked := Parameters.QRCode = QRCodeGraphics;
-  rbQRCodeText.Checked := Parameters.QRCode = QRCodeText;
-  rbQRCodeNone.Checked := Parameters.QRCode = QRCodeNone;
+  rbBarcodeESCCommands.Checked := Parameters.PrintBarcode = PrintBarcodeESCCommands;
+  rbBarcodeGraphics.Checked := Parameters.PrintBarcode = PrintBarcodeGraphics;
+  rbBarcodeText.Checked := Parameters.PrintBarcode = PrintBarcodeText;
+  rbBarcodeNone.Checked := Parameters.PrintBarcode = PrintBarcodeNone;
 end;
 
 procedure TfmFptrBarcode.UpdateObject;
 begin
-  if rbQRCodeESC.Checked  then
-    Parameters.QRCode := QRCodeESC;
-  if rbQRCodeGraphics.Checked then
-    Parameters.QRCode := QRCodeGraphics;
-  if rbQRCodeText.Checked then
-    Parameters.QRCode := QRCodeText;
-  if rbQRCodeNone.Checked then
-    Parameters.QRCode := QRCodeNone;
+  if rbBarcodeESCCommands.Checked  then
+    Parameters.PrintBarcode := PrintBarcodeESCCommands;
+  if rbBarcodeGraphics.Checked then
+    Parameters.PrintBarcode := PrintBarcodeGraphics;
+  if rbBarcodeText.Checked then
+    Parameters.PrintBarcode := PrintBarcodeText;
+  if rbBarcodeNone.Checked then
+    Parameters.PrintBarcode := PrintBarcodeNone;
 end;
 
 end.

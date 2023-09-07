@@ -184,7 +184,7 @@ begin
       FParameters.SerialTimeout := IniFile.ReadInteger(Section, 'SerialTimeout', DefSerialTimeout);
       FParameters.DevicePollTime := IniFile.ReadInteger(Section, 'DevicePollTime', DefDevicePollTime);
       FParameters.TranslationName := IniFile.ReadString(Section, 'TranslationName', DefTranslationName);
-      FParameters.QRCode := IniFile.ReadInteger(Section, 'QRCode', DefQRCode);
+      FParameters.PrintBarcode := IniFile.ReadInteger(Section, 'PrintBarcode', DefPrintBarcode);
       FParameters.TranslationEnabled := IniFile.ReadBool(Section, 'TranslationEnabled', DefTranslationEnabled);
       FParameters.TemplateEnabled := IniFile.ReadBool(Section, 'TemplateEnabled', DefTemplateEnabled);
       FParameters.CurrencyName := IniFile.ReadString(Section, 'CurrencyName', DefCurrencyName);
@@ -230,7 +230,7 @@ begin
     IniFile.WriteInteger(Section, 'SerialTimeout', FParameters.SerialTimeout);
     IniFile.WriteInteger(Section, 'DevicePollTime', FParameters.DevicePollTime);
     IniFile.WriteString(Section, 'TranslationName', FParameters.TranslationName);
-    IniFile.WriteInteger(Section, 'QRCode', FParameters.QRCode);
+    IniFile.WriteInteger(Section, 'PrintBarcode', FParameters.PrintBarcode);
     IniFile.WriteBool(Section, 'TranslationEnabled', FParameters.TranslationEnabled);
     IniFile.WriteBool(Section, 'TemplateEnabled', FParameters.TemplateEnabled);
     IniFile.WriteString(Section, 'CurrencyName', FParameters.CurrencyName);

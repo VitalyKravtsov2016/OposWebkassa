@@ -74,7 +74,11 @@ uses
   RawPrinterPort in '..\Shared\RawPrinterPort.pas',
   Translation in '..\Shared\Translation.pas',
   DirectIOAPI in 'units\DirectIOAPI.pas',
-  xmlParser in '..\Shared\XMLParser.pas';
+  xmlParser in '..\Shared\XMLParser.pas',
+  DIOHandlers in '..\Shared\DIOHandlers.pas',
+  DIOHandler in '..\Shared\DIOHandler.pas',
+  DriverContext in '..\Shared\DriverContext.pas',
+  PrinterTypes in '..\Shared\PrinterTypes.pas';
 
 exports
   DllGetClassObject,

@@ -77,7 +77,6 @@ uses
   SerialPorts in '..\..\src\Shared\SerialPorts.pas',
   ReceiptTemplate in '..\..\src\Shared\ReceiptTemplate.pas',
   MockPrinterPort in '..\..\src\Shared\MockPrinterPort.pas',
-  duPosEscPrinter in 'units\duPosEscPrinter.pas',
   RawPrinterPort in '..\..\src\Shared\RawPrinterPort.pas',
   Translation in '..\..\src\Shared\Translation.pas',
   duPrinterParameters in 'units\duPrinterParameters.pas',
@@ -88,7 +87,11 @@ uses
   MockPosPrinter in 'units\MockPosPrinter.pas',
   duWebkassaImpl in 'units\duWebkassaImpl.pas',
   duOposUtils in 'units\duOposUtils.pas',
-  duWebkassaImpl2 in 'units\duWebkassaImpl2.pas';
+  duWebkassaImpl2 in 'units\duWebkassaImpl2.pas',
+  duPosEscPrinter in 'units\duPosEscPrinter.pas',
+  DIOHandler in '..\..\src\Shared\DIOHandler.pas',
+  PrinterTypes in '..\..\src\Shared\PrinterTypes.pas',
+  DIOHandlers in '..\..\src\Shared\DIOHandlers.pas';
 
 {$R *.RES}
 

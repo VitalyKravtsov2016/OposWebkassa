@@ -260,8 +260,8 @@ begin
       if Reg.ValueExists('TranslationName') then
         Parameters.TranslationName := Reg.ReadString('TranslationName');
 
-      if Reg.ValueExists('QRCode') then
-        Parameters.QRCode := Reg.ReadInteger('QRCode');
+      if Reg.ValueExists('PrintBarcode') then
+        Parameters.PrintBarcode := Reg.ReadInteger('PrintBarcode');
 
       if Reg.ValueExists('TranslationEnabled') then
         Parameters.TranslationEnabled := Reg.ReadBool('TranslationEnabled');
@@ -360,7 +360,7 @@ begin
     Reg.WriteInteger('SerialTimeout', FParameters.SerialTimeout);
     Reg.WriteInteger('DevicePollTime', FParameters.DevicePollTime);
     Reg.WriteString('TranslationName', FParameters.TranslationName);
-    Reg.WriteInteger('QRCode', FParameters.QRCode);
+    Reg.WriteInteger('PrintBarcode', FParameters.PrintBarcode);
     Reg.WriteBool('TranslationEnabled', FParameters.TranslationEnabled);
     Reg.WriteBool('TemplateEnabled', FParameters.TemplateEnabled);
     Reg.WriteString('CurrencyName', FParameters.CurrencyName);

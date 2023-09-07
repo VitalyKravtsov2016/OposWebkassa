@@ -15,12 +15,12 @@ uses
 
 const
   /////////////////////////////////////////////////////////////////////////////
-  // QR code print mode
+  // Barcode print mode
 
-  QRCodeESC       = 0;
-  QRCodeGraphics  = 1;
-  QRCodeText      = 2;
-  QRCodeNone      = 3;
+  PrintBarcodeESCCommands  = 0;
+  PrintBarcodeGraphics     = 1;
+  PrintBarcodeText         = 2;
+  PrintBarcodeNone         = 3;
 
   /////////////////////////////////////////////////////////////////////////////
   // Valid baudrates
@@ -95,7 +95,7 @@ const
   DefDevicePollTime = 3000;
   DefReceiptTemplate = '';
   DefTranslationName = 'KAZ';
-  DefQRCode = QRCodeEsc;
+  DefPrintBarcode = PrintBarcodeEscCommands;
   DefTranslationEnabled = false;
   DefTemplateEnabled = False;
   DefCurrencyName = 'עד';
@@ -188,7 +188,7 @@ type
     FlowControl: Integer;
     SerialTimeout: Integer;
     ReconnectPort: Boolean;
-    QRCode: Integer;
+    PrintBarcode: Integer;
 
     constructor Create(ALogger: ILogFile);
     destructor Destroy; override;
@@ -346,7 +346,7 @@ begin
   ReconnectPort := DefReconnectPort;
   SerialTimeout := DefSerialTimeout;
   DevicePollTime := DefDevicePollTime;
-  QRCode := DefQRCode;
+  PrintBarcode := DefPrintBarcode;
   TranslationName := DefTranslationName;
   TranslationEnabled := DefTranslationEnabled;
   TemplateEnabled := DefTemplateEnabled;
@@ -412,7 +412,7 @@ begin
   Logger.Debug('RemotePort: ' + IntToStr(RemotePort));
   Logger.Debug('ByteTimeout: ' + IntToStr(ByteTimeout));
   Logger.Debug('DevicePollTime: ' + IntToStr(DevicePollTime));
-  Logger.Debug('QRCode: ' + IntToStr(QRCode));
+  Logger.Debug('PrintBarcode: ' + IntToStr(PrintBarcode));
   Logger.Debug('TemplateEnabled: ' + BoolToStr(TemplateEnabled));
   Logger.Debug('CurrencyName: ' + CurrencyName);
   Logger.Debug('LineSpacing: ' + IntToStr(LineSpacing));

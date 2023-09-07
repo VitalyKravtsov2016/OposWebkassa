@@ -95,7 +95,10 @@ uses
   fmuFptrHeader in 'Fmu\fmuFptrHeader.pas' {fmFptrHeader},
   fmuTranslation in 'Fmu\fmuTranslation.pas' {fmTranslation},
   DirectIOAPI in '..\OposWebkassa\units\DirectIOAPI.pas',
-  xmlParser in '..\Shared\XMLParser.pas';
+  xmlParser in '..\Shared\XMLParser.pas',
+  DIOHandler in '..\Shared\DIOHandler.pas',
+  PrinterTypes in '..\Shared\PrinterTypes.pas',
+  DIOHandlers in '..\Shared\DIOHandlers.pas';
 
 {$R *.RES}
 {$R WindowsXP.RES}

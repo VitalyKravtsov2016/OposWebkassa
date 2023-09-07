@@ -11,14 +11,14 @@ uses
   PascalMock,
   // Opos
   Opos, OposFptr, Oposhi, OposFptrhi, OposFptrUtils, OposUtils,
-  OposEvents, OposPtr, RCSEvents, OposEsc,
+  OposEvents, OposPtr, RCSEvents, OposEsc, OPOSException,
   // Tnt
   TntClasses, TntSysUtils,
   // This
   LogFile, WebkassaImpl, WebkassaClient, MockPosPrinter2, FileUtils,
   CustomReceipt, uLkJSON, ReceiptTemplate, SalesReceipt, DirectIOAPI,
   DebugUtils, StringUtils, OposServiceDevice19, PosEscPrinter, PrinterPort,
-  MockPrinterPort;
+  MockPrinterPort, PrinterTypes, PrinterParameters;
 
 const
   CRLF = #13#10;
@@ -29,16 +29,19 @@ type
   TWebkassaImplTest3 = class(TTestCase)
   private
     FLogger: ILogFile;
-    FPort: IPrinterPort;
     FDriver: TWebkassaImpl;
-    FPrinter: TPosEscPrinter;
+    FPrinter: TMockPOSPrinter2;
   protected
     property Driver: TWebkassaImpl read FDriver;
   protected
     procedure SetUp; override;
     procedure TearDown; override;
-  published
     procedure TestPrintQRCode;
+  published
+    procedure TestPrintBarcodeFailed;
+    procedure TestPrintBarcodeAsBarcode;
+    procedure TestPrintBarcodeAsBarcode2;
+    procedure TestPrintBarcodeAsGraphics;
   end;
 
 implementation
@@ -50,8 +53,7 @@ begin
   inherited SetUp;
 
   FLogger := TLogFile.Create;
-  FPort := TMockPrinterPort.Create('Printer');
-  FPrinter := TPosEscPrinter.Create2(nil, FPort, FLogger);
+  FPrinter := TMockPOSPrinter2.Create;
   FDriver := TWebkassaImpl.Create(nil);
 
   FDriver.TestMode := True;
@@ -88,15 +90,143 @@ end;
 procedure TWebkassaImplTest3.TearDown;
 begin
   FDriver.Free;
+  FPrinter.Free;
   inherited TearDown;
 end;
 
+procedure TWebkassaImplTest3.TestPrintBarcodeFailed;
+var
+  Barcode: TBarcodeRec;
+begin
+  FPrinter.Expects('Get_CapRecBarCode').Returns(False);
+  FPrinter.Expects('Get_CapRecBitmap').Returns(False);
+
+  Barcode.Data := '3850504580002030';
+  Barcode.Text := 'DATAMATRIX';
+  Barcode.Height := 100;
+  Barcode.ModuleWidth := 3;
+  Barcode.BarcodeType := DIO_BARCODE_DATAMATRIX;
+  Barcode.Alignment := BARCODE_ALIGNMENT_CENTER;
+  try
+    FDriver.PrintBarcode(Barcode);
+    Fail('No exception');
+  except
+    on E: EOPOSException do
+    begin
+      CheckEquals(OPOS_E_ILLEGAL, E.ResultCode, 'E.ResultCode <> OPOS_E_ILLEGAL');
+      CheckEquals('Bitmaps are not supported', E.Message, 'Invalid E.Message');
+    end;
+  end;
+  FPrinter.Verify('TestPrintBarcodeFailed');
+end;
+
+procedure TWebkassaImplTest3.TestPrintBarcodeAsBarcode;
+var
+  Barcode: TBarcodeRec;
+begin
+  Barcode.Data := '3850504580002030';
+  Barcode.Text := 'DATAMATRIX';
+  Barcode.Height := 100;
+  Barcode.ModuleWidth := 3;
+  Barcode.BarcodeType := DIO_BARCODE_DATAMATRIX;
+  Barcode.Alignment := BARCODE_ALIGNMENT_CENTER;
+
+  FPrinter.Expects('Get_CapRecBarCode').Returns(True);
+  FPrinter.Expects('PrintBarCode').WithParams([FPTR_S_RECEIPT,
+    Barcode.Data, PTR_BCS_DATAMATRIX, Barcode.Height, 0, PTR_BC_CENTER, PTR_BC_TEXT_NONE]).Returns(0);
+  FDriver.PrintBarcode(Barcode);
+  FPrinter.Verify('Verify success');
+end;
+
+(*
+  PrintBarcodeESCCommands  = 0;
+  PrintBarcodeGraphics     = 1;
+  PrintBarcodeText         = 2;
+  PrintBarcodeNone         = 3;
+
+*)
+
+procedure TWebkassaImplTest3.TestPrintBarcodeAsBarcode2;
+var
+  Barcode: TBarcodeRec;
+begin
+  FDriver.Params.PrintBarcode := PrintBarcodeESCCommands;
+  Barcode.Data := '3850504580002030';
+  Barcode.Text := 'DATAMATRIX';
+  Barcode.Height := 100;
+  Barcode.ModuleWidth := 3;
+  Barcode.BarcodeType := DIO_BARCODE_DATAMATRIX;
+  Barcode.Alignment := BARCODE_ALIGNMENT_CENTER;
+
+  FPrinter.Expects('Get_CapRecBarCode').Returns(True);
+  FPrinter.Expects('PrintBarCode').WithParams([FPTR_S_RECEIPT,
+    Barcode.Data, PTR_BCS_DATAMATRIX, Barcode.Height, 0, PTR_BC_CENTER, PTR_BC_TEXT_NONE]).Returns(OPOS_E_ILLEGAL);
+  FPrinter.Expects('Get_ResultCode').Returns(OPOS_E_ILLEGAL);
+  FPrinter.Expects('Get_ResultCodeExtended').Returns(0);
+  FPrinter.Expects('Get_ErrorString').Returns('ErrorString');
+  try
+    FDriver.PrintBarcode(Barcode);
+    Fail('No exception');
+  except
+    on E: EOPOSException do
+    begin
+      CheckEquals(OPOS_E_ILLEGAL, E.ResultCode, 'E.ResultCode <> OPOS_E_ILLEGAL');
+      CheckEquals('ErrorString', E.Message, 'Invalid E.Message');
+    end;
+  end;
+  FPrinter.Verify('Verify success');
+end;
+
+procedure TWebkassaImplTest3.TestPrintBarcodeAsGraphics;
+var
+  Barcode: TBarcodeRec;
+const
+  BitmapData =
+  '424=:>000000000000003>000000280000001<0000001<0000000100010000000000700000000000' +
+  '000000000000020000000000000000000000??????0000000000000000000<<033300<<0333033?0?' +
+  '?<033?0??<00?33<<300?33<<3000??<?<000??<?<00?000<?00?000<?00<00?0<00<00?0<03<?3<?' +
+  '?03<?3<??03??3?3<03??3?3<003<<<<?003<<<<?00?<??3<00?<??3<003003<?003003<?00<?333<' +
+  '00<?333<03333333033333330';
+
+begin
+  FDriver.Params.PrintBarcode := PrintBarcodeGraphics;
+  Barcode.Data := '3850504580002030';
+  Barcode.Text := 'DATAMATRIX';
+  Barcode.Height := 100;
+  Barcode.ModuleWidth := 3;
+  Barcode.BarcodeType := DIO_BARCODE_DATAMATRIX;
+  Barcode.Alignment := BARCODE_ALIGNMENT_CENTER;
+
+  FPrinter.Expects('Open').WithParams(['ThermalU']).Returns(0);
+  FPrinter.Expects('ClaimDevice').WithParams([1000]).Returns(0);
+  FPrinter.Expects('Set_DeviceEnabled').WithParams([True]);
+  FPrinter.Expects('Get_ResultCode').Returns(0);
+  FPrinter.Expects('Set_RecLineChars').WithParams([42]);
+  FPrinter.Expects('Set_RecLineSpacing').WithParams([30]);
+  FPrinter.Expects('Get_CapRecBitmap').Returns(True);
+  FPrinter.Expects('Set_BinaryConversion').WithParams([OPOS_BC_NIBBLE]);
+  FPrinter.Expects('PrintMemoryBitmap').WithParams([FPTR_S_RECEIPT,
+    BitmapData, PTR_BMT_BMP, PTR_BM_ASIS, PTR_BM_CENTER]).Returns(0);
+  FPrinter.Expects('Set_BinaryConversion').WithParams([OPOS_BC_NONE]);
+  FPrinter.Expects('Set_DeviceEnabled').WithParams([False]);
+  FPrinter.Expects('Close').Returns(0);
+
+  FDriver.OpenService(OPOS_CLASSKEY_FPTR, 'DeviceName', nil);
+  FDriver.ClaimDevice(1000);
+  FDriver.SetPropertyNumber(PIDX_DeviceEnabled, 1);
+  FDriver.DirectIO2(DIO_PRINT_BARCODE, DIO_BARCODE_DATAMATRIX,
+    '3850504580002030;DATAMATRIX;100;3;0;');
+  FDriver.Close;
+
+  FPrinter.Verify('Verify success');
+end;
 
 procedure TWebkassaImplTest3.TestPrintQRCode;
 const
   BarcodeData = 'https://devkkm.webkassa.kz/Ticket?chb=SWK00033059&sh=100&extnum=92D51F08-13CF-428E-AF2F-67B6E8BDE994';
 begin
-  FPrinter.FCapRecBitmap := True;
+  FPrinter.Expects('Get_CapRecBarCode').Returns(False);
+  FPrinter.Expects('Get_CapRecBitmap').Returns(True);
   FDriver.PrintQRCodeAsGraphics(BarcodeData);
 end;
 
