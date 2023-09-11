@@ -329,15 +329,14 @@ begin
   Item.FormatText := '—Ã≈Õ¿ π%s';
   Item.Alignment := ALIGN_CENTER;
   Header.NewLine;
-  //
+  // “ËÔ ˜ÂÍ‡
   Item := Header.Add;
-  Item.ItemType := TEMPLATE_TYPE_TEXT;
-  Item.TextStyle := STYLE_BOLD;
-  Item.Text := 'œ–Œƒ¿∆¿';
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'OperationTypeText';
   Item.FormatText := '';
   Item.Alignment := ALIGN_LEFT;
   Header.NewLine;
-
   Header.AddSeparator;
   // Description
   Item := RecItem.Add;

@@ -1831,7 +1831,7 @@ begin
     Separator := StringOfChar('-', Document.LineChars);
     Document.AddLines('ÈÍÍ/ÁÈÍ', Command.Data.CashboxRN);
     Document.AddLines('ÇÍÌ', Command.Data.CashboxSN);
-    Document.AddLines('Êîä ÊÊÌ ÊÃÄ (ĞÍÌ)', IntToStr(Command.Data.CashboxIN));
+    Document.AddLines('Êîä ÊÊÌ ÊÃÄ (ĞÍÌ)', Command.Data.CashboxRN);
     if IsZReport then
       Document.AddLine(Document.AlignCenter('Z-ÎÒ×ÅÒ'))
     else
@@ -3207,6 +3207,19 @@ end;
 
 function TWebkassaImpl.ReceiptFieldByText(Receipt: TSalesReceipt;
   Item: TTemplateItem): WideString;
+
+  function GetRecTypeText(RecType: TRecType): string;
+  begin
+    case RecType of
+      rtBuy    : Result := 'ÏÎÊÓÏÊÀ';
+      rtRetBuy : Result := 'ÂÎÇÂĞÀÒ ÏÎÊÓÏÊÈ';
+      rtSell   : Result := 'ÏĞÎÄÀÆÀ';
+      rtRetSell: Result := 'ÂÎÇÂĞÀÒ ÏĞÎÄÀÆÈ';
+    else
+      raise Exception.CreateFmt('Invalid receipt type, %d', [Ord(RecType)]);
+    end;
+  end;
+
 var
   Amount: Currency;
 begin
@@ -3269,6 +3282,12 @@ begin
       Result := Format('%.2f', [Amount]);
     Exit;
   end;
+  if WideCompareText(Item.Text, 'OperationTypeText') = 0 then
+  begin
+    Result := GetRecTypeText(Receipt.RecType);
+    Exit;
+  end;
+
   raise Exception.CreateFmt('Receipt field %s not found', [Item.Text]);
 end;
 
