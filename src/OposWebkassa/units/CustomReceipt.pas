@@ -8,7 +8,7 @@ uses
   // Tnt
   TntClasses,
   // This
-  gnugettext, StringUtils, DirectIOAPI;
+  gnugettext, StringUtils, DirectIOAPI, PrinterTypes;
 
 const
   DriverParameterExternalCheckNumber = 300;
@@ -126,6 +126,7 @@ type
     procedure DirectIO(Command: Integer; var pData: Integer; var pString: WideString); virtual;
 
     procedure Print(AVisitor: TObject); virtual;
+    procedure PrintBarcode(const Barcode: string); virtual;
 
     property Barcode: string read FBarcode;
     property Lines: TTntStrings read FLines;
@@ -373,6 +374,11 @@ begin
       end;
     end;
   end;
+end;
+
+procedure TCustomReceipt.PrintBarcode(const Barcode: string);
+begin
+
 end;
 
 end.

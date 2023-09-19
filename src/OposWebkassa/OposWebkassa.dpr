@@ -78,7 +78,8 @@ uses
   DIOHandlers in '..\Shared\DIOHandlers.pas',
   DIOHandler in '..\Shared\DIOHandler.pas',
   DriverContext in '..\Shared\DriverContext.pas',
-  PrinterTypes in '..\Shared\PrinterTypes.pas';
+  PrinterTypes in '..\Shared\PrinterTypes.pas',
+  BarcodeUtils in '..\Shared\BarcodeUtils.pas';
 
 exports
   DllGetClassObject,

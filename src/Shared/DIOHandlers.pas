@@ -111,17 +111,14 @@ begin
     Barcode.BarcodeType := pData;
     Barcode.Data := pString;
     Barcode.Text := pString;
-
-    (*
-    Barcode.Height := Printer.Params.BarcodeHeight;
-    Barcode.ModuleWidth := Printer.Params.BarcodeModuleWidth;
-    Barcode.Alignment := Printer.Params.BarcodeAlignment;
-    Barcode.Parameter1 := Printer.Params.BarcodeParameter1;
-    Barcode.Parameter2 := Printer.Params.BarcodeParameter2;
-    Barcode.Parameter3 := Printer.Params.BarcodeParameter3;
-    Barcode.Parameter4 := Printer.Params.BarcodeParameter4;
-    Barcode.Parameter5 := Printer.Params.BarcodeParameter5;
-    *)
+    Barcode.Height := 100;
+    Barcode.ModuleWidth := 3;
+    Barcode.Alignment := 0;
+    Barcode.Parameter1 := 0;
+    Barcode.Parameter2 := 0;
+    Barcode.Parameter3 := 0;
+    Barcode.Parameter4 := 0;
+    Barcode.Parameter5 := 0;
   end else
   begin
     Barcode.BarcodeType := pData;
@@ -136,7 +133,7 @@ begin
     Barcode.Parameter4 := GetInteger(pString, 9, ValueDelimiters);
     Barcode.Parameter5 := GetInteger(pString, 10, ValueDelimiters);
   end;
-  Printer.PrintBarcode(Barcode);
+  Printer.PrintBarcode(BarcodeToStr(Barcode));
 end;
 
 { TDIOBarcodeHex }
@@ -172,7 +169,7 @@ begin
     Barcode.Parameter2 := GetInteger(pString, 7, ValueDelimiters);
     Barcode.Parameter3 := GetInteger(pString, 8, ValueDelimiters);
   end;
-  Printer.PrintBarcode(Barcode);
+  Printer.PrintBarcode(BarcodeToStr(Barcode));
 end;
 
 { TDIOBarcodeHex2 }
@@ -212,7 +209,7 @@ begin
     Barcode.Parameter4 := GetInteger(pString, 9, ValueDelimiters);
     Barcode.Parameter5 := GetInteger(pString, 10, ValueDelimiters);
   end;
-  Printer.PrintBarcode(Barcode);
+  Printer.PrintBarcode(BarcodeToStr(Barcode));
 end;
 
 { TDIOPrintText }

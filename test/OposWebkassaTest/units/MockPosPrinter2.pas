@@ -8,7 +8,7 @@ uses
   // Mock
   PascalMock,
   // Opos
-  OposPOSPrinter_CCO_TLB, DebugUtils;
+  OposPOSPrinter_CCO_TLB, DebugUtils, StringUtils;
 
 type
   { TMockPOSPrinter2 }
@@ -1299,7 +1299,8 @@ end;
 function TMockPOSPrinter2.PrintNormal(Station: Integer;
   const Data: WideString): Integer;
 begin
-  ODS(TrimRight(Data));
+  ODS('"' + Data + '"');
+  //ODS(StrToHex(Data));
   Result := AddCall('PrintNormal').WithParams([Station, Data]).ReturnValue;
 end;
 

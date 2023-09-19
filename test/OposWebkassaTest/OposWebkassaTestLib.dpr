@@ -84,7 +84,8 @@ uses
   DIOHandler in '..\..\src\Shared\DIOHandler.pas',
   DriverContext in '..\..\src\Shared\DriverContext.pas',
   PrinterTypes in '..\..\src\Shared\PrinterTypes.pas',
-  DIOHandlers in '..\..\src\Shared\DIOHandlers.pas';
+  DIOHandlers in '..\..\src\Shared\DIOHandlers.pas',
+  BarcodeUtils in '..\..\src\Shared\BarcodeUtils.pas';
 
 {$R *.RES}
 

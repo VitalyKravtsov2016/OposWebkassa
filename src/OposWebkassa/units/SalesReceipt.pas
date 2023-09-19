@@ -10,7 +10,8 @@ uses
   // Tnt
   TntClasses,
   // This
-  CustomReceipt, ReceiptItem, gnugettext, WException, MathUtils, TextDocument;
+  CustomReceipt, ReceiptItem, gnugettext, WException, MathUtils,
+  TextDocument, PrinterTypes;
 
 const
   MaxPayments = 4;
@@ -126,6 +127,7 @@ type
     procedure Print(AVisitor: TObject); override;
 
     procedure PrintRecMessage(const Message: WideString); override;
+    procedure PrintBarcode(const Barcode: string); override;
 
     property Change: Currency read FChange;
     property Charge: Currency read GetCharge;
@@ -643,5 +645,15 @@ begin
     Item.Style := STYLE_NORMAL;
   end;
 end;
+
+procedure TSalesReceipt.PrintBarcode(const Barcode: string);
+var
+  Item: TBarcodeItem;
+begin
+  Item := TBarcodeItem.Create(Items);
+  Item.Barcode := Barcode;
+end;
+
+
 
 end.

@@ -94,7 +94,8 @@ uses
   MathUtils in '..\OposWebkassa\units\MathUtils.pas',
   Translation in '..\Shared\Translation.pas',
   ReceiptTemplate in '..\Shared\ReceiptTemplate.pas',
-  xmlParser in '..\Shared\XMLParser.pas';
+  xmlParser in '..\Shared\XMLParser.pas',
+  PrinterTypes in '..\Shared\PrinterTypes.pas';
 
 {$R *.RES}
 {$R WindowsXP.RES}

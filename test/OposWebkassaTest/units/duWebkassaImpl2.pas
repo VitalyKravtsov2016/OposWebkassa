@@ -75,6 +75,7 @@ type
     procedure EnableDevice;
     procedure OpenClaimEnable;
     procedure TestRenderQRCode;
+    procedure TestPrintDatamatrixBarcode;
   end;
 
 implementation
@@ -568,6 +569,112 @@ begin
   finally
     Stream.Free;
     Graphic.Free;
+  end;
+end;
+
+procedure TWebkassaImplTest2.TestPrintDatamatrixBarcode;
+const
+  ReceiptText: string =
+    '                                          ' + CRLF +
+    '   Восточно-Казастанская область, город   ' + CRLF +
+    '  Усть-Каменогорск, ул. Грейдерная, 1/10  ' + CRLF +
+    '            ТОО PetroRetail               ' + CRLF +
+    'НДС Серия 00000                    № 00000' + CRLF +
+    '------------------------------------------' + CRLF +
+    '                     ' + CRLF +
+    '                 СМЕНА №0' + CRLF +
+    'ПРОДАЖА' + CRLF +
+    '------------------------------------------' + CRLF +
+    'Message 1' + CRLF +
+    'Item 1' + CRLF +
+    '   1.000 кг x 123.45 тг' + CRLF +
+    '   Стоимость                        123.45' + CRLF +
+    '------------------------------------------' + CRLF +
+    ESC + '|4CИТОГ          =123.45' + CRLF +
+    'Банковская карта:                  =123.45' + CRLF +
+    'в т.ч. НДС 12%                      =13.23' + CRLF +
+    '------------------------------------------' + CRLF +
+    'Фискальный признак: ' + CRLF +
+    'Время: ' + CRLF +
+    'Оператор фискальных данных:' + CRLF +
+    '' + CRLF +
+    'Для проверки чека зайдите на сайт:' + CRLF +
+    '' + CRLF +
+    '------------------------------------------' + CRLF +
+    '              ФИСКАЛЬНЫЙ ЧЕK' + CRLF +
+    '' + CRLF +
+    '                ИНК ОФД: ' + CRLF +
+    '           Код ККМ КГД (РНМ): ' + CRLF +
+    '                  ЗНМ: ' + CRLF +
+    '           Callцентр 039458039850         ' + CRLF +
+    '          Горячая линия 20948802934       ' + CRLF +
+    '            СПАСИБО ЗА ПОКУПКУ            ';
+
+var
+  i: Integer;
+  Lines: TStrings;
+begin
+  OpenClaimEnable;
+
+  Lines := TStringList.Create;
+  try
+    Lines.Text := ReceiptText;
+    FPrinter.Expects('Get_RecLineChars').Returns(42);
+    FPrinter.Expects('Get_RecLineHeight').Returns(18);
+    FPrinter.Expects('Get_RecLineSpacing').Returns(5);
+    FPrinter.Expects('CheckHealth').WithParams([OPOS_CH_INTERNAL]).Returns(0);
+    FPrinter.Expects('Get_CapRecEmptySensor').Returns(True);
+    FPrinter.Expects('Get_RecEmpty').Returns(False);
+    FPrinter.Expects('Get_CapCoverSensor').Returns(True);
+    FPrinter.Expects('Get_CoverOpen').Returns(False);
+
+    FPrinter.Expects('Get_CapRecBold').Returns(True);
+    FPrinter.Expects('Get_CapRecDwideDhigh').Returns(True);
+    FPrinter.Expects('Get_RecLineChars').Returns(42);
+    FPrinter.Expects('Get_RecLineHeight').Returns(18);
+    FPrinter.Expects('Get_RecLineSpacing').Returns(5);
+    FPrinter.Expects('Get_CapTransaction').Returns(True);
+    FPrinter.Expects('TransactionPrint').WithParams([PTR_S_RECEIPT, PTR_TP_TRANSACTION]).Returns(0);
+    for i := 0 to 13 do
+    begin
+      FPrinter.Expects('PrintNormal').WithParams([PTR_S_RECEIPT, Lines[i] + CRLF]).Returns(0);
+    end;
+    FPrinter.Expects('Get_CapRecBarCode').Returns(True);
+    FPrinter.Expects('PrintBarCode').WithParams([
+      2, '3850504580002030', 203, 100, 0, -2, -11]).Returns(0);
+
+    for i := 14 to 26 do
+    begin
+      FPrinter.Expects('PrintNormal').WithParams([PTR_S_RECEIPT, Lines[i] + CRLF]).Returns(0);
+    end;
+    FPrinter.Expects('Get_CapRecBarCode').Returns(True);
+    FPrinter.Expects('PrintBarCode').WithParams([
+      2, '', 204, 0, 4, -2, -11]).Returns(0);
+
+    for i := 27 to Lines.Count-1 do
+    begin
+      FPrinter.Expects('PrintNormal').WithParams([PTR_S_RECEIPT, Lines[i] + CRLF]).Returns(0);
+    end;
+    FPrinter.Expects('Get_CapRecPapercut').Returns(True);
+    FPrinter.Expects('Get_RecLinesToPaperCut').Returns(0);
+    FPrinter.Expects('CutPaper').WithParams([90]).Returns(0);
+    FPrinter.Expects('Get_CapTransaction').Returns(True);
+    FPrinter.Expects('TransactionPrint').WithParams([PTR_S_RECEIPT, PTR_TP_NORMAL]).Returns(0);
+    FPrinter.Expects('CheckHealth').WithParams([OPOS_CH_INTERNAL]).Returns(0);
+    FPrinter.Expects('Set_RecLineChars').WithParams([42]);
+
+
+    FptrCheck(Driver.BeginFiscalReceipt(True));
+    FptrCheck(Driver.PrintRecMessage('Message 1'));
+    FptrCheck(Driver.PrintRecItem('Item 1', 123.45, 1000, 1, 123.45, 'кг'));
+    FptrCheck(Driver.DirectIO2(DIO_PRINT_BARCODE, DIO_BARCODE_DATAMATRIX,
+      '3850504580002030;DATAMATRIX;100;3;0;'));
+    FptrCheck(Driver.PrintRecTotal(123.45, 123.45, '1'));
+    FptrCheck(Driver.EndFiscalReceipt(False));
+
+    FPrinter.Verify('TestPrintDatamatrixBarcode');
+  finally
+    Lines.Free;
   end;
 end;
 

@@ -4,33 +4,23 @@ interface
 
 uses
   // VCL
-  Classes, SysUtils, TntSysUtils,
+  Classes, SysUtils, TntSysUtils, Graphics,
   // Tnt
   TntClasses,
   // Opos
-  OposUtils, 
+  OposUtils,
   // This
-  StringUtils;
-
-const
-  STYLE_NORMAL        = 0;
-  STYLE_BOLD          = 1;
-  STYLE_ITALIC        = 2;
-  STYLE_DWIDTH        = 3;
-  STYLE_DHEIGHT       = 4;
-  STYLE_DWIDTH_HEIGHT = 5;
-  STYLE_QR_CODE       = 6;
-  STYLE_IMAGE         = 7;
+  StringUtils, PrinterTypes;
 
 type
-  TTextItem = class;
-  TTextItems = class;
+  TDocItem = class;
+  TDocItems = class;
 
   { TTextDocument }
 
   TTextDocument = class
   private
-    FItems: TTextItems;
+    FItems: TDocItems;
     FLineChars: Integer;
     FLineHeight: Integer;
     FLineSpacing: Integer;
@@ -53,32 +43,31 @@ type
     procedure AddLines(const Line1, Line2: WideString; Style: Integer); overload;
     function AlignCenter(const Line: WideString): WideString;
     function ConcatLines(const Line1, Line2: WideString; LineChars: Integer): WideString;
-    function AddItem(const Line: WideString; Style: Integer): TTextItem;
+    function AddItem(const Line: WideString; Style: Integer): TDocItem;
     function GetLineLength(Style: Integer): Integer;
-
     procedure Assign(Source: TTextDocument);
     procedure Add(const ALine: WideString; Style: Integer); overload;
+    procedure AddBarcode(const Barcode: string);
 
-    property Items: TTextItems read FItems;
+    property Items: TDocItems read FItems;
     property LineChars: Integer read FLineChars write FLineChars;
     property LineHeight: Integer read FLineHeight write FLineHeight;
     property LineSpacing: Integer read FLineSpacing write FLineSpacing;
     property PrintHeader: Boolean read FPrintHeader write FPrintHeader;
   end;
 
-  { TTextItems }
+  { TDocItems }
 
-  TTextItems = class(TCollection)
+  TDocItems = class(TCollection)
   private
-    function GetItem(Index: Integer): TTextItem;
+    function GetItem(Index: Integer): TDocItem;
   public
-    function Add: TTextItem;
-    property Items[Index: Integer]: TTextItem read GetItem; default;
+    property Items[Index: Integer]: TDocItem read GetItem; default;
   end;
 
-  { TTextItem }
+  { TDocItem }
 
-  TTextItem = class(TCollectionItem)
+  TDocItem = class(TCollectionItem)
   private
     FStyle: Integer;
     FText: WideString;
@@ -117,7 +106,7 @@ end;
 constructor TTextDocument.Create;
 begin
   inherited Create;
-  FItems := TTextItems.Create(TTextItem);
+  FItems := TDocItems.Create(TDocItem);
   LineChars := 42;
   LineHeight := 12;
   LineSpacing := 10;
@@ -196,11 +185,11 @@ begin
   until Length(Text) = 0;
 end;
 
-function TTextDocument.AddItem(const Line: WideString; Style: Integer): TTextItem;
+function TTextDocument.AddItem(const Line: WideString; Style: Integer): TDocItem;
 var
-  Item: TTextItem;
+  Item: TDocItem;
 begin
-  Item := FItems.Add;
+  Item := TDocItem.Create(Items);
   Item.FText := Line;
   Item.FStyle := Style;
   Item.FLineChars := LineChars;
@@ -211,9 +200,9 @@ end;
 
 procedure TTextDocument.Add(Index: Integer; const Line: WideString);
 var
-  Item: TTextItem;
+  Item: TDocItem;
 begin
-  Item := FItems.Insert(Index) as TTextItem;
+  Item := FItems.Insert(Index) as TDocItem;
   Item.FText := Line;
   Item.FStyle := STYLE_NORMAL;
 end;
@@ -297,27 +286,31 @@ begin
   FLineChars := Source.LineChars;
 end;
 
-{ TTextItems }
-
-function TTextItems.Add: TTextItem;
-begin
-  Result := TTextItem.Create(Self);
-end;
-
-function TTextItems.GetItem(Index: Integer): TTextItem;
-begin
-  Result := inherited Items[Index] as TTextItem;
-end;
-
-{ TTextItem }
-
-procedure TTextItem.Assign(Source: TPersistent);
+procedure TTextDocument.AddBarcode(const Barcode: string);
 var
-  Src: TTextItem;
+  Item: TDocItem;
 begin
-  if Source is TTextItem then
+  Item := TDocItem.Create(Items);
+  Item.FStyle := STYLE_BARCODE;
+  Item.FText := Barcode;
+end;
+
+{ TDocItems }
+
+function TDocItems.GetItem(Index: Integer): TDocItem;
+begin
+  Result := inherited Items[Index] as TDocItem;
+end;
+
+{ TDocItem }
+
+procedure TDocItem.Assign(Source: TPersistent);
+var
+  Src: TDocItem;
+begin
+  if Source is TDocItem then
   begin
-    Src := Source as TTextItem;
+    Src := Source as TDocItem;
     FStyle := Src.Style;
     FText := Src.Text;
   end else

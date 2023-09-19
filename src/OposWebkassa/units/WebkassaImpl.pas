@@ -22,7 +22,7 @@ uses
   SalesReceipt, TextDocument, ReceiptItem, StringUtils, DebugUtils, VatRate,
   uZintBarcode, uZintInterface, FileUtils, PosWinPrinter, PosEscPrinter,
   SerialPort, PrinterPort, SocketPort, ReceiptTemplate, RawPrinterPort,
-  DIOHandler, PrinterTypes, DirectIOAPI;
+  DIOHandler, PrinterTypes, DirectIOAPI, BarcodeUtils;
 
 const
   FPTR_DEVICE_DESCRIPTION = 'WebKassa OPOS driver';
@@ -73,10 +73,17 @@ type
     FOposDevice: TOposServiceDevice19;
     FPrinterState: TFiscalPrinterState;
     FDIOHandlers: TDIOHandlers;
-
     FVatValues: array [MinVatID..MaxVatID] of Integer;
     FRecLineChars: Integer;
     FHeaderPrinted: Boolean;
+    FLineChars: Integer;
+    FLineHeight: Integer;
+    FLineSpacing: Integer;
+    FPrefix: WideString;
+    FCapRecBold: Boolean;
+    FCapRecDwideDhigh: Boolean;
+
+
     procedure PrintLine(Text: WideString);
     function GetReceiptItemText(ReceiptItem: TSalesReceiptItem;
       Item: TTemplateItem): WideString;
@@ -88,10 +95,11 @@ type
     function ReadReceiptJson(RecCommand: TSendReceiptCommand): WideString;
     procedure BeginDocument(APrintHeader: boolean);
     procedure UpdateTemplateItem(Item: TTemplateItem);
-    procedure PrintQRCodeItem(const Item: TTextItem);
+    procedure PrintQRCodeItem(const Item: TDocItem);
     procedure CreateDIOHandlers;
     procedure PrintBarcodeAsGraphics(const Barcode: TBarcodeRec);
     function RenderBarcodeRec(Barcode: TBarcodeRec): AnsiString;
+    procedure PrintDocItem(Item: TDocItem);
   public
     procedure PrintDocumentSafe(Document: TTextDocument);
     procedure CheckCanPrint;
@@ -365,7 +373,8 @@ type
     function EncodeString(const S: WideString): WideString;
     procedure PrintQRCodeAsGraphics(const BarcodeData: AnsiString);
     function RenderQRCode(const BarcodeData: AnsiString): AnsiString;
-    procedure PrintBarcode(const Barcode: TBarcodeRec);
+    procedure PrintBarcode(const Barcode: string);
+    procedure PrintBarcode2(const Barcode: TBarcodeRec);
 
     property Logger: ILogFile read FLogger;
     property CashBox: TCashBox read FCashBox;
@@ -733,7 +742,8 @@ begin
     FReceipt := CreateReceipt(FFiscalReceiptType);
     FReceipt.BeginFiscalReceipt(PrintHeader);
 
-    BeginDocument(PrintHeader);
+    BeginDocument(PrintHeader);                                                                                     
+
     Result := ClearResult;
   except
     on E: Exception do
@@ -2933,6 +2943,7 @@ var
   ItemQuantity: Double;
   UnitPrice: Currency;
   Adjustment: TAdjustmentRec;
+  BarcodeItem: TBarcodeItem;
 begin
   Document.PrintHeader := Receipt.PrintHeader;
 
@@ -2993,6 +3004,12 @@ begin
     begin
       TextItem := ReceiptItem as TRecTexItem;
       Document.AddLine(TextItem.Text, TextItem.Style);
+    end;
+    // Barcode
+    if ReceiptItem is TBarcodeItem then
+    begin
+      BarcodeItem := ReceiptItem as TBarcodeItem;
+      Document.AddBarcode(BarcodeItem.Barcode);
     end;
   end;
   Document.AddSeparator;
@@ -3502,27 +3519,21 @@ end;
 procedure TWebkassaImpl.PrintDocument(Document: TTextDocument);
 var
   i: Integer;
-  Text: WideString;
-  CapRecBold: Boolean;
-  CapRecDwideDhigh: Boolean;
-  Item: TTextItem;
   TickCount: DWORD;
-  Prefix: WideString;
-  LineChars: Integer;
-  LineHeight: Integer;
-  LineSpacing: Integer;
+  DocItem: TDocItem;
 begin
   Logger.Debug('PrintDocument');
   TickCount := GetTickCount;
 
   CheckPtr(Printer.CheckHealth(OPOS_CH_INTERNAL));
   CheckCanPrint;
-  CapRecDwideDhigh := Printer.CapRecDwideDhigh;
-  CapRecBold := Printer.CapRecBold;
 
-  LineChars := Printer.RecLineChars;
-  LineHeight := Printer.RecLineHeight;
-  LineSpacing := Printer.RecLineSpacing;
+  FCapRecBold := Printer.CapRecBold;
+  FCapRecDwideDhigh := Printer.CapRecDwideDhigh;
+
+  FLineChars := Printer.RecLineChars;
+  FLineHeight := Printer.RecLineHeight;
+  FLineSpacing := Printer.RecLineSpacing;
 
   if Printer.CapTransaction then
   begin
@@ -3530,48 +3541,7 @@ begin
   end;
   for i := 0 to Document.Items.Count-1 do
   begin
-    Item := Document.Items[i] as TTextItem;
-
-    if (Item.LineChars <> 0)and(Item.LineChars <> LineChars) then
-    begin
-      Printer.RecLineChars := Item.LineChars;
-      LineChars := Item.LineChars;
-    end;
-    if (Item.LineHeight <> 0)and(Item.LineHeight <> LineHeight) then
-    begin
-      Printer.RecLineHeight := Item.LineHeight;
-      LineHeight := Item.LineHeight;
-    end;
-    if (Item.LineSpacing <> 0)and(Item.LineSpacing <> LineSpacing) then
-    begin
-      Printer.RecLineSpacing := Item.LineSpacing;
-      LineSpacing := Item.LineSpacing;
-    end;
-
-
-    case Item.Style of
-      STYLE_QR_CODE: PrintQRCodeItem(Item);
-    else
-      Text := Item.Text;
-      Prefix := '';
-      // DWDH
-      if Item.Style = STYLE_DWIDTH_HEIGHT then
-      begin
-        if CapRecDwideDhigh then
-          Prefix := ESC_DoubleHighWide;
-      end;
-      // BOLD
-      if Item.Style = STYLE_BOLD then
-      begin
-        if CapRecBold then
-          Prefix := ESC_Bold;
-      end;
-
-      Text := Params.GetTranslationText(Text);
-      CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, Prefix + Text));
-
-      //PrintText(Prefix, Text, RecLineChars);
-    end;
+    PrintDocItem(Document.Items[i]);
   end;
 
   PrintHeaderAndCut;
@@ -3583,7 +3553,52 @@ begin
   Logger.Debug(Format('PrintDocument, time=%d ms', [GetTickCount-TickCount]));
 end;
 
-procedure TWebkassaImpl.PrintQRCodeItem(const Item: TTextItem);
+procedure TWebkassaImpl.PrinTDocItem(Item: TDocItem);
+var
+  Text: WideString;
+begin
+  if (Item.LineChars <> 0)and(Item.LineChars <> FLineChars) then
+  begin
+    Printer.RecLineChars := Item.LineChars;
+    FLineChars := Item.LineChars;
+  end;
+  if (Item.LineHeight <> 0)and(Item.LineHeight <> FLineHeight) then
+  begin
+    Printer.RecLineHeight := Item.LineHeight;
+    FLineHeight := Item.LineHeight;
+  end;
+  if (Item.LineSpacing <> 0)and(Item.LineSpacing <> FLineSpacing) then
+  begin
+    Printer.RecLineSpacing := Item.LineSpacing;
+    FLineSpacing := Item.LineSpacing;
+  end;
+
+
+  case Item.Style of
+    STYLE_QR_CODE: PrintQRCodeItem(Item);
+    STYLE_BARCODE: PrintBarcode2(StrToBarcode(Item.Text));
+  else
+    Text := Item.Text;
+    FPrefix := '';
+    // DWDH
+    if Item.Style = STYLE_DWIDTH_HEIGHT then
+    begin
+      if FCapRecDwideDhigh then
+        FPrefix := ESC_DoubleHighWide;
+    end;
+    // BOLD
+    if Item.Style = STYLE_BOLD then
+    begin
+      if FCapRecBold then
+        FPrefix := ESC_Bold;
+    end;
+
+    Text := Params.GetTranslationText(Text);
+    CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, FPrefix + Text));
+  end;
+end;
+
+procedure TWebkassaImpl.PrintQRCodeItem(const Item: TDocItem);
 begin
   try
     case Params.PrintBarcode of
@@ -3730,53 +3745,6 @@ begin
     RaiseOposException(OPOS_E_ILLEGAL, _('No station defined'));
 
   Result := Station;
-end;
-
-procedure RenderBarcode(Bitmap: TBitmap; Symbol: PZSymbol; Is1D: Boolean);
-var
-  B: Byte;
-  X, Y: Integer;
-begin
-  Bitmap.Monochrome := True;
-  Bitmap.PixelFormat := pf1Bit;
-  Bitmap.Width := Symbol.width;
-  if Is1D then
-    Bitmap.Height := Symbol.Height
-  else
-    Bitmap.Height := Symbol.rows;
-
-  for X := 0 to Symbol.width-1 do
-  for Y := 0 to Symbol.Height-1 do
-  begin
-    Bitmap.Canvas.Pixels[X, Y] := clWhite;
-    if Is1D then
-      B := Byte(Symbol.encoded_data[0][X div 7])
-    else
-      B := Byte(Symbol.encoded_data[Y][X div 7]);
-
-    if (B and (1 shl (X mod 7))) <> 0 then
-      Bitmap.Canvas.Pixels[X, Y] := clBlack;
-  end;
-end;
-
-procedure ScaleBitmap(Bitmap: TBitmap; Scale: Integer);
-var
-  P: TPoint;
-  DstBitmap: TBitmap;
-begin
-  DstBitmap := TBitmap.Create;
-  try
-    DstBitmap.Monochrome := True;
-    DstBitmap.PixelFormat := pf1Bit;
-    P.X := Bitmap.Width * Scale;
-    P.Y := Bitmap.Height * Scale;
-    DstBitmap.Width := P.X;
-    DstBitmap.Height := P.Y;
-    DstBitmap.Canvas.StretchDraw(Rect(0, 0, P.X, P.Y), Bitmap);
-    Bitmap.Assign(DstBitmap);
-  finally
-    DstBitmap.Free;
-  end;
 end;
 
 function TWebkassaImpl.RenderQRCode(const BarcodeData: AnsiString): AnsiString;
@@ -3993,7 +3961,12 @@ begin
   end;
 end;
 
-procedure TWebkassaImpl.PrintBarcode(const Barcode: TBarcodeRec);
+procedure TWebkassaImpl.PrintBarcode(const Barcode: string);
+begin
+  Receipt.PrintBarcode(Barcode);
+end;
+
+procedure TWebkassaImpl.PrintBarcode2(const Barcode: TBarcodeRec);
 
   function BarcodeTypeToSymbology(BarcodeType: Integer): Integer;
   begin

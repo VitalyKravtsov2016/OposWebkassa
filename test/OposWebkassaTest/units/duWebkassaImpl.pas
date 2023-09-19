@@ -15,7 +15,7 @@ uses
   // This
   LogFile, WebkassaImpl, WebkassaClient, MockPosPrinter, FileUtils,
   CustomReceipt, uLkJSON, ReceiptTemplate, SalesReceipt, DirectIOAPI,
-  DebugUtils, StringUtils;
+  DebugUtils, StringUtils, PrinterTypes;
 
 const
   CRLF = #13#10;

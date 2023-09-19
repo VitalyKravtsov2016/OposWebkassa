@@ -98,7 +98,8 @@ uses
   xmlParser in '..\Shared\XMLParser.pas',
   DIOHandler in '..\Shared\DIOHandler.pas',
   PrinterTypes in '..\Shared\PrinterTypes.pas',
-  DIOHandlers in '..\Shared\DIOHandlers.pas';
+  DIOHandlers in '..\Shared\DIOHandlers.pas',
+  BarcodeUtils in '..\Shared\BarcodeUtils.pas';
 
 {$R *.RES}
 {$R WindowsXP.RES}

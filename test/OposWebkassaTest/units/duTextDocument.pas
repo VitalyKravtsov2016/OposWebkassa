@@ -13,7 +13,7 @@ uses
   // Tnt
   TntClasses, TntSysUtils,
   // This
-  TextDocument;
+  TextDocument, PrinterTypes;
 
 type
   { TTextDocumentTest }
@@ -63,7 +63,7 @@ end;
 
 procedure TTextDocumentTest.TestAddItem;
 var
-  Item: TTextItem;
+  Item: TDocItem;
 begin
   CheckEquals(0, FDocument.Items.Count, 'FDocument.Items.Count');
   FDocument.Items.Add;

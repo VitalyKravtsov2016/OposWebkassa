@@ -108,13 +108,13 @@ begin
   Barcode.BarcodeType := DIO_BARCODE_DATAMATRIX;
   Barcode.Alignment := BARCODE_ALIGNMENT_CENTER;
   try
-    FDriver.PrintBarcode(Barcode);
+    FDriver.PrintBarcode2(Barcode);
     Fail('No exception');
   except
     on E: EOPOSException do
     begin
       CheckEquals(OPOS_E_ILLEGAL, E.ResultCode, 'E.ResultCode <> OPOS_E_ILLEGAL');
-      CheckEquals('Bitmaps are not supported', E.Message, 'Invalid E.Message');
+      CheckEquals('Bitmaps are not supported', E.Message, 'E.Message');
     end;
   end;
   FPrinter.Verify('TestPrintBarcodeFailed');
@@ -134,7 +134,7 @@ begin
   FPrinter.Expects('Get_CapRecBarCode').Returns(True);
   FPrinter.Expects('PrintBarCode').WithParams([FPTR_S_RECEIPT,
     Barcode.Data, PTR_BCS_DATAMATRIX, Barcode.Height, 0, PTR_BC_CENTER, PTR_BC_TEXT_NONE]).Returns(0);
-  FDriver.PrintBarcode(Barcode);
+  FDriver.PrintBarcode2(Barcode);
   FPrinter.Verify('Verify success');
 end;
 
@@ -165,7 +165,7 @@ begin
   FPrinter.Expects('Get_ResultCodeExtended').Returns(0);
   FPrinter.Expects('Get_ErrorString').Returns('ErrorString');
   try
-    FDriver.PrintBarcode(Barcode);
+    FDriver.PrintBarcode2(Barcode);
     Fail('No exception');
   except
     on E: EOPOSException do
@@ -214,8 +214,7 @@ begin
   FDriver.OpenService(OPOS_CLASSKEY_FPTR, 'DeviceName', nil);
   FDriver.ClaimDevice(1000);
   FDriver.SetPropertyNumber(PIDX_DeviceEnabled, 1);
-  FDriver.DirectIO2(DIO_PRINT_BARCODE, DIO_BARCODE_DATAMATRIX,
-    '3850504580002030;DATAMATRIX;100;3;0;');
+  FDriver.PrintBarcode2(Barcode);
   FDriver.Close;
 
   FPrinter.Verify('Verify success');

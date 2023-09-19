@@ -14,7 +14,8 @@ uses
   // This
   PrinterParameters, FiscalPrinterDevice, Grids, TntGrids, Buttons,
   ToolWin, ComCtrls, SynEditHighlighter, SynHighlighterXML, ExtCtrls,
-  WebkassaImpl, SalesReceipt, ReceiptTemplate, TextDocument, LogFile;
+  WebkassaImpl, SalesReceipt, ReceiptTemplate, TextDocument, LogFile,
+  PrinterTypes;
 
 type
   { TfmFptrReceipt }
@@ -68,7 +69,7 @@ end;
 procedure TfmFptrReceipt.UpdateReceiptText2(const TemplateXml: string);
 var
   i: Integer;
-  TextItem: TTextItem;
+  TextItem: TDocItem;
   Driver: TWebkassaImpl;
   Receipt: TSalesReceipt;
   ItemName: WideString;

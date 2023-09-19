@@ -6,7 +6,7 @@ Uses
   // VCL
   Classes, SysUtils, Math,
   // This
-  MathUtils;
+  MathUtils, PrinterTypes;
 
 const
   // RoundType - Тип округления
@@ -18,6 +18,7 @@ type
   TAdjustment = class;
   TAdjustments = class;
   TReceiptItem = class;
+  TBarcodeItem = class;
 
   { TAdjustmentRec }
 
@@ -163,6 +164,15 @@ type
   public
     property Style: Integer read FStyle write FStyle;
     property Text: WideString read FText write FText;
+  end;
+
+  { TBarcodeItem }
+
+  TBarcodeItem = class(TReceiptItem)
+  private
+    FBarcode: string;
+  public
+    property Barcode: string read FBarcode write FBarcode;
   end;
 
 implementation

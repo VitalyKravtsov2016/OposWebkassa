@@ -12,7 +12,7 @@ uses
   OposPOSPrinter_CCO_TLB, WException, OposPtrUtils,
   // This
   LogFile, DriverError, EscPrinter, PrinterPort, NotifyThread,
-  RegExpr, SerialPort, Jpeg, GifImage;
+  RegExpr, SerialPort, Jpeg, GifImage, uZintBarcode, BarcodeUtils;
 
 type
   TPrintMode = (pmBold, pmDoubleWide, pmDoubleHigh, pmUnderlined);
@@ -25,9 +25,23 @@ type
     Text: WideString;
   end;
 
+  { TPosBarcode }
+
+  TPosBarcode = record
+    Data: AnsiString;
+    Symbology: Integer;
+    Height: Integer;
+    Width: Integer;
+    Alignment: Integer;
+    TextPosition: Integer;
+  end;
+
   { TPosEscPrinter }
 
   TPosEscPrinter = class(TComponent, IOPOSPOSPrinter, IOposEvents)
+  private
+    procedure PrintBarcodeAsGraphics(const Barcode: TPosBarcode);
+    function RenderBarcodeRec(Barcode: TPosBarcode): AnsiString;
   public
     FLogger: ILogFile;
     FPort: IPrinterPort;
@@ -1721,6 +1735,7 @@ var
   QRCode: TQRCode;
   PDF417: TPDF417;
   BarcodeType: Integer;
+  Barcode: TPosBarcode;
 begin
   try
     CheckRecStation(Station);
@@ -1764,6 +1779,20 @@ begin
           FPrinter.printQRCode(QRCode);
           FPrinter.PrintAndFeed(10);
         end;
+        PTR_BCS_MAXICODE,
+        PTR_BCS_DATAMATRIX,
+        PTR_BCS_UQRCODE,
+        PTR_BCS_AZTEC,
+        PTR_BCS_UPDF417:
+        begin
+          Barcode.Data := Data;
+          Barcode.Symbology := Symbology;
+          Barcode.Height := Height;
+          Barcode.Width := Width;
+          Barcode.Alignment := Alignment;
+          Barcode.TextPosition := TextPosition;
+          PrintBarcodeAsGraphics(Barcode);
+        end;
       else
         RaiseIllegalError('Symbology not supported');
       end;
@@ -1780,16 +1809,140 @@ begin
         PTR_BCS_Code39: BarcodeType := BARCODE2_CODE39;
         PTR_BCS_Code93: BarcodeType := BARCODE2_CODE93;
         PTR_BCS_Code128: BarcodeType := BARCODE2_CODE128;
+      end;
+
+      case Symbology of
+        PTR_BCS_UPCA,
+        PTR_BCS_UPCE,
+        PTR_BCS_EAN8,
+        PTR_BCS_EAN13,
+        PTR_BCS_ITF,
+        PTR_BCS_Codabar,
+        PTR_BCS_Code39,
+        PTR_BCS_Code93,
+        PTR_BCS_Code128:
+        begin
+          FPrinter.PrintBarcode2(BarcodeType, Data);
+        end;
+        PTR_BCS_TF,
+        PTR_BCS_UPCA_S,
+        PTR_BCS_UPCE_S,
+        PTR_BCS_UPCD1,
+        PTR_BCS_UPCD2,
+        PTR_BCS_UPCD3,
+        PTR_BCS_UPCD4,
+        PTR_BCS_UPCD5,
+        PTR_BCS_EAN8_S,
+        PTR_BCS_EAN13_S,
+        PTR_BCS_EAN128,
+        PTR_BCS_OCRA,
+        PTR_BCS_OCRB,
+        PTR_BCS_Code128_Parsed,
+        PTR_BCS_RSS14,
+        PTR_BCS_RSS_EXPANDED:
+        begin
+          Barcode.Data := Data;
+          Barcode.Symbology := Symbology;
+          Barcode.Height := Height;
+          Barcode.Width := Width;
+          Barcode.Alignment := Alignment;
+          Barcode.TextPosition := TextPosition;
+          PrintBarcodeAsGraphics(Barcode);
+        end;
       else
         RaiseIllegalError('Symbology not supported');
       end;
-      FPrinter.PrintBarcode2(BarcodeType, Data);
     end;
     FPrinter.SetJustification(JUSTIFICATION_LEFT);
     Result := ClearResult;
   except
     on E: Exception do
       Result := HandleException(E);
+  end;
+end;
+
+procedure TPosEscPrinter.PrintBarcodeAsGraphics(const Barcode: TPosBarcode);
+var
+  Data: AnsiString;
+begin
+  if not CapRecBitmap then
+    RaiseIllegalError('Bitmaps are not supported');
+
+  Data := RenderBarcodeRec(Barcode);
+  PrintMemoryBitmap(PTR_S_RECEIPT, Data, PTR_BMT_BMP, PTR_BM_ASIS, Barcode.Alignment);
+end;
+
+function BTypeToZBType(BarcodeType: Integer): TZBType;
+begin
+  case BarcodeType of
+    PTR_BCS_UPCA: Result := tBARCODE_UPCA;
+    PTR_BCS_UPCE: Result := tBARCODE_UPCE;
+    PTR_BCS_EAN8: Result := tBARCODE_EANX;
+    PTR_BCS_EAN13: Result := tBARCODE_EANX;
+    PTR_BCS_TF: Result := tBARCODE_C25INTER;
+    PTR_BCS_ITF: Result := tBARCODE_C25INTER;
+    PTR_BCS_Codabar: Result := tBARCODE_CODABAR;
+    PTR_BCS_Code39: Result := tBARCODE_CODE39;
+    PTR_BCS_Code93: Result := tBARCODE_CODE93;
+    PTR_BCS_Code128: Result := tBARCODE_CODE128;
+    PTR_BCS_UPCA_S: Result := tBARCODE_UPCA_CC;
+    PTR_BCS_UPCE_S: Result := tBARCODE_UPCE_CC;
+    PTR_BCS_EAN8_S: Result := tBARCODE_EANX;
+    PTR_BCS_EAN13_S: Result := tBARCODE_EANX;
+    PTR_BCS_EAN128: Result := tBARCODE_EANX;
+    PTR_BCS_RSS14: Result := tBARCODE_RSS14;
+    PTR_BCS_RSS_EXPANDED: Result := tBARCODE_RSS_EXP;
+    PTR_BCS_PDF417: Result := tBARCODE_PDF417;
+    PTR_BCS_MAXICODE: Result := tBARCODE_MAXICODE;
+    PTR_BCS_DATAMATRIX: Result := tBARCODE_DATAMATRIX;
+    PTR_BCS_QRCODE: Result := tBARCODE_QRCODE;
+    PTR_BCS_UQRCODE: Result := tBARCODE_MICROQR;
+    PTR_BCS_AZTEC: Result := tBARCODE_AZTEC;
+    PTR_BCS_UPDF417: Result := tBARCODE_MICROPDF417;
+  else
+    raise Exception.CreateFmt('Barcode type not supported, %d', [BarcodeType]);
+  end;
+end;
+
+function TPosEscPrinter.RenderBarcodeRec(Barcode: TPosBarcode): AnsiString;
+var
+  Bitmap: TBitmap;
+  Render: TZintBarcode;
+  Stream: TMemoryStream;
+begin
+  Result := '';
+
+  if Barcode.Height = 0 then
+    Barcode.Height := 200;
+
+  Bitmap := TBitmap.Create;
+  Render := TZintBarcode.Create;
+  Stream := TMemoryStream.Create;
+  try
+    Render.BorderWidth := 0;
+    Render.FGColor := clBlack;
+    Render.BGColor := clWhite;
+    Render.Scale := 1;
+    Render.Height := Barcode.Height;
+    Render.BarcodeType := BTypeToZBType(Barcode.Symbology);
+    Render.Data := Barcode.Data;
+    Render.ShowHumanReadableText := False;
+    Render.EncodeNow;
+
+    RenderBarcode(Bitmap, Render.Symbol, False);
+    ScaleBitmap(Bitmap, 2);
+    Bitmap.SaveToStream(Stream);
+
+    if Stream.Size > 0 then
+    begin
+      Stream.Position := 0;
+      SetLength(Result, Stream.Size);
+      Stream.ReadBuffer(Result[1], Stream.Size);
+    end;
+  finally
+    Render.Free;
+    Bitmap.Free;
+    Stream.Free;
   end;
 end;
 
