@@ -100,6 +100,7 @@ const
   DefTemplateEnabled = False;
   DefCurrencyName = 'עד';
   DefLineSpacing = 30;
+  DefPrintEnabled = True;
 
   /////////////////////////////////////////////////////////////////////////////
   // Header and trailer parameters
@@ -168,6 +169,7 @@ type
     FTemplate: TReceiptTemplate;
     FCurrencyName: string;
     FLineSpacing: Integer;
+    FPrintEnabled: Boolean;
 
     procedure LogText(const Caption, Text: WideString);
     procedure SetHeaderText(const Text: WideString);
@@ -247,6 +249,7 @@ type
     property Template: TReceiptTemplate read FTemplate;
     property CurrencyName: string read FCurrencyName write FCurrencyName;
     property LineSpacing: Integer read FLineSpacing write FLineSpacing;
+    property PrintEnabled: Boolean read FPrintEnabled write FPrintEnabled;
   end;
 
 function QRSizeToWidth(QRSize: Integer): Integer;
@@ -353,6 +356,7 @@ begin
   Template.SetDefaults;
   CurrencyName := DefCurrencyName;
   LineSpacing := DefLineSpacing;
+  PrintEnabled := DefPrintEnabled;
 end;
 
 procedure TPrinterParameters.LogText(const Caption, Text: WideString);
@@ -416,6 +420,7 @@ begin
   Logger.Debug('TemplateEnabled: ' + BoolToStr(TemplateEnabled));
   Logger.Debug('CurrencyName: ' + CurrencyName);
   Logger.Debug('LineSpacing: ' + IntToStr(LineSpacing));
+  Logger.Debug('PrintEnabled: ' + BoolToStr(PrintEnabled));
 
   // VatRates
   for i := 0 to VatRates.Count-1 do
@@ -610,6 +615,7 @@ begin
     DevicePollTime := Src.DevicePollTime;
     TemplateEnabled := Src.TemplateEnabled;
     CurrencyName := Src.CurrencyName;
+    PrintEnabled := Src.PrintEnabled;
   end else
     inherited Assign(Source);
 end;

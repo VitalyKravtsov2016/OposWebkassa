@@ -275,6 +275,9 @@ begin
       if Reg.ValueExists('LineSpacing') then
         Parameters.LineSpacing := Reg.ReadInteger('LineSpacing');
 
+      if Reg.ValueExists('PrintEnabled') then
+        Parameters.PrintEnabled := Reg.ReadBool('PrintEnabled');
+
       Reg.CloseKey;
     end;
     // VatRates
@@ -365,6 +368,7 @@ begin
     Reg.WriteBool('TemplateEnabled', FParameters.TemplateEnabled);
     Reg.WriteString('CurrencyName', FParameters.CurrencyName);
     Reg.WriteInteger('LineSpacing', FParameters.LineSpacing);
+    Reg.WriteBool('PrintEnabled', FParameters.PrintEnabled);
 
     Reg.CloseKey;
     // VatRates

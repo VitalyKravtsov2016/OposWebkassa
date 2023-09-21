@@ -10,10 +10,6 @@ uses
   // This
   gnugettext, StringUtils, DirectIOAPI, PrinterTypes;
 
-const
-  DriverParameterExternalCheckNumber = 300;
-  DriverParameterFiscalSign          = 301;
-
 type
   { TCustomReceipt }
 
@@ -128,13 +124,13 @@ type
     procedure Print(AVisitor: TObject); virtual;
     procedure PrintBarcode(const Barcode: string); virtual;
 
-    property Barcode: string read FBarcode;
+    property Barcode: string read FBarcode write FBarcode;
     property Lines: TTntStrings read FLines;
     property Trailer: TTntStrings read FTrailer;
     property AfterTotal: Boolean read FAfterTotal;
     property PrintHeader: Boolean read FPrintHeader;
-    property ExternalCheckNumber: WideString read FExternalCheckNumber;
     property FiscalSign: WideString read FFiscalSign write FFiscalSign;
+    property ExternalCheckNumber: WideString read FExternalCheckNumber write FExternalCheckNumber;
   end;
 
 function CurrencyToInt64(Value: Currency): Int64;
@@ -349,18 +345,6 @@ end;
 procedure TCustomReceipt.DirectIO(Command: Integer; var pData: Integer;
   var pString: WideString);
 begin
-  if Command = DIO_SET_DRIVER_PARAMETER then
-  begin
-    case pData of
-      DriverParameterBarcode: FBarcode := pString;
-      DriverParameterExternalCheckNumber:
-      begin
-        if pString <> '' then
-          FExternalCheckNumber := pString;
-      end;
-      DriverParameterFiscalSign: FFiscalSign := pString;
-    end;
-  end;
   if Command = DIO_WRITE_FS_STRING_TAG_OP then
   begin
     case pData of

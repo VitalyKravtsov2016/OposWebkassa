@@ -189,6 +189,7 @@ begin
       FParameters.TemplateEnabled := IniFile.ReadBool(Section, 'TemplateEnabled', DefTemplateEnabled);
       FParameters.CurrencyName := IniFile.ReadString(Section, 'CurrencyName', DefCurrencyName);
       FParameters.LineSpacing := IniFile.ReadInteger(Section, 'LineSpacing', DefLineSpacing);
+      FParameters.PrintEnabled := IniFile.ReadBool(Section, 'PrintEnabled', DefPrintEnabled);
     end;
   finally
     IniFile.Free;
@@ -235,6 +236,7 @@ begin
     IniFile.WriteBool(Section, 'TemplateEnabled', FParameters.TemplateEnabled);
     IniFile.WriteString(Section, 'CurrencyName', FParameters.CurrencyName);
     IniFile.WriteInteger(Section, 'LineSpacing', FParameters.LineSpacing);
+    IniFile.WriteBool(Section, 'PrintEn abled', FParameters.PrintEnabled);
   finally
     IniFile.Free;
   end;

@@ -484,6 +484,8 @@ begin
   TDIOBarcodeHex.CreateCommand(FDIOHandlers, DIO_PRINT_BARCODE_HEX, Self);
   TDIOPrintHeader.CreateCommand(FDIOHandlers, DIO_PRINT_HEADER, Self);
   TDIOPrintTrailer.CreateCommand(FDIOHandlers, DIO_PRINT_TRAILER, Self);
+  TDIOSetDriverParameter.CreateCommand(FDIOHandlers, DIO_SET_DRIVER_PARAMETER, Self);
+  TDIOGetDriverParameter.CreateCommand(FDIOHandlers, DIO_GET_DRIVER_PARAMETER, Self);
 end;
 
 procedure TWebkassaImpl.BeginDocument(APrintHeader: boolean);
@@ -3504,6 +3506,8 @@ end;
 
 procedure TWebkassaImpl.PrintDocumentSafe(Document: TTextDocument);
 begin
+  if not Params.PrintEnabled then Exit;
+
   try
     Document.AddText(Params.TrailerText);
     PrintDocument(Document);
@@ -3520,7 +3524,6 @@ procedure TWebkassaImpl.PrintDocument(Document: TTextDocument);
 var
   i: Integer;
   TickCount: DWORD;
-  DocItem: TDocItem;
 begin
   Logger.Debug('PrintDocument');
   TickCount := GetTickCount;

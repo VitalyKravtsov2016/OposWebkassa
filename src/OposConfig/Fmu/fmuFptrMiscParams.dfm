@@ -113,4 +113,12 @@ object fmFptrMiscParams: TfmFptrMiscParams
     Text = 'edtCurrencyName'
     OnChange = ModifiedClick
   end
+  object chbPrintEnabled: TCheckBox
+    Left = 8
+    Top = 176
+    Width = 233
+    Height = 17
+    Caption = #1055#1077#1095#1072#1090#1100' '#1085#1072' '#1095#1077#1082#1086#1074#1086#1081' '#1083#1077#1085#1090#1077
+    TabOrder = 5
+  end
 end

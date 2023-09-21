@@ -369,6 +369,10 @@ const
   DriverParameterLastDocTotal             = 102;
   DriverParameterLastDocDateTime          = 103;
 
+  DriverParameterExternalCheckNumber      = 300;
+  DriverParameterFiscalSign               = 301;
+  DriverParameterPrintEnabled             = 302;
+
   /////////////////////////////////////////////////////////////////////////////
   // Separator type
 

@@ -72,6 +72,20 @@ type
     procedure DirectIO(var pData: Integer; var pString: WideString); override;
   end;
 
+  { TDIOGetDriverParameter }
+
+  TDIOGetDriverParameter = class(TDIOHandler2)
+  public
+    procedure DirectIO(var pData: Integer; var pString: WideString); override;
+  end;
+
+  { TDIOSetDriverParameter }
+
+  TDIOSetDriverParameter = class(TDIOHandler2)
+  public
+    procedure DirectIO(var pData: Integer; var pString: WideString); override;
+  end;
+
 implementation
 
 function BoolToStr(Value: Boolean): WideString;
@@ -245,6 +259,36 @@ procedure TDIOPrintTrailer.DirectIO(var pData: Integer;
   var pString: WideString);
 begin
   //Printer.PrintHeader; !!!
+end;
+
+{ TDIOGetDriverParameter }
+
+procedure TDIOGetDriverParameter.DirectIO(var pData: Integer;
+  var pString: WideString);
+begin
+  case pData of
+    DriverParameterPrintEnabled: pString := BoolToStr(Printer.Params.PrintEnabled);
+    DriverParameterBarcode: pString := Printer.Receipt.Barcode;
+    DriverParameterExternalCheckNumber: pString := Printer.Receipt.ExternalCheckNumber;
+    DriverParameterFiscalSign: pString := Printer.Receipt.FiscalSign;
+  end;
+end;
+
+{ TDIOSetDriverParameter }
+
+procedure TDIOSetDriverParameter.DirectIO(var pData: Integer;
+  var pString: WideString);
+begin
+  case pData of
+    DriverParameterPrintEnabled: Printer.Params.PrintEnabled := StrToBool(pString);
+    DriverParameterBarcode: Printer.Receipt.Barcode := pString;
+    DriverParameterExternalCheckNumber:
+    begin
+      if pString <> '' then
+        Printer.Receipt.ExternalCheckNumber := pString;
+    end;
+    DriverParameterFiscalSign: Printer.Receipt.FiscalSign := pString;
+  end;
 end;
 
 end.
