@@ -14,7 +14,7 @@ uses
   TntClasses, TntSysUtils,
   // This
   LogFile, WebkassaImpl, WebkassaClient, MockPosPrinter, PrinterParameters,
-  SerialPort;
+  SerialPort, DirectIOAPI;
 
 const
   CRLF = #13#10;
@@ -25,11 +25,11 @@ type
   TWebkassaImplTest = class(TTestCase)
   private
     FDriver: TWebkassaImpl;
+    FPrinter: TMockPOSPrinter;
     FPrintHeader: Boolean;
     procedure ClaimDevice;
     procedure EnableDevice;
     procedure OpenService;
-    procedure TestCashIn;
     procedure FptrCheck(Code: Integer);
 
     property Driver: TWebkassaImpl read FDriver;
@@ -39,12 +39,14 @@ type
     procedure TearDown; override;
   published
     procedure OpenClaimEnable;
+    procedure TestCashIn;
     procedure TestCashIn2;
     procedure TestCashOut;
     procedure TestZReport;
     procedure TestXReport;
     procedure TestNonFiscal;
     procedure TestFiscalReceipt;
+    procedure TestPrintReceiptDuplicate;
     procedure TestFiscalReceipt2;
     procedure TestFiscalReceipt3;
     procedure TestFiscalReceipt4;
@@ -92,8 +94,9 @@ end;
 procedure TWebkassaImplTest.SetUp;
 begin
   inherited SetUp;
+  FPrinter := TMockPOSPrinter.Create(nil);
   FDriver := TWebkassaImpl.Create(nil);
-  //FDriver.Printer := TMockPOSPrinter.Create(nil);
+  FDriver.Printer := FPrinter;
 
   FDriver.TestMode := True;
   FDriver.Params.LogFileEnabled := True;
@@ -102,9 +105,8 @@ begin
   FDriver.Params.Login := 'webkassa4@softit.kz';
   FDriver.Params.Password := 'Kassa123';
   FDriver.Params.ConnectTimeout := 10;
-  FDriver.Params.WebkassaAddress := 'https://devkkm.webkassa.kz/';
-  //FDriver.Params.CashboxNumber := 'SWK00033059'; !!!
-  FDriver.Params.CashboxNumber := 'SWK00032685';
+  FDriver.Params.WebkassaAddress := 'https://devkkm.webkassa.kz';
+  FDriver.Params.CashboxNumber := 'SWK00033059';
   FDriver.Params.NumHeaderLines := 6;
   FDriver.Params.NumTrailerLines := 3;
   FDriver.Params.RoundType := RoundTypeNone;
@@ -169,6 +171,7 @@ end;
 procedure TWebkassaImplTest.TearDown;
 begin
   FDriver.Free;
+  FPrinter.Free;
   inherited TearDown;
 end;
 
@@ -313,6 +316,88 @@ begin
   FptrCheck(Driver.EndFiscalReceipt(False));
   CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
 end;
+
+procedure TWebkassaImplTest.TestPrintReceiptDuplicate;
+const
+  ReceiptLines: array [0..39] of string = (
+    '|bC              ДУБЛИКАТ',
+    '       ТОО SOFT IT KAZAKHSTAN',
+    '          БИН 131240010479',
+    'НДС Серия 00000            № 0000000',
+    '------------------------------------',
+    '             Касса 2.0.2',
+    '              Смена 213',
+    '      Порядковый номер чека №13',
+    'Чек №1176446355471',
+    'Кассир webkassa4@softit.kz',
+    'ПРОДАЖА',
+    '------------------------------------',
+    '  1. Сер. № 5',
+    '           ШОКОЛАДНАЯ ПЛИТКА MILKA',
+    'BUBBLES МОЛОЧНЫЙ',
+    '   1 шт x 590,00',
+    '   Стоимость                  590,00',
+    '------------------------------------',
+    'Наличные:                  12 345,00',
+    'Сдача:                     11 755,00',
+    '|bCИТОГО:                        590,00',
+    '------------------------------------',
+    'Фискальный признак: 1176446355471',
+    'Время: 25.09.2023 17:20:28',
+    'Алматы',
+    'Оператор фискальных данных: АО',
+    '"КазТранском"',
+    'Для проверки чека зайдите на сайт:',
+    'dev.kofd.kz/consumer',
+    '------------------------------------',
+    '|bC           ФИСКАЛЬНЫЙ ЧЕК',
+    'http://dev.kofd.kz/consumer?i=117644635547',
+    '1&f=427490326691&s=590.00&t=20230925T17202',
+    '8            ИНК ОФД: 657',
+    '   Код ККМ КГД (РНМ): 427490326691',
+    '          ЗНМ: SWK00033059',
+    '             WEBKASSA.KZ',
+    '           Callцентр 039458039850',
+    '          Горячая линия 20948802934',
+    '            СПАСИБО ЗА ПОКУПКУ');
+
+var
+  i: Integer;
+  pData: Integer;
+  pString: WideString;
+  ExternalCheckNumber: WideString;
+begin
+  TestFiscalReceipt;
+
+  FPrinter.Clear;
+  CheckEquals(0, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
+  CheckEquals('', FPrinter.Lines.Text, 'FPrinter.Lines.Text');
+
+  pString := '';
+  pData := DriverParameterExternalCheckNumber;
+  Driver.DirectIO(DIO_GET_DRIVER_PARAMETER, pData, pString);
+  ExternalCheckNumber := pString;
+  Driver.DirectIO2(DIO_PRINT_RECEIPT_DUPLICATE, 0, ExternalCheckNumber);
+
+  CheckEquals(48, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
+  for i := 0 to 5 do
+  begin
+    CheckEquals(TrimRight(ReceiptLines[i]), TrimRight(FPrinter.Lines[i]), 'Line ' + IntToStr(i));
+  end;
+  for i := 9 to 21 do
+  begin
+    CheckEquals(TrimRight(ReceiptLines[i]), TrimRight(FPrinter.Lines[i]), 'Line ' + IntToStr(i));
+  end;
+  for i := 24 to 30 do
+  begin
+    CheckEquals(TrimRight(ReceiptLines[i]), TrimRight(FPrinter.Lines[i]), 'Line ' + IntToStr(i));
+  end;
+  for i := 34 to 39 do
+  begin
+    CheckEquals(TrimRight(ReceiptLines[i]), TrimRight(FPrinter.Lines[i]), 'Line ' + IntToStr(i));
+  end;
+end;
+
 
 procedure TWebkassaImplTest.TestFiscalReceipt2;
 begin

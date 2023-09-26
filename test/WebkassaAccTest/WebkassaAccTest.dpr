@@ -51,7 +51,7 @@ uses
   TextDocument in '..\..\src\OposWebkassa\units\TextDocument.pas',
   OposPtr in '..\..\src\Opos\OposPtr.pas',
   StorePointIO_TLB in 'units\StorePointIO_TLB.pas',
-  duWebkassaTest in 'units\duWebkassaTest.pas',
+  duWebkassaClient in 'units\duWebkassaClient.pas',
   PrinterParametersReg in '..\..\src\Shared\PrinterParametersReg.pas',
   uLkJSON in '..\..\src\Shared\uLkJSON.pas',
   VatRate in '..\..\src\Shared\VatRate.pas',
@@ -85,7 +85,9 @@ uses
   DIOHandler in '..\..\src\Shared\DIOHandler.pas',
   DriverContext in '..\..\src\Shared\DriverContext.pas',
   PrinterTypes in '..\..\src\Shared\PrinterTypes.pas',
-  DIOHandlers in '..\..\src\Shared\DIOHandlers.pas';
+  DIOHandlers in '..\..\src\Shared\DIOHandlers.pas',
+  BarcodeUtils in '..\..\src\Shared\BarcodeUtils.pas',
+  MockPosPrinter in '..\OposWebkassaTest\units\MockPosPrinter.pas';
 
 {$R *.RES}
 

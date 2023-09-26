@@ -1,1 +1,1 @@
-{"Data":{"FullName":"webkassa4@softit.kz","Code":1,"Token":"1b993a122d9e48218d4777735388b78f"}}
+{"Data":{"FullName":"webkassa4@softit.kz","Code":1,"Token":"20216d6925e94abfb7b09655831ae380"}}

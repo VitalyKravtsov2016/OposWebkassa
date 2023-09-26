@@ -554,6 +554,8 @@ type
                            LineColor: Integer): Integer; safecall;
     property CapRecRuledLine: Integer read Get_CapRecRuledLine;
     property CapSlpRuledLine: Integer read Get_CapSlpRuledLine;
+  public
+    procedure Clear;
   end;
 
 implementation
@@ -1769,6 +1771,12 @@ function TMockPOSPrinter.ValidateData(Station: Integer;
   const Data: WideString): Integer;
 begin
   Result := 0;
+end;
+
+procedure TMockPOSPrinter.Clear;
+begin
+  FText := '';
+  FLines.Clear;
 end;
 
 end.

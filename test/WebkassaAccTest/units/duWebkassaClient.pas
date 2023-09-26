@@ -1,4 +1,4 @@
-unit duWebkassaTest;
+unit duWebkassaClient;
 
 interface
 
@@ -12,9 +12,9 @@ uses
   OposWebkassaLib_TLB, StringUtils;
 
 type
-  { TWebkassaTest }
+  { TWebkassaClientTest }
 
-  TWebkassaTest = class(TTestCase)
+  TWebkassaClientTest = class(TTestCase)
   private
     FLogger: ILogFile;
     FShiftNumber: Integer;
@@ -57,9 +57,9 @@ const
 var
   FReceipt: TSendReceiptCommand;
 
-{ TWebkassaTest }
+{ TWebkassaClientTest }
 
-procedure TWebkassaTest.SetUp;
+procedure TWebkassaClientTest.SetUp;
 begin
   FLogger := TLogFile.Create;
   FLogger.MaxCount := 10;
@@ -80,13 +80,13 @@ begin
 *)
 end;
 
-procedure TWebkassaTest.TearDown;
+procedure TWebkassaClientTest.TearDown;
 begin
   FClient.Free;
   FLogger.CloseFile;
 end;
 
-procedure TWebkassaTest.TestConnect;
+procedure TWebkassaClientTest.TestConnect;
 var
   Token1: string;
   Token2: string;
@@ -106,7 +106,7 @@ begin
   FClient.Disconnect;
 end;
 
-procedure TWebkassaTest.TestAuthenticate;
+procedure TWebkassaClientTest.TestAuthenticate;
 var
   Command: TAuthCommand;
 begin
@@ -123,7 +123,7 @@ begin
   end;
 end;
 
-procedure TWebkassaTest.TestAuthenticateError;
+procedure TWebkassaClientTest.TestAuthenticateError;
 var
   Item: TErrorItem;
   Command: TAuthCommand;
@@ -145,7 +145,7 @@ begin
   end;
 end;
 
-procedure TWebkassaTest.TestReadCashboxes;
+procedure TWebkassaClientTest.TestReadCashboxes;
 var
   Command: TCashboxesCommand;
 begin
@@ -161,7 +161,7 @@ begin
   end;
 end;
 
-procedure TWebkassaTest.TestChangeToken;
+procedure TWebkassaClientTest.TestChangeToken;
 var
   Command: TChangeTokenCommand;
 begin
@@ -179,7 +179,7 @@ begin
   end;
 end;
 
-procedure TWebkassaTest.TestXReport;
+procedure TWebkassaClientTest.TestXReport;
 var
   Command: TZXReportCommand;
 begin
@@ -196,7 +196,7 @@ begin
   end;
 end;
 
-procedure TWebkassaTest.TestXReportExtended;
+procedure TWebkassaClientTest.TestXReportExtended;
 var
   JsonText: WideString;
   Request: TCashboxRequest;
@@ -215,7 +215,7 @@ begin
   end;
 end;
 
-procedure TWebkassaTest.TestZReportExtended;
+procedure TWebkassaClientTest.TestZReportExtended;
 var
   JsonText: WideString;
   Request: TCashboxRequest;
@@ -234,7 +234,7 @@ begin
   end;
 end;
 
-procedure TWebkassaTest.TestZReport;
+procedure TWebkassaClientTest.TestZReport;
 var
   Command: TZXReportCommand;
 begin
@@ -252,7 +252,7 @@ begin
   end;
 end;
 
-procedure TWebkassaTest.TestJournalReport;
+procedure TWebkassaClientTest.TestJournalReport;
 var
   Command: TJournalReportCommand;
 begin
@@ -272,7 +272,7 @@ begin
   end;
 end;
 
-procedure TWebkassaTest.TestReadCahiers;
+procedure TWebkassaClientTest.TestReadCahiers;
 var
   Token1: string;
   Token2: string;
@@ -303,7 +303,7 @@ begin
   end;
 end;
 
-procedure TWebkassaTest.TestSendReceipt;
+procedure TWebkassaClientTest.TestSendReceipt;
 var
   Payment: TPayment;
   Item: TTicketItem;
@@ -362,7 +362,7 @@ begin
 *)
 end;
 
-procedure TWebkassaTest.TestSendReceipt2;
+procedure TWebkassaClientTest.TestSendReceipt2;
 var
   Payment: TPayment;
   Item: TTicketItem;
@@ -398,7 +398,7 @@ begin
   WriteFileData(GetModulePath + 'SendReceipt.txt', FClient.AnswerJson);
 end;
 
-procedure TWebkassaTest.TestReadReceipt;
+procedure TWebkassaClientTest.TestReadReceipt;
 var
   SrcItem: TTicketItem;
   DstItem: TPositionItem;
@@ -431,7 +431,7 @@ begin
   end;
 end;
 
-procedure TWebkassaTest.TestReadReceiptText;
+procedure TWebkassaClientTest.TestReadReceiptText;
 var
   Command: TReceiptTextCommand;
 begin
@@ -443,17 +443,18 @@ begin
     Command.Request.CashboxUniqueNumber := FClient.CashboxNumber;
     Command.Request.externalCheckNumber := FReceipt.Request.ExternalCheckNumber;
     Command.Request.isDuplicate := False;
-    Command.Request.paperKind := 0;
+    Command.Request.paperKind := PaperKind80mm;
 
     FClient.ReadReceiptText(Command);
     WriteFileData(GetModulePath + 'ReadReceiptText.txt', FClient.AnswerJson);
     Check(Command.Data.Lines.Count > 0);
+    WriteFileData(GetModulePath + 'ReadReceiptText2.txt', Command.Data.GetText);
   finally
     Command.Free;
   end;
 end;
 
-procedure TWebkassaTest.TestReadUnits;
+procedure TWebkassaClientTest.TestReadUnits;
 var
   Command: TReadUnitsCommand;
 begin
@@ -469,7 +470,7 @@ begin
   end;
 end;
 
-procedure TWebkassaTest.TestCashIn;
+procedure TWebkassaClientTest.TestCashIn;
 var
   Command: TMoneyOperationCommand;
 begin
@@ -490,7 +491,7 @@ begin
   end;
 end;
 
-procedure TWebkassaTest.TestCashOut;
+procedure TWebkassaClientTest.TestCashOut;
 var
   Command: TMoneyOperationCommand;
 begin
@@ -511,7 +512,7 @@ begin
   end;
 end;
 
-procedure TWebkassaTest.TestUploadOrder;
+procedure TWebkassaClientTest.TestUploadOrder;
 var
   Item: TOrderItem;
   CommandJson: string;
@@ -563,7 +564,7 @@ begin
   end;
 end;
 
-procedure TWebkassaTest.TestRegistration;
+procedure TWebkassaClientTest.TestRegistration;
 var
   GUID: TGUID;
   GUIDStr1: string;
@@ -575,7 +576,7 @@ begin
   CheckEquals(GUIDStr1, GUIDStr2);
 end;
 
-procedure TWebkassaTest.TestReadCashboxState;
+procedure TWebkassaClientTest.TestReadCashboxState;
 var
   Request: TCashboxRequest;
 begin
@@ -591,7 +592,7 @@ begin
   end;
 end;
 
-procedure TWebkassaTest.TestSumInCashbox;
+procedure TWebkassaClientTest.TestSumInCashbox;
 var
   SumInCashbox: Currency;
   XReport: TZXReportCommand;
@@ -640,7 +641,7 @@ end;
 
 initialization
   FReceipt := TSendReceiptCommand.Create;
-  RegisterTest('', TWebkassaTest.Suite);
+  RegisterTest('', TWebkassaClientTest.Suite);
 
 finalization
   FReceipt.Free;

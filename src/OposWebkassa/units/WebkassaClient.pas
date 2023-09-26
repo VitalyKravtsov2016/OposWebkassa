@@ -1169,6 +1169,7 @@ type
   private
     function GetItem(Index: Integer): TUnitItem;
   public
+    function ItemByCode(Code: Integer): TUnitItem;
     property Items[Index: Integer]: TUnitItem read GetItem; default;
   end;
 
@@ -3081,6 +3082,18 @@ end;
 function TUnitItems.GetItem(Index: Integer): TUnitItem;
 begin
   Result := inherited Items[Index] as TUnitItem;
+end;
+
+function TUnitItems.ItemByCode(Code: Integer): TUnitItem;
+var
+  i: Integer;
+begin
+  for i := 0 to Count-1 do
+  begin
+    Result := Items[i];
+    if Result.Code = Code then Exit;
+  end;
+  Result := nil;
 end;
 
 { TUnitItem }

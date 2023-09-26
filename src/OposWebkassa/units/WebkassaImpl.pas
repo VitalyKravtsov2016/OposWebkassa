@@ -92,7 +92,8 @@ type
     function ReceiptFieldByText(Receipt: TSalesReceipt;
       Item: TTemplateItem): WideString;
     procedure AddItems(Items: TList);
-    function ReadReceiptJson(RecCommand: TSendReceiptCommand): WideString;
+    function ReadReceiptJson(ShiftNumber: Integer;
+      const CheckNumber: WideString): WideString;
     procedure BeginDocument(APrintHeader: boolean);
     procedure UpdateTemplateItem(Item: TTemplateItem);
     procedure PrintQRCodeItem(const Item: TDocItem);
@@ -118,6 +119,8 @@ type
       RecLineChars: Integer);
     function CreatePrinter: IOPOSPOSPrinter;
     function CreateSerialPort: TSerialPort;
+    procedure PrintReceiptDuplicate(const pString: WideString);
+    procedure PrintReceiptDuplicate2(const pString: WideString);
   public
     procedure PrintReceiptTemplate(Receipt: TSalesReceipt; Template: TReceiptTemplate);
     function GetJsonField(JsonText: WideString; const FieldName: WideString): Variant;
@@ -486,6 +489,7 @@ begin
   TDIOPrintTrailer.CreateCommand(FDIOHandlers, DIO_PRINT_TRAILER, Self);
   TDIOSetDriverParameter.CreateCommand(FDIOHandlers, DIO_SET_DRIVER_PARAMETER, Self);
   TDIOGetDriverParameter.CreateCommand(FDIOHandlers, DIO_GET_DRIVER_PARAMETER, Self);
+  TDIOPrintReceiptDuplicate.CreateCommand(FDIOHandlers, DIO_PRINT_RECEIPT_DUPLICATE, Self);
 end;
 
 procedure TWebkassaImpl.BeginDocument(APrintHeader: boolean);
@@ -2825,7 +2829,7 @@ begin
     begin
       Receipt.ReguestJson := FClient.CommandJson;
       Receipt.AnswerJson := FClient.AnswerJson;
-      Receipt.ReceiptJson := ReadReceiptJson(Command);
+      Receipt.ReceiptJson := ReadReceiptJson(Command.Data.ShiftNumber, Command.Data.CheckNumber);
       PrintReceiptTemplate(Receipt, Params.Template);
     end else
     begin
@@ -2838,7 +2842,8 @@ begin
   end;
 end;
 
-function TWebkassaImpl.ReadReceiptJson(RecCommand: TSendReceiptCommand): WideString;
+function TWebkassaImpl.ReadReceiptJson(ShiftNumber: Integer;
+  const CheckNumber: WideString): WideString;
 var
   Command: TReceiptCommand;
 begin
@@ -2852,8 +2857,8 @@ begin
   try
     Command.Request.Token := Client.Token;
     Command.Request.CashboxUniqueNumber := Params.CashboxNumber;
-    Command.Request.Number := RecCommand.Data.CheckNumber;
-    Command.Request.ShiftNumber := RecCommand.Data.ShiftNumber;
+    Command.Request.Number := CheckNumber;
+    Command.Request.ShiftNumber := ShiftNumber;
     FClient.ReadReceipt(Command);
     Result := FClient.AnswerJson;
   finally
@@ -2920,20 +2925,21 @@ end;
 
 
 *)
+
+function OperationTypeToText(OperationType: Integer): WideString;
+begin
+  Result := '';
+  case OperationType of
+    OperationTypeBuy: Result := 'ПОКУПКА';
+    OperationTypeRetBuy: Result := 'ВОЗВРАТ ПОКУПКИ';
+    OperationTypeSell: Result := 'ПРОДАЖА';
+    OperationTypeRetSell: Result := 'ВОЗВРАТ ПРОДАЖИ';
+  end;
+end;
+
+
 procedure TWebkassaImpl.PrintReceipt(Receipt: TSalesReceipt;
   Command: TSendReceiptCommand);
-
-  function OperationTypeToText(OperationType: Integer): WideString;
-  begin
-    Result := '';
-    case OperationType of
-      OperationTypeBuy: Result := 'ПОКУПКА';
-      OperationTypeRetBuy: Result := 'ВОЗВРАТ ПОКУПКИ';
-      OperationTypeSell: Result := 'ПРОДАЖА';
-      OperationTypeRetSell: Result := 'ВОЗВРАТ ПРОДАЖИ';
-    end;
-  end;
-
 var
   i: Integer;
   Text: WideString;
@@ -4042,6 +4048,194 @@ begin
     begin
       CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, Barcode.Data));
     end;
+  end;
+end;
+
+procedure TWebkassaImpl.PrintReceiptDuplicate(const pString: WideString);
+const
+  ValueDelimiters = [';'];
+var
+  i: Integer;
+  Text: WideString;
+  Item: TPositionItem;
+  ShiftNumber: Integer;
+  CheckNumber: WideString;
+  Command: TReceiptCommand;
+  ItemQuantity: Double;
+  UnitName: WideString;
+  UnitItem: TUnitItem;
+  Payment: TPaymentItem;
+begin
+  ShiftNumber := GetInteger(pString, 1, ValueDelimiters);
+  CheckNumber := GetString(pString, 2, ValueDelimiters);
+
+  Command := TReceiptCommand.Create;
+  try
+    Command.Request.Token := Client.Token;
+    Command.Request.CashboxUniqueNumber := Params.CashboxNumber;
+    Command.Request.Number := CheckNumber;
+    Command.Request.ShiftNumber := ShiftNumber;
+    FClient.ReadReceipt(Command);
+
+    Document.PrintHeader := Receipt.PrintHeader;
+    Document.Addlines(Format('НДС Серия %s', [Params.VATSeries]),
+      Format('№ %s', [Params.VATNumber]));
+    Document.AddSeparator;
+    Document.AddLine(Document.AlignCenter(FCashBox.Name));
+    Document.AddLine(Document.AlignCenter(Format('СМЕНА №%d', [ShiftNumber])));
+    Document.AddLine(Command.Data.OperationTypeText);
+    Document.AddSeparator;
+    for i := 0 to Command.Data.Positions.Count-1 do
+    begin
+      Item := Command.Data.Positions[i];
+      Document.AddLine(Item.PositionName);
+
+      ItemQuantity := 1;
+      if Item.Count <> 0 then
+      begin
+        ItemQuantity := Item.Count;
+      end;
+      UnitName := '';
+      UnitItem := FUnits.ItemByCode(Item.UnitCode);
+      if UnitItem <> nil then
+        UnitName := UnitItem.NameKz;
+
+      Document.AddLine(Format('   %.3f %s x %s %s', [ItemQuantity,
+        UnitName, AmountToStr(Item.Price), Params.CurrencyName]));
+
+      // Скидка
+      if (not Item.DiscountDeleted)and(Item.DiscountTenge <> 0) then
+      begin
+        Document.AddLines('   Скидка', '-' + AmountToStr(Abs(Item.DiscountTenge)));
+      end;
+
+      // Наценка
+      if (not Item.MarkupDeleted)and(Item.Markup <> 0) then
+      begin
+        Document.AddLines('   Наценка', '+' + AmountToStr(Abs(Item.Markup)));
+      end;
+
+      Document.AddLines('   Стоимость', AmountToStr(Item.Sum));
+    end;
+    Document.AddSeparator;
+    // Скидка на чек
+    if Command.Data.Discount <> 0 then
+    begin
+      Document.AddLines('Скидка:', AmountToStr(Command.Data.Discount));
+    end;
+    // Наценка на чек
+    if Command.Data.Markup <> 0 then
+    begin
+      Document.AddLines('Наценка:', AmountToStr(Command.Data.Markup));
+    end;
+    // ИТОГ
+    Text := Document.ConcatLines('ИТОГ', AmountToStrEq(Command.Data.Total), Document.LineChars div 2);
+    Document.AddLine(Text, STYLE_DWIDTH_HEIGHT);
+    // Payments
+    for i := 0 to Command.Data.Payments.Count-1 do
+    begin
+      Payment := Command.Data.Payments[i];
+      if Payment.Sum <> 0 then
+      begin
+        Document.AddLines(Payment.PaymentTypeName + ':', AmountToStrEq(Payment.Sum));
+      end;
+    end;
+    if Command.Data.Change <> 0 then
+    begin
+      Document.AddLines('  СДАЧА', AmountToStrEq(Command.Data.Change));
+    end;
+    // VAT amounts
+    if Command.Data.Tax <> 0 then
+    begin
+      Document.AddLines(Format('в т.ч. %s', [Command.Data.TaxPercent]),
+          AmountToStrEq(Command.Data.Tax));
+    end;
+    Document.AddSeparator;
+    Document.AddLine('Фискальный признак: ' + CheckNumber);
+    Document.AddLine('Время: ' + Command.Data.RegistratedOn);
+    Document.AddLine('Оператор фискальных данных:');
+    Document.AddLine(Command.Data.Ofd.Name);
+    Document.AddLine('Для проверки чека зайдите на сайт:');
+    Document.AddLine(Command.Data.Ofd.Host);
+    Document.AddSeparator;
+    Document.AddLine(Document.AlignCenter('ФИСКАЛЬНЫЙ ЧЕK'));
+    Document.AddItem(Command.Data.TicketUrl, STYLE_QR_CODE);
+    Document.AddLine('');
+    Document.AddLine(Document.AlignCenter('ИНК ОФД: ' + Command.Data.CashboxIdentityNumber));
+    Document.AddLine(Document.AlignCenter('Код ККМ КГД (РНМ): ' + Command.Data.CashboxRegistrationNumber));
+    Document.AddLine(Document.AlignCenter('ЗНМ: ' + Command.Data.CashboxUniqueNumber));
+    Document.AddText(Receipt.Trailer.Text);
+    // Print
+    PrintDocumentSafe(Document);
+  finally
+    Command.Free;
+  end;
+end;
+
+procedure TWebkassaImpl.PrintReceiptDuplicate2(const pString: WideString);
+
+  function GetPaperKind: Integer;
+  var
+    LineWidthInMm: Integer;
+  begin
+    Printer.MapMode := PTR_MM_METRIC;
+    LineWidthInMm := Printer.RecLineWidth;
+    Printer.MapMode := PTR_MM_DOTS;
+
+    if LineWidthInMm <= 5800 then
+    begin
+      Result := PaperKind58mm;
+      Exit;
+    end;
+    if LineWidthInMm <= 8000 then
+    begin
+      Result := PaperKind80mm;
+      Exit;
+    end;
+    if LineWidthInMm <= 21000 then
+    begin
+      Result := PaperKindA4Book;
+      Exit;
+    end;
+    Result := PaperKindA4Album;
+  end;
+
+var
+  i: Integer;
+  Item: TReceiptTextItem;
+  ExternalCheckNumber: WideString;
+  Command: TReceiptTextCommand;
+begin
+  Document.Clear;
+  FCapRecBold := Printer.CapRecBold;
+  ExternalCheckNumber := pString;
+  Command := TReceiptTextCommand.Create;
+  try
+    Command.Request.Token := FClient.Token;
+    Command.Request.CashboxUniqueNumber := Params.CashboxNumber;
+    Command.Request.ExternalCheckNumber := ExternalCheckNumber;
+    Command.Request.isDuplicate := True;
+    Command.Request.paperKind := GetPaperKind;
+    FClient.ReadReceiptText(Command);
+    for i := 0 to Command.Data.Lines.Count-1 do
+    begin
+      Item := Command.Data.Lines.Items[i] as TReceiptTextItem;
+      case Item._Type of
+        ItemTypeText:
+        begin
+          if (Item.Style = TextStyleNormal) then
+            Document.AddLine(Item.Value, STYLE_NORMAL);
+          if (Item.Style = TextStyleBold) then
+            Document.AddLine(Item.Value, STYLE_BOLD);
+        end;
+        ItemTypePicture: Document.Add(Item.Value, STYLE_IMAGE);
+        ItemTypeQRCode: Document.Add(Item.Value, STYLE_QR_CODE);
+      end;
+    end;
+    // Print
+    PrintDocumentSafe(Document);
+  finally
+    Command.Free;
   end;
 end;
 

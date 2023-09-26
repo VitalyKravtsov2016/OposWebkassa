@@ -114,6 +114,9 @@ const
 
 
 
+  DIO_PRINT_RECEIPT_DUPLICATE   = 100;
+
+
   DIO_PRINT_TEXT2                = 1000;  // print text
 
   /////////////////////////////////////////////////////////////////////////////

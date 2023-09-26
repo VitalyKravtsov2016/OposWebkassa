@@ -6,6 +6,17 @@
 
 *******************************************************************
 
+  OposWebKassa_0.43.exe
+  26 сентября 2023 15:00
+  
+  [+] Добавлена печать копии чека через 
+      directIO(DIO_PRINT_RECEIPT_DUPLICATE, 0, ExternalCheckNumber)
+      DIO_PRINT_RECEIPT_DUPLICATE   = 100;
+      ExternalCheckNumber - номер чека. Можно получить через:
+      DirectIO(DIO_GET_DRIVER_PARAMETER, DriverParameterExternalCheckNumber, pString);
+  
+*******************************************************************
+
   OposWebKassa_0.42.exe
   21 сентября 2023 12:00
   

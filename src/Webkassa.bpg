@@ -10,7 +10,7 @@ DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
 PROJECTS = OposConfig.exe OposTest.exe OposWebkassa.dll OposWebkassaTest.exe \
-  OposWebkassaTestLib.dll
+  OposWebkassaTestLib.dll WebkassaAccTest.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -28,6 +28,9 @@ OposConfig.exe: OposConfig\OposConfig.dpr
   $(DCC)
 
 OposTest.exe: OposTest\OposTest.dpr
+  $(DCC)
+
+WebkassaAccTest.exe: ..\test\WebkassaAccTest\WebkassaAccTest.dpr
   $(DCC)
 
 

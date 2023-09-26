@@ -86,6 +86,13 @@ type
     procedure DirectIO(var pData: Integer; var pString: WideString); override;
   end;
 
+  { TDIOPrintReceiptDuplicate }
+
+  TDIOPrintReceiptDuplicate = class(TDIOHandler2)
+  public
+    procedure DirectIO(var pData: Integer; var pString: WideString); override;
+  end;
+
 implementation
 
 function BoolToStr(Value: Boolean): WideString;
@@ -289,6 +296,14 @@ begin
     end;
     DriverParameterFiscalSign: Printer.Receipt.FiscalSign := pString;
   end;
+end;
+
+{ TDIOPrintReceiptDuplicate }
+
+procedure TDIOPrintReceiptDuplicate.DirectIO(var pData: Integer;
+  var pString: WideString);
+begin
+  Printer.PrintReceiptDuplicate2(pString);
 end;
 
 end.
