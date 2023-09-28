@@ -43,6 +43,8 @@ type
   protected
     procedure SetUp; override;
     procedure TearDown; override;
+
+    procedure TestEvents;
   published
     procedure OpenClaimEnable;
     procedure TestCashIn;
@@ -58,13 +60,13 @@ type
     procedure TestFiscalReceipt4;
     procedure TestFiscalReceipt5;
     procedure TestFiscalReceipt6;
+    procedure TestFiscalReceipt7;
     procedure TestFiscalReceiptWithVAT;
     procedure TestFiscalReceiptWithAdjustments;
     procedure TestFiscalReceiptWithAdjustments2;
     procedure TestFiscalReceiptWithAdjustments3;
     procedure TestPrintBarcode;
     procedure TestGetData;
-    procedure TestEvents;
     procedure TestFontB;
   end;
 
@@ -122,8 +124,8 @@ begin
   Params.Login := 'webkassa4@softit.kz';
   Params.Password := 'Kassa123';
   Params.ConnectTimeout := 10;
-  Params.WebkassaAddress := 'https://devkkm.webkassa.kz';
-  //Params.WebkassaAddress := 'http://localhost:1332';
+  //Params.WebkassaAddress := 'https://devkkm.webkassa.kz';
+  Params.WebkassaAddress := 'http://localhost:1331';
 
   Params.CashboxNumber := 'SWK00033059';
   Params.NumHeaderLines := 6;
@@ -305,7 +307,7 @@ begin
   CheckEquals(0, Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 2'));
   CheckEquals(0, Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 3'));
   CheckEquals(0, Driver.EndNonFiscal, 'EndNonFiscal');
-  Application.MessageBox('Restart printer', 'Attention');
+  //Application.MessageBox('Restart printer', 'Attention');
 
   CheckEquals(0, Driver.ResetPrinter, 'ResetPrinter');
   CheckEquals(0, Driver.BeginNonFiscal, 'BeginNonFiscal');
@@ -517,6 +519,25 @@ begin
   FptrCheck(Driver.PrintRecMessage('Оператор: Кассир1'));
   FptrCheck(Driver.PrintRecMessage('Транз.:      11822 '));
   FptrCheck(Driver.PrintRecMessage('Транз. продажи: 11820 (200,00 тг)'));
+  FptrCheck(Driver.EndFiscalReceipt(False));
+end;
+
+procedure TWebkassaImplTest.TestFiscalReceipt7;
+begin
+  Params.RoundType := RoundTypeTotal;
+
+  OpenClaimEnable;
+  FptrCheck(Driver.ResetPrinter, 'ResetPrinter');
+  FptrCheck(Driver.ClearError, 'ClearError');
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+  FptrCheck(DirectIO2(30, 72, '4'));
+  FptrCheck(DirectIO2(30, 73, '1'));
+  FptrCheck(Driver.PrintRecItem('ШОКОЛАДНЫЙ БАТОНЧИК SNICKERS 50ГР.', 1180, 1000, 4, 1180, 'шт'));
+  FptrCheck(Driver.PrintRecTotal(1180, 1180, '0'));
+  FptrCheck(Driver.PrintRecMessage('Оператор: ts'));
+  FptrCheck(Driver.PrintRecMessage('ID:      29440 '));
+  FptrCheck(DirectIO2(30, 300, '29440'));
   FptrCheck(Driver.EndFiscalReceipt(False));
 end;
 

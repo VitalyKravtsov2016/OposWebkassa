@@ -68,8 +68,8 @@ begin
   FLogger.DeviceName := 'DeviceName';
 
   FClient := TWebkassaClient.Create(FLogger);
-  FClient.Address := 'https://devkkm.webkassa.kz';
-  //FClient.Address := 'http://localhost:1332';
+  //FClient.Address := 'https://devkkm.webkassa.kz';
+  FClient.Address := 'http://localhost:1331';
   FClient.Login := 'webkassa4@softit.kz';
   FClient.Password := 'Kassa123';
   FClient.CashboxNumber := 'SWK00033059';
@@ -400,6 +400,7 @@ var
   DstItem: TPositionItem;
   Command: TReceiptCommand;
 begin
+  TestSendReceipt;
   Command := TReceiptCommand.Create;
   try
     FClient.Connect;
