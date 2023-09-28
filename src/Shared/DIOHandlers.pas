@@ -276,7 +276,7 @@ begin
   case pData of
     DriverParameterPrintEnabled: pString := BoolToStr(Printer.Params.PrintEnabled);
     DriverParameterBarcode: pString := Printer.Receipt.Barcode;
-    DriverParameterExternalCheckNumber: pString := Printer.Receipt.ExternalCheckNumber;
+    DriverParameterExternalCheckNumber: pString := Printer.ExternalCheckNumber;
     DriverParameterFiscalSign: pString := Printer.Receipt.FiscalSign;
   end;
 end;
@@ -292,7 +292,7 @@ begin
     DriverParameterExternalCheckNumber:
     begin
       if pString <> '' then
-        Printer.Receipt.ExternalCheckNumber := pString;
+        Printer.ExternalCheckNumber := pString;
     end;
     DriverParameterFiscalSign: Printer.Receipt.FiscalSign := pString;
   end;

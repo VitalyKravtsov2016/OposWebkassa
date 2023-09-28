@@ -57,6 +57,7 @@ begin
   FDriver := TWebkassaImpl.Create(nil);
 
   FDriver.TestMode := True;
+  FDriver.LoadParamsEnabled := False;
   FDriver.Client.TestMode := True;
   FDriver.Printer := FPrinter;
   FDriver.Params.FontName := '42';

@@ -54,6 +54,7 @@ type
     FCashboxStatusJson: TlkJSON;
     FCashboxStatus: TlkJSONbase;
     FTestMode: Boolean;
+    FLoadParamsEnabled: Boolean;
     FPOSID: WideString;
     FCashierID: WideString;
     FLogger: ILogFile;
@@ -82,7 +83,7 @@ type
     FPrefix: WideString;
     FCapRecBold: Boolean;
     FCapRecDwideDhigh: Boolean;
-
+    FExternalCheckNumber: WideString;
 
     procedure PrintLine(Text: WideString);
     function GetReceiptItemText(ReceiptItem: TSalesReceiptItem;
@@ -386,6 +387,8 @@ type
     property TestMode: Boolean read FTestMode write FTestMode;
     property OposDevice: TOposServiceDevice19 read FOposDevice;
     property ReceiptJson: WideString read FReceiptJson write FReceiptJson;
+    property LoadParamsEnabled: Boolean read FLoadParamsEnabled write FLoadParamsEnabled;
+    property ExternalCheckNumber: WideString read FExternalCheckNumber write FExternalCheckNumber;
   end;
 
 implementation
@@ -449,8 +452,9 @@ begin
   FCashboxStatusJson := TlkJSON.Create;
   FLines := TTntStringList.Create;
   FDIOHandlers := TDIOHandlers.Create(FParams);
-
   CreateDIOHandlers;
+
+  FLoadParamsEnabled := True;
 end;
 
 destructor TWebkassaImpl.Destroy;
@@ -747,8 +751,9 @@ begin
     FReceipt.Free;
     FReceipt := CreateReceipt(FFiscalReceiptType);
     FReceipt.BeginFiscalReceipt(PrintHeader);
+    FExternalCheckNumber := CreateGUIDStr;
 
-    BeginDocument(PrintHeader);                                                                                     
+    BeginDocument(PrintHeader);
 
     Result := ClearResult;
   except
@@ -2297,7 +2302,7 @@ begin
   try
     Initialize;
     FOposDevice.Open(DeviceClass, DeviceName, GetEventInterface(pDispatch));
-    if not FTestMode then
+    if FLoadParamsEnabled then
     begin
       LoadParameters(FParams, DeviceName, FLogger);
     end;
@@ -2558,7 +2563,7 @@ begin
     Command.Request.CashboxUniqueNumber := Params.CashboxNumber;
     Command.Request.OperationType := OperationTypeCashIn;
     Command.Request.Sum := Receipt.GetTotal;
-    Command.Request.ExternalCheckNumber := Receipt.ExternalCheckNumber;
+    Command.Request.ExternalCheckNumber := FExternalCheckNumber;
     FClient.Execute(Command);
     // Create Document
     Document.PrintHeader := Receipt.PrintHeader;
@@ -2587,7 +2592,7 @@ begin
     Command.Request.CashboxUniqueNumber := Params.CashboxNumber;
     Command.Request.OperationType := OperationTypeCashOut;
     Command.Request.Sum := Receipt.GetTotal;
-    Command.Request.ExternalCheckNumber := Receipt.ExternalCheckNumber;
+    Command.Request.ExternalCheckNumber := FExternalCheckNumber;
     FClient.Execute(Command);
     //
     Document.PrintHeader := Receipt.PrintHeader;
@@ -2737,7 +2742,7 @@ begin
     Command.Request.OperationType := RecTypeToOperationType(Receipt.RecType);
     Command.Request.Change := Receipt.Change;
     Command.Request.RoundType := FParams.RoundType;
-    Command.Request.ExternalCheckNumber := Receipt.ExternalCheckNumber;
+    Command.Request.ExternalCheckNumber := FExternalCheckNumber;
     Command.Request.CustomerEmail := Receipt.CustomerEmail;
     Command.Request.CustomerPhone := Receipt.CustomerPhone;
     Command.Request.CustomerXin := Receipt.CustomerINN;

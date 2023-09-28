@@ -144,8 +144,9 @@ begin
 
   FDriver := TWebkassaImpl.Create(nil);
   FDriver.TestMode := True;
+  FDriver.LoadParamsEnabled := False;
   FDriver.Client.TestMode := True;
-  FDriver.Printer := FPrinter; 
+  FDriver.Printer := FPrinter;
   FDriver.Params.FontName := '42';
   FDriver.Params.LogFileEnabled := False;
   FDriver.Params.LogMaxCount := 10;

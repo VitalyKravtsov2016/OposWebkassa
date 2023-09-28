@@ -23,7 +23,7 @@ type
     function GetLogger: ILogFile;
     function GetDriver: TWebkassaImpl;
     function GetLock: TCriticalSection;
-
+ public
     property Logger: ILogFile read GetLogger;
     property Driver: TWebkassaImpl read GetDriver;
   public

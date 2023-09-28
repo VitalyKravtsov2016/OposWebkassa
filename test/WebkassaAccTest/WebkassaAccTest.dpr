@@ -87,9 +87,11 @@ uses
   PrinterTypes in '..\..\src\Shared\PrinterTypes.pas',
   DIOHandlers in '..\..\src\Shared\DIOHandlers.pas',
   BarcodeUtils in '..\..\src\Shared\BarcodeUtils.pas',
-  MockPosPrinter in '..\OposWebkassaTest\units\MockPosPrinter.pas';
+  MockPosPrinter in '..\OposWebkassaTest\units\MockPosPrinter.pas',
+  oleFiscalPrinter in '..\..\src\OposWebkassa\Units\oleFiscalPrinter.pas';
 
 {$R *.RES}
+{$R ..\..\src\OposWebkassa\OposWebkassa.tlb}
 
 begin
   DecimalSeparator := '.';

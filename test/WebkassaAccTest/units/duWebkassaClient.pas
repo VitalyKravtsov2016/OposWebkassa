@@ -69,15 +69,11 @@ begin
 
   FClient := TWebkassaClient.Create(FLogger);
   FClient.Address := 'https://devkkm.webkassa.kz';
+  //FClient.Address := 'http://localhost:1332';
   FClient.Login := 'webkassa4@softit.kz';
   FClient.Password := 'Kassa123';
   FClient.CashboxNumber := 'SWK00033059';
   FClient.RaiseErrors := True;
-(*
-  FClient.Login := 'Adilkhan.seilbekov@petroretail.kz';
-  FClient.Password := 'Aa123456789!';
-  FClient.CashboxNumber := 'SWK00032685';
-*)
 end;
 
 procedure TWebkassaClientTest.TearDown;

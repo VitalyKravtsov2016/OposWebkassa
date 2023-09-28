@@ -21,7 +21,6 @@ type
     FTrailer: TTntStrings;
     FAfterTotal: Boolean;
     FBarcode: string;
-    FExternalCheckNumber: WideString;
     FFiscalSign: WideString;
     FPrintHeader: Boolean;
     FCustomerINN: WideString;
@@ -130,7 +129,6 @@ type
     property AfterTotal: Boolean read FAfterTotal;
     property PrintHeader: Boolean read FPrintHeader;
     property FiscalSign: WideString read FFiscalSign write FFiscalSign;
-    property ExternalCheckNumber: WideString read FExternalCheckNumber write FExternalCheckNumber;
   end;
 
 function CurrencyToInt64(Value: Currency): Int64;
@@ -154,7 +152,6 @@ begin
   inherited Create;
   FLines := TTntStringList.Create;
   FTrailer := TTntStringList.Create;
-  FExternalCheckNumber := CreateGUIDStr;
 end;
 
 destructor TCustomReceipt.Destroy;
