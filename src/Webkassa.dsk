@@ -1,27 +1,19 @@
 [Closed Files]
-File_0=SourceModule,'D:\projects\WebKassa\test\OposWebkassaTest\units\duWebkassaImpl.pas',0,1,593,1,608,0,0
-File_1=SourceModule,'D:\projects\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas',0,1,744,126,771,0,0
-File_2=SourceModule,'D:\projects\WebKassa\test\OposWebkassaTest\units\duWebkassaImpl2.pas',0,1,1,1,1,0,0
-File_3=SourceModule,'D:\projects\WebKassa\test\OposWebkassaTest\units\duWebkassaClient.pas',0,1,56,27,67,0,0
-File_4=SourceModule,'D:\projects\WebKassa\test\OposWebkassaTest\units\duWebkassaImpl3.pas',0,1,46,18,61,0,0
-File_5=SourceModule,'D:\projects\WebKassa\src\Opos\OposException.pas',0,1,77,1,92,0,0
-File_6=SourceModule,'D:\projects\WebKassa\test\WebkassaAccTest\units\duWebkassaImpl.pas',0,1,95,41,117,0,0
-File_7=SourceModule,'D:\projects\WebKassa\src\OposWebkassa\units\WebkassaClient.pas',0,1,1666,38,1675,0,0
-File_8=SourceModule,'D:\projects\WebKassa\src\OposWebkassa\Units\oleFiscalPrinter.pas',0,1,1,112,20,0,0
-File_9=SourceModule,'D:\projects\WebKassa\src\Shared\FileUtils.pas',0,1,1,23,11,0,0
+File_0=SourceModule,'D:\projects\WebKassa\test\WebkassaAccTest\units\duWebkassaImpl.pas',0,1,113,12,122,0,0
+File_1=SourceModule,'D:\projects\WebKassa\test\WebkassaAccTest\units\duWebkassaClient.pas',0,1,302,32,306,0,0
+File_2=SourceModule,'D:\projects\WebKassa\test\OposWebkassaTest\units\duWebkassaImpl.pas',0,1,593,1,608,0,0
+File_3=SourceModule,'D:\projects\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas',0,1,744,126,771,0,0
+File_4=SourceModule,'D:\projects\WebKassa\test\OposWebkassaTest\units\duWebkassaImpl2.pas',0,1,1,1,1,0,0
+File_5=SourceModule,'D:\projects\WebKassa\test\OposWebkassaTest\units\duWebkassaClient.pas',0,1,56,27,67,0,0
+File_6=SourceModule,'D:\projects\WebKassa\test\OposWebkassaTest\units\duWebkassaImpl3.pas',0,1,46,18,61,0,0
+File_7=SourceModule,'D:\projects\WebKassa\src\Opos\OposException.pas',0,1,77,1,92,0,0
+File_8=SourceModule,'D:\projects\WebKassa\src\OposWebkassa\units\WebkassaClient.pas',0,1,1666,38,1675,0,0
+File_9=SourceModule,'D:\projects\WebKassa\src\OposWebkassa\Units\oleFiscalPrinter.pas',0,1,1,112,20,0,0
 
 [Modules]
 Count=0
 EditWindowCount=0
 TypeLibWindowCount=1
-
-[D:\projects\WebKassa\test\OposWebkassaTest\OposWebkassaTestLib.dpr]
-FormState=0
-FormOnTop=0
-
-[D:\projects\WebKassa\test\OposWebkassaTest\OposWebkassaTest.dpr]
-FormState=0
-FormOnTop=0
 
 [D:\projects\WebKassa\test\WebkassaAccTest\WebkassaAccTest.dpr]
 FormState=0
@@ -44,6 +36,14 @@ FormState=0
 FormOnTop=0
 
 [D:\projects\WebKassa\src\OposWebkassa\OposWebkassa.tlb]
+FormState=0
+FormOnTop=0
+
+[D:\projects\WebKassa\test\OposWebkassaTest\OposWebkassaTest.dpr]
+FormState=0
+FormOnTop=0
+
+[D:\projects\WebKassa\test\OposWebkassaTest\OposWebkassaTestLib.dpr]
 FormState=0
 FormOnTop=0
 

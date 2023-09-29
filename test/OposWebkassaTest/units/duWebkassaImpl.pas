@@ -856,7 +856,7 @@ begin
   Item := Driver.Params.Template.RecItem.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
   Item.TextStyle := STYLE_NORMAL;
-  Item.Text := 'Price';
+  Item.Text := 'UnitPrice';
   Item.FormatText := '%s ';
   Item.Alignment := ALIGN_LEFT;
   // Currency name
