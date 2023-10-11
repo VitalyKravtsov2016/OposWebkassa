@@ -11,7 +11,13 @@ uses
 const
   ESC   = #$1B;
   CRLF  = #13#10;
-  
+
+  /////////////////////////////////////////////////////////////////////////////
+  // Font type
+
+  FONT_TYPE_A = 0;
+  FONT_TYPE_B = 1;
+
   /////////////////////////////////////////////////////////////////////////////
   // Charset constants
 
@@ -359,6 +365,8 @@ type
 
     procedure BeginDocument;
     procedure EndDocument;
+    procedure EncodeUserCharacter(C: WideChar; FontType, CharCode: Integer;
+      Font: TFont);
 
     property Logger: ILogFile read FLogger;
     property Port: IPrinterPort read FPort;
@@ -552,6 +560,47 @@ begin
   Send(#$1B#$25 + Chr(n));
 end;
 
+///////////////////////////////////////////////////////////////////////////////
+// Font A 12x24, font B 9x17
+///////////////////////////////////////////////////////////////////////////////
+
+procedure TEscPrinter.EncodeUserCharacter(C: WideChar;
+  FontType, CharCode: Integer; Font: TFont);
+var
+  Bitmap: TBitmap;
+  UserChar: TUserChar;
+begin
+  Bitmap := TBitmap.Create;
+  try
+    Bitmap.Monochrome := True;
+    Bitmap.PixelFormat := pf1Bit;
+    if Font <> nil then
+    begin
+      Bitmap.Canvas.Font.Assign(Font);
+    end;
+
+    if FontType = FONT_TYPE_A then
+    begin
+      Bitmap.Width := 12;
+      Bitmap.Height := 24;
+      Bitmap.Canvas.Font.Size := 24;
+    end else
+    begin
+      Bitmap.Width := 9;
+      Bitmap.Height := 17;
+      Bitmap.Canvas.Font.Size := 17;
+    end;
+    Bitmap.Canvas.TextOut(0, 0, C);
+    Bitmap.SaveToFile('CHarBitmap.bmp');
+
+    UserChar.c1 := CharCode;
+    UserChar.c2 := CharCode;
+    UserChar.Data := GetBitmapData(Bitmap);
+  finally
+    Bitmap.Free;
+  end;
+  DefineUserCharacter(UserChar);
+end;
 
 (*
 y = 3
@@ -561,6 +610,7 @@ selected) 0 „T x „T 9 (when Font B (9X17) is
 selected)
 
 *)
+
 procedure TEscPrinter.DefineUserCharacter(C: TUserChar);
 begin
   Logger.Debug('TEscPrinter.DefineUserCharacter');

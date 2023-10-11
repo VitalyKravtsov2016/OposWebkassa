@@ -103,6 +103,7 @@ begin
   CheckEquals(InitText + StrToHex(Text), StrToHex(FPort.Buffer), 'Port.Buffer');
 end;
 
+
 initialization
   RegisterTest('', TPosEscPrinterTest.Suite);
 
