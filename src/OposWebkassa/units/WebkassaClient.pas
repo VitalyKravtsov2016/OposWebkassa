@@ -75,6 +75,29 @@ const
   TextStyleNormal             = 0; // Обычный текст
   TextStyleBold               = 1; // Жирный текст
 
+  /////////////////////////////////////////////////////////////////////////////
+  // Error codes
+
+  WEBKASSA_E_UNKNOWN                  = -1; // Неизвестная
+  WEBKASSA_E_INVALID_LOGIN_PASSWORD   = 1; // Неверный логин и/или пароль
+  WEBKASSA_E_TOKEN_EXPIRED            = 2; // Срок действия сессии истек
+  WEBKASSA_E_NOT_AUTHORIZED           = 3; // Пользователь не авторизован
+  WEBKASSA_E_OPERATION_ACCESS_DENIED  = 4; // Нет доступа к операции
+  WEBKASSA_E_ACCESS_DENIED            = 5; // Нет доступа к кассе
+  WEBKASSA_E_NOT_FOUND                = 6; // Касса не найдена
+  WEBKASSA_E_BLOCKED                  = 7; // Касса заблокирована
+  WEBKASSA_E_NO_CASH                  = 8; // Недостаточно суммы для изъятия
+  WEBKASSA_E_DATA_VALIDATION          = 9; // Ошибка валидации данных
+  WEBKASSA_E_NOT_ACTIVATED            = 10; // Касса не активирована
+  WEBKASSA_E_DAY_END_REQUIRED         = 11; // Продолжительность смены превышает 24 часа
+  WEBKASSA_E_DAY_CLOSED               = 12; // Смена уже закрыта
+  WEBKASSA_E_DAY_NOT_OPENED           = 13; // Не найдена открытая смена
+  WEBKASSA_E_DUPLICATE_REC_NUM        = 14; // Дублирующийся код системы-источника
+  WEBKASSA_E_DAY_NOT_FOUND            = 15; // Смена не найдена
+  WEBKASSA_E_REC_NOT_FOUND            = 16; // Чек не зарегистрирован в рамках смены
+  WEBKASSA_E_DAY_72_HOUR              = 18; // Продолжительность работы в автономном режиме превышает 72 часа
+  WEBKASSA_E_DAY_OPENED               = 1014; // Данная смена открыта
+
 type
   TNonNullable = class;
   TPaymentByType = class;
@@ -108,6 +131,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
+    function IsTokenExpired: Boolean;
     procedure Assign(Source: TPersistent); override;
   published
     property Errors: TErrorItems read FErrors write SetErrors;
@@ -1621,29 +1645,23 @@ end;
 
 function TWebkassaClient.Post(URL, Request: WideString): WideString;
 var
-  i: Integer;
-  Item: TErrorItem;
   RepCount: Integer;
   IsTokenExpired: Boolean;
+const
+  MaxConnectCount = 3;
 begin
   IsTokenExpired := False;
-  for RepCount := 1 to 3 do
+  for RepCount := 1 to MaxConnectCount do
   begin
     if IsTokenExpired then
     begin
       Request := ChangeTokenInJson(Request, Token);
     end;
-
     Result := PostJson(URL, Request);
-    IsTokenExpired := False;
-    for i := 0 to FErrorResult.Errors.Count-1 do
-    begin
-      Item := FErrorResult.Errors.Items[i] as TErrorItem;
-      IsTokenExpired := Item.Code = 2;
-      if IsTokenExpired then Break;
-    end;
+    IsTokenExpired := FErrorResult.IsTokenExpired;
     if not IsTokenExpired then Break;
-    if (i = 3) then Break;
+    if IsTokenExpired and (RepCount = MaxConnectCount) then
+      RaiseLastError;
 
     FConnected := False;
     Connect;
@@ -2962,6 +2980,20 @@ destructor TErrorResult.Destroy;
 begin
   FErrors.Free;
   inherited Destroy;
+end;
+
+function TErrorResult.IsTokenExpired: Boolean;
+var
+  i: Integer;
+  Item: TErrorItem;
+begin
+  Result := False;
+  for i := 0 to Errors.Count-1 do
+  begin
+    Item := Errors.Items[i] as TErrorItem;
+    Result := Item.Code = WEBKASSA_E_TOKEN_EXPIRED;
+    if Result then Break;
+  end;
 end;
 
 procedure TErrorResult.SetErrors(const Value: TErrorItems);
