@@ -14,7 +14,7 @@ uses
   TntClasses, TntSysUtils,
   // This
   LogFile, WebkassaImpl, WebkassaClient, MockPosPrinter, PrinterParameters,
-  SerialPort, DirectIOAPI, FileUtils, oleFiscalPrinter;
+  SerialPort, DirectIOAPI, FileUtils, oleFiscalPrinter, StringUtils;
 
 const
   CRLF = #13#10;
@@ -121,13 +121,14 @@ begin
   Params.LogFileEnabled := True;
   Params.LogMaxCount := 10;
   Params.LogFilePath := GetModulePath + 'Logs';
-  Params.Login := 'webkassa4@softit.kz';
-  Params.Password := 'Kassa123';
-  Params.ConnectTimeout := 10;
-  //Params.WebkassaAddress := 'https://devkkm.webkassa.kz';
-  Params.WebkassaAddress := 'http://localhost:1331';
 
-  Params.CashboxNumber := 'SWK00033059';
+  Params.Login := 'apykhtin@ibtsmail.ru';
+  Params.Password := 'Kassa123!';
+  Params.ConnectTimeout := 10;
+  Params.WebkassaAddress := 'https://devkkm.webkassa.kz';
+  //Params.WebkassaAddress := 'http://localhost:1331';
+
+  Params.CashboxNumber := 'SWK00033444';
   Params.NumHeaderLines := 6;
   Params.NumTrailerLines := 3;
   Params.RoundType := RoundTypeNone;
@@ -341,17 +342,17 @@ end;
 
 procedure TWebkassaImplTest.TestPrintReceiptDuplicate;
 const
-  ReceiptLines: array [0..39] of string = (
+  ReceiptLines: array [0..38] of string = (
     '|bC              ДУБЛИКАТ',
     '       ТОО SOFT IT KAZAKHSTAN',
     '          БИН 131240010479',
     'НДС Серия 00000            № 0000000',
     '------------------------------------',
-    '             Касса 2.0.2',
+    '                kassa',
     '              Смена 213',
     '      Порядковый номер чека №13',
     'Чек №1176446355471',
-    'Кассир webkassa4@softit.kz',
+    'Кассир apykhtin@ibtsmail.ru',
     'ПРОДАЖА',
     '------------------------------------',
     '  1. Сер. № 5',
@@ -366,18 +367,17 @@ const
     '------------------------------------',
     'Фискальный признак: 1176446355471',
     'Время: 25.09.2023 17:20:28',
-    'Алматы',
     'Оператор фискальных данных: АО',
     '"КазТранском"',
     'Для проверки чека зайдите на сайт:',
     'dev.kofd.kz/consumer',
     '------------------------------------',
     '|bC           ФИСКАЛЬНЫЙ ЧЕК',
-    'http://dev.kofd.kz/consumer?i=117644635547',
+    'http://dev.kofd.kz/consumer?i=174431930345',
     '1&f=427490326691&s=590.00&t=20230925T17202',
     '8            ИНК ОФД: 657',
     '   Код ККМ КГД (РНМ): 427490326691',
-    '          ЗНМ: SWK00033059',
+    '          ЗНМ: SWK00033444',
     '             WEBKASSA.KZ',
     '           Callцентр 039458039850',
     '          Горячая линия 20948802934',
@@ -405,7 +405,7 @@ begin
   FptrCheck(Driver.DirectIO(DIO_PRINT_RECEIPT_DUPLICATE, pData, ExternalCheckNumber),
     'DirectIO(DIO_PRINT_RECEIPT_DUPLICATE, 0, ExternalCheckNumber)');
 
-  CheckEquals(48, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
+  CheckEquals(47, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
   for i := 0 to 5 do
   begin
     CheckEquals(TrimRight(ReceiptLines[i]), TrimRight(FPrinter.Lines[i]), 'Line ' + IntToStr(i));
@@ -414,11 +414,11 @@ begin
   begin
     CheckEquals(TrimRight(ReceiptLines[i]), TrimRight(FPrinter.Lines[i]), 'Line ' + IntToStr(i));
   end;
-  for i := 24 to 30 do
+  for i := 24 to 29 do
   begin
     CheckEquals(TrimRight(ReceiptLines[i]), TrimRight(FPrinter.Lines[i]), 'Line ' + IntToStr(i));
   end;
-  for i := 34 to 39 do
+  for i := 34 to 38 do
   begin
     CheckEquals(TrimRight(ReceiptLines[i]), TrimRight(FPrinter.Lines[i]), 'Line ' + IntToStr(i));
   end;
@@ -523,7 +523,10 @@ begin
 end;
 
 procedure TWebkassaImplTest.TestFiscalReceipt7;
+var
+  RecNumber: string;
 begin
+  RecNumber := CreateGUIDStr;
   Params.RoundType := RoundTypeTotal;
 
   OpenClaimEnable;
@@ -536,8 +539,8 @@ begin
   FptrCheck(Driver.PrintRecItem('ШОКОЛАДНЫЙ БАТОНЧИК SNICKERS 50ГР.', 1180, 1000, 4, 1180, 'шт'));
   FptrCheck(Driver.PrintRecTotal(1180, 1180, '0'));
   FptrCheck(Driver.PrintRecMessage('Оператор: ts'));
-  FptrCheck(Driver.PrintRecMessage('ID:      29440 '));
-  FptrCheck(DirectIO2(30, 300, '29440'));
+  FptrCheck(Driver.PrintRecMessage('ID:      ' + RecNumber));
+  FptrCheck(DirectIO2(DIO_SET_DRIVER_PARAMETER, DriverParameterExternalCheckNumber, RecNumber));
   FptrCheck(Driver.EndFiscalReceipt(False));
 end;
 
@@ -731,6 +734,7 @@ begin
   FptrCheck(Driver.GetData(FPTR_GD_GRAND_TOTAL, OptArgs, Data));
   DataExpected := Driver.Driver.ReadCashboxStatus.Field['Data'].Field[
     'CurrentState'].Field['XReport'].Field['SumInCashbox'].Value;
+  DataExpected := IntToStr(Trunc(StrToCurr(DataExpected) * 100));
   CheckEquals(DataExpected, Data, 'FPTR_GD_GRAND_TOTAL');
   FptrCheck(Driver.GetData(FPTR_GD_DAILY_TOTAL, OptArgs, Data));
 end;

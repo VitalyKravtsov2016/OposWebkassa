@@ -92,7 +92,8 @@ uses
   DIOHandler in '..\..\src\Shared\DIOHandler.pas',
   PrinterTypes in '..\..\src\Shared\PrinterTypes.pas',
   DIOHandlers in '..\..\src\Shared\DIOHandlers.pas',
-  BarcodeUtils in '..\..\src\Shared\BarcodeUtils.pas';
+  BarcodeUtils in '..\..\src\Shared\BarcodeUtils.pas',
+  duEscPrinter in 'units\duEscPrinter.pas';
 
 {$R *.RES}
 

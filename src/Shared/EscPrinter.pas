@@ -4,7 +4,7 @@ interface
 
 uses
   // VCL
-  Types, SysUtils, Graphics,
+  Windows, Types, SysUtils, Graphics,
   // This
   ByteUtils, PrinterPort, RegExpr, StringUtils, LogFile;
 
@@ -15,8 +15,8 @@ const
   /////////////////////////////////////////////////////////////////////////////
   // Font type
 
-  FONT_TYPE_A = 0;
-  FONT_TYPE_B = 1;
+  FONT_TYPE_A = 0; // 12x24
+  FONT_TYPE_B = 1; // 9x17
 
   /////////////////////////////////////////////////////////////////////////////
   // Charset constants
@@ -590,7 +590,9 @@ begin
       Bitmap.Height := 17;
       Bitmap.Canvas.Font.Size := 17;
     end;
-    Bitmap.Canvas.TextOut(0, 0, C);
+    Windows.ExtTextOutW(Bitmap.Canvas.Handle, 0, 0, Bitmap.Canvas.TextFlags,
+      nil, PWideChar(C), Length(C), nil);
+
     Bitmap.SaveToFile('CHarBitmap.bmp');
 
     UserChar.c1 := CharCode;
@@ -599,7 +601,7 @@ begin
   finally
     Bitmap.Free;
   end;
-  DefineUserCharacter(UserChar);
+  //DefineUserCharacter(UserChar);
 end;
 
 (*

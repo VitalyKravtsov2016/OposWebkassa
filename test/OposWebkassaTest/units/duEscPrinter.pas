@@ -4,7 +4,7 @@ interface
 
 uses
   // VCL
-  Windows, SysUtils, Classes,
+  Windows, SysUtils, Classes, Graphics,
   // DUnit
   TestFramework,
   // 3'd
@@ -18,14 +18,15 @@ type
   TPosEscPrinterTest = class(TTestCase)
   private
     FLogger: ILogFile;
-    FPort: TMockPrinterPort;
     FPrinter: TEscPrinter;
+    FPort: TMockPrinterPort;
+
     property Printer: TEscPrinter read FPrinter;
   protected
     procedure SetUp; override;
     procedure TearDown; override;
+    procedure EncodeUserCharacter;
   published
-    procedure TestPrintNormal;
   end;
 
 implementation
@@ -36,7 +37,7 @@ procedure TPosEscPrinterTest.SetUp;
 begin
   FLogger := TLogFile.Create;
   FPort := TMockPrinterPort.Create('');
-  FPrinter := TPosEscPrinter.Create2(nil, FPort, FLogger);
+  FPrinter := TEscPrinter.Create(FPort, FLogger);
 end;
 
 procedure TPosEscPrinterTest.TearDown;
@@ -44,58 +45,24 @@ begin
   FPrinter.Free;
 end;
 
-procedure TPosEscPrinterTest.PtrCheck(Code: Integer);
+procedure TPosEscPrinterTest.EncodeUserCharacter;
 var
-  Text: WideString;
+  C: WideChar;
+  Font: TFont;
 begin
-  if Code <> OPOS_SUCCESS then
-  begin
-    if Printer.ResultCode = OPOS_E_EXTENDED then
-      Text := Format('%d, %d, %s [%s]', [Printer.ResultCode, Printer.ResultCodeExtended,
-      PtrResultCodeExtendedText(Printer.ResultCodeExtended), Printer.ErrorString])
-    else
-      Text := Format('%d, %s [%s]', [Printer.ResultCode,
-        PtrResultCodeExtendedText(Printer.ResultCode), Printer.ErrorString]);
-
-    raise Exception.Create(Text);
+  Font := TFont.Create;
+  try
+    C := WideChar($1179);
+    Font.Size := 12;
+    //Font.Name :=
+    Font.Style := [fsBold];
+    Printer.EncodeUserCharacter(C, FONT_TYPE_A, 1, Font);
+  finally
+    Font.Free;
   end;
 end;
 
-procedure TPosEscPrinterTest.OpenService;
-begin
-  PtrCheck(Printer.Open('DeviceName'));
-end;
 
-procedure TPosEscPrinterTest.ClaimDevice;
-begin
-  CheckEquals(False, Printer.Claimed, 'Printer.Claimed');
-  PtrCheck(Printer.ClaimDevice(1000));
-  CheckEquals(True, Printer.Claimed, 'Printer.Claimed');
-end;
-
-procedure TPosEscPrinterTest.EnableDevice;
-begin
-  Printer.DeviceEnabled := True;
-  CheckEquals(OPOS_SUCCESS, Printer.ResultCode, 'OPOS_SUCCESS');
-  CheckEquals(True, Printer.DeviceEnabled, 'DeviceEnabled');
-end;
-
-procedure TPosEscPrinterTest.OpenClaimEnable;
-begin
-  OpenService;
-  ClaimDevice;
-  EnableDevice;
-end;
-
-procedure TPosEscPrinterTest.TestPrintNormal;
-const
-  Text = 'Line 1';
-  InitText = '1B 40 1B 74 06 ';
-begin
-  OpenClaimEnable;
-  CheckEquals(OPOS_SUCCESS, FPrinter.PrintNormal(PTR_S_RECEIPT, Text));
-  CheckEquals(InitText + StrToHex(Text), StrToHex(FPort.Buffer), 'Port.Buffer');
-end;
 
 initialization
   RegisterTest('', TPosEscPrinterTest.Suite);
