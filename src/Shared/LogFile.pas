@@ -23,50 +23,50 @@ type
   ILogFile = interface
     procedure Lock;
     procedure Unlock;
-    procedure Write(const Data: AnsiString);
-    procedure Info(const Data: AnsiString); overload;
-    procedure Debug(const Data: AnsiString); overload;
-    procedure Trace(const Data: AnsiString); overload;
-    procedure Error(const Data: AnsiString); overload;
-    procedure Error(const Data: AnsiString; E: Exception); overload;
-    procedure Info(const Data: AnsiString; Params: array of const); overload;
-    procedure Trace(const Data: AnsiString; Params: array of const); overload;
-    procedure Error(const Data: AnsiString; Params: array of const); overload;
-    procedure Debug(const Data: AnsiString; Result: Variant); overload;
-    procedure Debug(const Data: AnsiString; Params: array of const); overload;
-    procedure Debug(const Data: AnsiString; Params: array of const; Result: Variant); overload;
-    function GetFileDate(const FileName: AnsiString; var FileDate: TDateTime): Boolean;
-    procedure WriteRxData(Data: AnsiString);
-    procedure WriteTxData(Data: AnsiString);
-    procedure LogParam(const ParamName: AnsiString; const ParamValue: Variant);
-    procedure GetFileNames(const Mask: AnsiString; FileNames: TTntStrings);
+    procedure Write(const Data: WideString);
+    procedure Info(const Data: WideString); overload;
+    procedure Debug(const Data: WideString); overload;
+    procedure Trace(const Data: WideString); overload;
+    procedure Error(const Data: WideString); overload;
+    procedure Error(const Data: WideString; E: Exception); overload;
+    procedure Info(const Data: WideString; Params: array of const); overload;
+    procedure Trace(const Data: WideString; Params: array of const); overload;
+    procedure Error(const Data: WideString; Params: array of const); overload;
+    procedure Debug(const Data: WideString; Result: Variant); overload;
+    procedure Debug(const Data: WideString; Params: array of const); overload;
+    procedure Debug(const Data: WideString; Params: array of const; Result: Variant); overload;
+    function GetFileDate(const FileName: WideString; var FileDate: TDateTime): Boolean;
+    procedure WriteRxData(Data: WideString);
+    procedure WriteTxData(Data: WideString);
+    procedure LogParam(const ParamName: WideString; const ParamValue: Variant);
+    procedure GetFileNames(const Mask: WideString; FileNames: TTntStrings);
 
     function GetFileSize: Int64;
     function GetEnabled: Boolean;
     function GetMaxCount: Integer;
-    function GetFilePath: AnsiString;
-    function GetFileName: AnsiString;
-    function GetSeparator: AnsiString;
-    function GetDeviceName: AnsiString;
+    function GetFilePath: WideString;
+    function GetFileName: WideString;
+    function GetSeparator: WideString;
+    function GetDeviceName: WideString;
     function GetTimeStampEnabled: Boolean;
 
     procedure CloseFile;
     procedure CheckFilesMaxCount;
     procedure SetEnabled(Value: Boolean);
     procedure SetMaxCount(const Value: Integer);
-    procedure SetFileName(const Value: AnsiString);
-    procedure SetFilePath(const Value: AnsiString);
-    procedure SetSeparator(const Value: AnsiString);
-    procedure SetDeviceName(const Value: AnsiString);
+    procedure SetFileName(const Value: WideString);
+    procedure SetFilePath(const Value: WideString);
+    procedure SetSeparator(const Value: WideString);
+    procedure SetDeviceName(const Value: WideString);
     procedure SetTimeStampEnabled(const Value: Boolean);
 
     property FileSize: Int64 read GetFileSize;
     property Enabled: Boolean read GetEnabled write SetEnabled;
-    property FilePath: AnsiString read GetFilePath write SetFilePath;
-    property FileName: AnsiString read GetFileName write SetFileName;
+    property FilePath: WideString read GetFilePath write SetFilePath;
+    property FileName: WideString read GetFileName write SetFileName;
     property MaxCount: Integer read GetMaxCount write SetMaxCount;
-    property Separator: AnsiString read GetSeparator write SetSeparator;
-    property DeviceName: AnsiString read GetDeviceName write SetDeviceName;
+    property Separator: WideString read GetSeparator write SetSeparator;
+    property DeviceName: WideString read GetDeviceName write SetDeviceName;
     property TimeStampEnabled: Boolean read GetTimeStampEnabled write SetTimeStampEnabled;
   end;
 
@@ -76,40 +76,40 @@ type
   TLogFile = class(TInterfacedObject, ILogFile)
   private
     FHandle: THandle;
-    FFileName: AnsiString;
-    FFilePath: AnsiString;
+    FFileName: WideString;
+    FFilePath: WideString;
     FEnabled: Boolean;
-    FSeparator: AnsiString;
+    FSeparator: WideString;
     FMaxCount: Integer;
     FLock: TCriticalSection;
-    FDeviceName: AnsiString;
+    FDeviceName: WideString;
     FTimeStampEnabled: Boolean;
 
     function GetFileSize: Int64;
     function GetOpened: Boolean;
     function GetEnabled: Boolean;
     function GetMaxCount: Integer;
-    function GetFilePath: AnsiString;
-    function GetFileName: AnsiString;
-    function GetSeparator: AnsiString;
-    function GetDeviceName: AnsiString;
+    function GetFilePath: WideString;
+    function GetFileName: WideString;
+    function GetSeparator: WideString;
+    function GetDeviceName: WideString;
     function GetTimeStampEnabled: Boolean;
-    function GetDefaultFileName: AnsiString;
+    function GetDefaultFileName: WideString;
 
     procedure OpenFile;
     procedure CloseFile;
     procedure SetDefaults;
     procedure CheckFilesMaxCount;
     procedure SetEnabled(Value: Boolean);
-    procedure Write(const Data: AnsiString);
-    procedure AddLine(const Data: AnsiString);
+    procedure Write(const Data: WideString);
+    procedure AddLine(const Data: WideString);
     procedure SetMaxCount(const Value: Integer);
-    procedure SetFilePath(const Value: AnsiString);
-    procedure SetFileName(const Value: AnsiString);
-    procedure SetSeparator(const Value: AnsiString);
-    procedure SetDeviceName(const Value: AnsiString);
+    procedure SetFilePath(const Value: WideString);
+    procedure SetFileName(const Value: WideString);
+    procedure SetSeparator(const Value: WideString);
+    procedure SetDeviceName(const Value: WideString);
     procedure SetTimeStampEnabled(const Value: Boolean);
-    procedure GetFileNames(const Mask: AnsiString; FileNames: TTntStrings);
+    procedure GetFileNames(const Mask: WideString; FileNames: TTntStrings);
 
     property Opened: Boolean read GetOpened;
   public
@@ -119,38 +119,38 @@ type
     procedure Lock;
 
     procedure Unlock;
-    procedure Info(const Data: AnsiString); overload;
-    procedure Debug(const Data: AnsiString); overload;
-    procedure Trace(const Data: AnsiString); overload;
-    procedure Error(const Data: AnsiString); overload;
-    procedure Error(const Data: AnsiString; E: Exception); overload;
-    procedure Info(const Data: AnsiString; Params: array of const); overload;
-    procedure Trace(const Data: AnsiString; Params: array of const); overload;
-    procedure Error(const Data: AnsiString; Params: array of const); overload;
-    procedure Debug(const Data: AnsiString; Result: Variant); overload;
-    procedure Debug(const Data: AnsiString; Params: array of const); overload;
-    procedure Debug(const Data: AnsiString; Params: array of const; Result: Variant); overload;
-    class function StrToText(const Text: AnsiString): AnsiString;
-    function GetFileDate(const FileName: AnsiString;
+    procedure Info(const Data: WideString); overload;
+    procedure Debug(const Data: WideString); overload;
+    procedure Trace(const Data: WideString); overload;
+    procedure Error(const Data: WideString); overload;
+    procedure Error(const Data: WideString; E: Exception); overload;
+    procedure Info(const Data: WideString; Params: array of const); overload;
+    procedure Trace(const Data: WideString; Params: array of const); overload;
+    procedure Error(const Data: WideString; Params: array of const); overload;
+    procedure Debug(const Data: WideString; Result: Variant); overload;
+    procedure Debug(const Data: WideString; Params: array of const); overload;
+    procedure Debug(const Data: WideString; Params: array of const; Result: Variant); overload;
+    class function StrToText(const Text: WideString): WideString;
+    function GetFileDate(const FileName: WideString;
       var FileDate: TDateTime): Boolean;
-    procedure DebugData(const Prefix, Data: AnsiString);
-    procedure LogParam(const ParamName: AnsiString; const ParamValue: Variant);
-    procedure WriteRxData(Data: AnsiString);
-    procedure WriteTxData(Data: AnsiString);
+    procedure DebugData(const Prefix, Data: WideString);
+    procedure LogParam(const ParamName: WideString; const ParamValue: Variant);
+    procedure WriteRxData(Data: WideString);
+    procedure WriteTxData(Data: WideString);
 
-    class function VariantToStr(V: Variant): AnsiString;
-    class function ParamsToStr(const Params: array of const): AnsiString;
-    class function ParamsToStr2(const Params: array of const): AnsiString;
-    class function VarArrayToStr(const AVarArray: TVariantArray): AnsiString;
-    class function VarArrayToStr2(const AVarArray: TVariantArray): AnsiString;
+    class function VariantToStr(V: Variant): WideString;
+    class function ParamsToStr(const Params: array of const): WideString;
+    class function ParamsToStr2(const Params: array of const): WideString;
+    class function VarArrayToStr(const AVarArray: TVariantArray): WideString;
+    class function VarArrayToStr2(const AVarArray: TVariantArray): WideString;
 
     property FileSize: Int64 read GetFileSize;
     property Enabled: Boolean read GetEnabled write SetEnabled;
-    property FilePath: AnsiString read GetFilePath write SetFilePath;
-    property FileName: AnsiString read GetFileName write SetFileName;
+    property FilePath: WideString read GetFilePath write SetFilePath;
+    property FileName: WideString read GetFileName write SetFileName;
     property MaxCount: Integer read GetMaxCount write SetMaxCount;
-    property Separator: AnsiString read GetSeparator write SetSeparator;
-    property DeviceName: AnsiString read GetDeviceName write SetDeviceName;
+    property Separator: WideString read GetSeparator write SetSeparator;
+    property DeviceName: WideString read GetDeviceName write SetDeviceName;
     property TimeStampEnabled: Boolean read GetTimeStampEnabled write SetTimeStampEnabled;
   end;
 
@@ -179,7 +179,7 @@ begin
         vtPointer: Result[i] := Integer(VPointer);
         vtPChar: Result[i] := StrPas(VPChar);
         vtObject: Result[i]:= Integer(VObject);
-        vtAnsiString: Result[i] := String(VAnsiString);
+        vtAnsiString: Result[i] := AnsiString(VWideString);
         vtCurrency: Result[i] := VCurrency^;
         vtVariant: Result[i] := VVariant^;
         vtInterface: Result[i]:= Integer(VPointer);
@@ -191,7 +191,7 @@ begin
   end;
 end;
 
-function StrToHex(const S: AnsiString): AnsiString;
+function StrToHex(const S: WideString): WideString;
 var
   i: Integer;
 begin
@@ -209,7 +209,7 @@ const
   TagDebug        = '[DEBUG] ';
   TagError        = '[ERROR] ';
 
-function GetTimeStamp: AnsiString;
+function GetTimeStamp: WideString;
 var
   Year, Month, Day: Word;
   Hour, Min, Sec, MSec: Word;
@@ -220,12 +220,12 @@ begin
     Day, Month, Year, Hour, Min, Sec, MSec]);
 end;
 
-function GetLongFileName(const FileName: AnsiString): AnsiString;
+function GetLongFileName(const FileName: WideString): WideString;
 var
   L: Integer;
   Handle: Integer;
-  Buffer: array[0..MAX_PATH] of Char;
-  GetLongPathName: function (ShortPathName: PChar; LongPathName: PChar;
+  Buffer: array[0..MAX_PATH] of WideChar;
+  GetLongPathNameW: function (ShortPathName: PWideChar; LongPathName: PWideChar;
     cchBuffer: Integer): Integer stdcall;
 const
   kernel = 'kernel32.dll';
@@ -234,16 +234,16 @@ begin
   Handle := GetModuleHandle(kernel);
   if Handle <> 0 then
   begin
-    @GetLongPathName := GetProcAddress(Handle, 'GetLongPathNameA');
-    if Assigned(GetLongPathName) then
+    @GetLongPathNameW := GetProcAddress(Handle, 'GetLongPathNameW');
+    if Assigned(GetLongPathNameW) then
     begin
-      L := GetLongPathName(PChar(FileName), Buffer, SizeOf(Buffer));
+      L := GetLongPathNameW(PWideChar(FileName), Buffer, SizeOf(Buffer));
       SetString(Result, Buffer, L);
     end;
   end;
 end;
 
-function GetModFileName: AnsiString;
+function GetModFileName: WideString;
 var
   Buffer: array[0..261] of Char;
 begin
@@ -251,17 +251,17 @@ begin
     Buffer, SizeOf(Buffer)));
 end;
 
-function GetModuleFileName: AnsiString;
+function GetModuleFileName: WideString;
 begin
   Result := GetLongFileName(GetModFileName);
 end;
 
-function GetLastErrorText: AnsiString;
+function GetLastErrorText: WideString;
 begin
   Result := Tnt_WideFormat(SOSError, [GetLastError,  SysErrorMessage(GetLastError)]);
 end;
 
-procedure ODS(const S: AnsiString);
+procedure ODS(const S: WideString);
 begin
 {$IFDEF DEBUG}
   //OutputDebugString(PChar(S));
@@ -299,13 +299,13 @@ begin
   FLock.Leave;
 end;
 
-function TLogFile.GetDefaultFileName: AnsiString;
+function TLogFile.GetDefaultFileName: WideString;
 begin
   Result := IncludeTrailingBackSlash(FilePath) + DeviceName + '_' +
     FormatDateTime('yyyy.mm.dd', Date) + '.log';
 end;
 
-function TLogFile.GetFileName: AnsiString;
+function TLogFile.GetFileName: WideString;
 begin
   Result := FFileName;
 end;
@@ -320,8 +320,26 @@ begin
 end;
 
 procedure TLogFile.OpenFile;
+
+  function IsFileExists(const FileName: WideString): Boolean;
+  var
+    hFile: DWORD;
+  begin
+    Result := False;
+    hFile := CreateFileW(PWideChar(FileName), GENERIC_READ, FILE_SHARE_READ,
+      nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+    if hFile <> INVALID_HANDLE_VALUE then
+    begin
+      CloseHandle(hFile);
+      Result := True;
+    end;
+  end;
+
 var
-  FileName: AnsiString;
+  FileName: WideString;
+  FileCreated: Boolean;
+const
+  UNICODE_BOM = WideChar($FEFF);
 begin
   Lock;
   try
@@ -339,13 +357,19 @@ begin
       end;
 
       FileName := GetDefaultFileName;
-      FHandle := CreateFile(PChar(FileName), GENERIC_READ or GENERIC_WRITE,
+      FileCreated := not IsFileExists(FileName);
+
+      FHandle := CreateFileW(PWideChar(FileName), GENERIC_READ or GENERIC_WRITE,
         FILE_SHARE_READ, nil, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
 
       if Opened then
       begin
         FileSeek(FHandle, 0, 2); // 0 from end
         FFileName := FileName;
+        if FileCreated then
+        begin
+          Write(UNICODE_BOM);
+        end;
       end else
       begin
         ODS(Format('Failed to create log file ''%s''', [FileName]));
@@ -383,7 +407,7 @@ begin
   end;
 end;
 
-procedure TLogFile.SetFileName(const Value: AnsiString);
+procedure TLogFile.SetFileName(const Value: WideString);
 begin
   if Value <> FileName then
   begin
@@ -394,7 +418,7 @@ end;
 
 procedure TLogFile.CheckFilesMaxCount;
 var
-  FileMask: AnsiString;
+  FileMask: WideString;
   FileNames: TTntStringList;
 begin
   if MaxCount = 0 then Exit;
@@ -413,11 +437,11 @@ begin
   end;
 end;
 
-procedure TLogFile.GetFileNames(const Mask: AnsiString; FileNames: TTntStrings);
+procedure TLogFile.GetFileNames(const Mask: WideString; FileNames: TTntStrings);
 var
   F: TSearchRec;
   Result: Integer;
-  FileName: AnsiString;
+  FileName: WideString;
 begin
   FileNames.Clear;
   Result := FindFirst(Mask, faAnyFile, F);
@@ -430,10 +454,10 @@ begin
   FindClose(F);
 end;
 
-function TLogFile.GetFileDate(const FileName: AnsiString;
+function TLogFile.GetFileDate(const FileName: WideString;
   var FileDate: TDateTime): Boolean;
 var
-  Line: AnsiString;
+  Line: WideString;
   Year, Month, Day: Word;
 begin
   try
@@ -449,12 +473,12 @@ begin
   end;
 end;
 
-procedure TLogFile.Write(const Data: AnsiString);
+procedure TLogFile.Write(const Data: WideString);
 var
   i: Integer;
-  S: AnsiString;
+  S: WideString;
   Count: DWORD;
-  NewFileName: AnsiString;
+  NewFileName: WideString;
 begin
   ODS(Data);
   if not Enabled then Exit;
@@ -485,7 +509,7 @@ begin
         OpenFile;
       end;
 
-      if not WriteFile(FHandle, S[1], Length(S), Count, nil) then
+      if not WriteFile(FHandle, S[1], Length(S) * Sizeof(WideChar), Count, nil) then
       begin
         CloseFile;
       end;
@@ -495,9 +519,9 @@ begin
   end;
 end;
 
-procedure TLogFile.AddLine(const Data: AnsiString);
+procedure TLogFile.AddLine(const Data: WideString);
 var
-  Line: AnsiString;
+  Line: WideString;
 begin
   Line := Data;
   if FTimeStampEnabled then
@@ -506,75 +530,75 @@ begin
   Write(Line);
 end;
 
-procedure TLogFile.Trace(const Data: AnsiString);
+procedure TLogFile.Trace(const Data: WideString);
 begin
   AddLine(TagTrace + Data);
 end;
 
-procedure TLogFile.Info(const Data: AnsiString);
+procedure TLogFile.Info(const Data: WideString);
 begin
   AddLine(TagInfo + Data);
 end;
 
-procedure TLogFile.Error(const Data: AnsiString);
+procedure TLogFile.Error(const Data: WideString);
 begin
   AddLine(TagError + Data);
 end;
 
-procedure TLogFile.Error(const Data: AnsiString; E: Exception);
+procedure TLogFile.Error(const Data: WideString; E: Exception);
 begin
   AddLine(TagError + Data + ' ' + GetExceptionMessage(E));
 end;
 
-procedure TLogFile.Debug(const Data: AnsiString);
+procedure TLogFile.Debug(const Data: WideString);
 begin
   AddLine(TagDebug + Data);
 end;
 
-class function TLogFile.ParamsToStr(const Params: array of const): AnsiString;
+class function TLogFile.ParamsToStr(const Params: array of const): WideString;
 begin
   Result := VarArrayToStr(ConstArrayToVarArray(Params));
 end;
 
-class function TLogFile.ParamsToStr2(const Params: array of const): AnsiString;
+class function TLogFile.ParamsToStr2(const Params: array of const): WideString;
 begin
   Result := VarArrayToStr2(ConstArrayToVarArray(Params));
 end;
 
-procedure TLogFile.Debug(const Data: AnsiString; Params: array of const);
+procedure TLogFile.Debug(const Data: WideString; Params: array of const);
 begin
   Debug(Data + ParamsToStr(Params));
 end;
 
-procedure TLogFile.Debug(const Data: AnsiString; Params: array of const;
+procedure TLogFile.Debug(const Data: WideString; Params: array of const;
   Result: Variant);
 begin
   Debug(Data + ParamsToStr(Params) + '=' + VariantToStr(Result));
 end;
 
-procedure TLogFile.Debug(const Data: AnsiString; Result: Variant);
+procedure TLogFile.Debug(const Data: WideString; Result: Variant);
 begin
   Debug(Data + '=' + VariantToStr(Result));
 end;
 
-procedure TLogFile.Error(const Data: AnsiString; Params: array of const);
+procedure TLogFile.Error(const Data: WideString; Params: array of const);
 begin
   Error(Data + ParamsToStr(Params));
 end;
 
-procedure TLogFile.Info(const Data: AnsiString; Params: array of const);
+procedure TLogFile.Info(const Data: WideString; Params: array of const);
 begin
   Info(Data + ParamsToStr(Params));
 end;
 
-procedure TLogFile.Trace(const Data: AnsiString; Params: array of const);
+procedure TLogFile.Trace(const Data: WideString; Params: array of const);
 begin
   Trace(Data + ParamsToStr(Params));
 end;
 
 { Преобразование строки в текст, чтобы увидеть все символы }
 
-class function TLogFile.StrToText(const Text: AnsiString): AnsiString;
+class function TLogFile.StrToText(const Text: WideString): WideString;
 var
   Code: Byte;
   i: Integer;
@@ -613,7 +637,7 @@ begin
   end;
 end;
 
-class function TLogFile.VariantToStr(V: Variant): AnsiString;
+class function TLogFile.VariantToStr(V: Variant): WideString;
 begin
   if VarIsNull(V) then
   begin
@@ -631,7 +655,7 @@ begin
   end;
 end;
 
-class function TLogFile.VarArrayToStr2(const AVarArray: TVariantArray): AnsiString;
+class function TLogFile.VarArrayToStr2(const AVarArray: TVariantArray): WideString;
 var
   I: Integer;
 begin
@@ -644,7 +668,7 @@ begin
   end;
 end;
 
-class function TLogFile.VarArrayToStr(const AVarArray: TVariantArray): AnsiString;
+class function TLogFile.VarArrayToStr(const AVarArray: TVariantArray): WideString;
 var
   I: Integer;
 begin
@@ -667,9 +691,9 @@ begin
   end;
 end;
 
-procedure TLogFile.DebugData(const Prefix, Data: AnsiString);
+procedure TLogFile.DebugData(const Prefix, Data: WideString);
 var
-  Line: AnsiString;
+  Line: WideString;
 const
   DataLen = 20; // Max data string length
 begin
@@ -680,28 +704,28 @@ begin
   until Line = '';
 end;
 
-procedure TLogFile.WriteRxData(Data: AnsiString);
+procedure TLogFile.WriteRxData(Data: WideString);
 begin
   DebugData('<- ', Data);
 end;
 
-procedure TLogFile.WriteTxData(Data: AnsiString);
+procedure TLogFile.WriteTxData(Data: WideString);
 begin
   DebugData('-> ', Data);
 end;
 
-procedure TLogFile.LogParam(const ParamName: AnsiString; const ParamValue: Variant);
+procedure TLogFile.LogParam(const ParamName: WideString; const ParamValue: Variant);
 begin
   Debug(ParamName + ': ' + VarToStr(ParamValue));
 end;
 
 
-function TLogFile.GetSeparator: AnsiString;
+function TLogFile.GetSeparator: WideString;
 begin
   Result := FSeparator;
 end;
 
-procedure TLogFile.SetSeparator(const Value: AnsiString);
+procedure TLogFile.SetSeparator(const Value: WideString);
 begin
   FSeparator := Value;
 end;
@@ -716,22 +740,22 @@ begin
   Result := FEnabled;
 end;
 
-function TLogFile.GetFilePath: AnsiString;
+function TLogFile.GetFilePath: WideString;
 begin
   Result := FFilePath;
 end;
 
-procedure TLogFile.SetFilePath(const Value: AnsiString);
+procedure TLogFile.SetFilePath(const Value: WideString);
 begin
   FFilePath := Value;
 end;
 
-function TLogFile.GetDeviceName: AnsiString;
+function TLogFile.GetDeviceName: WideString;
 begin
   Result := FDeviceName;
 end;
 
-procedure TLogFile.SetDeviceName(const Value: AnsiString);
+procedure TLogFile.SetDeviceName(const Value: WideString);
 begin
   FDeviceName := Value;
 end;

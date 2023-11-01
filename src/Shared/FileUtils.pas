@@ -12,6 +12,7 @@ function GetModulePath: WideString;
 function GetModuleFileName: WideString;
 function ReadFileData(const FileName: AnsiString): AnsiString;
 procedure WriteFileData(const FileName, Data: AnsiString);
+procedure WriteFileDataW(const FileName, Data: WideString);
 function GetLongFileName(const FileName: WideString): WideString;
 function GetSystemPath: WideString;
 function CLSIDToFileName(const CLSID: TGUID): WideString;
@@ -68,6 +69,23 @@ begin
   finally
     Stream.Free;
   end;
+end;
+
+procedure WriteFileDataW(const FileName, Data: WideString);
+var
+  hFile: Integer;
+  Count: DWORD;
+begin
+  hFile := Integer(CreateFileW(PWideChar(FileName), GENERIC_READ or GENERIC_WRITE,
+    0, nil, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0));
+  if hFile <= 0 then RaiseLastWin32Error;
+
+  if not WriteFile(hFile, Data[1], Length(Data) * SizeOf(WideChar), Count, nil) then
+  begin
+    CloseHandle(hFile);
+    RaiseLastWin32Error;
+  end;
+  CloseHandle(hFile);
 end;
 
 function GetLongFileName(const FileName: WideString): WideString;

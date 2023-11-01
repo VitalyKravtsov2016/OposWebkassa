@@ -365,7 +365,7 @@ type
 
     procedure BeginDocument;
     procedure EndDocument;
-    procedure EncodeUserCharacter(C: WideChar; FontType, CharCode: Integer;
+    procedure EncodeText(Text: WideString; FontType, CharCode: Integer;
       Font: TFont);
 
     property Logger: ILogFile read FLogger;
@@ -564,7 +564,7 @@ end;
 // Font A 12x24, font B 9x17
 ///////////////////////////////////////////////////////////////////////////////
 
-procedure TEscPrinter.EncodeUserCharacter(C: WideChar;
+procedure TEscPrinter.EncodeText(Text: WideString;
   FontType, CharCode: Integer; Font: TFont);
 var
   Bitmap: TBitmap;
@@ -581,17 +581,17 @@ begin
 
     if FontType = FONT_TYPE_A then
     begin
-      Bitmap.Width := 12;
-      Bitmap.Height := 24;
+      Bitmap.Width := 12 * Length(Text) + 10;
+      Bitmap.Height := 24 + 10;
       Bitmap.Canvas.Font.Size := 24;
     end else
     begin
-      Bitmap.Width := 9;
-      Bitmap.Height := 17;
+      Bitmap.Width := 9 * Length(Text) + 10;
+      Bitmap.Height := 17 + 10;
       Bitmap.Canvas.Font.Size := 17;
     end;
     Windows.ExtTextOutW(Bitmap.Canvas.Handle, 0, 0, Bitmap.Canvas.TextFlags,
-      nil, PWideChar(C), Length(C), nil);
+      nil, PWideChar(Text), Length(Text), nil);
 
     Bitmap.SaveToFile('CHarBitmap.bmp');
 

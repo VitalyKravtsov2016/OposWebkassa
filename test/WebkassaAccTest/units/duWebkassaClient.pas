@@ -70,14 +70,16 @@ begin
   FClient := TWebkassaClient.Create(FLogger);
   FClient.RaiseErrors := True;
   FClient.Address := 'https://devkkm.webkassa.kz';
+  //FClient.Address := 'http://localhost:1331';
+  // Касса не имеет активного активационного номера
   FClient.Login := 'apykhtin@ibtsmail.ru';
   FClient.Password := 'Kassa123!';
   FClient.CashboxNumber := 'SWK00033444';
-
-  //FClient.Address := 'http://localhost:1331';
-  //FClient.Login := 'webkassa4@softit.kz';
-  //FClient.Password := 'Kassa123';
-  //FClient.CashboxNumber := 'SWK00033059';
+(*
+  FClient.Login := 'webkassa4@softit.kz';
+  FClient.Password := 'Kassa123';
+  FClient.CashboxNumber := 'SWK00033059';
+*)
 end;
 
 procedure TWebkassaClientTest.TearDown;
@@ -307,9 +309,19 @@ procedure TWebkassaClientTest.TestSendReceipt;
 var
   Payment: TPayment;
   Item: TTicketItem;
+  ItemText: WideString;
+  Strings: TTntStringList;
 begin
-  FClient.Connect;
+  Strings := TTntStringList.Create;
+  try
+    Strings.LoadFromFile('KazakhText.txt');
+    ItemText := Strings[0];
+    //ItemText := 'Позиция 1';
+  finally
+    Strings.Free;
+  end;
 
+  FClient.Connect;
   FReceipt.Request.Token := FClient.Token;
   FReceipt.Request.CashboxUniqueNumber := FClient.CashboxNumber;
   FReceipt.Request.ExternalCheckNumber := CreateGUIDStr;
@@ -321,9 +333,9 @@ begin
   Item.TaxPercent := 12;
   Item.Tax := 1633.03;
   Item.TaxType := TaxTypeVAT;
-  Item.PositionName := 'Позиция чека 1';
+  Item.PositionName := ItemText; //'Позиция чека 1';
   Item.PositionCode := '1';
-  Item.DisplayName := 'Товар номер 1';
+  Item.DisplayName := ItemText; //'Товар номер 1';
   Item.UnitCode := 796;
   Item.Discount := 12;
   Item.Markup := 13;
@@ -404,7 +416,6 @@ var
   DstItem: TPositionItem;
   Command: TReceiptCommand;
 begin
-  TestSendReceipt;
   Command := TReceiptCommand.Create;
   try
     FClient.Connect;
@@ -415,8 +426,6 @@ begin
     Command.Request.ShiftNumber := FReceipt.Data.ShiftNumber;
 
     FClient.ReadReceipt(Command);
-    WriteFileData(GetModulePath + 'ReadReceipt.txt', FClient.AnswerJson);
-
     CheckEquals(FReceipt.Request.CashboxUniqueNumber,
       Command.Data.CashboxUniqueNumber, 'CashboxUniqueNumber');
 
@@ -434,6 +443,7 @@ end;
 
 procedure TWebkassaClientTest.TestReadReceiptText;
 var
+  Strings: TTntStringList;
   Command: TReceiptTextCommand;
 begin
   Command := TReceiptTextCommand.Create;
@@ -448,6 +458,17 @@ begin
 
     FClient.ReadReceiptText(Command);
     WriteFileData(GetModulePath + 'ReadReceiptText.txt', FClient.AnswerJson);
+    WriteFileDataW(GetModulePath + 'ReadReceiptText2.txt', FClient.AnswerJson);
+
+    Strings := TTntStringList.Create;
+    try
+      Strings.Text := UTF8Decode(FClient.AnswerJson);
+      Strings.SaveToFile(GetModulePath + 'ReadReceiptText3.txt');
+    finally
+      Strings.Free;
+    end;
+
+
     Check(Command.Data.Lines.Count > 0);
     WriteFileData(GetModulePath + 'ReadReceiptText2.txt', Command.Data.GetText);
   finally

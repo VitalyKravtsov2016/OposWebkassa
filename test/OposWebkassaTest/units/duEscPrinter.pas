@@ -5,10 +5,12 @@ interface
 uses
   // VCL
   Windows, SysUtils, Classes, Graphics,
+  // Tnt
+  TntGraphics, TntClasses,
   // DUnit
   TestFramework,
   // 3'd
-  TntClasses, Opos, OposPtr, OposPtrUtils,
+  Opos, OposPtr, OposPtrUtils,
   // This
   LogFile, PosEscPrinter, MockPrinterPort, PrinterPort, StringUtils, EscPrinter;
 
@@ -25,8 +27,8 @@ type
   protected
     procedure SetUp; override;
     procedure TearDown; override;
-    procedure EncodeUserCharacter;
   published
+    procedure EncodeUserCharacter;
   end;
 
 implementation
@@ -47,18 +49,34 @@ end;
 
 procedure TPosEscPrinterTest.EncodeUserCharacter;
 var
-  C: WideChar;
   Font: TFont;
+  Bitmap: TBitmap;
+  Text: WideString;
+  Strings: TTntStrings;
 begin
   Font := TFont.Create;
+  Bitmap := TBitmap.Create;
+  Strings := TTntStringList.Create;
   try
-    C := WideChar($1179);
     Font.Size := 12;
-    //Font.Name :=
-    Font.Style := [fsBold];
-    Printer.EncodeUserCharacter(C, FONT_TYPE_A, 1, Font);
+    Font.Name := 'Times New Roman';
+    Strings.LoadFromFile('KazakhText.txt');
+    Text := Strings.Text;
+
+    Bitmap.Monochrome := True;
+    Bitmap.PixelFormat := pf1Bit;
+    Bitmap.Canvas.Font.Assign(Font);
+    Bitmap.Width := 100;
+    Bitmap.Height := 24;
+
+    TntGraphics.WideCanvasTextOut(Bitmap.Canvas, 0, 0, Text);
+
+    DeleteFile('KazakhText.bmp');
+    Bitmap.SaveToFile('KazakhText.bmp');
   finally
     Font.Free;
+    Bitmap.Free;
+    Strings.Free;
   end;
 end;
 
