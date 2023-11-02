@@ -69,8 +69,9 @@ begin
 
   FClient := TWebkassaClient.Create(FLogger);
   FClient.RaiseErrors := True;
-  FClient.Address := 'https://devkkm.webkassa.kz';
-  //FClient.Address := 'http://localhost:1331';
+  //FClient.Address := 'https://devkkm.webkassa.kz';
+  FClient.Address := 'http://localhost:1332';
+
   //  асса не имеет активного активационного номера
   FClient.Login := 'apykhtin@ibtsmail.ru';
   FClient.Password := 'Kassa123!';
@@ -496,6 +497,7 @@ procedure TWebkassaClientTest.TestCashIn;
 var
   Command: TMoneyOperationCommand;
 begin
+  TestReadCashboxes;
   Command := TMoneyOperationCommand.Create;
   try
     FClient.Connect;
@@ -504,7 +506,7 @@ begin
 	  Command.Request.CashboxUniqueNumber := FClient.CashboxNumber;
 	  Command.Request.OperationType := OperationTypeCashIn;
 	  Command.Request.Sum := 12345.67;
-	  Command.Request.ExternalCheckNumber := '';
+	  Command.Request.ExternalCheckNumber := CreateGUIDStr;
 
     FClient.MoneyOperation(Command);
     WriteFileData(GetModulePath + 'CashIn.txt', FClient.AnswerJson);

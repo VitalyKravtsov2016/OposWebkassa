@@ -22,11 +22,11 @@ type
     FLogger: ILogFile;
     FPrinter: TEscPrinter;
     FPort: TMockPrinterPort;
-
-    property Printer: TEscPrinter read FPrinter;
   protected
     procedure SetUp; override;
     procedure TearDown; override;
+
+    property Printer: TEscPrinter read FPrinter;
   published
     procedure EncodeUserCharacter;
   end;

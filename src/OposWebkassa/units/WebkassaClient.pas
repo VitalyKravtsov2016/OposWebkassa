@@ -98,6 +98,81 @@ const
   WEBKASSA_E_DAY_72_HOUR              = 18; // ѕродолжительность работы в автономном режиме превышает 72 часа
   WEBKASSA_E_DAY_OPENED               = 1014; // ƒанна€ смена открыта
 
+(*
+
+	public enum ApiErrorCode
+	{
+		UnknownError = -1,
+		WrongCredentials = 1,
+		TokenExpired = 2,
+		NotAuthorized = 3,
+		OperationAccessDenied = 4,
+		CashAccessDenied = 5,
+		CashboxNotFound = 6,
+		CashBlocked = 7,
+		NotEnoughMoney = 8,
+		ValidationError = 9,
+		CashboxNotActivated = 10,
+		ShiftOpenedMoreThan24Hours = 11,
+		ShiftAlreadyClosed = 12,
+		ShiftNotFound = 13,
+		DuplicateExternalCode = 14,
+		ShiftDoesNotExist = 15,
+		CheckNotFound = 16,
+		DiscountMarkUpCanNotBeSpecified = 17,
+		OfflineModeMoreThan72Hours = 18,
+		CheckWithThisExternalNumberNotFound = 19,
+		OrganizationAlreadyRegistered = 1000,
+		EmployeeAlreadyRegistered = 1001,
+		CashboxWithThisIDIsAlreadyRegistered = 1002,
+		ActivationCardAlreadyWasUsed = 1003,
+		WrongActivationCardData = 1004,
+		WrongOldPassword = 1005,
+		DuplicatePassword = 1006,
+		SumIsNotToBeFraction = 1007,
+		SumCanNotBeLessZero = 1008,
+		EmployeeNotFound = 1009,
+		CashboxNotFoundToAccess = 1010,
+		PeriodDatesIncorrect = 1011,
+		IdSalemNotFound = 1011,
+		IncorrectTransactionStatus = 1012,
+		OfflineChecksNotSupported = 1013,
+		ZReportNotFound = 1014,
+		ExternalPartnerNotFound = 1015,
+		InvalidValidationCode = 1016,
+		CashboxYetUsedExternalSystem = 1017,
+		CashboxNotUsedExternalSystem = 1018,
+		CantCancelTicket = 1019,
+		WrongCashboxRegistrationInformation = 1020,
+		CanNotCreatePacketForNonExistentXin = 1021,
+		CanNotProlongatePacketForNonExistentXin = 1022,
+		ActivationCardNeverUsed = 1023,
+		OrganizationIsNotServiceCenter = 1030,
+		Cashbox1CActivationNotAllowed = 1031,
+		CanNotActivateCashbox = 1032,
+		HasNoServiceCenterRights = 1033,
+		OrganizationNotFound = 1034,
+		DataEarlierCashboxConnectionDateNotAllowed = 20,
+		LicenseNotFound = 1404,
+		MobilePacketOperationRestriction = 1024,
+		ExciseNotActivated = 1025,
+		CashboxHasNotServiceCenter = 1026,
+		SulpakServiceTemporarilyUnavailable = 2001,
+		SulpakCardNumberNotFound = 2002,
+		SulpakInvalidSmsCode = 2003,
+		SulpakCardNumberAlreadyPay = 2004,
+		SulpakNotEnoughMoney = 2005,
+		SulpakNotification = 2006,
+		SulpakTicketNotificationValidationError = 2007,
+		AlfaBankAuthError = 3001,
+		AlfaBankServiceIsTemporarilyUnavailable = 3002
+	}
+}
+
+*)
+
+
+
 type
   TNonNullable = class;
   TPaymentByType = class;
@@ -1777,7 +1852,8 @@ var
   JsonText: WideString;
 begin
   JsonText := ObjectToJson(Command.Request);
-  JsonText := PostJson(GetAddress + 'api/Authorize/WithEmployeeInfo', JsonText);
+  //JsonText := PostJson(GetAddress + 'api/Authorize/WithEmployeeInfo', JsonText);
+  JsonText := PostJson(GetAddress + 'api/Authorize', JsonText);
   Result := CheckLastError;
   if Result then
   begin
