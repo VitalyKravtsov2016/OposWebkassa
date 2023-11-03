@@ -4,9 +4,9 @@ interface
 
 uses
   // VCL
-  Classes, SysUtils,
+  Windows, Classes, SysUtils,
   // Tnt
-  TntClasses,
+  TntClasses, TntRegistry,
   // Json
   uLkJSON,
   // Indy
@@ -1349,7 +1349,6 @@ type
     FConnectTimeout: Integer;
     FCashboxNumber: WideString;
 
-    FConnected: Boolean;
     FCommandJson: WideString;
     FAnswerJson: WideString;
     FToken: WideString;
@@ -1357,6 +1356,7 @@ type
     FRaiseErrors: Boolean;
     FErrorResult: TErrorResult;
     FTestErrorResult: TErrorResult;
+    FRegKeyName: WideString;
 
     function GetTransport: TIdHTTP;
     function CheckLastError: Boolean;
@@ -1372,6 +1372,8 @@ type
 
     procedure Connect;
     procedure Disconnect;
+    procedure SaveParams;
+    procedure LoadParams;
     procedure RaiseLastError;
     function GetAddress: WideString;
     function Post(URL, Request: WideString): WideString;
@@ -1392,10 +1394,10 @@ type
     function ReadShiftHistory(Command: TShiftCommand): Boolean;
     function Execute(Command: TWebkassaCommand): Boolean;
 
+    property RegKeyName: WideString read FRegKeyName write FRegKeyName;
     property Login: WideString read FLogin write FLogin;
     property Password: WideString read FPassword write FPassword;
     property ConnectTimeout: Integer read FConnectTimeout write FConnectTimeout;
-    property Connected: Boolean read FConnected;
     property Token: WideString read FToken write FToken;
     property ErrorResult: TErrorResult read FErrorResult;
     property TestMode: Boolean read FTestMode write FTestMode;
@@ -1543,6 +1545,8 @@ begin
   FAddress := 'https://devkkm.webkassa.kz/';
   FErrorResult := TErrorResult.Create;
   FDomainNames := TStringList.Create;
+  FRegKeyName := 'SHTRIH-M\WebKassa';
+  LoadParams;
 end;
 
 destructor TWebkassaClient.Destroy;
@@ -1551,6 +1555,51 @@ begin
   FErrorResult.Free;
   FDomainNames.Free;
   inherited Destroy;
+end;
+
+procedure TWebkassaClient.SaveParams;
+var
+  Reg: TTntRegistry;
+begin
+  Reg := TTntRegistry.Create;
+  try
+    Reg.Access := KEY_ALL_ACCESS;
+    Reg.RootKey := HKEY_CURRENT_USER;
+    if Reg.OpenKey(RegKeyName, True) then
+    begin
+      Reg.WriteString('Token', Token);
+    end else
+    begin
+      FLogger.Error('Registry key open error');
+    end;
+  except
+    on E: Exception do
+    begin
+      FLogger.Error('Save params failed, ' + E.Message);
+    end;
+  end;
+  Reg.Free;
+end;
+
+procedure TWebkassaClient.LoadParams;
+var
+  Reg: TTntRegistry;
+begin
+  Reg := TTntRegistry.Create;
+  try
+    Reg.Access := KEY_READ;
+    Reg.RootKey := HKEY_CURRENT_USER;
+    if Reg.OpenKey(RegKeyName, True) then
+    begin
+      Token := Reg.ReadString('Token');
+    end;
+  except
+    on E: Exception do
+    begin
+      FLogger.Error('Read params failed, ' + E.Message);
+    end;
+  end;
+  Reg.Free;
 end;
 
 (*
@@ -1633,7 +1682,7 @@ procedure TWebkassaClient.Connect;
 var
   Command: TAuthCommand;
 begin
-  if not FConnected then
+  if Token = '' then
   begin
     Command := TAuthCommand.Create;
     try
@@ -1642,22 +1691,17 @@ begin
       if not Authenticate(Command) then
         RaiseLastError;
       FToken := Command.Data.Token;
+      SaveParams;
     finally
       Command.Free;
     end;
-    FConnected := True;
   end;
 end;
 
 procedure TWebkassaClient.Disconnect;
 begin
-  if FConnected then
-  begin
-    FToken := '';
-    FTransport.Free;
-    FTransport := nil;
-    FConnected := False;
-  end;
+  FTransport.Free;
+  FTransport := nil;
 end;
 
 procedure TWebkassaClient.RaiseLastError;
@@ -1738,7 +1782,7 @@ begin
     if IsTokenExpired and (RepCount = MaxConnectCount) then
       RaiseLastError;
 
-    FConnected := False;
+    FToken := '';
     Connect;
   end;
 end;
@@ -1852,7 +1896,6 @@ var
   JsonText: WideString;
 begin
   JsonText := ObjectToJson(Command.Request);
-  //JsonText := PostJson(GetAddress + 'api/Authorize/WithEmployeeInfo', JsonText);
   JsonText := PostJson(GetAddress + 'api/Authorize', JsonText);
   Result := CheckLastError;
   if Result then

@@ -22,7 +22,7 @@ uses
   SalesReceipt, TextDocument, ReceiptItem, StringUtils, DebugUtils, VatRate,
   uZintBarcode, uZintInterface, FileUtils, PosWinPrinter, PosEscPrinter,
   SerialPort, PrinterPort, SocketPort, ReceiptTemplate, RawPrinterPort,
-  DIOHandler, PrinterTypes, DirectIOAPI, BarcodeUtils;
+  DIOHandler, PrinterTypes, DirectIOAPI, BarcodeUtils, PrinterParametersReg;
 
 const
   FPTR_DEVICE_DESCRIPTION = 'WebKassa OPOS driver';
@@ -2317,6 +2317,8 @@ begin
     FClient.ConnectTimeout := FParams.ConnectTimeout;
     FClient.Address := FParams.WebkassaAddress;
     FClient.CashboxNumber := FParams.CashboxNumber;
+    FClient.RegKeyName := TPrinterParametersReg.GetUsrKeyName(DeviceName);
+    FClient.LoadParams;
 
     if FPrinter = nil then
     begin

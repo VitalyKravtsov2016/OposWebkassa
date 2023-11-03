@@ -23,8 +23,6 @@ type
     procedure LoadUsrParameters(const DeviceName: WideString);
     procedure SaveSysParameters(const DeviceName: WideString);
     procedure SaveUsrParameters(const DeviceName: WideString);
-    class function GetUsrKeyName(const DeviceName: WideString): WideString;
-    class function GetSysKeyName(const DeviceName: WideString): WideString;
 
     property Parameters: TPrinterParameters read FParameters;
   public
@@ -32,6 +30,8 @@ type
 
     procedure Load(const DeviceName: WideString);
     procedure Save(const DeviceName: WideString);
+    class function GetUsrKeyName(const DeviceName: WideString): WideString;
+    class function GetSysKeyName(const DeviceName: WideString): WideString;
 
     property Logger: ILogFile read FLogger;
   end;

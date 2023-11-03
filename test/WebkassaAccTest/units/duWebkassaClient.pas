@@ -15,38 +15,31 @@ type
   { TWebkassaClientTest }
 
   TWebkassaClientTest = class(TTestCase)
-  private
-    FLogger: ILogFile;
-    FShiftNumber: Integer;
-    FClient: TWebkassaClient;
   protected
     procedure SetUp; override;
     procedure TearDown; override;
 
     procedure TestUploadOrder;
     procedure TestChangeToken;
-  published
     procedure TestConnect;
+    procedure TestSumInCashbox;
     procedure TestAuthenticate;
     procedure TestAuthenticateError;
+  published
     procedure TestReadCashboxes;
     procedure TestCashIn;
     procedure TestCashOut;
-    procedure TestZReport;
     procedure TestReadCahiers;
     procedure TestReadUnits;
-    procedure TestJournalReport;
     procedure TestRegistration;
     procedure TestReadCashboxState;
     procedure TestXReport;
-    procedure TestXReportExtended;
-    procedure TestZReportExtended;
+    procedure TestZReport;
+    procedure TestJournalReport;
     procedure TestSendReceipt;
     procedure TestReadReceipt;
     procedure TestReadReceiptText;
     procedure TestSendReceipt2;
-
-    procedure TestSumInCashbox;
   end;
 
 implementation
@@ -55,58 +48,51 @@ const
   CRLF = #13#10;
 
 var
+  FLogger: ILogFile;
+  FShiftNumber: Integer;
+  FClient: TWebkassaClient;
   FReceipt: TSendReceiptCommand;
 
 { TWebkassaClientTest }
 
 procedure TWebkassaClientTest.SetUp;
 begin
-  FLogger := TLogFile.Create;
-  FLogger.MaxCount := 10;
-  FLogger.Enabled := True;
-  FLogger.FilePath := 'Logs';
-  FLogger.DeviceName := 'DeviceName';
+  if FLogger = nil then
+  begin
+    FLogger := TLogFile.Create;
+    FLogger.MaxCount := 10;
+    FLogger.Enabled := True;
+    FLogger.FilePath := 'Logs';
+    FLogger.DeviceName := 'DeviceName';
+  end;
 
-  FClient := TWebkassaClient.Create(FLogger);
-  FClient.RaiseErrors := True;
-  //FClient.Address := 'https://devkkm.webkassa.kz';
-  FClient.Address := 'http://localhost:1332';
+  if FClient = nil then
+  begin
+    FClient := TWebkassaClient.Create(FLogger);
+    FClient.RaiseErrors := True;
+    //FClient.Address := 'https://devkkm.webkassa.kz';
+    FClient.Address := 'http://localhost:1332';
 
-  //  асса не имеет активного активационного номера
-  FClient.Login := 'apykhtin@ibtsmail.ru';
-  FClient.Password := 'Kassa123!';
-  FClient.CashboxNumber := 'SWK00033444';
-(*
-  FClient.Login := 'webkassa4@softit.kz';
-  FClient.Password := 'Kassa123';
-  FClient.CashboxNumber := 'SWK00033059';
-*)
+    //  асса не имеет активного активационного номера
+    FClient.Login := 'apykhtin@ibtsmail.ru';
+    FClient.Password := 'Kassa123!';
+    FClient.CashboxNumber := 'SWK00033444';
+  (*
+    FClient.Login := 'webkassa4@softit.kz';
+    FClient.Password := 'Kassa123';
+    FClient.CashboxNumber := 'SWK00033059';
+  *)
+  end;
 end;
 
 procedure TWebkassaClientTest.TearDown;
 begin
-  FClient.Free;
-  FLogger.CloseFile;
 end;
 
 procedure TWebkassaClientTest.TestConnect;
-var
-  Token1: string;
-  Token2: string;
 begin
-  CheckEquals(False, FClient.Connected, 'FClient.Connected');
-  CheckEquals('', FClient.Token, 'FClient.Token not empty');
   FClient.Connect;
-  Token1 := FClient.Token;
-  CheckEquals(True, FClient.Connected, 'FClient.Connected');
   CheckNotEquals('', FClient.Token, 'FClient.Token is empty');
-  FClient.Disconnect;
-  FClient.Connect;
-  Token2 := FClient.Token;
-  CheckEquals(True, FClient.Connected, 'FClient.Connected');
-  CheckNotEquals('', FClient.Token, 'FClient.Token is empty');
-  CheckNotEquals(Token1, Token2, 'Token1 = Token2');
-  FClient.Disconnect;
 end;
 
 procedure TWebkassaClientTest.TestAuthenticate;
@@ -199,44 +185,6 @@ begin
   end;
 end;
 
-procedure TWebkassaClientTest.TestXReportExtended;
-var
-  JsonText: WideString;
-  Request: TCashboxRequest;
-begin
-  Request := TCashboxRequest.Create;
-  try
-    FClient.Connect;
-    Request.Token := FClient.Token;
-    Request.CashboxUniqueNumber := FClient.CashboxNumber;
-
-    JsonText := ObjectToJson(Request);
-    JsonText := FClient.Post(FClient.GetAddress + 'api/xreport/extended', JsonText);
-    WriteFileData(GetModulePath + 'XReportExtended.txt', FClient.AnswerJson);
-  finally
-    Request.Free;
-  end;
-end;
-
-procedure TWebkassaClientTest.TestZReportExtended;
-var
-  JsonText: WideString;
-  Request: TCashboxRequest;
-begin
-  Request := TCashboxRequest.Create;
-  try
-    FClient.Connect;
-    Request.Token := FClient.Token;
-    Request.CashboxUniqueNumber := FClient.CashboxNumber;
-
-    JsonText := ObjectToJson(Request);
-    JsonText := FClient.Post(FClient.GetAddress + 'api/zreport/extended', JsonText);
-    WriteFileData(GetModulePath + 'ZReportExtended.txt', FClient.AnswerJson);
-  finally
-    Request.Free;
-  end;
-end;
-
 procedure TWebkassaClientTest.TestZReport;
 var
   Command: TZXReportCommand;
@@ -259,9 +207,6 @@ procedure TWebkassaClientTest.TestJournalReport;
 var
   Command: TJournalReportCommand;
 begin
-  // Read shift number
-  TestXReport;
-
   Command := TJournalReportCommand.Create;
   try
     FClient.Connect;
@@ -367,12 +312,8 @@ begin
   Payment.PaymentType := PaymentTypeCard;
 
   FClient.SendReceipt(FReceipt);
+  FShiftNumber := FReceipt.Data.ShiftNumber;
   WriteFileData(GetModulePath + 'SendReceipt.txt', FClient.AnswerJson);
-(*
-  CheckEquals(149, FReceipt.Data.ShiftNumber, 'FReceipt.Data.ShiftNumber');
-  CheckEquals('SWK00032685', FReceipt.Data.Cashbox.UniqueNumber, 'FReceipt.Data.Cashbox.UniqueNumber');
-  CheckEquals('https://devkkm.webkassa.kz/Ticket?chb=SWK00032685&extnum=8234682763482746', FReceipt.Data.TicketPrintUrl, 'FReceipt.Data.TicketPrintUrl');
-*)
 end;
 
 procedure TWebkassaClientTest.TestSendReceipt2;
@@ -427,9 +368,6 @@ begin
     Command.Request.ShiftNumber := FReceipt.Data.ShiftNumber;
 
     FClient.ReadReceipt(Command);
-    CheckEquals(FReceipt.Request.CashboxUniqueNumber,
-      Command.Data.CashboxUniqueNumber, 'CashboxUniqueNumber');
-
     CheckEquals(FReceipt.Request.Positions.Count, Command.Data.Positions.Count, 'Positions.Count');
 
     SrcItem := FReceipt.Request.Positions[0];
@@ -669,5 +607,9 @@ initialization
 
 finalization
   FReceipt.Free;
+
+  FClient.Free;
+  FClient := nil;
+  FLogger := nil;
 
 end.

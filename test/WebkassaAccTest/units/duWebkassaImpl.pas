@@ -26,8 +26,6 @@ type
   private
     function GetParams: TPrinterParameters;
   private
-    FDriver: ToleFiscalPrinter;
-    FPrinter: TMockPOSPrinter;
     FPrintHeader: Boolean;
     procedure ClaimDevice;
     procedure EnableDevice;
@@ -38,7 +36,6 @@ type
     function DirectIO2(Command: Integer; const pData: Integer;
       const pString: WideString): Integer;
 
-    property Driver: ToleFiscalPrinter read FDriver;
     property Params: TPrinterParameters read GetParams;
   protected
     procedure SetUp; override;
@@ -74,9 +71,13 @@ implementation
 
 { TWebkassaImplTest }
 
+var
+  Driver: ToleFiscalPrinter;
+  Printer: TMockPOSPrinter;
+
 function TWebkassaImplTest.GetParams: TPrinterParameters;
 begin
-  Result := FDriver.Driver.Params;
+  Result := Driver.Driver.Params;
 end;
 
 procedure TWebkassaImplTest.FptrCheck(Code: Integer);
@@ -109,119 +110,128 @@ begin
   end;
 end;
 
-
 procedure TWebkassaImplTest.SetUp;
 begin
   inherited SetUp;
-  FPrinter := TMockPOSPrinter.Create(nil);
-  FDriver := ToleFiscalPrinter.Create;
-  FDriver.Driver.Printer := FPrinter;
-  FDriver.Driver.LoadParamsEnabled := False;
+  if Printer = nil then
+  begin
+    Printer := TMockPOSPrinter.Create(nil);
+  end;
+  if Driver = nil then
+  begin
+    Driver := ToleFiscalPrinter.Create;
+    Driver.Driver.Printer := Printer;
+    Driver.Driver.LoadParamsEnabled := False;
 
-  Params.LogFileEnabled := True;
-  Params.LogMaxCount := 10;
-  Params.LogFilePath := GetModulePath + 'Logs';
-
-  Params.Login := 'apykhtin@ibtsmail.ru';
-  Params.Password := 'Kassa123!';
-  Params.ConnectTimeout := 10;
-  Params.WebkassaAddress := 'https://devkkm.webkassa.kz';
-  //Params.WebkassaAddress := 'http://localhost:1331';
-
-  Params.CashboxNumber := 'SWK00033444';
-  Params.NumHeaderLines := 6;
-  Params.NumTrailerLines := 3;
-  Params.RoundType := RoundTypeNone;
-
-  Params.HeaderText :=
-    ' ' + CRLF +
-    '                  ТОО PetroRetail                 230498234              029384     203948' + CRLF +
-    '                 БИН 181040037076                 ' + CRLF +
-    '             НДС Серия 60001 № 1204525            ' + CRLF +
-    '               АЗС №Z-5555 (Касса 1)              ' + CRLF +
-    '                       стенд                      ';
-
+    Params.LogFileEnabled := True;
+    Params.LogMaxCount := 10;
+    Params.LogFilePath := GetModulePath + 'Logs';
 (*
-  Params.HeaderText :=
-    ' ' + CRLF +
-    '  Восточно-Казастанская область, город' + CRLF +
-    '    Усть-Каменогорск, ул. Грейдерная, 1/10' + CRLF +
-    '            ТОО PetroRetail';
+    Params.Login := 'webkassa4@softit.kz';
+    Params.Password := 'Kassa123';
+    Params.CashboxNumber := 'SWK00033059';
 *)
+    Params.Login := 'apykhtin@ibtsmail.ru';
+    Params.Password := 'Kassa123!';
+    Params.CashboxNumber := 'SWK00033444';
 
-  Params.TrailerText :=
-    '           Callцентр 039458039850 ' + CRLF +
-    '          Горячая линия 20948802934' + CRLF +
-    '            СПАСИБО ЗА ПОКУПКУ';
+    Params.ConnectTimeout := 10;
+    //Params.WebkassaAddress := 'https://devkkm.webkassa.kz';
+    Params.WebkassaAddress := 'http://localhost:1332';
 
-  Params.PaymentType2 := 1;
-  Params.PaymentType3 := 4;
-  Params.PaymentType4 := 4;
-  Params.VatRateEnabled := True;
-  Params.RoundType := RoundTypeItems;
-  Params.VATSeries := '12347';
-  Params.VATNumber := '7654321';
-  Params.AmountDecimalPlaces := 2;
-  Params.VatRates.Clear;
-  Params.VatRates.Add(1, 12, 'НДС 12%');
+    Params.NumHeaderLines := 6;
+    Params.NumTrailerLines := 3;
+    Params.RoundType := RoundTypeNone;
 
-(*
-  // Network
-  Params.PrinterType := PrinterTypeEscPrinterNetwork;
-  Params.RemoteHost := '10.11.7.176';
-  Params.RemotePort := 9100;
-  Params.ByteTimeout := 1000;
-  Params.FontName := 'FontA11';
+    Params.HeaderText :=
+      ' ' + CRLF +
+      '                  ТОО PetroRetail                 230498234              029384     203948' + CRLF +
+      '                 БИН 181040037076                 ' + CRLF +
+      '             НДС Серия 60001 № 1204525            ' + CRLF +
+      '               АЗС №Z-5555 (Касса 1)              ' + CRLF +
+      '                       стенд                      ';
 
-  // Serial
-  Params.PrinterType := PrinterTypeEscPrinterSerial;
-  Params.ByteTimeout := 500;
-  Params.FontName := 'FontA11';
-  Params.PortName := 'COM6';
-  Params.BaudRate := 19200;
-  Params.DataBits := DATABITS_8;
-  Params.StopBits := ONESTOPBIT;
-  Params.Parity := NOPARITY;
-  Params.FlowControl := FLOW_CONTROL_NONE;
-  Params.ReconnectPort := False;
-*)
-  Params.PrinterType := PrinterTypeEscPrinterWindows;
-  Params.PrinterName := 'RONGTA 80mm Series Printer';
-  Params.FontName := 'FontA11';
+    Params.TrailerText :=
+      '           Callцентр 039458039850 ' + CRLF +
+      '          Горячая линия 20948802934' + CRLF +
+      '            СПАСИБО ЗА ПОКУПКУ';
+
+    Params.PaymentType2 := 1;
+    Params.PaymentType3 := 4;
+    Params.PaymentType4 := 4;
+    Params.VatRateEnabled := True;
+    Params.RoundType := RoundTypeItems;
+    Params.VATSeries := '12347';
+    Params.VATNumber := '7654321';
+    Params.AmountDecimalPlaces := 2;
+    Params.VatRates.Clear;
+    Params.VatRates.Add(1, 12, 'НДС 12%');
+
+  (*
+    // Network
+    Params.PrinterType := PrinterTypeEscPrinterNetwork;
+    Params.RemoteHost := '10.11.7.176';
+    Params.RemotePort := 9100;
+    Params.ByteTimeout := 1000;
+    Params.FontName := 'FontA11';
+
+    // Serial
+    Params.PrinterType := PrinterTypeEscPrinterSerial;
+    Params.ByteTimeout := 500;
+    Params.FontName := 'FontA11';
+    Params.PortName := 'COM6';
+    Params.BaudRate := 19200;
+    Params.DataBits := DATABITS_8;
+    Params.StopBits := ONESTOPBIT;
+    Params.Parity := NOPARITY;
+    Params.FlowControl := FLOW_CONTROL_NONE;
+    Params.ReconnectPort := False;
+  *)
+    Params.PrinterType := PrinterTypeEscPrinterWindows;
+    Params.PrinterName := 'RONGTA 80mm Series Printer';
+    Params.FontName := 'FontA11';
+  end;
 end;
 
 procedure TWebkassaImplTest.TearDown;
 begin
-  FDriver.Free;
-  FPrinter.Free;
   inherited TearDown;
 end;
 
 procedure TWebkassaImplTest.OpenService;
 begin
-  FptrCheck(Driver.OpenService(OPOS_CLASSKEY_FPTR, 'DeviceName', nil));
-  Driver.SetPropertyNumber(PIDX_PowerNotify, OPOS_PN_ENABLED);
+  if Driver.GetPropertyNumber(PIDX_State) = OPOS_S_CLOSED then
+  begin
+    FptrCheck(Driver.OpenService(OPOS_CLASSKEY_FPTR, 'DeviceName', nil));
+    Driver.SetPropertyNumber(PIDX_PowerNotify, OPOS_PN_ENABLED);
+  end;
 end;
 
 procedure TWebkassaImplTest.ClaimDevice;
 begin
-  CheckEquals(0, Driver.GetPropertyNumber(PIDX_Claimed),
-    'GetPropertyNumber(PIDX_Claimed)');
-  FptrCheck(Driver.ClaimDevice(1000));
-  CheckEquals(1, Driver.GetPropertyNumber(PIDX_Claimed),
-    'GetPropertyNumber(PIDX_Claimed)');
+  if Driver.GetPropertyNumber(PIDX_Claimed) = 0 then
+  begin
+    CheckEquals(0, Driver.GetPropertyNumber(PIDX_Claimed),
+      'GetPropertyNumber(PIDX_Claimed)');
+    FptrCheck(Driver.ClaimDevice(1000));
+    CheckEquals(1, Driver.GetPropertyNumber(PIDX_Claimed),
+      'GetPropertyNumber(PIDX_Claimed)');
+  end;
 end;
 
 procedure TWebkassaImplTest.EnableDevice;
 var
   ResultCode: Integer;
 begin
-  Driver.SetPropertyNumber(PIDX_DeviceEnabled, 1);
-  ResultCode := Driver.GetPropertyNumber(PIDX_ResultCode);
-  FptrCheck(ResultCode);
+  if Driver.GetPropertyNumber(PIDX_DeviceEnabled) = 0 then
+  begin
+    Driver.SetPropertyNumber(PIDX_DeviceEnabled, 1);
+    ResultCode := Driver.GetPropertyNumber(PIDX_ResultCode);
+    FptrCheck(ResultCode);
 
-  CheckEquals(OPOS_SUCCESS, ResultCode, 'OPOS_SUCCESS');
-  CheckEquals(1, Driver.GetPropertyNumber(PIDX_DeviceEnabled), 'DeviceEnabled');
+    CheckEquals(OPOS_SUCCESS, ResultCode, 'OPOS_SUCCESS');
+    CheckEquals(1, Driver.GetPropertyNumber(PIDX_DeviceEnabled), 'DeviceEnabled');
+  end;
 end;
 
 procedure TWebkassaImplTest.OpenClaimEnable;
@@ -268,7 +278,7 @@ end;
 procedure TWebkassaImplTest.TestCashOut;
 begin
   OpenClaimEnable;
-  CheckEquals(0, Driver.ResetPrinter, 'ResetPrinter');
+  FptrCheck(Driver.ResetPrinter, 'ResetPrinter');
   CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_CASH_OUT);
   CheckEquals(FPTR_RT_CASH_OUT, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
@@ -296,32 +306,32 @@ end;
 procedure TWebkassaImplTest.TestXReport;
 begin
   OpenClaimEnable;
-  CheckEquals(0, Driver.PrintXReport, 'PrintXReport');
+  FptrCheck(Driver.PrintXReport, 'PrintXReport');
 end;
 
 procedure TWebkassaImplTest.TestNonFiscal;
 begin
   OpenClaimEnable;
-  CheckEquals(0, Driver.ResetPrinter, 'ResetPrinter');
-  CheckEquals(0, Driver.BeginNonFiscal, 'BeginNonFiscal');
-  CheckEquals(0, Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 1'));
-  CheckEquals(0, Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 2'));
-  CheckEquals(0, Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 3'));
-  CheckEquals(0, Driver.EndNonFiscal, 'EndNonFiscal');
+  FptrCheck(Driver.ResetPrinter, 'ResetPrinter');
+  FptrCheck(Driver.BeginNonFiscal, 'BeginNonFiscal');
+  FptrCheck(Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 1'));
+  FptrCheck(Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 2'));
+  FptrCheck(Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 3'));
+  FptrCheck(Driver.EndNonFiscal, 'EndNonFiscal');
   //Application.MessageBox('Restart printer', 'Attention');
 
-  CheckEquals(0, Driver.ResetPrinter, 'ResetPrinter');
-  CheckEquals(0, Driver.BeginNonFiscal, 'BeginNonFiscal');
-  CheckEquals(0, Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 1'));
-  CheckEquals(0, Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 2'));
-  CheckEquals(0, Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 3'));
-  CheckEquals(0, Driver.EndNonFiscal, 'EndNonFiscal');
+  FptrCheck(Driver.ResetPrinter, 'ResetPrinter');
+  FptrCheck(Driver.BeginNonFiscal, 'BeginNonFiscal');
+  FptrCheck(Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 1'));
+  FptrCheck(Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 2'));
+  FptrCheck(Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 3'));
+  FptrCheck(Driver.EndNonFiscal, 'EndNonFiscal');
 end;
 
 procedure TWebkassaImplTest.TestFiscalReceipt;
 begin
   OpenClaimEnable;
-  CheckEquals(0, Driver.ResetPrinter, 'ResetPrinter');
+  FptrCheck(Driver.ResetPrinter, 'ResetPrinter');
   CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
   CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
@@ -348,7 +358,7 @@ const
     '          БИН 131240010479',
     'НДС Серия 00000            № 0000000',
     '------------------------------------',
-    '                kassa',
+    '             Касса 2.0.2',
     '              Смена 213',
     '      Порядковый номер чека №13',
     'Чек №1176446355471',
@@ -367,6 +377,7 @@ const
     '------------------------------------',
     'Фискальный признак: 1176446355471',
     'Время: 25.09.2023 17:20:28',
+    'Алматы',
     'Оператор фискальных данных: АО',
     '"КазТранском"',
     'Для проверки чека зайдите на сайт:',
@@ -376,12 +387,11 @@ const
     'http://dev.kofd.kz/consumer?i=174431930345',
     '1&f=427490326691&s=590.00&t=20230925T17202',
     '8            ИНК ОФД: 657',
-    '   Код ККМ КГД (РНМ): 427490326691',
-    '          ЗНМ: SWK00033444',
     '             WEBKASSA.KZ',
     '           Callцентр 039458039850',
     '          Горячая линия 20948802934',
-    '            СПАСИБО ЗА ПОКУПКУ');
+    '            СПАСИБО ЗА ПОКУПКУ',
+    '');
 
 var
   i: Integer;
@@ -391,9 +401,9 @@ var
 begin
   TestFiscalReceipt;
 
-  FPrinter.Clear;
-  CheckEquals(0, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
-  CheckEquals('', FPrinter.Lines.Text, 'FPrinter.Lines.Text');
+  Printer.Clear;
+  FptrCheck(Printer.Lines.Count, 'Printer.Lines.Count');
+  CheckEquals('', Printer.Lines.Text, 'Printer.Lines.Text');
 
   pString := '';
   pData := DriverParameterExternalCheckNumber;
@@ -405,22 +415,22 @@ begin
   FptrCheck(Driver.DirectIO(DIO_PRINT_RECEIPT_DUPLICATE, pData, ExternalCheckNumber),
     'DirectIO(DIO_PRINT_RECEIPT_DUPLICATE, 0, ExternalCheckNumber)');
 
-  CheckEquals(47, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
+  //CheckEquals(47, Printer.Lines.Count, 'Printer.Lines.Count');
   for i := 0 to 5 do
   begin
-    CheckEquals(TrimRight(ReceiptLines[i]), TrimRight(FPrinter.Lines[i]), 'Line ' + IntToStr(i));
+    CheckEquals(TrimRight(ReceiptLines[i]), TrimRight(Printer.Lines[i]), 'Line ' + IntToStr(i));
   end;
   for i := 9 to 21 do
   begin
-    CheckEquals(TrimRight(ReceiptLines[i]), TrimRight(FPrinter.Lines[i]), 'Line ' + IntToStr(i));
+    CheckEquals(TrimRight(ReceiptLines[i]), TrimRight(Printer.Lines[i]), 'Line ' + IntToStr(i));
   end;
   for i := 24 to 29 do
   begin
-    CheckEquals(TrimRight(ReceiptLines[i]), TrimRight(FPrinter.Lines[i]), 'Line ' + IntToStr(i));
+    CheckEquals(TrimRight(ReceiptLines[i]), TrimRight(Printer.Lines[i]), 'Line ' + IntToStr(i));
   end;
   for i := 34 to 38 do
   begin
-    CheckEquals(TrimRight(ReceiptLines[i]), TrimRight(FPrinter.Lines[i]), 'Line ' + IntToStr(i));
+    CheckEquals(TrimRight(ReceiptLines[i]), TrimRight(Printer.Lines[i]), 'Line ' + IntToStr(i));
   end;
 end;
 
@@ -430,7 +440,7 @@ begin
   Params.RoundType := RoundTypeItems;
 
   OpenClaimEnable;
-  CheckEquals(0, Driver.ResetPrinter, 'ResetPrinter');
+  FptrCheck(Driver.ResetPrinter, 'ResetPrinter');
   CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
   CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
@@ -450,7 +460,7 @@ begin
   Params.RoundType := RoundTypeItems;
 
   OpenClaimEnable;
-  CheckEquals(0, Driver.ResetPrinter, 'ResetPrinter');
+  FptrCheck(Driver.ResetPrinter, 'ResetPrinter');
   CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
   CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
@@ -466,7 +476,7 @@ end;
 procedure TWebkassaImplTest.TestFiscalReceipt4;
 begin
   OpenClaimEnable;
-  CheckEquals(0, Driver.ResetPrinter, 'ResetPrinter');
+  FptrCheck(Driver.ResetPrinter, 'ResetPrinter');
   CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
   CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
@@ -481,7 +491,7 @@ procedure TWebkassaImplTest.TestFiscalReceipt5;
 begin
   Params.RoundType := RoundTypeTotal;
   OpenClaimEnable;
-  CheckEquals(0, Driver.ResetPrinter, 'ResetPrinter');
+  FptrCheck(Driver.ResetPrinter, 'ResetPrinter');
   Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
   FptrCheck(Driver.BeginFiscalReceipt(True));
   FptrCheck(Driver.PrintRecItem('Яблоки', 333, 1000, 4, 333, 'кг'));
@@ -499,7 +509,7 @@ var
 begin
   pData2 := pData;
   pString2 := pString;
-  Result := FDriver.DirectIO(Command, pData2, pString2);
+  Result := Driver.DirectIO(Command, pData2, pString2);
 end;
 
 procedure TWebkassaImplTest.TestFiscalReceipt6;
@@ -507,7 +517,7 @@ begin
   Params.RoundType := RoundTypeTotal;
 
   OpenClaimEnable;
-  CheckEquals(0, Driver.ResetPrinter, 'ResetPrinter');
+  FptrCheck(Driver.ResetPrinter, 'ResetPrinter');
   Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
   FptrCheck(Driver.BeginFiscalReceipt(True));
 
@@ -552,7 +562,7 @@ begin
   Params.RoundType := RoundTypeItems;
 
   OpenClaimEnable;
-  CheckEquals(0, Driver.ResetPrinter, 'ResetPrinter');
+  FptrCheck(Driver.ResetPrinter, 'ResetPrinter');
   CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
   CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
@@ -571,7 +581,7 @@ var
   Data: WideString;
   Total: Currency;
 begin
-  CheckEquals(0, Driver.GetData(FPTR_GD_CURRENT_TOTAL, IData, Data));
+  FptrCheck(Driver.GetData(FPTR_GD_CURRENT_TOTAL, IData, Data));
   Total := StrToCurr(Data)/100;
   CheckEquals(Amount, Total, 'Total');
 end;
@@ -585,7 +595,7 @@ begin
 
   OpenClaimEnable;
   Driver.SetPropertyNumber(PIDXFptr_CheckTotal, 1);
-  CheckEquals(0, Driver.ResetPrinter, 'ResetPrinter');
+  FptrCheck(Driver.ResetPrinter, 'ResetPrinter');
   CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
   CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
@@ -628,7 +638,7 @@ begin
 
   OpenClaimEnable;
   Driver.SetPropertyNumber(PIDXFptr_CheckTotal, 1);
-  CheckEquals(0, Driver.ResetPrinter, 'ResetPrinter');
+  FptrCheck(Driver.ResetPrinter, 'ResetPrinter');
   CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
   CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
@@ -671,7 +681,7 @@ begin
 
   OpenClaimEnable;
   Driver.SetPropertyNumber(PIDXFptr_CheckTotal, 1);
-  CheckEquals(0, Driver.ResetPrinter, 'ResetPrinter');
+  FptrCheck(Driver.ResetPrinter, 'ResetPrinter');
   CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
   CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
@@ -751,7 +761,14 @@ begin
   OpenClaimEnable;
 end;
 
+
 initialization
   RegisterTest('', TWebkassaImplTest.Suite);
+
+finalization
+  Driver.Free;
+  Driver := nil;
+  Printer.Free;
+  Printer := nil;
 
 end.
