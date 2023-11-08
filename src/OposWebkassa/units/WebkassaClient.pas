@@ -1546,7 +1546,6 @@ begin
   FErrorResult := TErrorResult.Create;
   FDomainNames := TStringList.Create;
   FRegKeyName := 'SHTRIH-M\WebKassa';
-  LoadParams;
 end;
 
 destructor TWebkassaClient.Destroy;

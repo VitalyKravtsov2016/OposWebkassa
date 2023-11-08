@@ -2318,7 +2318,10 @@ begin
     FClient.Address := FParams.WebkassaAddress;
     FClient.CashboxNumber := FParams.CashboxNumber;
     FClient.RegKeyName := TPrinterParametersReg.GetUsrKeyName(DeviceName);
-    FClient.LoadParams;
+    if FLoadParamsEnabled then
+    begin
+      FClient.LoadParams;
+    end;
 
     if FPrinter = nil then
     begin
