@@ -47,6 +47,10 @@ begin
   FPrinter.Free;
 end;
 
+///////////////////////////////////////////////////////////////////////////////
+//  FONT_TYPE_A = 0; // 12x24
+//  FONT_TYPE_B = 1; // 9x17
+
 procedure TPosEscPrinterTest.EncodeUserCharacter;
 var
   Font: TFont;
@@ -58,8 +62,8 @@ begin
   Bitmap := TBitmap.Create;
   Strings := TTntStringList.Create;
   try
-    Font.Size := 12;
-    Font.Name := 'Times New Roman';
+    Font.Size := 16;
+    Font.Name := 'Courier New';
     Strings.LoadFromFile('KazakhText.txt');
     Text := Strings.Text;
 

@@ -54,6 +54,7 @@ type
     procedure TestNVBitImage;
     procedure TestCoverOpen;
     procedure TestRecoverError;
+    procedure TestUserCharacter;
   end;
 
 implementation
@@ -93,7 +94,7 @@ function TESCPrinterTest.CreateSerialPort: TSerialPort;
 var
   SerialParams: TSerialParams;
 begin
-  SerialParams.PortName := 'COM6';
+  SerialParams.PortName := 'COM12';
   SerialParams.BaudRate := 19200;
   SerialParams.DataBits := 8;
   SerialParams.StopBits := ONESTOPBIT;
@@ -606,6 +607,39 @@ begin
   if ErrorStatus.AutoRecoverableError then
   begin
     FPrinter.RecoverError(True);
+  end;
+end;
+
+procedure TESCPrinterTest.TestUserCharacter;
+var
+  i: Integer;
+  C: WideChar;
+  Text: WideString;
+  Strings: TTntStrings;
+begin
+  FPrinter.Initialize;
+
+  Strings := TTntStringList.Create;
+  try
+    Strings.LoadFromFile('KazakhText.txt');
+    Text := Strings.Text;
+
+
+    C := Text[1];
+    FPrinter.SelectUserCharacter(1);
+    FPrinter.WriteUserChar(C, FONT_TYPE_A, $33);
+    FPrinter.PrintText(Chr($33) + CRLF);
+    FPrinter.PrintText('F' + CRLF);
+    FPrinter.SelectUserCharacter(0);
+(*
+    for i := 1 to Length(Text) do
+    begin
+      FPrinter.WriteUserChar(Text[i], FONT_TYPE_A, i + $70);
+      FPrinter.PrintText(Chr(i + $70) + CRLF);
+    end;
+*)
+  finally
+    Strings.Free;
   end;
 end;
 

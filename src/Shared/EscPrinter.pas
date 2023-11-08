@@ -5,6 +5,8 @@ interface
 uses
   // VCL
   Windows, Types, SysUtils, Graphics,
+  // Tnt
+  TntGraphics, 
   // This
   ByteUtils, PrinterPort, RegExpr, StringUtils, LogFile;
 
@@ -219,6 +221,7 @@ type
   TUserChar = record
     c1: Byte;
     c2: Byte;
+    Font: Byte;
     Data: AnsiString;
   end;
 
@@ -365,8 +368,7 @@ type
 
     procedure BeginDocument;
     procedure EndDocument;
-    procedure EncodeText(Text: WideString; FontType, CharCode: Integer;
-      Font: TFont);
+    procedure WriteUserChar(C: WideChar; FontType, CharCode: Integer);
 
     property Logger: ILogFile read FLogger;
     property Port: IPrinterPort read FPort;
@@ -563,45 +565,52 @@ end;
 ///////////////////////////////////////////////////////////////////////////////
 // Font A 12x24, font B 9x17
 ///////////////////////////////////////////////////////////////////////////////
+// The allowable character code range is from ASCII code <20>H to
+// <7E>H (95 characters).
 
-procedure TEscPrinter.EncodeText(Text: WideString;
-  FontType, CharCode: Integer; Font: TFont);
+procedure TEscPrinter.WriteUserChar(C: WideChar; FontType, CharCode: Integer);
 var
+  Font: TFont;
   Bitmap: TBitmap;
   UserChar: TUserChar;
 begin
+  Font := TFont.Create;
   Bitmap := TBitmap.Create;
   try
+    Font.Name := 'Courier New';
+
     Bitmap.Monochrome := True;
     Bitmap.PixelFormat := pf1Bit;
-    if Font <> nil then
-    begin
-      Bitmap.Canvas.Font.Assign(Font);
-    end;
 
     if FontType = FONT_TYPE_A then
     begin
-      Bitmap.Width := 12 * Length(Text) + 10;
-      Bitmap.Height := 24 + 10;
+      Font.Size := 16;
+      Bitmap.Width := 12;
+      Bitmap.Height := 24;
       Bitmap.Canvas.Font.Size := 24;
     end else
     begin
-      Bitmap.Width := 9 * Length(Text) + 10;
-      Bitmap.Height := 17 + 10;
-      Bitmap.Canvas.Font.Size := 17;
+      Font.Size := 12;
+      Bitmap.Width := 9;
+      Bitmap.Height := 17;
     end;
-    Windows.ExtTextOutW(Bitmap.Canvas.Handle, 0, 0, Bitmap.Canvas.TextFlags,
-      nil, PWideChar(Text), Length(Text), nil);
-
-    Bitmap.SaveToFile('CHarBitmap.bmp');
-
+    Bitmap.Canvas.Font.Assign(Font);
+    TntGraphics.WideCanvasTextOut(Bitmap.Canvas, 0, 0, C);
+    // Print bitmap
+    PrintText('Bitmap.0' + CRLF);
+    DownloadBMP(0, Bitmap);
+    PrintBmp(BMP_MODE_NORMAL);
+    PrintText('Bitmap.1' + CRLF);
+    // Write
     UserChar.c1 := CharCode;
     UserChar.c2 := CharCode;
+    UserChar.Font := FontType;
     UserChar.Data := GetBitmapData(Bitmap);
+    DefineUserCharacter(UserChar);
   finally
+    Font.Free;
     Bitmap.Free;
   end;
-  //DefineUserCharacter(UserChar);
 end;
 
 (*
@@ -614,9 +623,13 @@ selected)
 *)
 
 procedure TEscPrinter.DefineUserCharacter(C: TUserChar);
+var
+  FontWidth: Byte;
 begin
   Logger.Debug('TEscPrinter.DefineUserCharacter');
-  Send(#$1B#$26#$03 + Chr(C.c1) + Chr(C.c2) + C.Data);
+  FontWidth := 12;
+  if C.Font = FONT_TYPE_B then FontWidth := 9;
+  Send(#$1B#$26#$03 + Chr(C.c1) + Chr(C.c2) + Chr(FontWidth) + C.Data);
 end;
 
 function TEscPrinter.GetBitmapData(Bitmap: TBitmap): AnsiString;
