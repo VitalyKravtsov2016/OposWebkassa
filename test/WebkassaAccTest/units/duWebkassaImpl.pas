@@ -58,6 +58,7 @@ type
     procedure TestFiscalReceipt5;
     procedure TestFiscalReceipt6;
     procedure TestFiscalReceipt7;
+    procedure TestFiscalReceipt8;
     procedure TestFiscalReceiptWithVAT;
     procedure TestFiscalReceiptWithAdjustments;
     procedure TestFiscalReceiptWithAdjustments2;
@@ -120,7 +121,7 @@ begin
   if Driver = nil then
   begin
     Driver := ToleFiscalPrinter.Create;
-    Driver.Driver.Printer := Printer;
+    //Driver.Driver.Printer := Printer;
     Driver.Driver.LoadParamsEnabled := False;
 
     Params.LogFileEnabled := True;
@@ -346,7 +347,6 @@ begin
   CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
 end;
 
-
 procedure TWebkassaImplTest.TestPrintReceiptDuplicate;
 const
   ReceiptLines: array [0..38] of string = (
@@ -544,6 +544,20 @@ begin
   FptrCheck(DirectIO2(DIO_SET_DRIVER_PARAMETER, DriverParameterExternalCheckNumber, RecNumber));
   FptrCheck(Driver.EndFiscalReceipt(False));
 end;
+
+procedure TWebkassaImplTest.TestFiscalReceipt8;
+begin
+  OpenClaimEnable;
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+  FptrCheck(Driver.PrintRecItem('ТРК 1:АИ-92-К4/К5', 101, 500, 4, 202, 'л'));
+  FptrCheck(Driver.PrintRecTotal(101, 1000, '0'));
+  FptrCheck(Driver.PrintRecMessage('Оператор: Кассир1'));
+  FptrCheck(Driver.PrintRecMessage('Транз.:      16770 '));
+  FptrCheck(Driver.PrintRecMessage('Транз. продажи: 16768 (1000,00 тг)'));
+  FptrCheck(Driver.EndFiscalReceipt(False));
+end;
+
 
 procedure TWebkassaImplTest.TestFiscalReceiptWithVAT;
 begin

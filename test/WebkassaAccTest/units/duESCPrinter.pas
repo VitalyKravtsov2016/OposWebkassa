@@ -42,6 +42,7 @@ type
     procedure TestBarcode2;
     procedure TestQRCode;
     procedure TestQRCode2;
+    procedure TestQRCode3;
     procedure PrintTestPage;
     procedure TestJustification;
     procedure TestJustification2;
@@ -72,7 +73,6 @@ begin
 
   //FPrinterPort := CreateSocketPort;
   //FPrinterPort := CreateSerialPort;
-
   FPrinterPort := CreateRawPort;
   FPrinterPort.Open;
   FPrinter := TEscPrinter.Create(FPrinterPort, FLogger);
@@ -94,7 +94,7 @@ function TESCPrinterTest.CreateSerialPort: TSerialPort;
 var
   SerialParams: TSerialParams;
 begin
-  SerialParams.PortName := 'COM12';
+  SerialParams.PortName := 'COM3';
   SerialParams.BaudRate := 19200;
   SerialParams.DataBits := 8;
   SerialParams.StopBits := ONESTOPBIT;
@@ -383,6 +383,14 @@ begin
   FPrinter.Send(Data);
 end;
 
+procedure TESCPrinterTest.TestQRCode3;
+var
+  Data: string;
+begin
+  Data := HexToStr('1B5A0001045600687474703A2F2F6465762E6B6F66642E6B7A2F636F6E73756D65723F693D3133303834353639393334343726663D35353536393734373031363726733D313030302E303026743D323032333131303854313735323033');
+  FPrinter.Send(Data);
+end;
+
 procedure TESCPrinterTest.TestBitmap;
 var
   Bitmap: TBitmap;
@@ -409,10 +417,14 @@ end;
 
 procedure TESCPrinterTest.TestReadPrinterID;
 begin
-  CheckEquals('_7.03 ESC/POS', FPrinter.ReadPrinterID(65), 'Firmware version');
-  CheckEquals('_EPSON', FPrinter.ReadPrinterID(66), 'Manufacturer');
-  CheckEquals('_TM-T88III', FPrinter.ReadPrinterID(67), 'Printer name');
-  CheckEquals('_D6KG074561', FPrinter.ReadPrinterID(68), 'Serial number');
+  CheckEquals('7.03 ESC/POS', FPrinter.ReadPrinterID(65), 'Firmware version');
+  CheckEquals('7.03 ESC/POS', FPrinter.ReadFirmwareVersion, 'Firmware version');
+  CheckEquals('EPSON', FPrinter.ReadPrinterID(66), 'Manufacturer');
+  CheckEquals('EPSON', FPrinter.ReadManufacturer, 'Manufacturer');
+  CheckEquals('TM-T88III', FPrinter.ReadPrinterID(67), 'Printer name');
+  CheckEquals('TM-T88III', FPrinter.ReadPrinterName, 'Printer name');
+  CheckEquals('D6KG074561', FPrinter.ReadPrinterID(68), 'Serial number');
+  CheckEquals('D6KG074561', FPrinter.ReadSerialNumber, 'Serial number');
 end;
 
 procedure TESCPrinterTest.PrintTestPage;
