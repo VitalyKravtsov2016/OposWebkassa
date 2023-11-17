@@ -20,6 +20,9 @@ const
   FONT_TYPE_A = 0; // 12x24
   FONT_TYPE_B = 1; // 9x17
 
+  FONT_TYPE_MIN = FONT_TYPE_A;
+  FONT_TYPE_MAX = FONT_TYPE_B;
+
   /////////////////////////////////////////////////////////////////////////////
   // Charset constants
 

@@ -278,6 +278,12 @@ begin
       if Reg.ValueExists('PrintEnabled') then
         Parameters.PrintEnabled := Reg.ReadBool('PrintEnabled');
 
+      if Reg.ValueExists('RecLineChars') then
+        Parameters.RecLineChars := Reg.ReadInteger('RecLineChars');
+
+      if Reg.ValueExists('RecLineHeight') then
+        Parameters.RecLineHeight := Reg.ReadInteger('RecLineHeight');
+
       Reg.CloseKey;
     end;
     // VatRates
@@ -369,6 +375,8 @@ begin
     Reg.WriteString('CurrencyName', FParameters.CurrencyName);
     Reg.WriteInteger('LineSpacing', FParameters.LineSpacing);
     Reg.WriteBool('PrintEnabled', FParameters.PrintEnabled);
+    Reg.WriteInteger('RecLineChars', FParameters.RecLineChars);
+    Reg.WriteInteger('RecLineHeight', FParameters.RecLineHeight);
 
     Reg.CloseKey;
     // VatRates

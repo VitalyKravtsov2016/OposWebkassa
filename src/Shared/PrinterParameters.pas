@@ -101,6 +101,8 @@ const
   DefCurrencyName = 'עד';
   DefLineSpacing = 30;
   DefPrintEnabled = True;
+  DefRecLineChars = 42;
+  DefRecLineHeight = 24;
 
   /////////////////////////////////////////////////////////////////////////////
   // Header and trailer parameters
@@ -191,6 +193,8 @@ type
     SerialTimeout: Integer;
     ReconnectPort: Boolean;
     PrintBarcode: Integer;
+    RecLineChars: Integer;
+    RecLineHeight: Integer;
 
     constructor Create(ALogger: ILogFile);
     destructor Destroy; override;
@@ -357,6 +361,8 @@ begin
   CurrencyName := DefCurrencyName;
   LineSpacing := DefLineSpacing;
   PrintEnabled := DefPrintEnabled;
+  RecLineChars := DefRecLineChars;
+  RecLineHeight := DefRecLineHeight;
 end;
 
 procedure TPrinterParameters.LogText(const Caption, Text: WideString);
@@ -421,6 +427,8 @@ begin
   Logger.Debug('CurrencyName: ' + CurrencyName);
   Logger.Debug('LineSpacing: ' + IntToStr(LineSpacing));
   Logger.Debug('PrintEnabled: ' + BoolToStr(PrintEnabled));
+  Logger.Debug('RecLineChars: ' + IntToStr(RecLineChars));
+  Logger.Debug('RecLineHeight: ' + IntToStr(RecLineHeight));
 
   // VatRates
   for i := 0 to VatRates.Count-1 do
@@ -616,6 +624,8 @@ begin
     TemplateEnabled := Src.TemplateEnabled;
     CurrencyName := Src.CurrencyName;
     PrintEnabled := Src.PrintEnabled;
+    RecLineChars := Src.RecLineChars;
+    RecLineHeight := Src.RecLineHeight;
   end else
     inherited Assign(Source);
 end;

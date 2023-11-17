@@ -2,7 +2,7 @@ object fmPrinter: TfmPrinter
   Left = 577
   Top = 205
   Width = 471
-  Height = 366
+  Height = 438
   Caption = #1055#1088#1080#1085#1090#1077#1088
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -13,21 +13,21 @@ object fmPrinter: TfmPrinter
   OldCreateOrder = False
   DesignSize = (
     455
-    327)
+    400)
   PixelsPerInch = 96
   TextHeight = 13
   object lblResultCode: TTntLabel
     Left = 8
-    Top = 232
+    Top = 296
     Width = 55
     Height = 13
     Caption = #1056#1077#1079#1091#1083#1100#1090#1072#1090':'
   end
   object memResult: TMemo
     Left = 8
-    Top = 248
+    Top = 312
     Width = 441
-    Height = 41
+    Height = 49
     Anchors = [akLeft, akTop, akRight, akBottom]
     Color = clBtnFace
     Font.Charset = RUSSIAN_CHARSET
@@ -41,7 +41,7 @@ object fmPrinter: TfmPrinter
   end
   object btnTestConnection: TButton
     Left = 240
-    Top = 296
+    Top = 368
     Width = 105
     Height = 25
     Anchors = [akRight, akBottom]
@@ -51,7 +51,7 @@ object fmPrinter: TfmPrinter
   end
   object btnPrintReceipt: TButton
     Left = 352
-    Top = 296
+    Top = 368
     Width = 97
     Height = 25
     Anchors = [akRight, akBottom]
@@ -63,7 +63,7 @@ object fmPrinter: TfmPrinter
     Left = 8
     Top = 8
     Width = 441
-    Height = 217
+    Height = 281
     ActivePage = tsCommonParams
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 0
@@ -92,17 +92,31 @@ object fmPrinter: TfmPrinter
       end
       object lblDevicePollTime: TTntLabel
         Left = 8
-        Top = 120
+        Top = 216
         Width = 103
         Height = 13
         Caption = #1055#1077#1088#1080#1086#1076' '#1086#1087#1088#1086#1089#1072', '#1084#1089'.:'
       end
       object lblLineSpacing: TTntLabel
         Left = 8
-        Top = 152
+        Top = 184
         Width = 124
         Height = 13
         Caption = #1052#1077#1078#1089#1090#1088#1086#1095#1085#1099#1081' '#1080#1085#1090#1077#1088#1074#1072#1083':'
+      end
+      object lblRecLineChars: TTntLabel
+        Left = 8
+        Top = 120
+        Width = 162
+        Height = 13
+        Caption = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1089#1080#1084#1074#1086#1083#1086#1074' '#1074' '#1089#1090#1088#1086#1082#1077':'
+      end
+      object lblRecLineHeight: TTntLabel
+        Left = 8
+        Top = 152
+        Width = 94
+        Height = 13
+        Caption = #1042#1099#1089#1086#1090#1072' '#1089#1080#1084#1074#1086#1083#1086#1074':'
       end
       object cbPrinterName: TTntComboBox
         Left = 120
@@ -131,9 +145,9 @@ object fmPrinter: TfmPrinter
           'ESC Windows '#1087#1088#1080#1085#1090#1077#1088)
       end
       object cbFontName: TTntComboBox
-        Left = 120
+        Left = 184
         Top = 88
-        Width = 305
+        Width = 241
         Height = 21
         Style = csDropDownList
         ItemHeight = 13
@@ -141,9 +155,31 @@ object fmPrinter: TfmPrinter
         OnChange = ModifiedClick
       end
       object seDevicePollTime: TSpinEdit
-        Left = 152
+        Left = 184
+        Top = 216
+        Width = 241
+        Height = 22
+        MaxValue = 0
+        MinValue = 0
+        TabOrder = 6
+        Value = 0
+        OnClick = ModifiedClick
+      end
+      object seLineSpacing: TSpinEdit
+        Left = 184
+        Top = 184
+        Width = 241
+        Height = 22
+        MaxValue = 0
+        MinValue = 0
+        TabOrder = 5
+        Value = 0
+        OnClick = ModifiedClick
+      end
+      object seRecLineChars: TSpinEdit
+        Left = 184
         Top = 120
-        Width = 137
+        Width = 241
         Height = 22
         MaxValue = 0
         MinValue = 0
@@ -151,10 +187,10 @@ object fmPrinter: TfmPrinter
         Value = 0
         OnClick = ModifiedClick
       end
-      object seLineSpacing: TSpinEdit
-        Left = 152
+      object seRecLineHeight: TSpinEdit
+        Left = 184
         Top = 152
-        Width = 137
+        Width = 241
         Height = 22
         MaxValue = 0
         MinValue = 0
@@ -277,7 +313,7 @@ object fmPrinter: TfmPrinter
         Width = 113
         Height = 21
         Style = csDropDownList
-        ItemHeight = 0
+        ItemHeight = 13
         TabOrder = 0
         OnChange = ModifiedClick
       end
@@ -334,7 +370,7 @@ object fmPrinter: TfmPrinter
         Width = 113
         Height = 21
         Style = csDropDownList
-        ItemHeight = 0
+        ItemHeight = 13
         TabOrder = 4
         OnChange = ModifiedClick
       end

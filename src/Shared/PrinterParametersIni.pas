@@ -190,6 +190,8 @@ begin
       FParameters.CurrencyName := IniFile.ReadString(Section, 'CurrencyName', DefCurrencyName);
       FParameters.LineSpacing := IniFile.ReadInteger(Section, 'LineSpacing', DefLineSpacing);
       FParameters.PrintEnabled := IniFile.ReadBool(Section, 'PrintEnabled', DefPrintEnabled);
+      FParameters.RecLineChars := IniFile.ReadInteger(Section, 'RecLineChars', DefRecLineChars);
+      FParameters.RecLineHeight := IniFile.ReadInteger(Section, 'RecLineHeight', DefRecLineHeight);
     end;
   finally
     IniFile.Free;
@@ -237,6 +239,8 @@ begin
     IniFile.WriteString(Section, 'CurrencyName', FParameters.CurrencyName);
     IniFile.WriteInteger(Section, 'LineSpacing', FParameters.LineSpacing);
     IniFile.WriteBool(Section, 'PrintEn abled', FParameters.PrintEnabled);
+    IniFile.WriteInteger(Section, 'RecLineChars', FParameters.RecLineChars);
+    IniFile.WriteInteger(Section, 'RecLineHeight', FParameters.RecLineHeight);
   finally
     IniFile.Free;
   end;

@@ -56,15 +56,22 @@ type
     seDevicePollTime: TSpinEdit;
     lblLineSpacing: TTntLabel;
     seLineSpacing: TSpinEdit;
+    lblRecLineChars: TTntLabel;
+    lblRecLineHeight: TTntLabel;
+    seRecLineChars: TSpinEdit;
+    seRecLineHeight: TSpinEdit;
     procedure btnTestConnectionClick(Sender: TObject);
     procedure btnPrintReceiptClick(Sender: TObject);
     procedure cbPrinterTypeChange(Sender: TObject);
     procedure cbPrinterNameChange(Sender: TObject);
     procedure ModifiedClick(Sender: TObject);
   private
+    function GetPrinter: TRecPrinter;
+  private
+    FPrinter: TRecPrinter;
     procedure UpdateFontNames;
     procedure UpdateDeviceNames;
-    
+
     procedure UpdateBaudRates;
     procedure UpdatePortNames;
     procedure UpdateStopBits;
@@ -72,7 +79,9 @@ type
     procedure UpdateParity;
     procedure UpdateFlowControl;
     function CreatePrinter(PrinterType: Integer): TRecPrinter;
+    property Printer: TRecPrinter read GetPrinter;
   public
+    destructor Destroy; override;
     procedure UpdatePage; override;
     procedure UpdateObject; override;
   end;
@@ -82,6 +91,19 @@ implementation
 {$R *.dfm}
 
 { TfmFptrConnection }
+
+destructor TfmPrinter.Destroy;
+begin
+  FPrinter.Free;
+  inherited Destroy;
+end;
+
+function TfmPrinter.GetPrinter: TRecPrinter;
+begin
+  if FPrinter = nil then
+    FPrinter := CreatePrinter(cbPrinterType.ItemIndex);
+  Result := FPrinter;
+end;
 
 procedure TfmPrinter.UpdatePage;
 begin
@@ -97,6 +119,9 @@ begin
   UpdateStopBits;
   UpdateParity;
   UpdateFlowControl;
+
+  seRecLineChars.Value := Parameters.RecLineChars;
+  seRecLineHeight.Value := Parameters.RecLineHeight;
 
   edtRemoteHost.Text := Parameters.RemoteHost;
   seRemotePort.Value := Parameters.RemotePort;
@@ -234,19 +259,12 @@ begin
 end;
 
 procedure TfmPrinter.btnTestConnectionClick(Sender: TObject);
-var
-  Printer: TRecPrinter;
 begin
   EnableButtons(False);
   memResult.Clear;
   try
     UpdateObject;
-    Printer := CreatePrinter(Parameters.PrinterType);
-    try
-      memResult.Text := Printer.TestConnection;
-    finally
-      Printer.Free;
-    end;
+    memResult.Text := Printer.TestConnection;
   except
     on E: Exception do
     begin
@@ -257,19 +275,12 @@ begin
 end;
 
 procedure TfmPrinter.btnPrintReceiptClick(Sender: TObject);
-var
-  Printer: TRecPrinter;
 begin
   EnableButtons(False);
   memResult.Clear;
   try
     UpdateObject;
-    Printer := CreatePrinter(Parameters.PrinterType);
-    try
-      memResult.Text := Printer.PrintTestReceipt;
-    finally
-      Printer.Free;
-    end;
+    memResult.Text := Printer.PrintTestReceipt;
   except
     on E: Exception do
     begin
@@ -281,6 +292,9 @@ end;
 
 procedure TfmPrinter.cbPrinterTypeChange(Sender: TObject);
 begin
+  FPrinter.Free;
+  FPrinter := nil;
+
   UpdateDeviceNames;
   UpdateFontNames;
   Modified;
@@ -289,11 +303,9 @@ end;
 procedure TfmPrinter.UpdateDeviceNames;
 var
   Index: Integer;
-  Printer: TRecPrinter;
 begin
   try
     cbPrinterName.Items.BeginUpdate;
-    Printer := CreatePrinter(cbPrinterType.ItemIndex);
     try
       cbPrinterName.Items.Text := Printer.ReadDeviceList;
       Index := cbPrinterName.Items.IndexOf(Parameters.PrinterName);
@@ -301,7 +313,6 @@ begin
         Index := 0;
       cbPrinterName.ItemIndex := Index;
     finally
-      Printer.Free;
       cbPrinterName.Items.EndUpdate;
     end;
   except
@@ -313,20 +324,17 @@ end;
 procedure TfmPrinter.UpdateFontNames;
 var
   Index: Integer;
-  Printer: TRecPrinter;
 begin
   try
     cbFontName.Items.BeginUpdate;
-    Parameters.PrinterName := cbPrinterName.Text;
-    Printer := CreatePrinter(cbPrinterType.ItemIndex);
     try
+      Parameters.PrinterName := cbPrinterName.Text;
       cbFontName.Items.Text := Printer.GetFontNames;
       Index := cbFontName.Items.IndexOf(Parameters.FontName);
       if Index = -1 then
         Index := 0;
       cbFontName.ItemIndex := Index;
     finally
-      Printer.Free;
       cbFontName.Items.EndUpdate;
     end;
   except

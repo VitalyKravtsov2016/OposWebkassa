@@ -52,6 +52,7 @@ type
     procedure TestDoubleStrikeMode;
     procedure TestCharacterFont;
     procedure TestCodePage;
+    procedure TestCodePage2;
     procedure TestNVBitImage;
     procedure TestCoverOpen;
     procedure TestRecoverError;
@@ -564,6 +565,47 @@ begin
   end;
 end;
 
+procedure TESCPrinterTest.TestCodePage2;
+const
+  TextCodePage1251: WideString = 'Кодовая страница 1251';
+  TextCodePage866: WideString = 'Кодовая страница 866';
+var
+  Text: AnsiString;
+  WideText: WideString;
+  Strings: TTntStrings;
+begin
+  Strings := TTntStringList.Create;
+  try
+    FPrinter.Initialize;
+    // 1251
+    FPrinter.SetCodePage(CODEPAGE_WCP1251);
+    FPrinter.PrintText(Text);
+    // 866
+    FPrinter.SetCodePage(CODEPAGE_CP866);
+    Text := WideStringToAnsiString(866, TextCodePage866);
+    FPrinter.PrintText(Text);
+    // 1255 Hebrew
+    FPrinter.SetCodePage(CODEPAGE_WCP1251);
+    FPrinter.PrintText('CODEPAGE 1255 Hebrew');
+    FPrinter.SetCodePage(CODEPAGE_WCP1255);
+    Strings.LoadFromFile(GetModulePath + 'HebrewText.txt');
+    WideText := Strings[0];
+    Text := WideStringToAnsiString(1255, WideText);
+    FPrinter.PrintText(Text);
+    // 1256 Arabic
+    FPrinter.SetCodePage(CODEPAGE_WCP1251);
+    FPrinter.PrintText('CODEPAGE 1256 Arabic');
+    FPrinter.SetCodePage(CODEPAGE_WCP1256);
+
+    Strings.LoadFromFile(GetModulePath + 'ArabicText.txt');
+    WideText := Strings[0];
+    Text := WideStringToAnsiString(1256, WideText);
+    FPrinter.PrintText(Text);
+  finally
+    Strings.Free;
+  end;
+end;
+
 procedure TESCPrinterTest.TestNVBitImage;
 var
   Bitmap: TBitmap;
@@ -621,6 +663,50 @@ begin
     FPrinter.RecoverError(True);
   end;
 end;
+
+(*
+
+&#1170; 0x0492
+cyrillic capital letter ghe stroke
+&#1171;
+cyrillic small letter ghe stroke
+&#1178;
+cyrillic capital letter ka descender
+&#1179;
+cyrillic small letter ka descender
+&#1186;
+cyrillic capital letter en descender
+&#1187;
+cyrillic small letter en descender
+&#1198;
+cyrillic capital letter straight u
+&#1199;
+cyrillic small letter straight u
+&#1200;
+cyrillic capital letter straight u stroke
+&#1201;
+cyrillic small letter straight u stroke
+&#1210;
+cyrillic capital letter shha
+&#1211;
+cyrillic small letter shha
+&#1240;
+cyrillic capital letter schwa
+&#1241;
+cyrillic small letter schwa
+&#1256;
+cyrillic capital letter barred o
+&#1257;
+cyrillic small letter barred o
+&#64488;
+arabic letter uighur kazakh kirghiz alef maksura initial form
+&#64489;
+arabic letter uighur kazakh kirghiz alef maksura medial form
+????
+&#127472;
+&#127487;
+kazakhstan flag
+*)
 
 procedure TESCPrinterTest.TestUserCharacter;
 var

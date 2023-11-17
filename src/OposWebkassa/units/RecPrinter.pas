@@ -373,12 +373,18 @@ begin
 end;
 
 function TRecPrinter.GetFontNames: WideString;
+var
+  i: Integer;
+  Lines: TTntStrings;
 begin
+  Lines := TTntStringList.Create;
   Check(Printer.Open(FParams.PrinterName));
   try
-    Result := Printer.RecLineCharsList;
-    Result := StringReplace(Result, ',', CRLF, [rfReplaceAll, rfIgnoreCase]);
+    Lines.Text := StringReplace(Printer.FontTypefaceList, ',', CRLF, [
+      rfReplaceAll, rfIgnoreCase]);
+    Result := Lines.Text;
   finally
+    Lines.Free;
     Printer.Close;
   end;
 end;

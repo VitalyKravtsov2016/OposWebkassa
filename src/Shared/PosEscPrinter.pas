@@ -14,8 +14,12 @@ uses
   LogFile, DriverError, EscPrinter, PrinterPort, NotifyThread,
   RegExpr, SerialPort, Jpeg, GifImage, uZintBarcode, BarcodeUtils;
 
+const
+  FontNameA = 'Font A (12x24)';
+  FontNameB = 'Font B (9x17)';
+
 type
-  TPrintMode = (pmBold, pmDoubleWide, pmDoubleHigh, pmUnderlined);
+  TPrintMode = (pmFontB, pmBold, pmDoubleWide, pmDoubleHigh, pmUnderlined);
   TPrintModes = set of TPrintMode;
 
   { TEscToken }
@@ -722,6 +726,7 @@ begin
     '437,720,737,755,775,850,852,855,856,857,858,860,862,863,864,865,866,874,' +
     '1250,1251,1252,1253,1254,1255,1256,1257,1258,88591,88592,' +
     '88593,88594,88595,88596,88597,88598,88599,885915';
+
   FCheckHealthText := '';
   FControlObjectDescription := 'OPOS Windows Printer';
   FControlObjectVersion := 1014001;
@@ -730,7 +735,8 @@ begin
   FErrorLevel := PTR_EL_NONE;
   FErrorStation := PTR_S_RECEIPT;
   FFlagWhenIdle := False;
-  FFontTypefaceList := '';
+  FFontName := FontNameA;
+  FFontTypefaceList := FontNameA + ',' + FontNameB;
   FJrnCartridgeState := 0;
   FJrnCurrentCartridge := 0;
   FJrnEmpty := False;
@@ -757,7 +763,7 @@ begin
   FRecEmpty := False;
   FRecLetterQuality := False;
   FRecLineChars := 48;
-  FRecLineCharsList := '42,64';
+  FRecLineCharsList := '48,64';
   FRecLineHeight := 24;
   FRecLineSpacing := 30;
   FRecLinesToPaperCut := 4;
@@ -2305,6 +2311,10 @@ procedure TPosEscPrinter.InitializeDevice;
 begin
   FPrinter.Initialize;
   FPrinter.SetCodePage(CODEPAGE_WCP1251);
+  if FontName = FontNameB then
+  begin
+    FPrinter.SetCharacterFont(FONT_TYPE_B);
+  end;
 end;
 
 procedure TPosEscPrinter.DeviceProc(Sender: TObject);
@@ -2637,10 +2647,30 @@ begin
   begin
     if Token.IsEsc then
     begin
+      // Normal Restores printer characteristics to normal condition.
+      if Token.Text = ESC + '|N' then
+        FPrinter.Initialize;
+
+      // Font
+      if Token.Text = ESC + '|0fT' then
+        PrintMode := PrintMode - [pmFontB];
+      if Token.Text = ESC + '|1fT' then
+        PrintMode := PrintMode - [pmFontB];
+      if Token.Text = ESC + '|2fT' then
+        PrintMode := PrintMode + [pmFontB];
+
+      // Bold
       if Token.Text = ESC + '|bC' then
         PrintMode := PrintMode + [pmBold];
       if Token.Text = ESC + '|!bC' then
-        PrintMode := PrintMode + [pmBold];
+        PrintMode := PrintMode - [pmBold];
+
+      // Underline
+      if Token.Text = ESC + '|uC' then
+        PrintMode := PrintMode + [pmUnderlined];
+      if Token.Text = ESC + '|!uC' then
+        PrintMode := PrintMode - [pmUnderlined];
+
       if Token.Text = ESC + '|1C' then
         PrintMode := [];
       if Token.Text = ESC + '|2C' then
@@ -2649,12 +2679,13 @@ begin
         PrintMode := PrintMode + [pmDoubleHigh];
       if Token.Text = ESC + '|4C' then
         PrintMode := PrintMode + [pmDoubleWide, pmDoubleHigh];
+
     end else
     begin
       // Select print mode is needed
       if PrintMode <> FLastPrintMode then
       begin
-        Mode.CharacterFontB := False;
+        Mode.CharacterFontB := pmFontB in PrintMode;
         Mode.Emphasized := pmBold in PrintMode;
         Mode.DoubleHeight := pmDoubleHigh in PrintMode;
         Mode.DoubleWidth := pmDoubleWide in PrintMode;

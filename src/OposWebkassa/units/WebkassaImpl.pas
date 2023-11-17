@@ -75,7 +75,6 @@ type
     FPrinterState: TFiscalPrinterState;
     FDIOHandlers: TDIOHandlers;
     FVatValues: array [MinVatID..MaxVatID] of Integer;
-    FRecLineChars: Integer;
     FHeaderPrinted: Boolean;
     FLineChars: Integer;
     FLineHeight: Integer;
@@ -2328,7 +2327,6 @@ begin
       FPrinter := CreatePrinter;
     end;
     CheckPtr(Printer.Open(FParams.PrinterName));
-    FRecLineChars := StrToIntDef(Params.FontName, 0);
 
     Logger.Debug(Logger.Separator);
     Logger.Debug('LOG START');
@@ -2525,13 +2523,18 @@ begin
 
       Printer.DeviceEnabled := True;
       CheckPtr(Printer.ResultCode);
-      if FRecLineChars <> 0 then
+
+      if Params.RecLineChars <> 0 then
       begin
-        Printer.RecLineChars := FRecLineChars;
+        Printer.RecLineChars := Params.RecLineChars;
       end;
       if Params.LineSpacing <> 0 then
       begin
         Printer.RecLineSpacing := Params.LineSpacing;
+      end;
+      if Params.RecLineHeight <> 0 then
+      begin
+        Printer.RecLineHeight := Params.RecLineHeight;
       end;
     end else
     begin
@@ -2846,7 +2849,7 @@ begin
       PrintReceipt(Receipt, Command);
     end;
     PrintDocumentSafe(Document);
-    Printer.RecLineChars := FRecLineChars;
+    Printer.RecLineChars := Params.RecLineChars;
   finally
     Command.Free;
   end;
