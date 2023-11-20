@@ -202,6 +202,12 @@ begin
   FPrinter.Expects('ClaimDevice').WithParams([1000]).Returns(0);
   FPrinter.Expects('Set_DeviceEnabled').WithParams([True]);
   FPrinter.Expects('Get_ResultCode').Returns(0);
+
+  FPrinter.Expects('Get_CharacterSetList').Returns('997,998,999');
+  FPrinter.Expects('Set_CharacterSet').WithParams([997]);
+  FPrinter.Expects('Get_CapMapCharacterSet').Returns(True);
+  FPrinter.Expects('Set_MapCharacterSet').WithParams([True]);
+
   FPrinter.Expects('Set_RecLineChars').WithParams([42]);
   FPrinter.Expects('Set_RecLineSpacing').WithParams([30]);
   FPrinter.Expects('Set_RecLineHeight').WithParams([24]);
@@ -221,6 +227,46 @@ begin
 
   FPrinter.Verify('Verify success');
 end;
+
+(*
+
+TestPrintBarcodeAsGraphics: EMockVerifyException
+at  $0058C0DE
+Verify success
+Unexpected call to Get_CharacterSetList() <-- Don't match expectations
+
+Expected:
+Open(ThermalU): 0
+ClaimDevice(1000): 0
+Set_DeviceEnabled(True)
+Get_ResultCode(): 0
+Set_RecLineChars(42)
+Set_RecLineSpacing(30)
+Set_RecLineHeight(24)
+Get_CapRecBitmap(): True
+Set_BinaryConversion(1)
+PrintMemoryBitmap(2, 424=:>000000000000003>000000280000001<0000001<0000000100010000000000700000000000000000000000020000000000000000000000??????0000000000000000000<<033300<<0333033?0??<033?0??<00?33<<300?33<<3000??<?<000??<?<00?000<?00?000<?00<00?0<00<00?0<03<?3<??03<?3<??03??3?3<03??3?3<003<<<<?003<<<<?00?<??3<00?<??3<003003<?003003<?00<?333<00<?333<03333333033333330, 1, -11, -2): 0
+Set_BinaryConversion(0)
+Set_DeviceEnabled(False)
+Close(): 0
+
+Called:
+Open(ThermalU): 0
+ClaimDevice(1000): 0
+Set_DeviceEnabled(True)
+Get_ResultCode(): 0
+Get_CharacterSetList() <-- Don't match expectations
+Get_CapRecBitmap(): True
+Set_BinaryConversion(1)
+PrintMemoryBitmap(2, 424=:>000000000000003>000000280000001<0000001<0000000100010000000000700000000000000000000000020000000000000000000000??????0000000000000000000<<033300<<0333033?0??<033?0??<00?33<<300?33<<3000??<?<000??<?<00?000<?00?000<?00<00?0<00<00?0<03<?3<??03<?3<??03??3?3<03??3?3<003<<<<?003<<<<?00?<??3<00?<??3<003003<?003003<?00<?333<00<?333<03333333033333330, 1, -11, -2): 0
+Set_BinaryConversion(0)
+Close(): 0
+
+
+
+*)
+
+
 
 procedure TWebkassaImplTest3.TestPrintQRCode;
 const

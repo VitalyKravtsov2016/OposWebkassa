@@ -290,6 +290,12 @@ begin
 
   FPrinter.Expects('Set_DeviceEnabled').WithParams([True]);
   FPrinter.Expects('Get_ResultCode').Returns(0);
+
+  FPrinter.Expects('Get_CharacterSetList').Returns('997,998,999');
+  FPrinter.Expects('Set_CharacterSet').WithParams([997]);
+  FPrinter.Expects('Get_CapMapCharacterSet').Returns(True);
+  FPrinter.Expects('Set_MapCharacterSet').WithParams([True]);
+
   FPrinter.Expects('Set_RecLineChars').WithParams([42]);
   FPrinter.Expects('Set_RecLineSpacing').WithParams([30]);
   FPrinter.Expects('Set_RecLineHeight').WithParams([24]);

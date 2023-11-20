@@ -83,6 +83,7 @@ type
     FCapRecBold: Boolean;
     FCapRecDwideDhigh: Boolean;
     FExternalCheckNumber: WideString;
+    FCodePage: Integer;
 
     procedure PrintLine(Text: WideString);
     function GetReceiptItemText(ReceiptItem: TSalesReceiptItem;
@@ -101,6 +102,7 @@ type
     procedure PrintBarcodeAsGraphics(const Barcode: TBarcodeRec);
     function RenderBarcodeRec(Barcode: TBarcodeRec): AnsiString;
     procedure PrintDocItem(Item: TDocItem);
+    procedure PtrPrintNormal(Station: Integer; const Data: WideString);
   public
     procedure PrintDocumentSafe(Document: TTextDocument);
     procedure CheckCanPrint;
@@ -256,6 +258,8 @@ type
     FCashiersUpdated: Boolean;
     FCashBoxesUpdated: Boolean;
     FReceiptJson: WideString;
+
+    FPtrMapCharacterSet: Boolean;
 
     function DoCloseDevice: Integer;
     function DoOpen(const DeviceClass, DeviceName: WideString;
@@ -2510,6 +2514,15 @@ begin
 end;
 
 procedure TWebkassaImpl.SetDeviceEnabled(Value: Boolean);
+
+  function IsCharacterSetSupported(const CharacterSetList: string;
+    CharacterSet: Integer): Boolean;
+  begin
+    Result := Pos(IntToStr(CharacterSet), CharacterSetList) <> 0;
+  end;
+
+var
+  CharacterSetList: WideString;
 begin
   if Value <> FDeviceEnabled then
   begin
@@ -2523,6 +2536,20 @@ begin
 
       Printer.DeviceEnabled := True;
       CheckPtr(Printer.ResultCode);
+
+      CharacterSetList := Printer.CharacterSetList;
+      if IsCharacterSetSupported(CharacterSetList, PTR_CS_UNICODE) then
+      begin
+        Printer.CharacterSet := PTR_CS_UNICODE;
+      end else
+      begin
+        if IsCharacterSetSupported(CharacterSetList, PTR_CS_WINDOWS) then
+          Printer.CharacterSet := PTR_CS_WINDOWS;
+      end;
+
+      FPtrMapCharacterSet := Printer.CapMapCharacterSet;
+      if FPtrMapCharacterSet then
+        Printer.MapCharacterSet := True;
 
       if Params.RecLineChars <> 0 then
       begin
@@ -3616,9 +3643,30 @@ begin
     end;
 
     Text := Params.GetTranslationText(Text);
-    CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, FPrefix + Text));
+    PtrPrintNormal(PTR_S_RECEIPT, FPrefix + Text);
   end;
 end;
+
+procedure TWebkassaImpl.PtrPrintNormal(Station: Integer; const Data: WideString);
+var
+  Text: AnsiString;
+begin
+  if FPtrMapCharacterSet then
+  begin
+    CheckPtr(Printer.PrintNormal(Station, Data));
+  end else
+  begin
+    Text := WideStringToAnsiString(FCodePage, Data);
+    CheckPtr(Printer.PrintNormal(Station, Data));
+  end;
+end;
+
+procedure TWebkassaImpl.PrintLine(Text: WideString);
+begin
+  Text := Params.GetTranslationText(Text);
+  PtrPrintNormal(PTR_S_RECEIPT, Text + CRLF);
+end;
+
 
 procedure TWebkassaImpl.PrintQRCodeItem(const Item: TDocItem);
 begin
@@ -3644,7 +3692,7 @@ begin
 
       PrintBarcodeText:
       begin
-        CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, Item.Text));
+        PtrPrintNormal(PTR_S_RECEIPT, Item.Text);
       end;
     end;
   except
@@ -3686,12 +3734,6 @@ begin
     Text := Copy(Text, RecLineChars + 1, Length(Text));
     if Length(Text) = 0 then Break;
   end;
-end;
-
-procedure TWebkassaImpl.PrintLine(Text: WideString);
-begin
-  Text := Params.GetTranslationText(Text);
-  CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, Text + CRLF));
 end;
 
 procedure TWebkassaImpl.PrintHeaderAndCut;
@@ -4059,7 +4101,7 @@ begin
 
     PrintBarcodeText:
     begin
-      CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, Barcode.Data));
+      PtrPrintNormal(PTR_S_RECEIPT, Barcode.Data);
     end;
   end;
 end;
