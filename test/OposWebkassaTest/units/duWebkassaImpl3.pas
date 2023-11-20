@@ -204,6 +204,7 @@ begin
   FPrinter.Expects('Get_ResultCode').Returns(0);
   FPrinter.Expects('Set_RecLineChars').WithParams([42]);
   FPrinter.Expects('Set_RecLineSpacing').WithParams([30]);
+  FPrinter.Expects('Set_RecLineHeight').WithParams([24]);
   FPrinter.Expects('Get_CapRecBitmap').Returns(True);
   FPrinter.Expects('Set_BinaryConversion').WithParams([OPOS_BC_NIBBLE]);
   FPrinter.Expects('PrintMemoryBitmap').WithParams([FPTR_S_RECEIPT,

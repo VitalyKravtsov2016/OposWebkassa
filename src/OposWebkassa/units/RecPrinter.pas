@@ -374,7 +374,6 @@ end;
 
 function TRecPrinter.GetFontNames: WideString;
 var
-  i: Integer;
   Lines: TTntStrings;
 begin
   Lines := TTntStringList.Create;

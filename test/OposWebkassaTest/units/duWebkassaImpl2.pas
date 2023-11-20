@@ -292,6 +292,7 @@ begin
   FPrinter.Expects('Get_ResultCode').Returns(0);
   FPrinter.Expects('Set_RecLineChars').WithParams([42]);
   FPrinter.Expects('Set_RecLineSpacing').WithParams([30]);
+  FPrinter.Expects('Set_RecLineHeight').WithParams([24]);
 
   Driver.SetPropertyNumber(PIDX_DeviceEnabled, 1);
   ResultCode := Driver.GetPropertyNumber(PIDX_ResultCode);
