@@ -661,7 +661,7 @@ begin
   FCapJrnNearEndSensor := False;
   FCapJrnPresent := False;
   FCapJrnUnderline := False;
-  FCapMapCharacterSet := False;
+  FCapMapCharacterSet := True;
   FCapRecNearEndSensor := False;
   if FPrinter.CapRead then
   begin
@@ -723,9 +723,10 @@ begin
   FCartridgeNotify := 0;
   FCharacterSet := 1251;
   FCharacterSetList :=
-    '437,720,737,755,775,850,852,855,856,857,858,860,862,863,864,865,866,874,' +
-    '1250,1251,1252,1253,1254,1255,1256,1257,1258,88591,88592,' +
-    '88593,88594,88595,88596,88597,88598,88599,885915';
+    '997,998,999,'+
+    '437,720,737,755,775,850,852,855,856,857,858,860,862,863,864,865,866,874,'+
+    '1250,1251,1252,1253,1254,1255,1256,1257,1258,'+
+    '88591,88592,88593,88594,88595,88596,88597,88598,88599,885915';
 
   FCheckHealthText := '';
   FControlObjectDescription := 'OPOS Windows Printer';
