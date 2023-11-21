@@ -2555,7 +2555,7 @@ begin
       begin
         Printer.RecLineChars := Params.RecLineChars;
       end;
-      if Params.LineSpacing <> 0 then
+      if Params.LineSpacing >= 0 then
       begin
         Printer.RecLineSpacing := Params.LineSpacing;
       end;
@@ -3743,6 +3743,7 @@ var
   Text: WideString;
   RecLinesToPaperCut: Integer;
 begin
+  PrintLine('');
   if Printer.CapRecPapercut then
   begin
     RecLinesToPaperCut := Printer.RecLinesToPaperCut;
@@ -3752,13 +3753,13 @@ begin
       begin
         for i := 0 to Params.Header.Count-1 do
         begin
-          Text := TrimRight(Params.Header[i]) + CRLF;
+          Text := TrimRight(Params.Header[i]);
           PrintLine(Text);
         end;
         Count := RecLinesToPaperCut - FParams.NumHeaderLines;
         for i := 0 to Count-1 do
         begin
-          PrintLine(CRLF);
+          PrintLine('');
         end;
         Printer.CutPaper(90);
       end else
@@ -3770,7 +3771,7 @@ begin
         Printer.CutPaper(90);
         for i := 0 to Params.Header.Count-1 do
         begin
-          Text := TrimRight(Params.Header[i]) + CRLF;
+          Text := TrimRight(Params.Header[i]);
           PrintLine(Text);
         end;
       end;
@@ -3778,7 +3779,7 @@ begin
     begin
       for i := 1 to RecLinesToPaperCut do
       begin
-        PrintLine(CRLF);
+        PrintLine('');
       end;
       Printer.CutPaper(90);
     end;

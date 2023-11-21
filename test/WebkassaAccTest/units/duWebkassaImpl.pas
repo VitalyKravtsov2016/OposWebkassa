@@ -14,7 +14,8 @@ uses
   TntClasses, TntSysUtils,
   // This
   LogFile, WebkassaImpl, WebkassaClient, MockPosPrinter, PrinterParameters,
-  SerialPort, DirectIOAPI, FileUtils, oleFiscalPrinter, StringUtils;
+  SerialPort, DirectIOAPI, FileUtils, oleFiscalPrinter, StringUtils,
+  PosEscPrinter;
 
 const
   CRLF = #13#10;
@@ -146,7 +147,7 @@ begin
 
     Params.HeaderText :=
       ' ' + CRLF +
-      '                  ТОО PetroRetail                 230498234              029384     203948' + CRLF +
+      '                  ТОО PetroRetail                 ' + CRLF +
       '                 БИН 181040037076                 ' + CRLF +
       '             НДС Серия 60001 № 1204525            ' + CRLF +
       '               АЗС №Z-5555 (Касса 1)              ' + CRLF +
@@ -190,9 +191,12 @@ begin
   *)
     Params.PrinterType := PrinterTypeEscPrinterWindows;
     Params.PrinterName := 'RONGTA 80mm Series Printer';
-    Params.FontName := 'FontA11';
+    Params.FontName := FontNameB;
+    Params.LineSpacing := 0;
+    Params.RecLineChars := 64;
+    Params.RecLineHeight := 10;
   end;
-end;
+end;                            
 
 procedure TWebkassaImplTest.TearDown;
 begin
@@ -245,6 +249,8 @@ end;
 
 procedure TWebkassaImplTest.TestCashIn;
 begin
+  Params.NumHeaderLines := 4;
+
   OpenClaimEnable;
   Driver.SetHeaderLine(1, ' ', False);
   Driver.SetHeaderLine(2, '  Восточно-Казастанская область, город', False);

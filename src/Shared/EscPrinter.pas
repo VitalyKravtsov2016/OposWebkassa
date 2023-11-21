@@ -6,7 +6,7 @@ uses
   // VCL
   Windows, Types, SysUtils, Graphics,
   // Tnt
-  TntGraphics, 
+  TntGraphics,
   // This
   ByteUtils, PrinterPort, RegExpr, StringUtils, LogFile;
 
@@ -1322,7 +1322,6 @@ begin
   Logger.Debug(Format('TEscPrinter.PrintText(''%s'')', [TrimRight(Text)]));
   Send(Text);
 end;
-
 
 function TEscPrinter.CapRead: Boolean;
 begin

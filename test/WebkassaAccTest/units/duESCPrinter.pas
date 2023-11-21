@@ -1,4 +1,3 @@
-
 unit duESCPrinter;
 
 interface
@@ -57,6 +56,9 @@ type
     procedure TestCoverOpen;
     procedure TestRecoverError;
     procedure TestUserCharacter;
+    procedure TestLineSpacing;
+    procedure TestCutDistanceFontA;
+    procedure TestCutDistanceFontB;
   end;
 
 implementation
@@ -518,9 +520,11 @@ end;
 procedure TESCPrinterTest.TestCharacterFont;
 begin
   FPrinter.Initialize;
-  FPrinter.PrintText('Character font A');
+  FPrinter.PrintText('Character font A' + CRLF);
+  FPrinter.PrintText('0123456789012345678901234567890123456789012345678901234567890123456789' + CRLF);
   FPrinter.SetCharacterFont(1);
   FPrinter.PrintText('Character font B' + CRLF);
+  FPrinter.PrintText('0123456789012345678901234567890123456789012345678901234567890123456789' + CRLF);
   FPrinter.SetCharacterFont(0);
 end;
 
@@ -739,6 +743,61 @@ begin
   finally
     Strings.Free;
   end;
+end;
+
+procedure TESCPrinterTest.TestLineSpacing;
+begin
+  FPrinter.Initialize;
+  FPrinter.SetCharacterFont(1);
+  FPrinter.PrintText('Default line spacing 1' + CRLF);
+  FPrinter.PrintText('Default line spacing 2' + CRLF);
+  FPrinter.SetLineSpacing(0);
+  FPrinter.PrintText('Zero line spacing 1' + CRLF);
+  FPrinter.PrintText('Zero line spacing 2' + CRLF);
+  FPrinter.PrintText(CRLF + CRLF);
+  FPrinter.PrintText('Zero line spacing 3' + CRLF);
+  FPrinter.PrintText('Zero line spacing 4' + CRLF);
+(*
+  FPrinter.SetLineSpacing(100);
+  FPrinter.PrintText('100 line spacing 1' + CRLF);
+  FPrinter.PrintText('100 line spacing 2' + CRLF);
+*)
+end;
+
+procedure TESCPrinterTest.TestCutDistanceFontA;
+begin
+  FPrinter.Initialize;
+  FPrinter.SetLineSpacing(0);
+  FPrinter.SetCharacterFont(0);
+  FPrinter.PrintText('Trailer line 1' + CRLF);
+  FPrinter.PrintText('Trailer line 2' + CRLF);
+  FPrinter.PrintText('Trailer line 3' + CRLF);
+  FPrinter.PrintText('Trailer line 4' + CRLF);
+  FPrinter.PrintText('Trailer line 5' + CRLF);
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText('Header line 1' + CRLF);
+  FPrinter.PrintText('Header line 2' + CRLF);
+  FPrinter.PrintText('Header line 3' + CRLF);
+  FPrinter.PrintText('Header line 4' + CRLF);
+  FPrinter.PartialCut;
+end;
+
+procedure TESCPrinterTest.TestCutDistanceFontB;
+begin
+  FPrinter.Initialize;
+  FPrinter.SetLineSpacing(0);
+  FPrinter.SetCharacterFont(1);
+  FPrinter.PrintText('Trailer line 1' + CRLF);
+  FPrinter.PrintText('Trailer line 2' + CRLF);
+  FPrinter.PrintText('Trailer line 3' + CRLF);
+  FPrinter.PrintText('Trailer line 4' + CRLF);
+  FPrinter.PrintText('Trailer line 5' + CRLF);
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText('Header line 1' + CRLF);
+  FPrinter.PrintText('Header line 2' + CRLF);
+  FPrinter.PrintText('Header line 3' + CRLF);
+  FPrinter.PrintText('Header line 4' + CRLF);
+  FPrinter.PartialCut;
 end;
 
 initialization

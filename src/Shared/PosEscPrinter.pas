@@ -12,7 +12,8 @@ uses
   OposPOSPrinter_CCO_TLB, WException, OposPtrUtils,
   // This
   LogFile, DriverError, EscPrinter, PrinterPort, NotifyThread,
-  RegExpr, SerialPort, Jpeg, GifImage, uZintBarcode, BarcodeUtils;
+  RegExpr, SerialPort, Jpeg, GifImage, uZintBarcode, BarcodeUtils,
+  StringUtils;
 
 const
   FontNameA = 'Font A (12x24)';
@@ -167,7 +168,6 @@ type
     FRecLineCharsList: WideString;
     FRecLineHeight: Integer;
     FRecLineSpacing: Integer;
-    FRecLinesToPaperCut: Integer;
     FRecLineWidth: Integer;
     FRecNearEnd: Boolean;
     FRecSidewaysMaxChars: Integer;
@@ -615,6 +615,50 @@ type
 
 implementation
 
+const
+  SupportedCharacterSets: array [0..39] of Integer = (
+    437,720,737,755,775,850,852,855,856,857,858,860,862,863,864,865,866,874,
+    997,998,999,1250,1251,1252,1253,1254,1255,1256,1257,1258,
+    28591,28592,28593,28594,28595,28596,28597,28598,28599,28605);
+
+function IsValidCharacterSet(CharacterSet: Integer): Boolean;
+var
+  i: Integer;
+begin
+  for i := Low(SupportedCharacterSets) to High(SupportedCharacterSets) do
+  begin
+    Result := CharacterSet = SupportedCharacterSets[i];
+    if Result then Break;
+  end;
+end;
+
+function ArrayToString(const Items: array of Integer): string;
+var
+  i: Integer;
+begin
+  Result := '';
+  for i := Low(Items) to High(Items) do
+  begin
+    if Result <> '' then
+      Result := Result + ',';
+
+    Result := Result + IntToStr(Items[i]);
+  end;
+end;
+
+function CharacterSetToCodePage(CharacterSet: Integer): Integer;
+begin
+  case CharacterSet of
+    PTR_CS_UNICODE: Result := CP_ACP; // active code page
+    PTR_CS_ASCII: Result := 20127;    // us-ascii	US-ASCII (7-bit)
+    PTR_CS_WINDOWS: Result := CP_ACP; // active code page
+  else
+    Result := CharacterSet;
+  end;
+end;
+
+{ TPosEscPrinter }
+
 constructor TPosEscPrinter.Create2(AOwner: TComponent; APort: IPrinterPort;
   ALogger: ILogFile);
 begin
@@ -722,12 +766,7 @@ begin
   FCapUpdateStatistics := False;
   FCartridgeNotify := 0;
   FCharacterSet := 1251;
-  FCharacterSetList :=
-    '997,998,999,'+
-    '437,720,737,755,775,850,852,855,856,857,858,860,862,863,864,865,866,874,'+
-    '1250,1251,1252,1253,1254,1255,1256,1257,1258,'+
-    '88591,88592,88593,88594,88595,88596,88597,88598,88599,885915';
-
+  FCharacterSetList := ArrayToString(SupportedCharacterSets);
   FCheckHealthText := '';
   FControlObjectDescription := 'OPOS Windows Printer';
   FControlObjectVersion := 1014001;
@@ -767,7 +806,6 @@ begin
   FRecLineCharsList := '48,64';
   FRecLineHeight := 24;
   FRecLineSpacing := 30;
-  FRecLinesToPaperCut := 4;
   FRecLineWidth := 512;
   FRecNearEnd := False;
   FRecSidewaysMaxChars := 69;
@@ -1572,8 +1610,10 @@ begin
 end;
 
 function TPosEscPrinter.Get_RecLinesToPaperCut: Integer;
+const
+  DistanceToCutterInDots = 128;
 begin
-  Result := FRecLinesToPaperCut;
+  Result := DistanceToCutterInDots div (RecLineSpacing + RecLineHeight + 10);
 end;
 
 function TPosEscPrinter.Get_RecLineWidth: Integer;
@@ -2138,9 +2178,76 @@ begin
   FCartridgeNotify := pCartridgeNotify;
 end;
 
-procedure TPosEscPrinter.Set_CharacterSet(pCharacterSet: Integer);
+function CharacterSetToPrinterCodePage(CharacterSet: Integer): Integer;
 begin
-  FCharacterSet := pCharacterSet;
+  case CharacterSet of
+    PTR_CS_ASCII: Result := CODEPAGE_WCP1251;
+    PTR_CS_UNICODE: Result := CODEPAGE_WCP1251;
+    PTR_CS_WINDOWS: Result := CODEPAGE_WCP1251;
+
+    437: Result := CODEPAGE_CP437;
+    720: Result := CODEPAGE_CP720_ARABIC;
+    737: Result := CODEPAGE_CP737;
+    755: Result := CODEPAGE_CP755;
+    775: Result := CODEPAGE_CP775;
+    850: Result := CODEPAGE_CP850;
+    852: Result := CODEPAGE_CP852;
+    855: Result := CODEPAGE_CP855;
+    856: Result := CODEPAGE_CP856;
+    857: Result := CODEPAGE_CP857;
+    858: Result := CODEPAGE_CP858;
+    860: Result := CODEPAGE_CP860;
+    862: Result := CODEPAGE_CP862;
+    863: Result := CODEPAGE_CP863;
+    864: Result := CODEPAGE_CP864;
+    865: Result := CODEPAGE_CP865;
+    866: Result := CODEPAGE_CP866;
+    874: Result := CODEPAGE_CP874;
+
+    1250: Result := CODEPAGE_WCP1250;
+    1251: Result := CODEPAGE_WCP1251;
+    1252: Result := CODEPAGE_WCP1252;
+    1253: Result := CODEPAGE_WCP1253;
+    1254: Result := CODEPAGE_WCP1254;
+    1255: Result := CODEPAGE_WCP1255;
+    1256: Result := CODEPAGE_WCP1256;
+    1257: Result := CODEPAGE_WCP1257;
+    1258: Result := CODEPAGE_WCP1258;
+
+    28591: Result := CODEPAGE_ISO_8859_1;
+    28592: Result := CODEPAGE_ISO_8859_2;
+    28593: Result := CODEPAGE_ISO_8859_3;
+    28594: Result := CODEPAGE_ISO_8859_4;
+    28595: Result := CODEPAGE_ISO_8859_5;
+    28596: Result := CODEPAGE_ISO_8859_6;
+    28597: Result := CODEPAGE_ISO_8859_7;
+    28598: Result := CODEPAGE_ISO_8859_8;
+    28599: Result := CODEPAGE_ISO_8859_9;
+    28605: Result := CODEPAGE_ISO_8859_15;
+
+    //CODEPAGE_KATAKANA     = 1;
+    //CODEPAGE_MIK          = 8;
+    //CODEPAGE_IRAN         = 10;
+    //CODEPAGE_IRAN_II      = 20;
+    //CODEPAGE_LATVIAN      = 21;
+    //CODEPAGE_THAI         = 26;
+    //CODEPAGE_THAI2        = 45;
+  else
+    raise Exception.Create('Character set not supported');
+  end;
+end;
+
+procedure TPosEscPrinter.Set_CharacterSet(pCharacterSet: Integer);
+var
+  CodePage: Integer;
+begin
+  if IsValidCharacterSet(pCharacterSet) then
+  begin
+    FCharacterSet := pCharacterSet;
+
+    CodePage := CharacterSetToPrinterCodePage(CharacterSet);
+    FPrinter.SetCodePage(CodePage);
+  end;
 end;
 
 procedure TPosEscPrinter.StartDeviceThread;
@@ -2314,6 +2421,7 @@ begin
   FPrinter.SetCodePage(CODEPAGE_WCP1251);
   if FontName = FontNameB then
   begin
+    FLastPrintMode := [pmFontB];
     FPrinter.SetCharacterFont(FONT_TYPE_B);
   end;
 end;
@@ -2446,7 +2554,13 @@ end;
 
 procedure TPosEscPrinter.Set_RecLineHeight(pRecLineHeight: Integer);
 begin
-  FRecLineHeight := pRecLineHeight;
+  if (pRecLineHeight >= 24) then
+  begin
+    FRecLineHeight := 24
+  end else
+  begin
+    FRecLineHeight := 17;
+  end;
 end;
 
 procedure TPosEscPrinter.Set_RecLineSpacing(pRecLineSpacing: Integer);
@@ -2513,7 +2627,7 @@ begin
     begin
       StopDeviceThread;
       FPrinter.BeginDocument;
-      InitializeDevice;
+      //InitializeDevice; !!!
     end;
     if Control = PTR_TP_NORMAL then
     begin
@@ -2639,10 +2753,16 @@ end;
 procedure TPosEscPrinter.PrintText(Text: WideString);
 var
   Token: TEscToken;
+  CodePage: Integer;
   PrintMode: TPrintModes;
   Mode: EscPrinter.TPrintMode;
 begin
   PrintMode := [];
+  if FontName = FontNameB then
+  begin
+    PrintMode := [pmFontB];
+  end;
+
   Text := ReplaceRegExpr('\' + ESC + '\|[0-9]{0,3}\P', Text, #$1B#$69);
   while GetToken(Text, Token) do
   begin
@@ -2661,7 +2781,7 @@ begin
         PrintMode := PrintMode + [pmFontB];
 
       // Bold
-      if Token.Text = ESC + '|bC' then
+      if Token.Text = ESC_Bold then
         PrintMode := PrintMode + [pmBold];
       if Token.Text = ESC + '|!bC' then
         PrintMode := PrintMode - [pmBold];
@@ -2694,7 +2814,9 @@ begin
         FPrinter.SelectPrintMode(Mode);
         FLastPrintMode := PrintMode;
       end;
-      FPrinter.PrintText(Token.Text);
+
+      CodePage := CharacterSetToCodePage(CharacterSet);
+      FPrinter.PrintText(WideStringToAnsiString(CodePage, Token.Text));
     end;
   end;
 end;
