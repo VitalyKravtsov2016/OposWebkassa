@@ -87,6 +87,7 @@ type
     procedure TestReceiptTemplate;
     procedure TestReceiptTemplate2;
     procedure TestReceiptTemplate3;
+    procedure TestReceiptTemplate4;
     procedure TestGetJsonField;
     procedure TestEncoding;
     procedure TestBarcode;
@@ -1143,6 +1144,62 @@ begin
   CheckEquals(OPOS_SUCCESS, Driver.EndFiscalReceipt(False));
 
   FLines.Text := Receipt4Text;
+  CheckLines;
+end;
+
+procedure TWebkassaImplTest.TestReceiptTemplate4;
+const
+  ReceiptText =
+    'НДС Серия 00000                    № 00000' + CRLF +
+    '------------------------------------------' + CRLF +
+    '                                          ' + CRLF +
+    '                 СМЕНА №                  ' + CRLF +
+    'ПРОДАЖА                                   ' + CRLF +
+    '------------------------------------------' + CRLF +
+    'ТРК 1:АИ-92-К4/К5                         ' + CRLF +
+    '   6.700 л x 202.00 руб                   ' + CRLF +
+    '   Стоимость                       1353.00' + CRLF +
+    '------------------------------------------' + CRLF +
+    'ИТОГ         =1353.00                     ' + CRLF +
+    'Наличные:                         =2000.00' + CRLF +
+    '  СДАЧА                            =647.00' + CRLF +
+    '------------------------------------------' + CRLF +
+    'Фискальный признак:                       ' + CRLF +
+    'Время:                                    ' + CRLF +
+    'Оператор фискальных данных:               ' + CRLF +
+    '                                          ' + CRLF +
+    'Для проверки чека зайдите на сайт:        ' + CRLF +
+    '                                          ' + CRLF +
+    '------------------------------------------' + CRLF +
+    '              ФИСКАЛЬНЫЙ ЧЕK              ' + CRLF +
+    '                                          ' + CRLF +
+    '                ИНК ОФД:                  ' + CRLF +
+    '           Код ККМ КГД (РНМ):             ' + CRLF +
+    '                  ЗНМ:                    ' + CRLF +
+    'Оператор: Кассир1                         ' + CRLF +
+    'Транз.:      16868                        ' + CRLF +
+    '                                          ' + CRLF;
+
+begin
+  Driver.Params.TemplateEnabled := True;
+  Driver.Params.Template.SetDefaults;
+  FDriver.Params.NumHeaderLines := 0;
+  FDriver.Params.NumTrailerLines := 0;
+  FDriver.Params.HeaderText := '';
+  FDriver.Params.TrailerText := '';
+
+  OpenClaimEnable;
+  FDriver.Client.TestMode := True;
+  CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+  FptrCheck(Driver.PrintRecItem('ТРК 1:АИ-92-К4/К5', 1353, 6700, 4, 202, 'л'));
+  FptrCheck(Driver.PrintRecTotal(1353, 2000, '0'));
+  FptrCheck(Driver.PrintRecMessage('Оператор: Кассир1'));
+  FptrCheck(Driver.PrintRecMessage('Транз.:      16868 '));
+  FptrCheck(Driver.EndFiscalReceipt(False));
+
+  FLines.Text := ReceiptText;
   CheckLines;
 end;
 
