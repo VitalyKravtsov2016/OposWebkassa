@@ -357,7 +357,6 @@ end;
 
 procedure TCustomReceipt.PrintBarcode(const Barcode: string);
 begin
-
 end;
 
 end.

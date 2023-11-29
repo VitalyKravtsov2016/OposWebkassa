@@ -1,4 +1,3 @@
-
 unit duWebkassaImpl;
 
 interface
@@ -51,6 +50,7 @@ type
     procedure TestZReport;
     procedure TestXReport;
     procedure TestNonFiscal;
+    procedure TestNonFiscal2;
     procedure TestFiscalReceipt;
     procedure TestPrintReceiptDuplicate;
     procedure TestFiscalReceipt2;
@@ -125,6 +125,7 @@ begin
     //Driver.Driver.Printer := Printer;
     Driver.Driver.LoadParamsEnabled := False;
 
+    Params.PrintBarcode := PrintBarcodeESCCommands;
     Params.LogFileEnabled := True;
     Params.LogMaxCount := 10;
     Params.LogFilePath := GetModulePath + 'Logs';
@@ -189,9 +190,9 @@ begin
   *)
     Params.PrinterType := PrinterTypeEscPrinterWindows;
     Params.PrinterName := 'RONGTA 80mm Series Printer';
-    Params.FontName := FontNameB;
+    Params.FontName := FontNameA;
     Params.LineSpacing := 0;
-    Params.RecLineChars := 64;
+    Params.RecLineChars := 48;
     Params.RecLineHeight := 10;
   end;
 end;                            
@@ -330,6 +331,40 @@ begin
   FptrCheck(Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 3'));
   FptrCheck(Driver.EndNonFiscal, 'EndNonFiscal');
 end;
+
+procedure TWebkassaImplTest.TestNonFiscal2;
+begin
+  OpenClaimEnable;
+  FptrCheck(Driver.ResetPrinter, 'ResetPrinter');
+  FptrCheck(Driver.BeginNonFiscal, 'BeginNonFiscal');
+  FptrCheck(Driver.PrintNormal(2, '****************Квитанция*****************'));
+  FptrCheck(Driver.PrintNormal(2, 'ТР 2:                                АИ-92'));
+  FptrCheck(Driver.PrintNormal(2, '------------------------------------------'));
+  FptrCheck(Driver.PrintNormal(2, 'Итого:                              2,60 л'));
+  FptrCheck(Driver.PrintNormal(2, '------------------------------------------'));
+  FptrCheck(Driver.PrintNormal(2, 'Талоны онлайн:                      2,60 л'));
+  FptrCheck(Driver.PrintNormal(2, '2692807                            20,00 л'));
+  FptrCheck(Driver.PrintNormal(2, 'Ноливной талон                    -17,40 л'));
+  FptrCheck(Driver.PrintNormal(2, '------------------------------------------'));
+  FptrCheck(Driver.PrintNormal(2, '29.11.2023 13:35               Чек : 31863'));
+  FptrCheck(Driver.PrintNormal(2, '                  Код авторизации: 5056439'));
+  FptrCheck(Driver.PrintNormal(2, '------------------------------------------'));
+  FptrCheck(Driver.PrintNormal(2, 'Оператор: ts'));
+  FptrCheck(Driver.PrintNormal(2, 'Нефискальный чек'));
+  FptrCheck(Driver.PrintNormal(2, '------------------------------------------'));
+  FptrCheck(Driver.PrintNormal(2, '29.11.2023 13:37'));
+  FptrCheck(Driver.PrintNormal(2, 'Ноливной талон:'));
+  FptrCheck(Driver.PrintNormal(2, '3850201740002066'));
+  FptrCheck(Driver.PrintNormal(2, 'АИ-92: 17,40 л'));
+  FptrCheck(Driver.PrintNormal(2, 'Используйте сегодня'));
+  FptrCheck(Driver.PrintNormal(2, 'Только на данной АЗС!'));
+  FptrCheck(Driver.PrintNormal(2, 'Оператор: ts'));
+  FptrCheck(Driver.PrintNormal(2, 'Нефискальный чек'));
+  FptrCheck(DirectIO2(7, 51, '3850201740002066;DATAMATRIX;100;8;0;'));
+  FptrCheck(Driver.PrintNormal(2, ''));
+  FptrCheck(Driver.EndNonFiscal);
+end;
+
 
 procedure TWebkassaImplTest.TestFiscalReceipt;
 begin

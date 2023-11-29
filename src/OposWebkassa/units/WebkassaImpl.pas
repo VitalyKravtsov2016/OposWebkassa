@@ -504,8 +504,6 @@ begin
   Document.LineChars := Printer.RecLineChars;
   Document.LineHeight := Printer.RecLineHeight;
   Document.LineSpacing := Printer.RecLineSpacing;
-
-
   if APrintHeader and not (Params.HeaderPrinted) then
   begin
     Document.AddText(Params.HeaderText);
@@ -4025,7 +4023,13 @@ end;
 
 procedure TWebkassaImpl.PrintBarcode(const Barcode: string);
 begin
-  Receipt.PrintBarcode(Barcode);
+  if FPrinterState.State = FPTR_PS_NONFISCAL then
+  begin
+    Document.AddBarcode(Barcode);
+  end else
+  begin
+    Receipt.PrintBarcode(Barcode);
+  end;
 end;
 
 procedure TWebkassaImpl.PrintBarcode2(const Barcode: TBarcodeRec);

@@ -74,7 +74,6 @@ type
     procedure TestCashIn;
     procedure TestCashOut;
     procedure TestNonFiscal;
-
     procedure OpenClaimEnable;
     procedure TestFiscalReceipt;
     procedure TestCoverError;
