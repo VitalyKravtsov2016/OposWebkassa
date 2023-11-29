@@ -75,7 +75,6 @@ type
     FPrinterState: TFiscalPrinterState;
     FDIOHandlers: TDIOHandlers;
     FVatValues: array [MinVatID..MaxVatID] of Integer;
-    FHeaderPrinted: Boolean;
     FLineChars: Integer;
     FLineHeight: Integer;
     FLineSpacing: Integer;
@@ -114,7 +113,7 @@ type
     function ReadDailyTotal: Currency;
     function ReadRefundTotal: Currency;
     function ReadSellTotal: Currency;
-    procedure PrintHeaderAndCut;
+    procedure CutPaper;
     procedure ClearCashboxStatus;
     procedure PrintText(Prefix, Text: WideString; RecLineChars: Integer);
     procedure PrintTextLine(Prefix, Text: WideString;
@@ -506,9 +505,12 @@ begin
   Document.LineHeight := Printer.RecLineHeight;
   Document.LineSpacing := Printer.RecLineSpacing;
 
-  if APrintHeader then
+
+  if APrintHeader and not (Params.HeaderPrinted) then
   begin
     Document.AddText(Params.HeaderText);
+    Params.HeaderPrinted := False;
+    SaveUsrParameters(FParams, FOposDevice.DeviceName, FLogger);
   end;
 end;
 
@@ -972,9 +974,7 @@ begin
   try
     CheckEnabled;
     CheckState(FPTR_PS_NONFISCAL);
-
-    PrintDocument(Document);
-
+    PrintDocumentSafe(Document);
     SetPrinterState(FPTR_PS_MONITOR);
     Result := ClearResult;
   except
@@ -1850,8 +1850,7 @@ begin
       (Command.Data.EndNonNullable.ReturnSell - Command.Data.StartNonNullable.ReturnSell) +
       (Command.Data.EndNonNullable.ReturnBuy - Command.Data.StartNonNullable.ReturnBuy);
 
-    BeginDocument(not FHeaderPrinted);
-    Document.PrintHeader := False;
+    BeginDocument(True);
     Separator := StringOfChar('-', Document.LineChars);
     Document.AddLines('»ÕÕ/¡»Õ', Command.Data.CashboxRN);
     Document.AddLines('«ÕÃ', Command.Data.CashboxSN);
@@ -2601,7 +2600,6 @@ begin
     Command.Request.ExternalCheckNumber := FExternalCheckNumber;
     FClient.Execute(Command);
     // Create Document
-    Document.PrintHeader := Receipt.PrintHeader;
     Document.AddLine('¡»Õ ' + Command.Data.Cashbox.RegistrationNumber);
     Document.AddLine(Format('«ÕÃ %s »Õ  Œ‘ƒ %s', [Command.Data.Cashbox.UniqueNumber,
       Command.Data.Cashbox.IdentityNumber]));
@@ -2630,7 +2628,6 @@ begin
     Command.Request.ExternalCheckNumber := FExternalCheckNumber;
     FClient.Execute(Command);
     //
-    Document.PrintHeader := Receipt.PrintHeader;
     Document.AddLine('¡»Õ ' + Command.Data.Cashbox.RegistrationNumber);
     Document.AddLine(Format('«ÕÃ %s »Õ  Œ‘ƒ %s', [Command.Data.Cashbox.UniqueNumber,
       Command.Data.Cashbox.IdentityNumber]));
@@ -2993,8 +2990,6 @@ var
   Adjustment: TAdjustmentRec;
   BarcodeItem: TBarcodeItem;
 begin
-  Document.PrintHeader := Receipt.PrintHeader;
-
   Document.Addlines(Format('Õƒ— —ÂËˇ %s', [Params.VATSeries]),
     Format('π %s', [Params.VATNumber]));
   Document.AddSeparator;
@@ -3382,7 +3377,6 @@ begin
   IsValid := True;
   LineItems := TList.Create;
   try
-    Document.PrintHeader := Receipt.PrintHeader;
     // Header
     LineItems.Clear;
     for i := 0 to Template.Header.Count-1 do
@@ -3593,7 +3587,7 @@ begin
     PrintDocItem(Document.Items[i]);
   end;
 
-  PrintHeaderAndCut;
+  CutPaper;
   if Printer.CapTransaction then
   begin
     CheckPtr(Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_NORMAL));
@@ -3736,18 +3730,20 @@ begin
   end;
 end;
 
-procedure TWebkassaImpl.PrintHeaderAndCut;
+procedure TWebkassaImpl.CutPaper;
 var
   i: Integer;
   Count: Integer;
   Text: WideString;
   RecLinesToPaperCut: Integer;
+const
+  PrintHeader = True;
 begin
   PrintLine('');
   if Printer.CapRecPapercut then
   begin
     RecLinesToPaperCut := Printer.RecLinesToPaperCut;
-    if Document.PrintHeader then
+    if PrintHeader then
     begin
       if FParams.NumHeaderLines <= RecLinesToPaperCut then
       begin
@@ -3775,6 +3771,8 @@ begin
           PrintLine(Text);
         end;
       end;
+      Params.HeaderPrinted := True;
+      SaveUsrParameters(FParams, FOposDevice.DeviceName, FLogger);
     end else
     begin
       for i := 1 to RecLinesToPaperCut do
@@ -3784,7 +3782,6 @@ begin
       Printer.CutPaper(90);
     end;
   end;
-  FHeaderPrinted := Document.PrintHeader;
 end;
 
 function TWebkassaImpl.GetPrinterStation(Station: Integer): Integer;
@@ -4133,7 +4130,6 @@ begin
     Command.Request.ShiftNumber := ShiftNumber;
     FClient.ReadReceipt(Command);
 
-    Document.PrintHeader := Receipt.PrintHeader;
     Document.Addlines(Format('Õƒ— —ÂËˇ %s', [Params.VATSeries]),
       Format('π %s', [Params.VATNumber]));
     Document.AddSeparator;

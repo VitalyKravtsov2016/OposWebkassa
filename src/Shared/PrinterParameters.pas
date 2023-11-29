@@ -103,6 +103,7 @@ const
   DefPrintEnabled = True;
   DefRecLineChars = 42;
   DefRecLineHeight = 24;
+  DefHeaderPrinted = false;
 
   /////////////////////////////////////////////////////////////////////////////
   // Header and trailer parameters
@@ -195,6 +196,7 @@ type
     PrintBarcode: Integer;
     RecLineChars: Integer;
     RecLineHeight: Integer;
+    HeaderPrinted: Boolean;
 
     constructor Create(ALogger: ILogFile);
     destructor Destroy; override;

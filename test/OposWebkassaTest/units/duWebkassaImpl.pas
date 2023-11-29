@@ -749,7 +749,7 @@ const
 begin
   FPrinter.Lines.Clear;
   OpenClaimEnable;
-  Driver.PrintHeaderAndCut;
+  Driver.CutPaper;
   CheckEquals(4, FPrinter.Lines.Count, 'Printer.Lines.Count');
   FLines.Text := Text;
   CheckLines;

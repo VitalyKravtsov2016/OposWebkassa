@@ -68,7 +68,6 @@ end;
 
 procedure TCashOutReceipt.EndFiscalReceipt(APrintHeader: Boolean);
 begin
-  FPrintHeader := APrintHeader;
 end;
 
 procedure TCashOutReceipt.Print(AVisitor: TObject);

@@ -265,7 +265,6 @@ end;
 procedure TSalesReceipt.EndFiscalReceipt(APrintHeader: Boolean);
 begin
   FIsOpened := False;
-  FPrintHeader := APrintHeader;
 end;
 
 function TSalesReceipt.AddItem: TSalesReceiptItem;

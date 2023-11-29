@@ -22,7 +22,6 @@ type
     FAfterTotal: Boolean;
     FBarcode: string;
     FFiscalSign: WideString;
-    FPrintHeader: Boolean;
     FCustomerINN: WideString;
     FCustomerEmail: WideString;
     FCustomerPhone: WideString;
@@ -127,7 +126,6 @@ type
     property Lines: TTntStrings read FLines;
     property Trailer: TTntStrings read FTrailer;
     property AfterTotal: Boolean read FAfterTotal;
-    property PrintHeader: Boolean read FPrintHeader;
     property FiscalSign: WideString read FFiscalSign write FFiscalSign;
   end;
 

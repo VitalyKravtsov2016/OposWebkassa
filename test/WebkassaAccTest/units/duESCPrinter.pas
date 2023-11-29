@@ -714,7 +714,6 @@ kazakhstan flag
 
 procedure TESCPrinterTest.TestUserCharacter;
 var
-  i: Integer;
   C: WideChar;
   Text: WideString;
   Strings: TTntStrings;

@@ -24,7 +24,6 @@ type
     FLineChars: Integer;
     FLineHeight: Integer;
     FLineSpacing: Integer;
-    FPrintHeader: Boolean;
     procedure Add(Index: Integer; const Line: WideString); overload;
     procedure Add2(const ALine: WideString; Style: Integer);
   public
@@ -53,7 +52,6 @@ type
     property LineChars: Integer read FLineChars write FLineChars;
     property LineHeight: Integer read FLineHeight write FLineHeight;
     property LineSpacing: Integer read FLineSpacing write FLineSpacing;
-    property PrintHeader: Boolean read FPrintHeader write FPrintHeader;
   end;
 
   { TDocItems }
@@ -262,7 +260,6 @@ end;
 procedure TTextDocument.Clear;
 begin
   FItems.Clear;
-  FPrintHeader := False;
 end;
 
 procedure TTextDocument.Save;

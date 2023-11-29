@@ -141,17 +141,15 @@ begin
     Params.WebkassaAddress := 'https://devkkm.webkassa.kz';
     //Params.WebkassaAddress := 'http://localhost:1332';
 
-    Params.NumHeaderLines := 6;
+    Params.NumHeaderLines := 4;
     Params.NumTrailerLines := 3;
     Params.RoundType := RoundTypeNone;
 
     Params.HeaderText :=
-      ' ' + CRLF +
       '                  ТОО PetroRetail                 ' + CRLF +
       '                 БИН 181040037076                 ' + CRLF +
       '             НДС Серия 60001 № 1204525            ' + CRLF +
-      '               АЗС №Z-5555 (Касса 1)              ' + CRLF +
-      '                       стенд                      ';
+      '               АЗС №Z-5555 (Касса 1) стенд        ';
 
     Params.TrailerText :=
       '           Callцентр 039458039850 ' + CRLF +

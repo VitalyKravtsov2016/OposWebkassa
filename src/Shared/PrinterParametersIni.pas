@@ -192,6 +192,7 @@ begin
       FParameters.PrintEnabled := IniFile.ReadBool(Section, 'PrintEnabled', DefPrintEnabled);
       FParameters.RecLineChars := IniFile.ReadInteger(Section, 'RecLineChars', DefRecLineChars);
       FParameters.RecLineHeight := IniFile.ReadInteger(Section, 'RecLineHeight', DefRecLineHeight);
+      FParameters.HeaderPrinted := IniFile.ReadBool(Section, 'HeaderPrinted', DefHeaderPrinted);
     end;
   finally
     IniFile.Free;
@@ -238,9 +239,10 @@ begin
     IniFile.WriteBool(Section, 'TemplateEnabled', FParameters.TemplateEnabled);
     IniFile.WriteString(Section, 'CurrencyName', FParameters.CurrencyName);
     IniFile.WriteInteger(Section, 'LineSpacing', FParameters.LineSpacing);
-    IniFile.WriteBool(Section, 'PrintEn abled', FParameters.PrintEnabled);
+    IniFile.WriteBool(Section, 'PrintEnabled', FParameters.PrintEnabled);
     IniFile.WriteInteger(Section, 'RecLineChars', FParameters.RecLineChars);
     IniFile.WriteInteger(Section, 'RecLineHeight', FParameters.RecLineHeight);
+    IniFile.WriteBool(Section, 'HeaderPrinted', FParameters.HeaderPrinted);
   finally
     IniFile.Free;
   end;

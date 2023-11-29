@@ -284,6 +284,10 @@ begin
       if Reg.ValueExists('RecLineHeight') then
         Parameters.RecLineHeight := Reg.ReadInteger('RecLineHeight');
 
+      if Reg.ValueExists('HeaderPrinted') then
+        Parameters.HeaderPrinted := Reg.ReadBool('HeaderPrinted');
+
+
       Reg.CloseKey;
     end;
     // VatRates
@@ -377,6 +381,7 @@ begin
     Reg.WriteBool('PrintEnabled', FParameters.PrintEnabled);
     Reg.WriteInteger('RecLineChars', FParameters.RecLineChars);
     Reg.WriteInteger('RecLineHeight', FParameters.RecLineHeight);
+    Reg.WriteBool('HeaderPrinted', FParameters.HeaderPrinted);
 
     Reg.CloseKey;
     // VatRates
