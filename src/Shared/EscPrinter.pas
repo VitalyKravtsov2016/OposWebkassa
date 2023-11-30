@@ -259,10 +259,8 @@ type
     function GetBitmapData(Bitmap: TBitmap): AnsiString;
     function GetRasterBitmapData(Bitmap: TBitmap): AnsiString;
     function GetRasterImageData(Image: TGraphic): AnsiString;
-    function GetImageData2(Justification: Integer;
-      Image: TGraphic): AnsiString;
-    procedure DrawImage(Justification: Integer; Image: TGraphic;
-      Bitmap: TBitmap);
+    function GetImageData2(Image: TGraphic): AnsiString;
+    procedure DrawImage(Image: TGraphic; Bitmap: TBitmap);
   public
     constructor Create(APort: IPrinterPort; ALogger: ILogFile);
 
@@ -313,7 +311,7 @@ type
     procedure PrintNVBitImage(Number, Mode: Byte);
     procedure DefineNVBitImage(Number: Byte; Image: TGraphic);
     procedure SetCharacterSize(N: Byte);
-    procedure DownloadBMP(Justification: Integer; Image: TGraphic);
+    procedure DownloadBMP(Image: TGraphic);
     procedure PrintBmp(Mode: Byte);
     procedure SetWhiteBlackReverse(Value: Boolean);
     function ReadPrinterID(N: Byte): AnsiString;
@@ -601,7 +599,7 @@ begin
     TntGraphics.WideCanvasTextOut(Bitmap.Canvas, 0, 0, C);
     // Print bitmap
     PrintText('Bitmap.0' + CRLF);
-    DownloadBMP(0, Bitmap);
+    DownloadBMP(Bitmap);
     PrintBmp(BMP_MODE_NORMAL);
     PrintText('Bitmap.1' + CRLF);
     // Write
@@ -697,47 +695,29 @@ end;
 
 function TEscPrinter.GetImageData(Image: TGraphic): AnsiString;
 begin
-  Result := GetImageData2(JUSTIFICATION_LEFT, Image);
+  Result := GetImageData2(Image);
 end;
 
-function TEscPrinter.GetImageData2(Justification: Integer; Image: TGraphic): AnsiString;
+function TEscPrinter.GetImageData2(Image: TGraphic): AnsiString;
 var
   Bitmap: TBitmap;
 begin
   Bitmap := TBitmap.Create;
   try
-    DrawImage(Justification, Image, Bitmap);
+    DrawImage(Image, Bitmap);
     Result := GetBitmapData(Bitmap);
   finally
     Bitmap.Free;
   end;
 end;
 
-procedure TEscPrinter.DrawImage(Justification: Integer; Image: TGraphic; Bitmap: TBitmap);
-var
-  x: Integer;
+procedure TEscPrinter.DrawImage(Image: TGraphic; Bitmap: TBitmap);
 begin
   Bitmap.Monochrome := True;
   Bitmap.PixelFormat := pf1Bit;
-  if Justification = JUSTIFICATION_LEFT then
-  begin
-    Bitmap.Width := Image.Width;
-    Bitmap.Height := Image.Height;
-    Bitmap.Canvas.Draw(0, 0, Image);
-  end;
-  if Justification = JUSTIFICATION_CENTERING then
-  begin
-    Bitmap.Width := (DeviceMetrics.PrintWidth + Image.Width) div 2;
-    Bitmap.Height := Image.Height;
-    x := (DeviceMetrics.PrintWidth - Image.Width) div 2;
-    Bitmap.Canvas.Draw(x, 0, Image);
-  end;
-  if Justification = JUSTIFICATION_RIGHT then
-  begin
-    Bitmap.Width := DeviceMetrics.PrintWidth;
-    Bitmap.Height := Image.Height;
-    Bitmap.Canvas.Draw(DeviceMetrics.PrintWidth - Image.Width, 0, Image);
-  end;
+  Bitmap.Width := Image.Width;
+  Bitmap.Height := Image.Height;
+  Bitmap.Canvas.Draw(0, 0, Image);
 end;
 
 function TEscPrinter.GetRasterImageData(Image: TGraphic): AnsiString;
@@ -917,7 +897,7 @@ begin
 
   Bitmap := TBitmap.Create;
   try
-    DrawImage(JUSTIFICATION_LEFT, Image, Bitmap);
+    DrawImage(Image, Bitmap);
 
     x := (Bitmap.Width + 7) div 8;
     y := (Bitmap.Height + 7) div 8;
@@ -934,7 +914,7 @@ begin
   Send(#$1D#$21 + Chr(N));
 end;
 
-procedure TEscPrinter.DownloadBMP(Justification: Integer; Image: TGraphic);
+procedure TEscPrinter.DownloadBMP(Image: TGraphic);
 var
   x, y: Byte;
   Bitmap: TBitmap;
@@ -942,7 +922,7 @@ begin
   Logger.Debug('TEscPrinter.DownloadBMP');
   Bitmap := TBitmap.Create;
   try
-    DrawImage(Justification, Image, Bitmap);
+    DrawImage(Image, Bitmap);
 
     x := (Bitmap.Width + 7) div 8;
     y := (Bitmap.Height + 7) div 8;

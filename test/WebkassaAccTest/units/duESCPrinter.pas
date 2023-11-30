@@ -39,6 +39,7 @@ type
     procedure TestPrintModeInLine;
     procedure TestBarcode;
     procedure TestBarcode2;
+    procedure TestPDF417;
     procedure TestQRCode;
     procedure TestQRCode2;
     procedure TestQRCode3;
@@ -360,6 +361,23 @@ begin
   FPrinter.PrintText(CRLF);
 end;
 
+procedure TESCPrinterTest.TestPDF417;
+var
+  Barcode: TPDF417;
+const
+  BarcodeData = 'http://dev.kofd.kz/consumer?i=925871425876&f=211030200207&s=15443.72&t=20220826T210014';
+begin
+  FPrinter.Initialize;
+  FPrinter.PrintText('PDF417 test' + CRLF);
+  FPrinter.Select2DBarcode(BARCODE_PDF417);
+  Barcode.ColumnNumber := 4; // 1..30
+  Barcode.SecurityLevel := 0; // 0..8
+  Barcode.HVRatio := 2; // 2..5
+  Barcode.data := BarcodeData;
+  FPrinter.SetLeftMargin(100);
+  FPrinter.printPDF417(Barcode);
+end;
+
 procedure TESCPrinterTest.TestQRCode;
 var
   QRCode: TQRCode;
@@ -405,8 +423,7 @@ begin
     Bitmap.LoadFromFile(FileName);
 
     FPrinter.Initialize;
-    FPrinter.DownloadBMP(JUSTIFICATION_LEFT, Bitmap);
-
+    FPrinter.DownloadBMP(Bitmap);
     FPrinter.SetJustification(JUSTIFICATION_LEFT);
     FPrinter.PrintBmp(BMP_MODE_NORMAL);
     FPrinter.SetJustification(JUSTIFICATION_CENTERING);

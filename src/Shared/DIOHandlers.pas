@@ -132,8 +132,8 @@ begin
     Barcode.BarcodeType := pData;
     Barcode.Data := pString;
     Barcode.Text := pString;
-    Barcode.Height := 100;
-    Barcode.ModuleWidth := 3;
+    Barcode.Height := 0;
+    Barcode.ModuleWidth := 4;
     Barcode.Alignment := 0;
     Barcode.Parameter1 := 0;
     Barcode.Parameter2 := 0;

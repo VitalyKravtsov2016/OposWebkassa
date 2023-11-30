@@ -193,7 +193,7 @@ begin
   FDriver.Params.PrintBarcode := PrintBarcodeGraphics;
   Barcode.Data := '3850504580002030';
   Barcode.Text := 'DATAMATRIX';
-  Barcode.Height := 100;
+  Barcode.Height := 28;
   Barcode.ModuleWidth := 3;
   Barcode.BarcodeType := DIO_BARCODE_DATAMATRIX;
   Barcode.Alignment := BARCODE_ALIGNMENT_CENTER;
@@ -213,8 +213,10 @@ begin
   FPrinter.Expects('Set_RecLineHeight').WithParams([24]);
   FPrinter.Expects('Get_CapRecBitmap').Returns(True);
   FPrinter.Expects('Set_BinaryConversion').WithParams([OPOS_BC_NIBBLE]);
-  FPrinter.Expects('PrintMemoryBitmap').WithParams([FPTR_S_RECEIPT,
-    BitmapData, PTR_BMT_BMP, PTR_BM_ASIS, PTR_BM_CENTER]).Returns(0);
+  FPrinter.Expects('PrintMemoryBitmap').WithParams([FPTR_S_RECEIPT, BitmapData,
+    PTR_BMT_BMP, PTR_BM_ASIS, PTR_BM_CENTER]).Returns(0);
+
+
   FPrinter.Expects('Set_BinaryConversion').WithParams([OPOS_BC_NONE]);
   FPrinter.Expects('Set_DeviceEnabled').WithParams([False]);
   FPrinter.Expects('Close').Returns(0);
@@ -225,48 +227,10 @@ begin
   FDriver.PrintBarcode2(Barcode);
   FDriver.Close;
 
+
+
   FPrinter.Verify('Verify success');
 end;
-
-(*
-
-TestPrintBarcodeAsGraphics: EMockVerifyException
-at  $0058C0DE
-Verify success
-Unexpected call to Get_CharacterSetList() <-- Don't match expectations
-
-Expected:
-Open(ThermalU): 0
-ClaimDevice(1000): 0
-Set_DeviceEnabled(True)
-Get_ResultCode(): 0
-Set_RecLineChars(42)
-Set_RecLineSpacing(30)
-Set_RecLineHeight(24)
-Get_CapRecBitmap(): True
-Set_BinaryConversion(1)
-PrintMemoryBitmap(2, 424=:>000000000000003>000000280000001<0000001<0000000100010000000000700000000000000000000000020000000000000000000000??????0000000000000000000<<033300<<0333033?0??<033?0??<00?33<<300?33<<3000??<?<000??<?<00?000<?00?000<?00<00?0<00<00?0<03<?3<??03<?3<??03??3?3<03??3?3<003<<<<?003<<<<?00?<??3<00?<??3<003003<?003003<?00<?333<00<?333<03333333033333330, 1, -11, -2): 0
-Set_BinaryConversion(0)
-Set_DeviceEnabled(False)
-Close(): 0
-
-Called:
-Open(ThermalU): 0
-ClaimDevice(1000): 0
-Set_DeviceEnabled(True)
-Get_ResultCode(): 0
-Get_CharacterSetList() <-- Don't match expectations
-Get_CapRecBitmap(): True
-Set_BinaryConversion(1)
-PrintMemoryBitmap(2, 424=:>000000000000003>000000280000001<0000001<0000000100010000000000700000000000000000000000020000000000000000000000??????0000000000000000000<<033300<<0333033?0??<033?0??<00?33<<300?33<<3000??<?<000??<?<00?000<?00?000<?00<00?0<00<00?0<03<?3<??03<?3<??03??3?3<03??3?3<003<<<<?003<<<<?00?<??3<00?<??3<003003<?003003<?00<?333<00<?333<03333333033333330, 1, -11, -2): 0
-Set_BinaryConversion(0)
-Close(): 0
-
-
-
-*)
-
-
 
 procedure TWebkassaImplTest3.TestPrintQRCode;
 const

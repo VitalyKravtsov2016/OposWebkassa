@@ -65,6 +65,7 @@ type
     procedure TestFiscalReceiptWithAdjustments2;
     procedure TestFiscalReceiptWithAdjustments3;
     procedure TestPrintBarcode;
+    procedure TestPrint2DBarcode;
     procedure TestGetData;
     procedure TestFontB;
   end;
@@ -364,7 +365,6 @@ begin
   FptrCheck(Driver.PrintNormal(2, ''));
   FptrCheck(Driver.EndNonFiscal);
 end;
-
 
 procedure TWebkassaImplTest.TestFiscalReceipt;
 begin
@@ -769,7 +769,58 @@ const
   Barcode = 'http://dev.kofd.kz/consumer?i=925871425876&f=211030200207&s=15443.72&t=20220826T210014';
 begin
   OpenClaimEnable;
-  Driver.Driver.PrintQRCodeAsGraphics(Barcode);
+  FptrCheck(Driver.ResetPrinter, 'ResetPrinter');
+  FptrCheck(Driver.BeginNonFiscal, 'BeginNonFiscal');
+
+  FptrCheck(Driver.PrintNormal(FPTR_S_RECEIPT, 'DIO_BARCODE_PDF417'));
+  FptrCheck(DirectIO2(7, DIO_BARCODE_PDF417, Barcode));
+
+  FptrCheck(Driver.PrintNormal(FPTR_S_RECEIPT, 'DIO_BARCODE_AZTEC'));
+  FptrCheck(DirectIO2(7, DIO_BARCODE_AZTEC, Barcode));
+
+  FptrCheck(Driver.PrintNormal(FPTR_S_RECEIPT, 'DIO_BARCODE_QRCODE'));
+  FptrCheck(DirectIO2(7, DIO_BARCODE_QRCODE, Barcode));
+
+  FptrCheck(Driver.PrintNormal(FPTR_S_RECEIPT, 'DIO_BARCODE_DATAMATRIX'));
+  FptrCheck(DirectIO2(7, DIO_BARCODE_DATAMATRIX, Barcode));
+
+  FptrCheck(Driver.EndNonFiscal);
+end;
+
+procedure TWebkassaImplTest.TestPrint2DBarcode;
+
+  procedure PrintBarcodes;
+  const
+    Barcode = 'http://dev.kofd.kz/consumer?i=925871425876&f=211030200207&s=15443.72&t=20220826T210014';
+  begin
+    FptrCheck(Driver.PrintNormal(FPTR_S_RECEIPT, 'DIO_BARCODE_PDF417' + CRLF));
+    FptrCheck(DirectIO2(7, DIO_BARCODE_PDF417, Barcode));
+
+    FptrCheck(Driver.PrintNormal(FPTR_S_RECEIPT, 'DIO_BARCODE_QRCODE' + CRLF));
+    FptrCheck(DirectIO2(7, DIO_BARCODE_QRCODE, Barcode));
+
+    FptrCheck(Driver.PrintNormal(FPTR_S_RECEIPT, 'DIO_BARCODE_DATAMATRIX' + CRLF));
+    FptrCheck(DirectIO2(7, DIO_BARCODE_DATAMATRIX, Barcode));
+
+    FptrCheck(Driver.PrintNormal(FPTR_S_RECEIPT, 'DIO_BARCODE_AZTEC' + CRLF));
+    FptrCheck(DirectIO2(7, DIO_BARCODE_AZTEC, Barcode));
+  end;
+
+begin
+  OpenClaimEnable;
+  FptrCheck(Driver.ResetPrinter, 'ResetPrinter');
+
+  FptrCheck(Driver.BeginNonFiscal, 'BeginNonFiscal');
+  FptrCheck(Driver.PrintNormal(FPTR_S_RECEIPT, 'PrintBarcodeESCCommands'));
+  Params.PrintBarcode := PrintBarcodeESCCommands;
+  PrintBarcodes;
+  FptrCheck(Driver.EndNonFiscal);
+
+  FptrCheck(Driver.BeginNonFiscal, 'BeginNonFiscal');
+  FptrCheck(Driver.PrintNormal(FPTR_S_RECEIPT, 'PrintBarcodeGraphics'));
+  Params.PrintBarcode := PrintBarcodeGraphics;
+  PrintBarcodes;
+  FptrCheck(Driver.EndNonFiscal);
 end;
 
 procedure TWebkassaImplTest.TestGetData;

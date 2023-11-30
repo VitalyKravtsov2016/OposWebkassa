@@ -96,12 +96,11 @@ type
       const CheckNumber: WideString): WideString;
     procedure BeginDocument(APrintHeader: boolean);
     procedure UpdateTemplateItem(Item: TTemplateItem);
-    procedure PrintQRCodeItem(const Item: TDocItem);
     procedure CreateDIOHandlers;
     procedure PrintBarcodeAsGraphics(const Barcode: TBarcodeRec);
-    function RenderBarcodeRec(Barcode: TBarcodeRec): AnsiString;
     procedure PrintDocItem(Item: TDocItem);
     procedure PtrPrintNormal(Station: Integer; const Data: WideString);
+    function RenderBarcodeRec(Barcode: TBarcodeRec): AnsiString;
   public
     procedure PrintDocumentSafe(Document: TTextDocument);
     procedure CheckCanPrint;
@@ -428,6 +427,28 @@ begin
       OSVersionInfo.dwMinorVersion,
       OSVersionInfo.dwBuildNumber,
       OSVersionInfo.dwPlatformId]);
+  end;
+end;
+
+function BarcodeAlignmentToBCAlignment(BarcodeAlignment: Integer): Integer;
+begin
+  case BarcodeAlignment of
+    BARCODE_ALIGNMENT_CENTER: Result := PTR_BC_CENTER;
+    BARCODE_ALIGNMENT_LEFT  : Result := PTR_BC_LEFT;
+    BARCODE_ALIGNMENT_RIGHT : Result := PTR_BC_RIGHT;
+  else
+    Result := PTR_BC_CENTER;
+  end;
+end;
+
+function BarcodeAlignmentToBMPAlignment(BarcodeAlignment: Integer): Integer;
+begin
+  case BarcodeAlignment of
+    BARCODE_ALIGNMENT_CENTER: Result := PTR_BM_CENTER;
+    BARCODE_ALIGNMENT_LEFT  : Result := PTR_BM_LEFT;
+    BARCODE_ALIGNMENT_RIGHT : Result := PTR_BM_RIGHT;
+  else
+    Result := PTR_BM_CENTER;
   end;
 end;
 
@@ -3597,6 +3618,7 @@ end;
 procedure TWebkassaImpl.PrinTDocItem(Item: TDocItem);
 var
   Text: WideString;
+  Barcode: TBarcodeRec;
 begin
   if (Item.LineChars <> 0)and(Item.LineChars <> FLineChars) then
   begin
@@ -3616,7 +3638,21 @@ begin
 
 
   case Item.Style of
-    STYLE_QR_CODE: PrintQRCodeItem(Item);
+    STYLE_QR_CODE:
+    begin
+      Barcode.Data := Item.Text;
+      Barcode.Text := Item.Text;
+      Barcode.Height := 0;
+      Barcode.BarcodeType := DIO_BARCODE_QRCODE;
+      Barcode.ModuleWidth := 4;
+      Barcode.Alignment := ALIGN_CENTER;
+      Barcode.Parameter1 := 0;
+      Barcode.Parameter2 := 0;
+      Barcode.Parameter3 := 0;
+      Barcode.Parameter4 := 0;
+      Barcode.Parameter5 := 0;
+      PrintBarcode2(Barcode);
+    end;
     STYLE_BARCODE: PrintBarcode2(StrToBarcode(Item.Text));
   else
     Text := Item.Text;
@@ -3659,41 +3695,6 @@ begin
   PtrPrintNormal(PTR_S_RECEIPT, Text + CRLF);
 end;
 
-
-procedure TWebkassaImpl.PrintQRCodeItem(const Item: TDocItem);
-begin
-  try
-    case Params.PrintBarcode of
-      PrintBarcodeEscCommands:
-      if Printer.CapRecBarcode then
-      begin
-        if Printer.PrintBarCode(PTR_S_RECEIPT, Item.Text, PTR_BCS_QRCODE, 0, 4,
-          PTR_BC_CENTER, PTR_BC_TEXT_NONE) <> OPOS_SUCCESS then
-        begin
-          PrintQRCodeAsGraphics(Item.Text);
-        end;
-      end else
-      begin
-        PrintQRCodeAsGraphics(Item.Text);
-      end;
-
-      PrintBarcodeGraphics:
-      begin
-        PrintQRCodeAsGraphics(Item.Text);
-      end;
-
-      PrintBarcodeText:
-      begin
-        PtrPrintNormal(PTR_S_RECEIPT, Item.Text);
-      end;
-    end;
-  except
-    on E: Exception do
-    begin
-      Logger.Error('PrintQRCodeItem: ' + E.Message);
-    end;
-  end;
-end;
 
 procedure TWebkassaImpl.PrintText(Prefix, Text: WideString; RecLineChars: Integer);
 var
@@ -3863,6 +3864,7 @@ end;
 procedure TWebkassaImpl.PrintBarcodeAsGraphics(const Barcode: TBarcodeRec);
 var
   Data: AnsiString;
+  BMPAlignment: Integer;
 begin
   if not Printer.CapRecBitmap then
     RaiseIllegalError('Bitmaps are not supported');
@@ -3872,8 +3874,9 @@ begin
   try
     Data := RenderBarcodeRec(Barcode);
     Data := OposStrToNibble(Data);
+    BMPAlignment := BarcodeAlignmentToBMPAlignment(Barcode.Alignment);
     CheckPtr(Printer.PrintMemoryBitmap(PTR_S_RECEIPT, Data,
-      PTR_BMT_BMP, PTR_BM_ASIS, PTR_BM_CENTER));
+      PTR_BMT_BMP, PTR_BM_ASIS, BMPAlignment));
   finally
     Printer.BinaryConversion := OPOS_BC_NONE;
   end;
@@ -3982,14 +3985,19 @@ function TWebkassaImpl.RenderBarcodeRec(Barcode: TBarcodeRec): AnsiString;
 
 
 var
+  SCale: Integer;
   Bitmap: TBitmap;
   Render: TZintBarcode;
   Stream: TMemoryStream;
 begin
   Result := '';
 
+  Scale := 0;
   if Barcode.Height = 0 then
-    Barcode.Height := 200;
+  begin
+    Barcode.Height := 100;
+    Scale := 4;
+  end;
 
   Bitmap := TBitmap.Create;
   Render := TZintBarcode.Create;
@@ -4005,7 +4013,13 @@ begin
     Render.ShowHumanReadableText := False;
     Render.EncodeNow;
     RenderBarcode(Bitmap, Render.Symbol, False);
-    ScaleBitmap(Bitmap, 2);
+
+    if Scale = 0 then
+    begin
+      Scale := Barcode.Height div Bitmap.Height;
+      if not (Scale in [2..10]) then Scale := 2;
+    end;
+    ScaleBitmap(Bitmap, Scale);
     Bitmap.SaveToStream(Stream);
 
     if Stream.Size > 0 then
@@ -4068,17 +4082,6 @@ procedure TWebkassaImpl.PrintBarcode2(const Barcode: TBarcodeRec);
     end;
   end;
 
-  function BarcodeAlignmentToAlignment(BarcodeAlignment: Integer): Integer;
-  begin
-    case BarcodeAlignment of
-      BARCODE_ALIGNMENT_CENTER: Result := PTR_BC_CENTER;
-      BARCODE_ALIGNMENT_LEFT  : Result := PTR_BC_LEFT;
-      BARCODE_ALIGNMENT_RIGHT : Result := PTR_BC_RIGHT;
-    else
-      Result := PTR_BC_CENTER;
-    end;
-  end;
-
 var
   Symbology: Integer;
   Alignment: Integer;
@@ -4088,7 +4091,7 @@ begin
     if Printer.CapRecBarcode then
     begin
       Symbology := BarcodeTypeToSymbology(Barcode.BarcodeType);
-      Alignment := BarcodeAlignmentToAlignment(Barcode.Alignment);
+      Alignment := BarcodeAlignmentToBCAlignment(Barcode.Alignment);
       CheckPtr(Printer.PrintBarCode(FPTR_S_RECEIPT, Barcode.Data, Symbology,
         Barcode.Height, 0, Alignment, PTR_BC_TEXT_NONE));
     end else

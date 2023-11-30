@@ -316,6 +316,7 @@ begin
 
   FScale := 1;
 
+  FSymbol.rows := 6;
   FSymbol.show_human_readable_text := 1;
   FSymbol.input_mode := Integer(UNICODE_MODE);
   FRotation := r0;
