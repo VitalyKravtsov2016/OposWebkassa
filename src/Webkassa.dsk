@@ -1,32 +1,23 @@
 [Closed Files]
-File_0=SourceModule,'C:\projects\WebKassa\src\Shared\PrinterParameters.pas',0,1,1,23,21,0,0
-File_1=SourceModule,'C:\projects\WebKassa\src\Shared\uZintBarcode.pas',0,1,646,9,665,0,0
-File_2=SourceModule,'C:\projects\WebKassa\src\Shared\BarcodeUtils.pas',0,1,1,1,14,0,0
-File_3=SourceModule,'C:\projects\WebKassa\src\Shared\PrinterTypes.pas',0,1,58,1,89,0,0
+File_0=SourceModule,'C:\projects\WebKassa\src\Shared\FileUtils.pas',0,1,11,23,11,0,0
+File_1=SourceModule,'c:\program files (x86)\borland\delphi7\source\rtl\Sys\system.pas',0,1,1,1,10,0,0
+File_2=SourceModule,'C:\projects\WebKassa\test\OposWebkassaTest\units\duWebkassaImpl3.pas',0,1,189,51,207,0,0
+File_3=SourceModule,'C:\projects\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas',0,1,3851,1,3877,0,0
+File_4=SourceModule,'C:\projects\WebKassa\test\WebkassaAccTest\units\duWebkassaImpl.pas',0,1,798,34,815,0,0
+File_5=SourceModule,'C:\projects\WebKassa\src\Shared\ReceiptTemplate.pas',0,1,503,34,518,0,0
+File_6=SourceModule,'C:\projects\WebKassa\src\Shared\DIOHandlers.pas',0,1,126,6,137,0,0
+File_7=SourceModule,'C:\projects\WebKassa\src\Shared\uZintBarcode.pas',0,1,119,23,138,0,0
 
 [Modules]
-Module0=C:\projects\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas
-Module1=C:\projects\WebKassa\src\Shared\PosEscPrinter.pas
-Module2=C:\projects\WebKassa\test\WebkassaAccTest\units\duWebkassaImpl.pas
-Module3=C:\projects\WebKassa\test\WebkassaAccTest\units\duESCPrinter.pas
-Module4=C:\projects\WebKassa\src\Shared\DIOHandlers.pas
-Module5=C:\projects\WebKassa\src\Shared\EscPrinter.pas
-Module6=C:\projects\WebKassa\src\OposWebkassa\units\DirectIOAPI.pas
-Count=7
+Module0=C:\projects\WebKassa\src\Shared\EscPrinter.pas
+Module1=C:\projects\WebKassa\test\WebkassaAccTest\units\duESCPrinter.pas
+Module2=C:\projects\WebKassa\src\Shared\PosEscPrinter.pas
+Module3=C:\projects\WebKassa\src\OposWebkassa\units\TextDocument.pas
+Count=4
 EditWindowCount=1
 TypeLibWindowCount=1
 
-[C:\projects\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\projects\WebKassa\src\Shared\PosEscPrinter.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\projects\WebKassa\test\WebkassaAccTest\units\duWebkassaImpl.pas]
+[C:\projects\WebKassa\src\Shared\EscPrinter.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -36,22 +27,13 @@ ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[C:\projects\WebKassa\src\Shared\DIOHandlers.pas]
+[C:\projects\WebKassa\src\Shared\PosEscPrinter.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[C:\projects\WebKassa\src\Shared\EscPrinter.pas]
+[C:\projects\WebKassa\src\OposWebkassa\units\TextDocument.pas]
 ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\projects\WebKassa\src\OposWebkassa\units\DirectIOAPI.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\projects\WebKassa\test\WebkassaAccTest\WebkassaAccTest.dpr]
 FormState=0
 FormOnTop=0
 
@@ -83,16 +65,17 @@ FormOnTop=0
 FormState=0
 FormOnTop=0
 
+[C:\projects\WebKassa\test\WebkassaAccTest\WebkassaAccTest.dpr]
+FormState=0
+FormOnTop=0
+
 [EditWindow0]
-ViewCount=7
+ViewCount=4
 CurrentView=1
 View0=0
 View1=1
 View2=2
 View3=3
-View4=4
-View5=5
-View6=6
 CodeExplorer=CodeExplorer@EditWindow0
 MessageView=MessageView@EditWindow0
 Create=1
@@ -112,57 +95,36 @@ LeftPanelSize=0
 LeftPanelClients=CodeExplorer@EditWindow0
 LeftPanelData=00000400010000000C000000436F64654578706C6F7265720000000000000000000000000000000000FFFFFFFF
 RightPanelSize=0
-BottomPanelSize=82
+BottomPanelSize=360
 BottomPanelClients=MessageView@EditWindow0
 BottomPanelData=000004000000000000000000000000000000000000000000000100000000000000000B0000004D65737361676556696577FFFFFFFF
 
 [View0]
-Module=C:\projects\WebKassa\test\WebkassaAccTest\units\duWebkassaImpl.pas
-CursorX=49
-CursorY=815
-TopLine=786
+Module=C:\projects\WebKassa\test\WebkassaAccTest\units\duESCPrinter.pas
+CursorX=22
+CursorY=760
+TopLine=752
 LeftCol=1
 
 [View1]
-Module=C:\projects\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas
-CursorX=168
-CursorY=106
-TopLine=103
+Module=C:\projects\WebKassa\src\Shared\EscPrinter.pas
+CursorX=5
+CursorY=684
+TopLine=677
 LeftCol=1
 
 [View2]
 Module=C:\projects\WebKassa\src\Shared\PosEscPrinter.pas
-CursorX=1
-CursorY=729
-TopLine=699
+CursorX=2
+CursorY=2448
+TopLine=2438
 LeftCol=1
 
 [View3]
-Module=C:\projects\WebKassa\test\WebkassaAccTest\units\duESCPrinter.pas
-CursorX=37
-CursorY=373
-TopLine=361
-LeftCol=1
-
-[View4]
-Module=C:\projects\WebKassa\src\Shared\EscPrinter.pas
-CursorX=1
-CursorY=238
-TopLine=222
-LeftCol=1
-
-[View5]
-Module=C:\projects\WebKassa\src\Shared\DIOHandlers.pas
-CursorX=6
-CursorY=137
-TopLine=126
-LeftCol=1
-
-[View6]
-Module=C:\projects\WebKassa\src\OposWebkassa\units\DirectIOAPI.pas
-CursorX=21
-CursorY=227
-TopLine=201
+Module=C:\projects\WebKassa\src\OposWebkassa\units\TextDocument.pas
+CursorX=2
+CursorY=299
+TopLine=297
 LeftCol=1
 
 [TypeLibEditWindow0]
@@ -220,8 +182,8 @@ Left=268
 Top=225
 Width=1652
 Height=122
-MaxLeft=-1
-MaxTop=-1
+MaxLeft=-8
+MaxTop=-8
 MaxWidth=1936
 MaxHeight=122
 ClientWidth=1920
@@ -499,12 +461,12 @@ State=0
 Left=12
 Top=0
 Width=1908
-Height=82
+Height=360
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1908
-ClientHeight=82
-TBDockHeight=82
+ClientHeight=360
+TBDockHeight=360
 LRDockWidth=443
 Dockable=1
 
@@ -514,7 +476,7 @@ DockHostCount=1
 [DockSite0]
 DockSiteType=0
 Create=1
-Visible=1
+Visible=0
 State=0
 Left=681
 Top=195

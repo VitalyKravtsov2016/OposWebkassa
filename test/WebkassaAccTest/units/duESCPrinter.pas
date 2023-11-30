@@ -57,6 +57,7 @@ type
     procedure TestCoverOpen;
     procedure TestRecoverError;
     procedure TestUserCharacter;
+    procedure TestUserCharacter2;
     procedure TestLineSpacing;
     procedure TestCutDistanceFontA;
     procedure TestCutDistanceFontB;
@@ -731,8 +732,9 @@ kazakhstan flag
 
 procedure TESCPrinterTest.TestUserCharacter;
 var
-  C: WideChar;
+  i: Integer;
   Text: WideString;
+  Text2: AnsiString;
   Strings: TTntStrings;
 begin
   FPrinter.Initialize;
@@ -741,23 +743,61 @@ begin
   try
     Strings.LoadFromFile('KazakhText.txt');
     Text := Strings.Text;
-
-
-    C := Text[1];
-    FPrinter.SelectUserCharacter(1);
-    FPrinter.WriteUserChar(C, FONT_TYPE_A, $33);
-    FPrinter.PrintText(Chr($33) + CRLF);
-    FPrinter.PrintText('F' + CRLF);
-    FPrinter.SelectUserCharacter(0);
-(*
-    for i := 1 to Length(Text) do
-    begin
-      FPrinter.WriteUserChar(Text[i], FONT_TYPE_A, i + $70);
-      FPrinter.PrintText(Chr(i + $70) + CRLF);
-    end;
-*)
   finally
     Strings.Free;
+  end;
+
+  Text2 := '';
+  (*
+  // Test that charater printed at full size
+  FPrinter.SelectUserCharacter(1);
+  FPrinter.Send(#$1B#$26#$03 + Chr($7E) + Chr($7E) + Chr(12) + StringOfChar(#$FF, 36));
+  FPrinter.PrintText('KAZAKH CHARACTERS A: ' + Chr($7E) + CRLF);
+  FPrinter.SelectUserCharacter(0);
+  *)
+
+  FPrinter.SelectUserCharacter(1);
+  FPrinter.WriteUserChar(WideChar(1170), $7E, FONT_TYPE_A);
+  FPrinter.PrintText('KAZAKH CHARACTERS A: ' + Chr($7E) + CRLF);
+  FPrinter.SelectUserCharacter(0);
+
+
+(*
+  FPrinter.WriteKazakhCharacters;
+  for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
+  begin
+    Text2 := Text2 + Chr($20 + i);
+  end;
+  FPrinter.SelectUserCharacter(1);
+  FPrinter.SetCharacterFont(FONT_TYPE_A);
+  FPrinter.PrintText('KAZAKH CHARACTERS A: ' + Text2 + CRLF);
+  FPrinter.SetCharacterFont(FONT_TYPE_B);
+  FPrinter.PrintText('KAZAKH CHARACTERS B: ' + Text2 + CRLF);
+  FPrinter.SelectUserCharacter(0);
+*)
+end;
+
+procedure TESCPrinterTest.TestUserCharacter2;
+var
+  Bitmap: TBitmap;
+  UserChar: TUserChar;
+begin
+  Bitmap := TBitmap.Create;
+  try
+    Bitmap.LoadFromFile(GetModulePath + 'UserChars/UserChar_0x492.bmp');
+    // Write
+    UserChar.c1 := $7E;
+    UserChar.c2 := $7E;
+    UserChar.Font := FONT_TYPE_A;
+    UserChar.Data := FPrinter.GetBitmapData(Bitmap);
+    UserChar.Width := Bitmap.Width;
+
+    FPrinter.SelectUserCharacter(1);
+    FPrinter.DefineUserCharacter(UserChar);
+    FPrinter.PrintText('KAZAKH CHARACTERS' + Chr($7E) + CRLF);
+    FPrinter.SelectUserCharacter(0);
+  finally
+    Bitmap.Free;
   end;
 end;
 
