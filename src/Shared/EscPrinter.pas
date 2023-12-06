@@ -8,11 +8,23 @@ uses
   // Tnt
   TntGraphics,
   // This
-  ByteUtils, PrinterPort, RegExpr, StringUtils, LogFile;
+  ByteUtils, PrinterPort, RegExpr, StringUtils, LogFile, FileUtils;
 
 const
+  SupportedCodePages: array [0..39] of Integer = (
+    437,720,737,755,775,850,852,855,856,857,858,860,862,863,864,865,866,874,
+    997,998,999,1250,1251,1252,1253,1254,1255,1256,1257,1258,
+    28591,28592,28593,28594,28595,28596,28597,28598,28599,28605);
+
   ESC   = #$1B;
   CRLF  = #13#10;
+
+  /////////////////////////////////////////////////////////////////////////////
+  // The allowable character code range is from ASCII code <20>H to
+  // <7E>H (95 characters).
+
+  USER_CHAR_CODE_MIN = $20;
+  USER_CHAR_CODE_MAX = $7E;
 
   /////////////////////////////////////////////////////////////////////////////
   // Font type
@@ -273,12 +285,12 @@ type
   TUserCharacter = class(TCollectionItem)
   private
     FCode: Byte;
-    FChar: WideChar;
     FFont: Byte;
+    FChar: WideChar;
   public
     property Code: Byte read FCode;
-    property Char: WideChar read FChar;
     property Font: Byte read FFont;
+    property Char: WideChar read FChar;
   end;
 
   { TUserCharacters }
@@ -288,6 +300,7 @@ type
     function GetItem(Index: Integer): TUserCharacter;
     procedure Remove(Char: WideChar);
   public
+    function ItemByChar(Char: WideChar): TUserCharacter;
     function Add(Code: Byte; Char: WideChar; Font: Byte): TUserCharacter;
     property Items[Index: Integer]: TUserCharacter read GetItem; default;
   end;
@@ -298,16 +311,27 @@ type
   private
     FLogger: ILogFile;
     FPort: IPrinterPort;
+    FUserCharCode: Byte;
     FInTransaction: Boolean;
+    FUserCharacterMode: Integer;
     FUserChars: TUserCharacters;
     FDeviceMetrics: TDeviceMetrics;
+    procedure CheckUserCharCode(Code: Byte);
+    procedure ClearUserChars;
   public
+    procedure EnableUserCharacters;
+    procedure DisableUserCharacters;
+    procedure WriteKazakhCharacters2;
+    procedure WriteKazakhCharactersToBitmap;
     function GetImageData(Image: TGraphic): AnsiString;
     function GetBitmapData(Bitmap: TBitmap): AnsiString;
     function GetRasterBitmapData(Bitmap: TBitmap): AnsiString;
     function GetRasterImageData(Image: TGraphic): AnsiString;
     function GetImageData2(Image: TGraphic): AnsiString;
     procedure DrawImage(Image: TGraphic; Bitmap: TBitmap);
+    procedure DrawWideChar(AChar: WideChar; AFont: Byte; Bitmap: TBitmap; X, Y: Integer);
+    function GetFontData(Bitmap: TBitmap): AnsiString;
+    procedure PrintWideString(const AText: WideString);
   public
     constructor Create(APort: IPrinterPort; ALogger: ILogFile);
     destructor Destroy; override;
@@ -418,7 +442,10 @@ type
     procedure BeginDocument;
     procedure EndDocument;
     procedure WriteUserChar(AChar: WideChar; ACode, AFont: Byte);
+    procedure WriteUserChar2(AChar: WideChar; ACode, AFont: Byte);
     procedure WriteKazakhCharacters;
+    procedure PrintUserChar(Char: WideChar);
+    function IsUserChar(Char: WideChar): Boolean;
 
     property Logger: ILogFile read FLogger;
     property Port: IPrinterPort read FPort;
@@ -465,6 +492,18 @@ begin
   end;
 end;
 
+function TUserCharacters.ItemByChar(Char: WideChar): TUserCharacter;
+var
+  i: Integer;
+begin
+  for i := 0 to Count-1 do
+  begin
+    Result := Items[i];
+    if Result.Char = Char then Exit;
+  end;
+  Result := nil;
+end;
+
 function TUserCharacters.Add(Code: Byte; Char: WideChar; Font: Byte): TUserCharacter;
 begin
   Remove(Char);
@@ -494,6 +533,12 @@ destructor TEscPrinter.Destroy;
 begin
   FUserChars.Free;
   inherited Destroy;
+end;
+
+procedure TEscPrinter.ClearUserChars;
+begin
+  FUserChars.Clear;
+  FUserCharCode := USER_CHAR_CODE_MIN;
 end;
 
 procedure TEscPrinter.Send(const Data: AnsiString);
@@ -659,8 +704,26 @@ end;
 
 procedure TEscPrinter.SelectUserCharacter(n: Byte);
 begin
-  Logger.Debug('TEscPrinter.SelectUserCharacter');
+  Logger.Debug(Format('TEscPrinter.SelectUserCharacter(%d)', [n]));
+  if n = FUserCharacterMode then Exit;
   Send(#$1B#$25 + Chr(n));
+  FUserCharacterMode := n;
+end;
+
+procedure TEscPrinter.EnableUserCharacters;
+begin
+  SelectUserCharacter(1);
+end;
+
+procedure TEscPrinter.DisableUserCharacters;
+begin
+  SelectUserCharacter(1);
+end;
+
+procedure TEscPrinter.CheckUserCharCode(Code: Byte);
+begin
+  if (not Code in [USER_CHAR_CODE_MIN..USER_CHAR_CODE_MAX]) then
+    raise Exception.CreateFmt('Invalid character code, 0x%.2X', [Code]);
 end;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -674,15 +737,9 @@ var
   Bitmap: TBitmap;
   UserChar: TUserChar;
 begin
-  if (not ACode in [$20..$7E]) then
-    raise Exception.CreateFmt('Invalid character code, 0x%.2X', [ACode]);
-
-
+  CheckUserCharCode(ACode);
   Bitmap := TBitmap.Create;
   try
-    Bitmap.Canvas.Font.Name := 'Courier New';
-    Bitmap.Canvas.Font.Style := Bitmap.Canvas.Font.Style + [fsBold];
-
     Bitmap.Monochrome := True;
     Bitmap.PixelFormat := pf1Bit;
 
@@ -690,15 +747,53 @@ begin
     begin
       Bitmap.Width := 12;
       Bitmap.Height := 24;
-      Bitmap.Canvas.Font.Size := 16;
     end else
     begin
       Bitmap.Width := 9;
       Bitmap.Height := 17;
-      Bitmap.Canvas.Font.Size := 14;
     end;
-    TntGraphics.WideCanvasTextOut(Bitmap.Canvas, 0, 0, AChar);
-    Bitmap.SaveToFile(Format('UserChar_0x%.2X.bmp', [Word(AChar)]));
+
+    DrawWideChar(AChar, AFont, Bitmap, 0, 0);
+    //Bitmap.SaveToFile(Format('UnicodeChar_%d_%d.bmp', [AFont, Ord(AChar)]));
+    // Write
+    UserChar.c1 := ACode;
+    UserChar.c2 := ACode;
+    UserChar.Font := AFont;
+    UserChar.Data := GetBitmapData(Bitmap);
+    UserChar.Width := Bitmap.Width;
+    DefineUserCharacter(UserChar);
+  finally
+    Bitmap.Free;
+  end;
+  FUserChars.Add(ACode, AChar, AFont);
+end;
+
+procedure TEscPrinter.DrawWideChar(AChar: WideChar; AFont: Byte;
+  Bitmap: TBitmap; X, Y: Integer);
+begin
+  Bitmap.Canvas.Font.Name := 'Courier New';
+  //Bitmap.Canvas.Font.Style := Bitmap.Canvas.Font.Style + [fsBold];
+  if AFont = FONT_TYPE_A then
+  begin
+    Bitmap.Canvas.Font.Size := 16;
+  end else
+  begin
+    Bitmap.Canvas.Font.Size := 14;
+  end;
+  TntGraphics.WideCanvasTextOut(Bitmap.Canvas, X, Y, AChar);
+end;
+
+procedure TEscPrinter.WriteUserChar2(AChar: WideChar; ACode, AFont: Byte);
+var
+  Bitmap: TBitmap;
+  FileName: string;
+  UserChar: TUserChar;
+begin
+  CheckUserCharCode(ACode);
+  Bitmap := TBitmap.Create;
+  try
+    FileName := GetModulePath + Format('UserChars\UnicodeChar_%d_%d.bmp', [AFont, Ord(AChar)]);
+    Bitmap.LoadFromFile(FileName);
     // Write
     UserChar.c1 := ACode;
     UserChar.c2 := ACode;
@@ -737,7 +832,7 @@ begin
   Result := '';
   mx := (Bitmap.Width + 7) div 8;
   my := (Bitmap.Height + 7) div 8;
-  for x := 1 to mx * 8 do
+  for x := 1 to mx*8 do
   begin
     y := 1;
     for k := 1 to my do
@@ -754,6 +849,36 @@ begin
         end;
         Inc(y);
       end;
+      Result := Result + Chr(B);
+    end;
+  end;
+end;
+
+function TEscPrinter.GetFontData(Bitmap: TBitmap): AnsiString;
+var
+  B: Byte;
+  Bit: Byte;
+  x, y: Integer;
+begin
+  Result := '';
+  for x := 1 to Bitmap.Width do
+  begin
+    B := 0;
+    for y := 1 to Bitmap.Height do
+    begin
+      Bit := (y-1) mod 8;
+      if Bitmap.Canvas.Pixels[x, y] = clBlack then
+      begin
+        SetBit(B, 7-Bit);
+      end;
+      if (y mod 8) = 0 then
+      begin
+        Result := Result + Chr(B);
+        B := 0;
+      end;
+    end;
+    if (Bitmap.Height mod 8) <> 0 then
+    begin
       Result := Result + Chr(B);
     end;
   end;
@@ -872,7 +997,7 @@ procedure TEscPrinter.Initialize;
 begin
   Logger.Debug('TEscPrinter.Initialize');
   Send(#$1B#$40);
-  FUserChars.Clear;
+  ClearUserChars;
 end;
 
 procedure TEscPrinter.SetBeepParams(N, T: Byte);
@@ -949,7 +1074,7 @@ end;
 
 procedure TEscPrinter.SetCodePage(CodePage: Integer);
 begin
-  Logger.Debug('TEscPrinter.SetCodePage');
+  Logger.Debug(Format('TEscPrinter.SetCodePage(%d)', [CodePage]));
   Send(#$1B#$74 + Chr(CodePage));
 end;
 
@@ -1427,19 +1552,197 @@ begin
   Port.Flush;
 end;
 
-procedure TEscPrinter.WriteKazakhCharacters;
+procedure TEscPrinter.WriteKazakhCharactersToBitmap;
 var
   i: Integer;
   C: WideChar;
+  Bitmap: TBitmap;
+begin
+  Bitmap := TBitmap.Create;
+  try
+    Bitmap.Monochrome := True;
+    Bitmap.PixelFormat := pf1Bit;
+
+    // FONT_TYPE_A
+    Bitmap.Width := 12 * Length(KazakhUnicodeChars);
+    Bitmap.Height := 24;
+    for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
+    begin
+      C := WideChar(KazakhUnicodeChars[i]);
+      DrawWideChar(C, FONT_TYPE_A, Bitmap, i*12, 0);
+    end;
+    Bitmap.SaveToFile('KazakhFontA.bmp');
+
+    // FONT_TYPE_B
+    Bitmap.Width := 9 * Length(KazakhUnicodeChars);
+    Bitmap.Height := 17;
+    for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
+    begin
+      C := WideChar(KazakhUnicodeChars[i]);
+      DrawWideChar(C, FONT_TYPE_B, Bitmap, i*12, 0);
+    end;
+    Bitmap.SaveToFile('KazakhFontB.bmp');
+  finally
+    Bitmap.Free;
+  end;
+end;
+
+procedure TEscPrinter.WriteKazakhCharacters;
+var
+  i: Integer;
+  Code: Byte;
+  Count: Integer;
+  Bitmap: TBitmap;
+  Data: AnsiString;
+  FontWidth: Integer;
+  BitmapData: AnsiString;
+  FontFileName: WideString;
 begin
   SelectUserCharacter(1);
-  for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
-  begin
-    C := WideChar(KazakhUnicodeChars[i]);
-    WriteUserChar(C, $20 + i, FONT_TYPE_A);
-    //WriteUserChar(C, $20 + i, FONT_TYPE_B);
+  Bitmap := TBitmap.Create;
+  try
+    // FONT_TYPE_A
+    FontFileName := GetModulePath + 'Fonts\KazakhFontA.bmp';
+    if FileExists(FontFileName) then
+    begin
+      SetCharacterFont(FONT_TYPE_A);
+      Bitmap.LoadFromFile(FontFileName);
+      FontWidth := 12;
+      BitmapData := '';
+      Count := Bitmap.Width div FontWidth;
+      Code := FUserCharCode;
+      Data := GetFontData(Bitmap);
+      for i := 0 to Count-1 do
+      begin
+        FUserChars.Add(Code + i, WideChar(KazakhUnicodeChars[i]), FONT_TYPE_A);
+        BitmapData := BitmapData + Chr(FontWidth) + Copy(Data, i*FontWidth*3 + 1, FontWidth*3);
+      end;
+      Send(#$1B#$26#$03 + Chr(Code) + Chr(Code + Count -1) + BitmapData);
+    end;
+    // FONT_TYPE_B
+    FontFileName := GetModulePath + 'Fonts\KazakhFontB.bmp';
+    if FileExists(FontFileName) then
+    begin
+      SetCharacterFont(FONT_TYPE_B);
+      Bitmap.LoadFromFile(FontFileName);
+      FontWidth := 9;
+      BitmapData := '';
+      Count := Bitmap.Width div FontWidth;
+      Code := FUserCharCode;
+      Inc(FUserCharCode, Count);
+      Data := GetBitmapData(Bitmap);
+      for i := 0 to Count-1 do
+      begin
+        FUserChars.Add(Code + i, WideChar(KazakhUnicodeChars[i]), FONT_TYPE_B);
+        BitmapData := BitmapData + Chr(FontWidth) + Copy(Data, i*FontWidth*3 + 1, FontWidth*3);
+      end;
+      Send(#$1B#$26#$03 + Chr(Code) + Chr(Code + Count -1) + BitmapData);
+    end;
+  finally
+    Bitmap.Free;
   end;
   SelectUserCharacter(0);
+end;
+
+procedure TEscPrinter.WriteKazakhCharacters2;
+var
+  i: Integer;
+  Count: Integer;
+  Bitmap: TBitmap;
+  Data: AnsiString;
+  FontWidth: Integer;
+  BitmapData: AnsiString;
+begin
+  Bitmap := TBitmap.Create;
+  try
+    // FONT_TYPE_A
+    Bitmap.LoadFromFile(GetModulePath + 'Fonts\KazakhFontA.bmp');
+    FontWidth := 12;
+    BitmapData := '';
+    Count := Bitmap.Width div FontWidth;
+    Data := GetBitmapData(Bitmap);
+    for i := 0 to Count-1 do
+    begin
+      FUserChars.Add(FUserCharCode, WideChar(KazakhUnicodeChars[i]), FONT_TYPE_A);
+      BitmapData := Copy(Data, i*FontWidth + 1, FontWidth*3);
+      Send(#$1B#$26#$03 + Chr(FUserCharCode) + Chr(FUserCharCode) + Chr(FontWidth) + BitmapData);
+      Inc(FUserCharCode);
+    end;
+(*
+    // FONT_TYPE_B
+    Bitmap.LoadFromFile(GetModulePath + 'Fonts\KazakhFontB.bmp');
+    FontWidth := 9;
+    BitmapData := '';
+    Count := Bitmap.Width div FontWidth;
+    Code := FUserCharCode;
+    Inc(FUserCharCode, Count);
+    Data := GetBitmapData(Bitmap);
+    for i := 0 to Count-1 do
+    begin
+      FUserChars.Add(Code + i, WideChar(KazakhUnicodeChars[i]), FONT_TYPE_B);
+      BitmapData := BitmapData + Chr(FontWidth) + Copy(Data, i*FontWidth + 1, FontWidth*3);
+    end;
+    Send(#$1B#$26#$03 + Chr(Code) + Chr(Code + Count -1) + BitmapData);
+*)
+  finally
+    Bitmap.Free;
+  end;
+end;
+
+function TEscPrinter.IsUserChar(Char: WideChar): Boolean;
+begin
+  Result := IsKazakhUnicodeChar(Char);
+end;
+
+procedure TEscPrinter.PrintUserChar(Char: WideChar);
+var
+  Item: TUserCharacter;
+begin
+  Item := FUserChars.ItemByChar(Char);
+  if Item <> nil then
+  begin
+    EnableUserCharacters;
+    PrintText(Chr(Item.Code));
+  end;
+end;
+
+
+
+function CharacterToCodePage(C: WideChar): Integer;
+begin
+(*
+  for i := Low(SupportedCodePages) to High(SupportedCodePages) do
+  begin
+    CodePage := SupportedCodePages[i];
+    CharCount := WideCharToMultiByte(CodePage, 0, PWideChar(S), Length(S),
+      P, Count, nil, nil);
+    Result := P;
+  end;
+*)
+  Result := 0;
+end;
+
+procedure TEscPrinter.PrintWideString(const AText: WideString);
+var
+  i: Integer;
+  C: WideChar;
+  CodePage: Integer;
+begin
+  for i := 0 to Length(AText) do
+  begin
+    C := AText[i];
+    if IsUserChar(C) then
+    begin
+      PrintUserChar(C);
+    end else
+    begin
+      DisableUserCharacters;
+      CodePage := CharacterToCodePage(C);
+      SetCodePage(CodePage);
+      PrintText(WideStringToAnsiString(CodePage, C));
+    end;
+  end;
+  DisableUserCharacters;
 end;
 
 end.

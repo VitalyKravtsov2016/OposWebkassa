@@ -46,6 +46,7 @@ type
   TPosEscPrinter = class(TComponent, IOPOSPOSPrinter, IOposEvents)
   private
     procedure PrintBarcodeAsGraphics(const Barcode: TPosBarcode);
+    procedure PrintWideString(const AText: WideString);
   public
     FLogger: ILogFile;
     FPort: IPrinterPort;
@@ -195,7 +196,7 @@ type
     FOnErrorEvent: TOPOSPOSPrinterErrorEvent;
     FOnOutputCompleteEvent: TOPOSPOSPrinterOutputCompleteEvent;
     FOnStatusUpdateEvent: TOPOSPOSPrinterStatusUpdateEvent;
-
+  public
     function ClearResult: Integer;
     function HandleException(E: Exception): Integer;
     procedure CheckEnabled;
@@ -208,6 +209,8 @@ type
     procedure SetCoverState(CoverOpened: Boolean);
 
     property Logger: ILogFile read FLogger;
+    property Printer: TEscPrinter read FPrinter;
+
     procedure SetRecEmpty(ARecEmpty: Boolean);
     procedure SetRecNearEnd(ARecNearEnd: Boolean);
     procedure StartDeviceThread;
@@ -616,19 +619,13 @@ function RenderBarcodeRec(Barcode: TPosBarcode): AnsiString;
 
 implementation
 
-const
-  SupportedCharacterSets: array [0..39] of Integer = (
-    437,720,737,755,775,850,852,855,856,857,858,860,862,863,864,865,866,874,
-    997,998,999,1250,1251,1252,1253,1254,1255,1256,1257,1258,
-    28591,28592,28593,28594,28595,28596,28597,28598,28599,28605);
-
 function IsValidCharacterSet(CharacterSet: Integer): Boolean;
 var
   i: Integer;
 begin
-  for i := Low(SupportedCharacterSets) to High(SupportedCharacterSets) do
+  for i := Low(EscPrinter.SupportedCodePages) to High(EscPrinter.SupportedCodePages) do
   begin
-    Result := CharacterSet = SupportedCharacterSets[i];
+    Result := CharacterSet = EscPrinter.SupportedCodePages[i];
     if Result then Break;
   end;
 end;
@@ -850,7 +847,7 @@ begin
   FCapUpdateStatistics := False;
   FCartridgeNotify := 0;
   FCharacterSet := 1251;
-  FCharacterSetList := ArrayToString(SupportedCharacterSets);
+  FCharacterSetList := ArrayToString(EscPrinter.SupportedCodePages);
   FCheckHealthText := '';
   FControlObjectDescription := 'OPOS Windows Printer';
   FControlObjectVersion := 1014001;
@@ -2441,6 +2438,7 @@ end;
 procedure TPosEscPrinter.InitializeDevice;
 begin
   FPrinter.Initialize;
+  //FPrinter.WriteKazakhCharacters;
   FPrinter.SetCodePage(CODEPAGE_WCP1251);
   if FontName = FontNameB then
   begin
@@ -2776,7 +2774,6 @@ end;
 procedure TPosEscPrinter.PrintText(Text: WideString);
 var
   Token: TEscToken;
-  CodePage: Integer;
   PrintMode: TPrintModes;
   Mode: EscPrinter.TPrintMode;
 begin
@@ -2837,9 +2834,27 @@ begin
         FPrinter.SelectPrintMode(Mode);
         FLastPrintMode := PrintMode;
       end;
+      PrintWideString(Token.Text);
+    end;
+  end;
+end;
 
+procedure TPosEscPrinter.PrintWideString(const AText: WideString);
+var
+  i: Integer;
+  C: WideChar;
+  CodePage: Integer;
+begin
+  for i := 0 to Length(AText) do
+  begin
+    C := AText[i];
+    if FPrinter.IsUserChar(C) then
+    begin
+      FPrinter.PrintUserChar(C);
+    end else
+    begin
       CodePage := CharacterSetToCodePage(CharacterSet);
-      FPrinter.PrintText(WideStringToAnsiString(CodePage, Token.Text));
+      FPrinter.PrintText(WideStringToAnsiString(CodePage, C));
     end;
   end;
 end;

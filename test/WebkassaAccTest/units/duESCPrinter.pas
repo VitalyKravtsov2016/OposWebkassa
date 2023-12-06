@@ -686,121 +686,6 @@ begin
   end;
 end;
 
-(*
-
-&#1170; 0x0492
-cyrillic capital letter ghe stroke
-&#1171;
-cyrillic small letter ghe stroke
-&#1178;
-cyrillic capital letter ka descender
-&#1179;
-cyrillic small letter ka descender
-&#1186;
-cyrillic capital letter en descender
-&#1187;
-cyrillic small letter en descender
-&#1198;
-cyrillic capital letter straight u
-&#1199;
-cyrillic small letter straight u
-&#1200;
-cyrillic capital letter straight u stroke
-&#1201;
-cyrillic small letter straight u stroke
-&#1210;
-cyrillic capital letter shha
-&#1211;
-cyrillic small letter shha
-&#1240;
-cyrillic capital letter schwa
-&#1241;
-cyrillic small letter schwa
-&#1256;
-cyrillic capital letter barred o
-&#1257;
-cyrillic small letter barred o
-&#64488;
-arabic letter uighur kazakh kirghiz alef maksura initial form
-&#64489;
-arabic letter uighur kazakh kirghiz alef maksura medial form
-????
-&#127472;
-&#127487;
-kazakhstan flag
-*)
-
-procedure TESCPrinterTest.TestUserCharacter;
-var
-  i: Integer;
-  Text: WideString;
-  Text2: AnsiString;
-  Strings: TTntStrings;
-begin
-  FPrinter.Initialize;
-
-  Strings := TTntStringList.Create;
-  try
-    Strings.LoadFromFile('KazakhText.txt');
-    Text := Strings.Text;
-  finally
-    Strings.Free;
-  end;
-
-  Text2 := '';
-  (*
-  // Test that charater printed at full size
-  FPrinter.SelectUserCharacter(1);
-  FPrinter.Send(#$1B#$26#$03 + Chr($7E) + Chr($7E) + Chr(12) + StringOfChar(#$FF, 36));
-  FPrinter.PrintText('KAZAKH CHARACTERS A: ' + Chr($7E) + CRLF);
-  FPrinter.SelectUserCharacter(0);
-  *)
-
-  FPrinter.SelectUserCharacter(1);
-  FPrinter.WriteUserChar(WideChar(1170), $7E, FONT_TYPE_A);
-  FPrinter.PrintText('KAZAKH CHARACTERS A: ' + Chr($7E) + CRLF);
-  FPrinter.SelectUserCharacter(0);
-
-
-(*
-  FPrinter.WriteKazakhCharacters;
-  for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
-  begin
-    Text2 := Text2 + Chr($20 + i);
-  end;
-  FPrinter.SelectUserCharacter(1);
-  FPrinter.SetCharacterFont(FONT_TYPE_A);
-  FPrinter.PrintText('KAZAKH CHARACTERS A: ' + Text2 + CRLF);
-  FPrinter.SetCharacterFont(FONT_TYPE_B);
-  FPrinter.PrintText('KAZAKH CHARACTERS B: ' + Text2 + CRLF);
-  FPrinter.SelectUserCharacter(0);
-*)
-end;
-
-procedure TESCPrinterTest.TestUserCharacter2;
-var
-  Bitmap: TBitmap;
-  UserChar: TUserChar;
-begin
-  Bitmap := TBitmap.Create;
-  try
-    Bitmap.LoadFromFile(GetModulePath + 'UserChars/UserChar_0x492.bmp');
-    // Write
-    UserChar.c1 := $7E;
-    UserChar.c2 := $7E;
-    UserChar.Font := FONT_TYPE_A;
-    UserChar.Data := FPrinter.GetBitmapData(Bitmap);
-    UserChar.Width := Bitmap.Width;
-
-    FPrinter.SelectUserCharacter(1);
-    FPrinter.DefineUserCharacter(UserChar);
-    FPrinter.PrintText('KAZAKH CHARACTERS' + Chr($7E) + CRLF);
-    FPrinter.SelectUserCharacter(0);
-  finally
-    Bitmap.Free;
-  end;
-end;
-
 procedure TESCPrinterTest.TestLineSpacing;
 begin
   FPrinter.Initialize;
@@ -854,6 +739,137 @@ begin
   FPrinter.PrintText('Header line 3' + CRLF);
   FPrinter.PrintText('Header line 4' + CRLF);
   FPrinter.PartialCut;
+end;
+
+(*
+
+&#1170; 0x0492
+cyrillic capital letter ghe stroke
+&#1171;
+cyrillic small letter ghe stroke
+&#1178;
+cyrillic capital letter ka descender
+&#1179;
+cyrillic small letter ka descender
+&#1186;
+cyrillic capital letter en descender
+&#1187;
+cyrillic small letter en descender
+&#1198;
+cyrillic capital letter straight u
+&#1199;
+cyrillic small letter straight u
+&#1200;
+cyrillic capital letter straight u stroke
+&#1201;
+cyrillic small letter straight u stroke
+&#1210;
+cyrillic capital letter shha
+&#1211;
+cyrillic small letter shha
+&#1240;
+cyrillic capital letter schwa
+&#1241;
+cyrillic small letter schwa
+&#1256;
+cyrillic capital letter barred o
+&#1257;
+cyrillic small letter barred o
+&#64488;
+arabic letter uighur kazakh kirghiz alef maksura initial form
+&#64489;
+arabic letter uighur kazakh kirghiz alef maksura medial form
+????
+&#127472;
+&#127487;
+kazakhstan flag
+*)
+
+procedure TESCPrinterTest.TestUserCharacter;
+var
+  i: Integer;
+  Code: Byte;
+  Text: AnsiString;
+begin
+  FPrinter.Initialize;
+  FPrinter.WriteKazakhCharacters;
+  // FONT A
+  Text := '';
+  Code := USER_CHAR_CODE_MIN;
+  for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
+  begin
+    Text := Text + Chr(Code);
+    Inc(Code);
+  end;
+  FPrinter.SetCharacterFont(FONT_TYPE_A);
+  FPrinter.PrintText('KAZAKH CHARACTERS A: ');
+  FPrinter.SelectUserCharacter(1);
+  FPrinter.PrintText(Text + CRLF);
+  FPrinter.SelectUserCharacter(0);
+
+  // FONT B
+  Text := '';
+  Code := USER_CHAR_CODE_MIN;
+  for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
+  begin
+    Text := Text + Chr(Code);
+    Inc(Code);
+  end;
+  FPrinter.SetCharacterFont(FONT_TYPE_B);
+  FPrinter.PrintText('KAZAKH CHARACTERS B: ');
+  FPrinter.SelectUserCharacter(1);
+  FPrinter.PrintText(Text + CRLF);
+  FPrinter.SelectUserCharacter(0);
+
+
+  (*
+  // Test that charater printed at full size
+  FPrinter.SelectUserCharacter(1);
+  FPrinter.Send(#$1B#$26#$03 + Chr($7E) + Chr($7E) + Chr(12) + StringOfChar(#$FF, 36));
+  FPrinter.PrintText('KAZAKH CHARACTERS A: ' + Chr($7E) + CRLF);
+  FPrinter.SelectUserCharacter(0);
+
+  FPrinter.SelectUserCharacter(1);
+  FPrinter.WriteUserChar(WideChar(1170), $7E, FONT_TYPE_A);
+  FPrinter.PrintText('KAZAKH CHARACTERS A: ' + Chr($7E) + CRLF);
+  FPrinter.SelectUserCharacter(0);
+
+  FPrinter.WriteKazakhCharacters;
+  for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
+  begin
+    Text2 := Text2 + Chr($20 + i);
+  end;
+  FPrinter.SelectUserCharacter(1);
+  FPrinter.SetCharacterFont(FONT_TYPE_A);
+  FPrinter.PrintText('KAZAKH CHARACTERS A: ' + Text2 + CRLF);
+  FPrinter.SetCharacterFont(FONT_TYPE_B);
+  FPrinter.PrintText('KAZAKH CHARACTERS B: ' + Text2 + CRLF);
+  FPrinter.SelectUserCharacter(0);
+*)
+end;
+
+procedure TESCPrinterTest.TestUserCharacter2;
+var
+  Bitmap: TBitmap;
+  UserChar: TUserChar;
+begin
+  Bitmap := TBitmap.Create;
+  try
+    Bitmap.LoadFromFile(GetModulePath + 'UserChars/UserChar_0x492.bmp');
+    // Write
+    UserChar.c1 := $7E;
+    UserChar.c2 := $7E;
+    UserChar.Font := FONT_TYPE_A;
+    UserChar.Data := FPrinter.GetBitmapData(Bitmap);
+    UserChar.Width := Bitmap.Width;
+
+    FPrinter.SelectUserCharacter(1);
+    FPrinter.DefineUserCharacter(UserChar);
+    FPrinter.PrintText('KAZAKH CHARACTERS' + Chr($7E) + CRLF);
+    FPrinter.SelectUserCharacter(0);
+  finally
+    Bitmap.Free;
+  end;
 end;
 
 initialization
