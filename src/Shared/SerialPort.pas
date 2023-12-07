@@ -74,6 +74,7 @@ type
     function Read(Count: DWORD): AnsiString;
     function CapRead: Boolean;
     property Opened: Boolean read GetOpened;
+    function GetDescription: WideString;
   end;
 
   ESerialError = class(WideException);
@@ -478,10 +479,10 @@ begin
     begin
       CreateHandle;
       Inc(FOpenCount);
-      UpdateDCB;
       SetupComm(GetHandle, 1024, 1024);
       UpdateCommTimeouts;
       UpdateCommProperties;
+      UpdateDCB;
 
       ReadCommConfig;
       FNotification.Install(FHandle);
@@ -639,6 +640,11 @@ end;
 function TSerialPort.CapRead: Boolean;
 begin
   Result := True;
+end;
+
+function TSerialPort.GetDescription: WideString;
+begin
+  Result := 'SerialPort';
 end;
 
 end.

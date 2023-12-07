@@ -45,9 +45,6 @@ type
 
   TPosEscPrinter = class(TComponent, IOPOSPOSPrinter, IOposEvents)
   private
-    procedure PrintBarcodeAsGraphics(const Barcode: TPosBarcode);
-    procedure PrintWideString(const AText: WideString);
-  public
     FLogger: ILogFile;
     FPort: IPrinterPort;
     FPrinter: TEscPrinter;
@@ -60,7 +57,6 @@ type
 
     FAsyncMode: Boolean;
     FCapCharacterSet: Integer;
-    FCapCompareFirmwareVersion: Boolean;
     FCapConcurrentJrnRec: Boolean;
     FCapConcurrentJrnSlp: Boolean;
     FCapConcurrentPageMode: Boolean;
@@ -79,7 +75,6 @@ type
     FCapJrnPresent: Boolean;
     FCapJrnUnderline: Boolean;
     FCapMapCharacterSet: Boolean;
-    FCapPowerReporting: Integer;
     FCapRec2Color: Boolean;
     FCapRecBarCode: Boolean;
     FCapRecBitmap: Boolean;
@@ -123,14 +118,10 @@ type
     FCapSlpRotate180: Boolean;
     FCapSlpRuledLine: Integer;
     FCapSlpUnderline: Boolean;
-    FCapStatisticsReporting: Boolean;
     FCapTransaction: Boolean;
-    FCapUpdateFirmware: Boolean;
-    FCapUpdateStatistics: Boolean;
     FCartridgeNotify: Integer;
     FCharacterSet: Integer;
     FCharacterSetList: WideString;
-    FCheckHealthText: WideString;
     FControlObjectDescription: WideString;
     FControlObjectVersion: Integer;
     FCoverOpened: Boolean;
@@ -196,7 +187,12 @@ type
     FOnErrorEvent: TOPOSPOSPrinterErrorEvent;
     FOnOutputCompleteEvent: TOPOSPOSPrinterOutputCompleteEvent;
     FOnStatusUpdateEvent: TOPOSPOSPrinterStatusUpdateEvent;
+
+    property Device: TOposServiceDevice19 read FDevice;
   public
+    procedure PrintBarcodeAsGraphics(const Barcode: TPosBarcode);
+    procedure PrintWideString(const AText: WideString);
+    procedure PrintUnicode(const AText: WideString);
     function ClearResult: Integer;
     function HandleException(E: Exception): Integer;
     procedure CheckEnabled;
@@ -619,13 +615,70 @@ function RenderBarcodeRec(Barcode: TPosBarcode): AnsiString;
 
 implementation
 
+const
+  SupportedCodePages: array [0..39] of Integer = (
+    437,720,737,755,775,850,852,855,856,857,858,860,862,863,864,865,866,874,
+    997,998,999,1250,1251,1252,1253,1254,1255,1256,1257,1258,
+    28591,28592,28593,28594,28595,28596,28597,28598,28599,28605);
+
+function CharacterSetToPrinterCodePage(CharacterSet: Integer): Integer;
+begin
+  case CharacterSet of
+    PTR_CS_ASCII: Result := CODEPAGE_WCP1251;
+    PTR_CS_UNICODE: Result := CODEPAGE_WCP1251;
+    PTR_CS_WINDOWS: Result := CODEPAGE_WCP1251;
+
+    437: Result := CODEPAGE_CP437;
+    720: Result := CODEPAGE_CP720_ARABIC;
+    737: Result := CODEPAGE_CP737;
+    755: Result := CODEPAGE_CP755;
+    775: Result := CODEPAGE_CP775;
+    850: Result := CODEPAGE_CP850;
+    852: Result := CODEPAGE_CP852;
+    855: Result := CODEPAGE_CP855;
+    856: Result := CODEPAGE_CP856;
+    857: Result := CODEPAGE_CP857;
+    858: Result := CODEPAGE_CP858;
+    860: Result := CODEPAGE_CP860;
+    862: Result := CODEPAGE_CP862;
+    863: Result := CODEPAGE_CP863;
+    864: Result := CODEPAGE_CP864;
+    865: Result := CODEPAGE_CP865;
+    866: Result := CODEPAGE_CP866;
+    874: Result := CODEPAGE_CP874;
+
+    1250: Result := CODEPAGE_WCP1250;
+    1251: Result := CODEPAGE_WCP1251;
+    1252: Result := CODEPAGE_WCP1252;
+    1253: Result := CODEPAGE_WCP1253;
+    1254: Result := CODEPAGE_WCP1254;
+    1255: Result := CODEPAGE_WCP1255;
+    1256: Result := CODEPAGE_WCP1256;
+    1257: Result := CODEPAGE_WCP1257;
+    1258: Result := CODEPAGE_WCP1258;
+
+    28591: Result := CODEPAGE_ISO_8859_1;
+    28592: Result := CODEPAGE_ISO_8859_2;
+    28593: Result := CODEPAGE_ISO_8859_3;
+    28594: Result := CODEPAGE_ISO_8859_4;
+    28595: Result := CODEPAGE_ISO_8859_5;
+    28596: Result := CODEPAGE_ISO_8859_6;
+    28597: Result := CODEPAGE_ISO_8859_7;
+    28598: Result := CODEPAGE_ISO_8859_8;
+    28599: Result := CODEPAGE_ISO_8859_9;
+    28605: Result := CODEPAGE_ISO_8859_15;
+  else
+    raise Exception.Create('Character set not supported');
+  end;
+end;
+
 function IsValidCharacterSet(CharacterSet: Integer): Boolean;
 var
   i: Integer;
 begin
-  for i := Low(EscPrinter.SupportedCodePages) to High(EscPrinter.SupportedCodePages) do
+  for i := Low(SupportedCodePages) to High(SupportedCodePages) do
   begin
-    Result := CharacterSet = EscPrinter.SupportedCodePages[i];
+    Result := CharacterSet = SupportedCodePages[i];
     if Result then Break;
   end;
 end;
@@ -648,8 +701,8 @@ function CharacterSetToCodePage(CharacterSet: Integer): Integer;
 begin
   case CharacterSet of
     PTR_CS_UNICODE: Result := CP_ACP; // active code page
-    PTR_CS_ASCII: Result := 20127;    // us-ascii	US-ASCII (7-bit)
     PTR_CS_WINDOWS: Result := CP_ACP; // active code page
+    PTR_CS_ASCII: Result := 20127;    // us-ascii	US-ASCII (7-bit)
   else
     Result := CharacterSet;
   end;
@@ -769,7 +822,6 @@ procedure TPosEscPrinter.Initialize;
 begin
   FAsyncMode := False;
   FCapCharacterSet := PTR_CCS_UNICODE;
-  FCapCompareFirmwareVersion := False;
   FCapConcurrentJrnRec := False;
   FCapConcurrentJrnSlp := False;
   FCapConcurrentPageMode := False;
@@ -790,12 +842,12 @@ begin
   FCapRecNearEndSensor := False;
   if FPrinter.CapRead then
   begin
-    FCapPowerReporting := OPOS_PR_STANDARD;
+    FDevice.CapPowerReporting := OPOS_PR_STANDARD;
     FCapRecEmptySensor := True;
     FCapCoverSensor := True;
   end else
   begin
-    FCapPowerReporting := OPOS_PR_NONE;
+    Device.CapPowerReporting := OPOS_PR_NONE;
     FCapRecEmptySensor := False;
     FCapCoverSensor := False;
   end;
@@ -841,14 +893,10 @@ begin
   FCapSlpRotate180 := False;
   FCapSlpRuledLine := 0;
   FCapSlpUnderline := False;
-  FCapStatisticsReporting := False;
   FCapTransaction := True;
-  FCapUpdateFirmware := False;
-  FCapUpdateStatistics := False;
   FCartridgeNotify := 0;
   FCharacterSet := 1251;
-  FCharacterSetList := ArrayToString(EscPrinter.SupportedCodePages);
-  FCheckHealthText := '';
+  FCharacterSetList := ArrayToString(SupportedCodePages);
   FControlObjectDescription := 'OPOS Windows Printer';
   FControlObjectVersion := 1014001;
   FCoverOpened := False;
@@ -1107,7 +1155,7 @@ end;
 
 function TPosEscPrinter.Get_CapCompareFirmwareVersion: WordBool;
 begin
-  Result := FCapCompareFirmwareVersion;
+  Result := Device.CapCompareFirmwareVersion;
 end;
 
 function TPosEscPrinter.Get_CapConcurrentJrnRec: WordBool;
@@ -1202,7 +1250,7 @@ end;
 
 function TPosEscPrinter.Get_CapPowerReporting: Integer;
 begin
-  Result := FCapPowerReporting;
+  Result := Device.CapPowerReporting;
 end;
 
 function TPosEscPrinter.Get_CapRec2Color: WordBool;
@@ -1422,7 +1470,7 @@ end;
 
 function TPosEscPrinter.Get_CapStatisticsReporting: WordBool;
 begin
-  Result := FCapStatisticsReporting;
+  Result := Device.CapStatisticsReporting;
 end;
 
 function TPosEscPrinter.Get_CapTransaction: WordBool;
@@ -1432,12 +1480,12 @@ end;
 
 function TPosEscPrinter.Get_CapUpdateFirmware: WordBool;
 begin
-  Result := FCapUpdateFirmware;
+  Result := Device.CapUpdateFirmware;
 end;
 
 function TPosEscPrinter.Get_CapUpdateStatistics: WordBool;
 begin
-  Result := FCapUpdateStatistics;
+  Result := Device.CapUpdateStatistics;
 end;
 
 function TPosEscPrinter.Get_CartridgeNotify: Integer;
@@ -1457,7 +1505,7 @@ end;
 
 function TPosEscPrinter.Get_CheckHealthText: WideString;
 begin
-  Result := FCheckHealthText;
+  Result := Device.CheckHealthText;
 end;
 
 function TPosEscPrinter.Get_Claimed: WordBool;
@@ -2198,65 +2246,6 @@ begin
   FCartridgeNotify := pCartridgeNotify;
 end;
 
-function CharacterSetToPrinterCodePage(CharacterSet: Integer): Integer;
-begin
-  case CharacterSet of
-    PTR_CS_ASCII: Result := CODEPAGE_WCP1251;
-    PTR_CS_UNICODE: Result := CODEPAGE_WCP1251;
-    PTR_CS_WINDOWS: Result := CODEPAGE_WCP1251;
-
-    437: Result := CODEPAGE_CP437;
-    720: Result := CODEPAGE_CP720_ARABIC;
-    737: Result := CODEPAGE_CP737;
-    755: Result := CODEPAGE_CP755;
-    775: Result := CODEPAGE_CP775;
-    850: Result := CODEPAGE_CP850;
-    852: Result := CODEPAGE_CP852;
-    855: Result := CODEPAGE_CP855;
-    856: Result := CODEPAGE_CP856;
-    857: Result := CODEPAGE_CP857;
-    858: Result := CODEPAGE_CP858;
-    860: Result := CODEPAGE_CP860;
-    862: Result := CODEPAGE_CP862;
-    863: Result := CODEPAGE_CP863;
-    864: Result := CODEPAGE_CP864;
-    865: Result := CODEPAGE_CP865;
-    866: Result := CODEPAGE_CP866;
-    874: Result := CODEPAGE_CP874;
-
-    1250: Result := CODEPAGE_WCP1250;
-    1251: Result := CODEPAGE_WCP1251;
-    1252: Result := CODEPAGE_WCP1252;
-    1253: Result := CODEPAGE_WCP1253;
-    1254: Result := CODEPAGE_WCP1254;
-    1255: Result := CODEPAGE_WCP1255;
-    1256: Result := CODEPAGE_WCP1256;
-    1257: Result := CODEPAGE_WCP1257;
-    1258: Result := CODEPAGE_WCP1258;
-
-    28591: Result := CODEPAGE_ISO_8859_1;
-    28592: Result := CODEPAGE_ISO_8859_2;
-    28593: Result := CODEPAGE_ISO_8859_3;
-    28594: Result := CODEPAGE_ISO_8859_4;
-    28595: Result := CODEPAGE_ISO_8859_5;
-    28596: Result := CODEPAGE_ISO_8859_6;
-    28597: Result := CODEPAGE_ISO_8859_7;
-    28598: Result := CODEPAGE_ISO_8859_8;
-    28599: Result := CODEPAGE_ISO_8859_9;
-    28605: Result := CODEPAGE_ISO_8859_15;
-
-    //CODEPAGE_KATAKANA     = 1;
-    //CODEPAGE_MIK          = 8;
-    //CODEPAGE_IRAN         = 10;
-    //CODEPAGE_IRAN_II      = 20;
-    //CODEPAGE_LATVIAN      = 21;
-    //CODEPAGE_THAI         = 26;
-    //CODEPAGE_THAI2        = 45;
-  else
-    raise Exception.Create('Character set not supported');
-  end;
-end;
-
 procedure TPosEscPrinter.Set_CharacterSet(pCharacterSet: Integer);
 var
   CodePage: Integer;
@@ -2438,7 +2427,7 @@ end;
 procedure TPosEscPrinter.InitializeDevice;
 begin
   FPrinter.Initialize;
-  //FPrinter.WriteKazakhCharacters;
+  FPrinter.WriteKazakhCharacters;
   FPrinter.SetCodePage(CODEPAGE_WCP1251);
   if FontName = FontNameB then
   begin
@@ -2783,7 +2772,7 @@ begin
     PrintMode := [pmFontB];
   end;
 
-  Text := ReplaceRegExpr('\' + ESC + '\|[0-9]{0,3}\P', Text, #$1B#$69);
+  //Text := ReplaceRegExpr('\' + ESC + '\|[0-9]{0,3}\P', Text, #$1B#$69); !!!
   while GetToken(Text, Token) do
   begin
     if Token.IsEsc then
@@ -2841,22 +2830,67 @@ end;
 
 procedure TPosEscPrinter.PrintWideString(const AText: WideString);
 var
+  CodePage: Integer;
+begin
+  case CharacterSet of
+    PTR_CS_UNICODE,
+    PTR_CS_WINDOWS: PrintUnicode(AText);
+  else
+    CodePage := CharacterSetToCodePage(CharacterSet);
+    FPrinter.PrintText(WideStringToAnsiString(CodePage, AText));
+  end;
+end;
+
+function TestCharCodePage(C: WideChar; var CodePage: Integer): Boolean;
+var
+  UsedDefaultChar: BOOL;
+  Buffer: array [0..10] of Char;
+const
+  DefaultChar = '?';
+begin
+  UsedDefaultChar := FALSE;
+  Result := WideCharToMultiByte(CodePage, 0, PWideChar(C), 1,
+    @Buffer[0], Length(Buffer), PChar(DefaultChar), @UsedDefaultChar) > 0;
+  if Result then
+    Result := UsedDefaultChar = FALSE;
+end;
+
+procedure CharacterToCodePage(C: WideChar; var CodePage: Integer);
+var
+  i: Integer;
+begin
+  if TestCharCodePage(C, CodePage) then Exit;
+  for i := Low(SupportedCodePages) to High(SupportedCodePages) do
+  begin
+    CodePage := SupportedCodePages[i];
+    if TestCharCodePage(C, CodePage) then Exit;
+  end;
+  CodePage := CODEPAGE_WCP1251;
+end;
+
+procedure TPosEscPrinter.PrintUnicode(const AText: WideString);
+var
   i: Integer;
   C: WideChar;
   CodePage: Integer;
 begin
-  for i := 0 to Length(AText) do
+  for i := 1 to Length(AText) do
   begin
     C := AText[i];
-    if FPrinter.IsUserChar(C) then
+    if Printer.IsUserChar(C) then
     begin
-      FPrinter.PrintUserChar(C);
+      Printer.PrintUserChar(C);
     end else
     begin
-      CodePage := CharacterSetToCodePage(CharacterSet);
-      FPrinter.PrintText(WideStringToAnsiString(CodePage, C));
+      Printer.DisableUserCharacters;
+      CodePage := 1251;
+      CharacterToCodePage(C, CodePage);
+      Printer.SetCodePage(CodePage);
+      Printer.PrintText(WideStringToAnsiString(CodePage, C));
     end;
   end;
+  Printer.DisableUserCharacters;
 end;
+
 
 end.

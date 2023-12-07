@@ -61,6 +61,7 @@ type
     property Logger: ILogFile read FLogger;
     property Events: TOposEvents read FEvents;
     function GetFreezeEvents: Boolean;
+    procedure SetPowerNotify(const Value: Integer);
   public
     constructor Create(ALogger: ILogFile);
     destructor Destroy; override;
@@ -94,7 +95,7 @@ type
     property AutoDisable: Boolean read FAutoDisable;
     property LongDeviceName: WideString read FLongDeviceName;
     property CapCompareFirmwareVersion: Boolean read FCapCompareFirmwareVersion;
-    property CapPowerReporting: Integer read FCapPowerReporting;
+    property CapPowerReporting: Integer read FCapPowerReporting write FCapPowerReporting;
     property CapStatisticsReporting: Boolean read FCapStatisticsReporting;
     property CapUpdateFirmware: Boolean read FCapUpdateFirmware;
     property CapUpdateStatistics: Boolean read FCapUpdateStatistics;
@@ -104,7 +105,7 @@ type
     property DeviceEnabled: Boolean read FDeviceEnabled write SetDeviceEnabled;
     property FreezeEvents: Boolean read GetFreezeEvents write SetFreezeEvents;
     property OutputID: Integer read FOutputID;
-    property PowerNotify: Integer read FPowerNotify write FPowerNotify;
+    property PowerNotify: Integer read FPowerNotify write SetPowerNotify;
     property PowerState: Integer read FPowerState write SetPowerState;
     property State: Integer read FState;
     property ServiceObjectDescription: WideString read FServiceObjectDescription write FServiceObjectDescription;
@@ -491,6 +492,14 @@ end;
 function TOposServiceDevice19.GetFreezeEvents: Boolean;
 begin
   Result := FFreezeEvents;
+end;
+
+procedure TOposServiceDevice19.SetPowerNotify(const Value: Integer);
+begin
+  if (Value = OPOS_PN_ENABLED)and(CapPowerReporting = OPOS_PR_NONE) then
+    RaiseIllegalError;
+
+  FPowerNotify := Value;
 end;
 
 end.

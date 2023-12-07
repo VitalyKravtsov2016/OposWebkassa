@@ -29,6 +29,7 @@ type
     procedure Write(const Data: AnsiString);
     function Read(Count: DWORD): AnsiString;
     function CapRead: Boolean;
+    function GetDescription: WideString;
 
     property Buffer: AnsiString read FBuffer write FBuffer;
   end;
@@ -90,6 +91,11 @@ end;
 procedure TMockPrinterPort.Write(const Data: AnsiString);
 begin
   FBuffer := FBuffer + Data;
+end;
+
+function TMockPrinterPort.GetDescription: WideString;
+begin
+  Result := 'MockPrinterPort';
 end;
 
 end.

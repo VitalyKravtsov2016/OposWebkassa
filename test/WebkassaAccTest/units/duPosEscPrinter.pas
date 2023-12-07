@@ -12,7 +12,7 @@ uses
   OposPOSPrinter_CCO_TLB, OposEvents,
   // Tnt
   TntClasses, TntSysUtils, DebugUtils, StringUtils, SocketPort, LogFile,
-  PrinterPort, PosEscPrinter, SerialPort;
+  PrinterPort, PosEscPrinter, SerialPort, RawPrinterPort, EscPrinter;
 
 type
   { TPosEscPrinterTest }
@@ -37,6 +37,7 @@ type
     procedure SetUp; override;
     procedure TearDown; override;
   public
+    function CreateRawPort: TRawPrinterPort;
     function CreateSerialPort: TSerialPort;
     function CreateSocketPort: TSocketPort;
   published
@@ -49,6 +50,7 @@ type
     procedure TestCoverStateEvent;
     procedure TestPowerStateEvent;
     procedure TestPrintReceipt;
+    procedure TestPrintNormal;
   end;
 
 implementation
@@ -77,7 +79,8 @@ begin
   inherited SetUp;
   FLogger := TLogFile.Create;
   FEvents := TStringList.Create;
-  FPrinterPort := CreateSerialPort;
+  //FPrinterPort := CreateSerialPort;
+  FPrinterPort := CreateRawPort;
   FPrinter := TPosEscPrinter.Create2(nil, FPrinterPort, FLogger);
   FPrinter.OnStatusUpdateEvent := StatusUpdateEvent;
 end;
@@ -87,15 +90,20 @@ begin
   Events.Add(PtrStatusUpdateEventText(Data));
 end;
 
+function TPosEscPrinterTest.CreateRawPort: TRawPrinterPort;
+begin
+  Result := TRawPrinterPort.Create(FLogger, 'RONGTA 80mm Series Printer');
+end;
+
 function TPosEscPrinterTest.CreateSerialPort: TSerialPort;
 var
   SerialParams: TSerialParams;
 begin
   SerialParams.PortName := 'COM3';
-  SerialParams.BaudRate := 19200;
-  SerialParams.DataBits := 8;
-  SerialParams.StopBits := 1;
-  SerialParams.Parity := 0;
+  SerialParams.BaudRate := CBR_19200;
+  SerialParams.DataBits := DATABITS_8;
+  SerialParams.StopBits := STOPBITS_10;
+  SerialParams.Parity := NOPARITY;
   SerialParams.FlowControl := FLOW_CONTROL_NONE;
   SerialParams.ReconnectPort := False;
   SerialParams.ByteTimeout := 200;
@@ -126,12 +134,18 @@ procedure TPosEscPrinterTest.OpenService;
 begin
   PtrCheck(Printer.Open('ThermalU'));
 
-  CheckEquals(OPOS_PR_STANDARD, Printer.CapPowerReporting, 'CapPowerReporting');
-  CheckEquals(OPOS_PN_DISABLED, Printer.PowerNotify, 'PowerNotify');
+  if (FPrinterPort.GetDescription <> 'RawPrinterPort') then
+  begin
+    CheckEquals(OPOS_PR_STANDARD, Printer.CapPowerReporting, 'CapPowerReporting');
+    CheckEquals(OPOS_PN_DISABLED, Printer.PowerNotify, 'PowerNotify');
+  end;
   CheckEquals(False, Printer.FreezeEvents, 'FreezeEvents');
 
-  Printer.PowerNotify := OPOS_PN_ENABLED;
-  CheckEquals(OPOS_PN_ENABLED, Printer.PowerNotify, 'PowerNotify');
+  if Printer.CapPowerReporting <> OPOS_PR_NONE then
+  begin
+    Printer.PowerNotify := OPOS_PN_ENABLED;
+    CheckEquals(OPOS_PN_ENABLED, Printer.PowerNotify, 'PowerNotify');
+  end;
 end;
 
 procedure TPosEscPrinterTest.ClaimDevice;
@@ -160,7 +174,6 @@ begin
   OpenClaimEnable;
   PtrCheck(Printer.CheckHealth(OPOS_CH_INTERACTIVE));
 end;
-
 
 procedure TPosEscPrinterTest.TestPrintBarCode;
 const
@@ -247,39 +260,48 @@ end;
 procedure TPosEscPrinterTest.TestStatusUpdateEvent;
 begin
   OpenClaimEnable;
-  CheckEquals(1, FEvents.Count, 'FEvents.Count');
-  CheckEquals('OPOS_SUE_POWER_ONLINE', Events[0], 'OPOS_SUE_POWER_ONLINE');
+  if Printer.PowerNotify <> OPOS_PN_DISABLED then
+  begin
+    CheckEquals(1, FEvents.Count, 'FEvents.Count');
+    CheckEquals('OPOS_SUE_POWER_ONLINE', Events[0], 'OPOS_SUE_POWER_ONLINE');
+  end;
 end;
 
 procedure TPosEscPrinterTest.TestCoverStateEvent;
 begin
   OpenClaimEnable;
-  CheckEquals(1, FEvents.Count, 'FEvents.Count');
-  CheckEquals('OPOS_SUE_POWER_ONLINE', FEvents[0], 'OPOS_SUE_POWER_ONLINE');
-  FEvents.Clear;
-  if Application.MessageBox('Open printer cover and press OK', 'Attention',
-    MB_OKCANCEL) = ID_CANCEL then Abort;
-  Check(FEvents.IndexOf('PTR_SUE_COVER_OPEN') <> -1, 'PTR_SUE_COVER_OPEN');
-  FEvents.Clear;
-  if Application.MessageBox('Close printer cover and press OK', 'Attention',
-    MB_OKCANCEL) = ID_CANCEL then Abort;
-  Check(FEvents.IndexOf('PTR_SUE_COVER_OK') <> -1, 'PTR_SUE_COVER_OK');
+  if Printer.PowerNotify <> OPOS_PN_DISABLED then
+  begin
+    CheckEquals(1, FEvents.Count, 'FEvents.Count');
+    CheckEquals('OPOS_SUE_POWER_ONLINE', FEvents[0], 'OPOS_SUE_POWER_ONLINE');
+    FEvents.Clear;
+    if Application.MessageBox('Open printer cover and press OK', 'Attention',
+      MB_OKCANCEL) = ID_CANCEL then Abort;
+    Check(FEvents.IndexOf('PTR_SUE_COVER_OPEN') <> -1, 'PTR_SUE_COVER_OPEN');
+    FEvents.Clear;
+    if Application.MessageBox('Close printer cover and press OK', 'Attention',
+      MB_OKCANCEL) = ID_CANCEL then Abort;
+    Check(FEvents.IndexOf('PTR_SUE_COVER_OK') <> -1, 'PTR_SUE_COVER_OK');
+  end;
 end;
 
 procedure TPosEscPrinterTest.TestPowerStateEvent;
 begin
   OpenClaimEnable;
-  CheckEquals(1, FEvents.Count, 'FEvents.Count');
-  CheckEquals('OPOS_SUE_POWER_ONLINE', Events[0], 'OPOS_SUE_POWER_ONLINE');
-  FEvents.Clear;
-  if Application.MessageBox('Turn printer OFF and press OK', 'Attention',
-    MB_OKCANCEL) = ID_CANCEL then Abort;
-  Check(FEvents.IndexOf('OPOS_SUE_POWER_OFF_OFFLINE') <> -1, 'OPOS_SUE_POWER_OFF_OFFLINE');
-  FEvents.Clear;
-  if Application.MessageBox('Turn printer ON and press OK', 'Attention',
-    MB_OKCANCEL) = ID_CANCEL then Abort;
-  CheckEquals(1, FEvents.Count, 'FEvents.Count');
-  CheckEquals('OPOS_SUE_POWER_ONLINE', Events[0], 'OPOS_SUE_POWER_ONLINE');
+  if Printer.PowerNotify <> OPOS_PN_DISABLED then
+  begin
+    CheckEquals(1, FEvents.Count, 'FEvents.Count');
+    CheckEquals('OPOS_SUE_POWER_ONLINE', Events[0], 'OPOS_SUE_POWER_ONLINE');
+    FEvents.Clear;
+    if Application.MessageBox('Turn printer OFF and press OK', 'Attention',
+      MB_OKCANCEL) = ID_CANCEL then Abort;
+    Check(FEvents.IndexOf('OPOS_SUE_POWER_OFF_OFFLINE') <> -1, 'OPOS_SUE_POWER_OFF_OFFLINE');
+    FEvents.Clear;
+    if Application.MessageBox('Turn printer ON and press OK', 'Attention',
+      MB_OKCANCEL) = ID_CANCEL then Abort;
+    CheckEquals(1, FEvents.Count, 'FEvents.Count');
+    CheckEquals('OPOS_SUE_POWER_ONLINE', Events[0], 'OPOS_SUE_POWER_ONLINE');
+  end;
 end;
 
 procedure TPosEscPrinterTest.TestPrintReceipt;
@@ -310,6 +332,23 @@ begin
   begin
     Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_NORMAL);
   end;
+end;
+
+procedure TPosEscPrinterTest.TestPrintNormal;
+var
+  i: Integer;
+  Text: WideString;
+begin
+  OpenClaimEnable;
+  Printer.CharacterSet := PTR_CS_UNICODE;
+
+  Text := '';
+  //Text := 'KAZAKH CHARACTERS A: ';
+  for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
+  begin
+    Text := Text + WideChar(KazakhUnicodeChars[i]);
+  end;
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Text + CRLF));
 end;
 
 initialization

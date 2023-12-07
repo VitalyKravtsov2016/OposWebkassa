@@ -47,6 +47,7 @@ type
     function Read(Count: DWORD): AnsiString;
     function CapRead: Boolean;
     procedure Flush;
+    function GetDescription: WideString;
   end;
 
 
@@ -209,6 +210,11 @@ end;
 procedure TSocketPort.Flush;
 begin
 
+end;
+
+function TSocketPort.GetDescription: WideString;
+begin
+  Result := 'SocketPort';
 end;
 
 end.

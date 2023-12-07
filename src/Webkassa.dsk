@@ -1,132 +1,253 @@
 [Closed Files]
-File_0=SourceModule,'c:\program files (x86)\borland\delphi7\source\rtl\common\classes.pas',0,1,3770,1,3789,0,0
-File_1=SourceModule,'D:\projects\WebKassa\test\WebkassaAccTest\units\duESCPrinter.pas',0,1,809,1,851,0,0
-File_2=SourceModule,'D:\projects\WebKassa\src\Shared\FileUtils.pas',0,1,1,23,11,0,0
-File_3=SourceModule,'C:\projects\WebKassa\src\Shared\FileUtils.pas',0,1,11,23,11,0,0
-File_4=SourceModule,'c:\program files (x86)\borland\delphi7\source\rtl\Sys\system.pas',0,1,1,1,10,0,0
-File_5=SourceModule,'C:\projects\WebKassa\test\OposWebkassaTest\units\duWebkassaImpl3.pas',0,1,189,51,207,0,0
-File_6=SourceModule,'C:\projects\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas',0,1,3851,1,3877,0,0
-File_7=SourceModule,'C:\projects\WebKassa\test\WebkassaAccTest\units\duWebkassaImpl.pas',0,1,798,34,815,0,0
-File_8=SourceModule,'C:\projects\WebKassa\src\Shared\ReceiptTemplate.pas',0,1,503,34,518,0,0
-File_9=SourceModule,'C:\projects\WebKassa\src\Shared\DIOHandlers.pas',0,1,126,6,137,0,0
+File_0=SourceModule,'C:\projects\WebKassa\src\Shared\EscPrinter.pas',0,1,174,1,178,0,0
+File_1=SourceModule,'C:\projects\WebKassa\src\Opos\OPOS.pas',0,1,135,15,144,0,0
+File_2=SourceModule,'C:\projects\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas',0,1,2447,40,2452,0,0
+File_3=SourceModule,'C:\projects\WebKassa\src\Shared\PrinterParameters.pas',0,1,76,25,90,0,0
+File_4=SourceModule,'c:\program files (x86)\borland\delphi7\Comp\DUnit\src\TestFramework.pas',0,1,1774,1,1791,0,0
 
 [Modules]
-Module0=D:\projects\WebKassa\src\Shared\EscPrinter.pas
-Module1=D:\projects\WebKassa\src\Shared\PosEscPrinter.pas
-Module2=D:\projects\WebKassa\src\Shared\StringUtils.pas
-Module3=D:\projects\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas
-Count=4
+Module0=C:\projects\WebKassa\src\Shared\PosEscPrinter.pas
+Module1=C:\projects\WebKassa\test\WebkassaAccTest\units\duPosEscPrinter.pas
+Module2=c:\program files (x86)\borland\delphi7\source\rtl\Win\Windows.pas
+Module3=C:\projects\WebKassa\test\WebkassaAccTest\units\duESCPrinter.pas
+Module4=C:\projects\WebKassa\src\Opos\OposPtr.pas
+Module5=C:\projects\WebKassa\src\Opos\OposServiceDevice19.pas
+Module6=C:\projects\WebKassa\src\Opos\OposException.pas
+Module7=C:\projects\WebKassa\src\OposWebkassa\units\CustomReceipt.pas
+Module8=C:\projects\WebKassa\src\Shared\PrinterPort.pas
+Module9=C:\projects\WebKassa\src\Shared\SerialPort.pas
+Module10=C:\projects\WebKassa\src\Shared\SocketPort.pas
+Module11=C:\projects\WebKassa\src\Shared\RawPrinterPort.pas
+Module12=C:\projects\WebKassa\src\Shared\MockPrinterPort.pas
+Count=13
 EditWindowCount=1
 TypeLibWindowCount=1
 
-[D:\projects\WebKassa\src\Shared\EscPrinter.pas]
+[C:\projects\WebKassa\src\Shared\PosEscPrinter.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[D:\projects\WebKassa\src\Shared\PosEscPrinter.pas]
+[C:\projects\WebKassa\test\WebkassaAccTest\units\duPosEscPrinter.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[D:\projects\WebKassa\src\Shared\StringUtils.pas]
+[c:\program files (x86)\borland\delphi7\source\rtl\Win\Windows.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[D:\projects\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas]
+[C:\projects\WebKassa\test\WebkassaAccTest\units\duESCPrinter.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[D:\projects\WebKassa\src\Webkassa.bpg]
+[C:\projects\WebKassa\src\Opos\OposPtr.pas]
+ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[D:\projects\WebKassa\src\OposConfig\OposConfig.dpr]
+[C:\projects\WebKassa\src\Opos\OposServiceDevice19.pas]
+ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[D:\projects\WebKassa\src\OposTest\OposTest.dpr]
+[C:\projects\WebKassa\src\Opos\OposException.pas]
+ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[D:\projects\WebKassa\src\OposWebkassa\OposWebkassa.dpr]
+[C:\projects\WebKassa\src\OposWebkassa\units\CustomReceipt.pas]
+ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[D:\projects\WebKassa\src\OposWebkassa\OposWebkassa.tlb]
+[C:\projects\WebKassa\src\Shared\PrinterPort.pas]
+ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[D:\projects\WebKassa\test\OposWebkassaTest\OposWebkassaTest.dpr]
+[C:\projects\WebKassa\src\Shared\SerialPort.pas]
+ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[D:\projects\WebKassa\test\OposWebkassaTest\OposWebkassaTestLib.dpr]
+[C:\projects\WebKassa\src\Shared\SocketPort.pas]
+ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[D:\projects\WebKassa\test\WebkassaAccTest\WebkassaAccTest.dpr]
+[C:\projects\WebKassa\src\Shared\RawPrinterPort.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\projects\WebKassa\src\Shared\MockPrinterPort.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\projects\WebKassa\src\Webkassa.bpg]
+FormState=0
+FormOnTop=0
+
+[C:\projects\WebKassa\src\OposConfig\OposConfig.dpr]
+FormState=0
+FormOnTop=0
+
+[C:\projects\WebKassa\src\OposTest\OposTest.dpr]
+FormState=0
+FormOnTop=0
+
+[C:\projects\WebKassa\src\OposWebkassa\OposWebkassa.dpr]
+FormState=0
+FormOnTop=0
+
+[C:\projects\WebKassa\src\OposWebkassa\OposWebkassa.tlb]
+FormState=0
+FormOnTop=0
+
+[C:\projects\WebKassa\test\OposWebkassaTest\OposWebkassaTest.dpr]
+FormState=0
+FormOnTop=0
+
+[C:\projects\WebKassa\test\OposWebkassaTest\OposWebkassaTestLib.dpr]
+FormState=0
+FormOnTop=0
+
+[C:\projects\WebKassa\test\WebkassaAccTest\WebkassaAccTest.dpr]
 FormState=0
 FormOnTop=0
 
 [EditWindow0]
-ViewCount=4
-CurrentView=2
+ViewCount=13
+CurrentView=3
 View0=0
 View1=1
 View2=2
 View3=3
+View4=4
+View5=5
+View6=6
+View7=7
+View8=8
+View9=9
+View10=10
+View11=11
+View12=12
 CodeExplorer=CodeExplorer@EditWindow0
 MessageView=MessageView@EditWindow0
 Create=1
 Visible=1
 State=2
 Left=360
-Top=140
-Width=1560
+Top=138
+Width=1302
 Height=682
 MaxLeft=-8
-MaxTop=107
+MaxTop=106
 MaxWidth=1936
-MaxHeight=941
+MaxHeight=952
 ClientWidth=1920
-ClientHeight=902
+ClientHeight=914
 LeftPanelSize=0
 LeftPanelClients=CodeExplorer@EditWindow0
 LeftPanelData=00000400010000000C000000436F64654578706C6F7265720000000000000000000000000000000000FFFFFFFF
 RightPanelSize=0
-BottomPanelSize=85
+BottomPanelSize=0
 BottomPanelClients=MessageView@EditWindow0
-BottomPanelData=000004000000000000000000000000000000000000000000000100000000000000000B0000004D65737361676556696577FFFFFFFF
+BottomPanelData=00000400010000000B0000004D6573736167655669657700000000000000000000000000000000000100000000000000000B0000004D65737361676556696577FFFFFFFF
 
 [View0]
-Module=D:\projects\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas
-CursorX=54
-CursorY=16
-TopLine=1
+Module=C:\projects\WebKassa\test\WebkassaAccTest\units\duPosEscPrinter.pas
+CursorX=1
+CursorY=351
+TopLine=337
 LeftCol=1
 
 [View1]
-Module=D:\projects\WebKassa\src\Shared\PosEscPrinter.pas
+Module=C:\projects\WebKassa\test\WebkassaAccTest\units\duESCPrinter.pas
 CursorX=1
-CursorY=622
-TopLine=605
+CursorY=806
+TopLine=788
 LeftCol=1
 
 [View2]
-Module=D:\projects\WebKassa\src\Shared\EscPrinter.pas
-CursorX=7
-CursorY=1706
-TopLine=1683
+Module=C:\projects\WebKassa\src\Opos\OposPtr.pas
+CursorX=17
+CursorY=83
+TopLine=75
 LeftCol=1
 
 [View3]
-Module=D:\projects\WebKassa\src\Shared\StringUtils.pas
+Module=C:\projects\WebKassa\src\Shared\PosEscPrinter.pas
 CursorX=1
-CursorY=325
-TopLine=292
+CursorY=2852
+TopLine=2833
+LeftCol=1
+
+[View4]
+Module=c:\program files (x86)\borland\delphi7\source\rtl\Win\Windows.pas
+CursorX=49
+CursorY=26168
+TopLine=26166
+LeftCol=1
+
+[View5]
+Module=C:\projects\WebKassa\src\Opos\OposServiceDevice19.pas
+CursorX=1
+CursorY=502
+TopLine=490
+LeftCol=1
+
+[View6]
+Module=C:\projects\WebKassa\src\OposWebkassa\units\CustomReceipt.pas
+CursorX=3
+CursorY=168
+TopLine=158
+LeftCol=1
+
+[View7]
+Module=C:\projects\WebKassa\src\Opos\OposException.pas
+CursorX=1
+CursorY=92
+TopLine=73
+LeftCol=1
+
+[View8]
+Module=C:\projects\WebKassa\src\Shared\PrinterPort.pas
+CursorX=2
+CursorY=22
+TopLine=7
+LeftCol=1
+
+[View9]
+Module=C:\projects\WebKassa\src\Shared\SerialPort.pas
+CursorX=2
+CursorY=77
+TopLine=77
+LeftCol=1
+
+[View10]
+Module=C:\projects\WebKassa\src\Shared\SocketPort.pas
+CursorX=2
+CursorY=50
+TopLine=37
+LeftCol=1
+
+[View11]
+Module=C:\projects\WebKassa\src\Shared\RawPrinterPort.pas
+CursorX=2
+CursorY=35
+TopLine=35
+LeftCol=1
+
+[View12]
+Module=C:\projects\WebKassa\src\Shared\MockPrinterPort.pas
+CursorX=29
+CursorY=98
+TopLine=96
 LeftCol=1
 
 [TypeLibEditWindow0]
@@ -134,14 +255,14 @@ Create=1
 Visible=0
 State=0
 Left=200
-Top=590
+Top=589
 Width=647
-Height=458
+Height=457
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=631
 ClientHeight=419
-Module=D:\projects\WebKassa\src\OposWebkassa\OposWebkassa.tlb
+Module=C:\projects\WebKassa\src\OposWebkassa\OposWebkassa.tlb
 
 [Watches]
 Count=6
@@ -165,13 +286,15 @@ Height=142
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=476
-ClientHeight=103
+ClientHeight=108
 TBDockHeight=180
 LRDockWidth=320
 Dockable=1
 
 [Breakpoints]
-Count=0
+Count=2
+Breakpoint0='C:\projects\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas',2559,'',0,1,'',1,0,0,'',1,'','',''
+Breakpoint1='C:\projects\WebKassa\src\Shared\SerialPort.pas',480,'',0,1,'',1,0,0,'',1,'','',''
 
 [AddressBreakpoints]
 Count=0
@@ -183,11 +306,11 @@ State=2
 Left=268
 Top=225
 Width=1652
-Height=123
-MaxLeft=-8
-MaxTop=-8
+Height=122
+MaxLeft=-1
+MaxTop=-1
 MaxWidth=1936
-MaxHeight=123
+MaxHeight=122
 ClientWidth=1920
 ClientHeight=84
 
@@ -202,7 +325,7 @@ Height=683
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=466
-ClientHeight=644
+ClientHeight=649
 TBDockHeight=681
 LRDockWidth=445
 Dockable=0
@@ -218,7 +341,7 @@ Height=861
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=954
-ClientHeight=822
+ClientHeight=823
 DumpPane=163
 DisassemblyPane=921
 RegisterPane=231
@@ -231,7 +354,7 @@ State=0
 Left=822
 Top=767
 Width=156
-Height=89
+Height=84
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=150
@@ -248,7 +371,7 @@ Height=668
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=347
-ClientHeight=629
+ClientHeight=634
 TBDockHeight=681
 LRDockWidth=291
 Dockable=1
@@ -269,7 +392,7 @@ Height=293
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=805
-ClientHeight=254
+ClientHeight=259
 TBDockHeight=197
 LRDockWidth=737
 Dockable=1
@@ -287,12 +410,12 @@ State=0
 Left=0
 Top=12
 Width=856
-Height=484
+Height=489
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=856
-ClientHeight=484
-TBDockHeight=484
+ClientHeight=489
+TBDockHeight=489
 LRDockWidth=320
 Dockable=1
 
@@ -307,7 +430,7 @@ Height=189
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=544
-ClientHeight=150
+ClientHeight=155
 TBDockHeight=152
 LRDockWidth=320
 Dockable=1
@@ -327,7 +450,7 @@ Height=318
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=174
-ClientHeight=279
+ClientHeight=284
 TBDockHeight=318
 LRDockWidth=190
 Dockable=1
@@ -343,7 +466,7 @@ Height=917
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=420
-ClientHeight=878
+ClientHeight=883
 TBDockHeight=164
 LRDockWidth=445
 Dockable=1
@@ -359,7 +482,7 @@ Height=142
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=312
-ClientHeight=103
+ClientHeight=108
 TBDockHeight=192
 LRDockWidth=320
 Dockable=1
@@ -375,7 +498,7 @@ Height=536
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=745
-ClientHeight=497
+ClientHeight=502
 TBDockHeight=63
 LRDockWidth=470
 Dockable=1
@@ -399,7 +522,7 @@ Height=250
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=441
-ClientHeight=211
+ClientHeight=212
 RegisterPane=121
 FlagPane=59
 
@@ -414,7 +537,7 @@ Height=825
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1057
-ClientHeight=786
+ClientHeight=791
 TBDockHeight=137
 LRDockWidth=638
 Dockable=1
@@ -435,7 +558,7 @@ Height=195
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=367
-ClientHeight=156
+ClientHeight=161
 TBDockHeight=151
 LRDockWidth=383
 Dockable=1
@@ -445,7 +568,7 @@ Create=1
 Visible=0
 State=0
 Left=-164
-Top=-9
+Top=-6
 Width=140
 Height=305
 MaxLeft=-1
@@ -458,17 +581,17 @@ Dockable=1
 
 [MessageView@EditWindow0]
 Create=1
-Visible=1
+Visible=0
 State=0
 Left=12
 Top=0
 Width=1908
-Height=85
+Height=384
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1908
-ClientHeight=85
-TBDockHeight=85
+ClientHeight=384
+TBDockHeight=384
 LRDockWidth=443
 Dockable=1
 
@@ -478,21 +601,21 @@ DockHostCount=1
 [DockSite0]
 DockSiteType=0
 Create=1
-Visible=0
+Visible=1
 State=0
-Left=681
-Top=195
+Left=669
+Top=181
 Width=872
 Height=535
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=856
-ClientHeight=496
+ClientHeight=501
 TBDockHeight=690
 LRDockWidth=328
 Dockable=1
 DockClients=CallStackWindow
-DockSiteData=0000040000000000F001000000000000015803000000000000010000000087000000000000000100000002F0010000000000000200000000580300000F00000043616C6C537461636B57696E646F770200000000F7010000000000000100000000080100000000000001000000008C010000000000000100000000100200000000000001000000009802000000000000FFFFFFFF
+DockSiteData=0000040000000000F501000000000000015803000000000000010000000087000000000000000100000002F5010000000000000200000000580300000F00000043616C6C537461636B57696E646F770200000000F7010000000000000100000000080100000000000001000000008C010000000000000100000000100200000000000001000000009802000000000000FFFFFFFF
 
 [ActiveProject]
 ActiveProject=6

@@ -19,6 +19,7 @@ type
     procedure Write(const Data: AnsiString);
     function Read(Count: DWORD): AnsiString;
     function CapRead: Boolean;
+    function GetDescription: WideString;
   end;
 
 implementation

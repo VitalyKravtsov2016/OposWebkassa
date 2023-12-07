@@ -11,11 +11,6 @@ uses
   ByteUtils, PrinterPort, RegExpr, StringUtils, LogFile, FileUtils;
 
 const
-  SupportedCodePages: array [0..39] of Integer = (
-    437,720,737,755,775,850,852,855,856,857,858,860,862,863,864,865,866,874,
-    997,998,999,1250,1251,1252,1253,1254,1255,1256,1257,1258,
-    28591,28592,28593,28594,28595,28596,28597,28598,28599,28605);
-
   ESC   = #$1B;
   CRLF  = #13#10;
 
@@ -331,7 +326,6 @@ type
     procedure DrawImage(Image: TGraphic; Bitmap: TBitmap);
     procedure DrawWideChar(AChar: WideChar; AFont: Byte; Bitmap: TBitmap; X, Y: Integer);
     function GetFontData(Bitmap: TBitmap): AnsiString;
-    procedure PrintWideString(const AText: WideString);
   public
     constructor Create(APort: IPrinterPort; ALogger: ILogFile);
     destructor Destroy; override;
@@ -453,6 +447,7 @@ type
   end;
 
 function IsKazakhUnicodeChar(Char: WideChar): Boolean;
+function CharacterSetToPrinterCodePage(CharacterSet: Integer): Integer;
 
 implementation
 
@@ -464,13 +459,68 @@ const
 const
   BoolToInt: array [Boolean] of Integer = (0, 1);
 
+  SupportedCodePages: array [0..36] of Integer = (
+    437,720,737,755,775,850,852,855,856,857,858,860,862,863,864,865,866,874,
+    1250,1251,1252,1253,1254,1255,1256,1257,1258,
+    28591,28592,28593,28594,28595,28596,28597,28598,28599,28605);
+
+function CharacterSetToPrinterCodePage(CharacterSet: Integer): Integer;
+begin
+  case CharacterSet of
+    437: Result := CODEPAGE_CP437;
+    720: Result := CODEPAGE_CP720_ARABIC;
+    737: Result := CODEPAGE_CP737;
+    755: Result := CODEPAGE_CP755;
+    775: Result := CODEPAGE_CP775;
+    850: Result := CODEPAGE_CP850;
+    852: Result := CODEPAGE_CP852;
+    855: Result := CODEPAGE_CP855;
+    856: Result := CODEPAGE_CP856;
+    857: Result := CODEPAGE_CP857;
+    858: Result := CODEPAGE_CP858;
+    860: Result := CODEPAGE_CP860;
+    862: Result := CODEPAGE_CP862;
+    863: Result := CODEPAGE_CP863;
+    864: Result := CODEPAGE_CP864;
+    865: Result := CODEPAGE_CP865;
+    866: Result := CODEPAGE_CP866;
+    874: Result := CODEPAGE_CP874;
+
+    1250: Result := CODEPAGE_WCP1250;
+    1251: Result := CODEPAGE_WCP1251;
+    1252: Result := CODEPAGE_WCP1252;
+    1253: Result := CODEPAGE_WCP1253;
+    1254: Result := CODEPAGE_WCP1254;
+    1255: Result := CODEPAGE_WCP1255;
+    1256: Result := CODEPAGE_WCP1256;
+    1257: Result := CODEPAGE_WCP1257;
+    1258: Result := CODEPAGE_WCP1258;
+
+    28591: Result := CODEPAGE_ISO_8859_1;
+    28592: Result := CODEPAGE_ISO_8859_2;
+    28593: Result := CODEPAGE_ISO_8859_3;
+    28594: Result := CODEPAGE_ISO_8859_4;
+    28595: Result := CODEPAGE_ISO_8859_5;
+    28596: Result := CODEPAGE_ISO_8859_6;
+    28597: Result := CODEPAGE_ISO_8859_7;
+    28598: Result := CODEPAGE_ISO_8859_8;
+    28599: Result := CODEPAGE_ISO_8859_9;
+    28605: Result := CODEPAGE_ISO_8859_15;
+  else
+    raise Exception.Create('Character set not supported');
+  end;
+end;
+
 function IsKazakhUnicodeChar(Char: WideChar): Boolean;
 var
   i: Integer;
+  Code: Word;
 begin
+  Result := False;
   for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
   begin
-    Result := Ord(Char) = KazakhUnicodeChars[i];
+    Code := Word(Char);
+    Result := Code = KazakhUnicodeChars[i];
     if Result then Break;
   end;
 end;
@@ -1598,50 +1648,57 @@ var
   BitmapData: AnsiString;
   FontFileName: WideString;
 begin
-  SelectUserCharacter(1);
-  Bitmap := TBitmap.Create;
   try
-    // FONT_TYPE_A
-    FontFileName := GetModulePath + 'Fonts\KazakhFontA.bmp';
-    if FileExists(FontFileName) then
-    begin
-      SetCharacterFont(FONT_TYPE_A);
-      Bitmap.LoadFromFile(FontFileName);
-      FontWidth := 12;
-      BitmapData := '';
-      Count := Bitmap.Width div FontWidth;
-      Code := FUserCharCode;
-      Data := GetFontData(Bitmap);
-      for i := 0 to Count-1 do
+    SelectUserCharacter(1);
+    Bitmap := TBitmap.Create;
+    try
+      // FONT_TYPE_A
+      FontFileName := GetModulePath + 'Fonts\KazakhFontA.bmp';
+      if FileExists(FontFileName) then
       begin
-        FUserChars.Add(Code + i, WideChar(KazakhUnicodeChars[i]), FONT_TYPE_A);
-        BitmapData := BitmapData + Chr(FontWidth) + Copy(Data, i*FontWidth*3 + 1, FontWidth*3);
+        SetCharacterFont(FONT_TYPE_A);
+        Bitmap.LoadFromFile(FontFileName);
+        FontWidth := 12;
+        BitmapData := '';
+        Count := Bitmap.Width div FontWidth;
+        Code := FUserCharCode;
+        Data := GetFontData(Bitmap);
+        for i := 0 to Count-1 do
+        begin
+          FUserChars.Add(Code + i, WideChar(KazakhUnicodeChars[i]), FONT_TYPE_A);
+          BitmapData := BitmapData + Chr(FontWidth) + Copy(Data, i*FontWidth*3 + 1, FontWidth*3);
+        end;
+        Send(#$1B#$26#$03 + Chr(Code) + Chr(Code + Count -1) + BitmapData);
       end;
-      Send(#$1B#$26#$03 + Chr(Code) + Chr(Code + Count -1) + BitmapData);
-    end;
-    // FONT_TYPE_B
-    FontFileName := GetModulePath + 'Fonts\KazakhFontB.bmp';
-    if FileExists(FontFileName) then
-    begin
-      SetCharacterFont(FONT_TYPE_B);
-      Bitmap.LoadFromFile(FontFileName);
-      FontWidth := 9;
-      BitmapData := '';
-      Count := Bitmap.Width div FontWidth;
-      Code := FUserCharCode;
-      Inc(FUserCharCode, Count);
-      Data := GetBitmapData(Bitmap);
-      for i := 0 to Count-1 do
+      // FONT_TYPE_B
+      FontFileName := GetModulePath + 'Fonts\KazakhFontB.bmp';
+      if FileExists(FontFileName) then
       begin
-        FUserChars.Add(Code + i, WideChar(KazakhUnicodeChars[i]), FONT_TYPE_B);
-        BitmapData := BitmapData + Chr(FontWidth) + Copy(Data, i*FontWidth*3 + 1, FontWidth*3);
+        SetCharacterFont(FONT_TYPE_B);
+        Bitmap.LoadFromFile(FontFileName);
+        FontWidth := 9;
+        BitmapData := '';
+        Count := Bitmap.Width div FontWidth;
+        Code := FUserCharCode;
+        Inc(FUserCharCode, Count);
+        Data := GetBitmapData(Bitmap);
+        for i := 0 to Count-1 do
+        begin
+          FUserChars.Add(Code + i, WideChar(KazakhUnicodeChars[i]), FONT_TYPE_B);
+          BitmapData := BitmapData + Chr(FontWidth) + Copy(Data, i*FontWidth*3 + 1, FontWidth*3);
+        end;
+        Send(#$1B#$26#$03 + Chr(Code) + Chr(Code + Count -1) + BitmapData);
       end;
-      Send(#$1B#$26#$03 + Chr(Code) + Chr(Code + Count -1) + BitmapData);
+    finally
+      Bitmap.Free;
     end;
-  finally
-    Bitmap.Free;
+    SelectUserCharacter(0);
+  except
+    on E: Exception do
+    begin
+      FLogger.Error('Failed to load Kazakh fonts ' + E.Message);
+    end;
   end;
-  SelectUserCharacter(0);
 end;
 
 procedure TEscPrinter.WriteKazakhCharacters2;
@@ -1704,45 +1761,6 @@ begin
     EnableUserCharacters;
     PrintText(Chr(Item.Code));
   end;
-end;
-
-
-
-function CharacterToCodePage(C: WideChar): Integer;
-begin
-(*
-  for i := Low(SupportedCodePages) to High(SupportedCodePages) do
-  begin
-    CodePage := SupportedCodePages[i];
-    CharCount := WideCharToMultiByte(CodePage, 0, PWideChar(S), Length(S),
-      P, Count, nil, nil);
-    Result := P;
-  end;
-*)
-  Result := 0;
-end;
-
-procedure TEscPrinter.PrintWideString(const AText: WideString);
-var
-  i: Integer;
-  C: WideChar;
-  CodePage: Integer;
-begin
-  for i := 0 to Length(AText) do
-  begin
-    C := AText[i];
-    if IsUserChar(C) then
-    begin
-      PrintUserChar(C);
-    end else
-    begin
-      DisableUserCharacters;
-      CodePage := CharacterToCodePage(C);
-      SetCodePage(CodePage);
-      PrintText(WideStringToAnsiString(CodePage, C));
-    end;
-  end;
-  DisableUserCharacters;
 end;
 
 end.

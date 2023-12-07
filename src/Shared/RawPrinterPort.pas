@@ -32,6 +32,7 @@ type
     procedure Write(const Data: AnsiString);
     function Read(Count: DWORD): AnsiString;
     function CapRead: Boolean;
+    function GetDescription: WideString;
   end;
 
 implementation
@@ -106,6 +107,11 @@ end;
 procedure TRawPrinterPort.Write(const Data: AnsiString);
 begin
   FBuffer := FBuffer + Data;
+end;
+
+function TRawPrinterPort.GetDescription: WideString;
+begin
+  Result := 'RawPrinterPort';
 end;
 
 end.
