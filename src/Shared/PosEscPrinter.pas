@@ -13,7 +13,7 @@ uses
   // This
   LogFile, DriverError, EscPrinter, PrinterPort, NotifyThread,
   RegExpr, SerialPort, Jpeg, GifImage, uZintBarcode, BarcodeUtils,
-  StringUtils;
+  StringUtils, DebugUtils;
 
 const
   FontNameA = 'Font A (12x24)';
@@ -612,6 +612,7 @@ type
   end;
 
 function RenderBarcodeRec(Barcode: TPosBarcode): AnsiString;
+procedure CharacterToCodePage(C: WideChar; var CodePage: Integer);
 
 implementation
 
@@ -2428,6 +2429,8 @@ procedure TPosEscPrinter.InitializeDevice;
 begin
   FPrinter.Initialize;
   FPrinter.WriteKazakhCharacters;
+  FPrinter.DisableUserCharacters;
+  FPrinter.SetCharacterFont(FONT_TYPE_A);
   FPrinter.SetCodePage(CODEPAGE_WCP1251);
   if FontName = FontNameB then
   begin
@@ -2772,7 +2775,7 @@ begin
     PrintMode := [pmFontB];
   end;
 
-  //Text := ReplaceRegExpr('\' + ESC + '\|[0-9]{0,3}\P', Text, #$1B#$69); !!!
+  //Text := ReplaceRegExpr('\' + ESC + '\|[0-9]{0,3}\P', Text, #$1B#$69);
   while GetToken(Text, Token) do
   begin
     if Token.IsEsc then
@@ -2841,31 +2844,38 @@ begin
   end;
 end;
 
-function TestCharCodePage(C: WideChar; var CodePage: Integer): Boolean;
+function TestCodePage(S: WideString; CodePage: Integer): Boolean;
 var
+  P: PAnsiChar;
+  Count: Integer;
   UsedDefaultChar: BOOL;
-  Buffer: array [0..10] of Char;
 const
-  DefaultChar = '?';
+  DefaultChar: PAnsiChar = '?';
 begin
-  UsedDefaultChar := FALSE;
-  Result := WideCharToMultiByte(CodePage, 0, PWideChar(C), 1,
-    @Buffer[0], Length(Buffer), PChar(DefaultChar), @UsedDefaultChar) > 0;
-  if Result then
-    Result := UsedDefaultChar = FALSE;
+  ODS('TestCharCodePage. CodePage: ' + IntToStr(CodePage));
+  Count := WideCharToMultiByte(CodePage, 0, PWideChar(S), Length(S), nil, 0,
+    nil, nil);
+  if Count > 0 then
+  begin
+    P := AllocMem(Count);
+    Count := WideCharToMultiByte(CodePage, 0, PWideChar(S), Length(S),
+      P, Count, DefaultChar, @UsedDefaultChar);
+    FreeMem(P);
+  end;
+  Result := (Count > 0) and(not UsedDefaultChar);
 end;
 
 procedure CharacterToCodePage(C: WideChar; var CodePage: Integer);
 var
   i: Integer;
 begin
-  if TestCharCodePage(C, CodePage) then Exit;
-  for i := Low(SupportedCodePages) to High(SupportedCodePages) do
+  if TestCodePage(C, CodePage) then Exit;
+  for i := Low(EscPrinter.SupportedCodePages) to High(EscPrinter.SupportedCodePages) do
   begin
-    CodePage := SupportedCodePages[i];
-    if TestCharCodePage(C, CodePage) then Exit;
+    CodePage := EscPrinter.SupportedCodePages[i];
+    if TestCodePage(C, CodePage) then Exit;
   end;
-  CodePage := CODEPAGE_WCP1251;
+  CodePage := 1251;
 end;
 
 procedure TPosEscPrinter.PrintUnicode(const AText: WideString);
@@ -2874,19 +2884,29 @@ var
   C: WideChar;
   CodePage: Integer;
 begin
-  for i := 1 to Length(AText) do
+  CodePage := 1251;
+  if TestCodePage(AText, CodePage) then
   begin
-    C := AText[i];
-    if Printer.IsUserChar(C) then
+    Printer.SetCodePage(CharacterSetToPrinterCodePage(CodePage));
+
+    Logger.Debug(WideFormat('TEscPrinter.PrintText(''%s'')', [Trim(AText)]));
+    Printer.PrintText(WideStringToAnsiString(CodePage, AText));
+  end else
+  begin
+    for i := 1 to Length(AText) do
     begin
-      Printer.PrintUserChar(C);
-    end else
-    begin
-      Printer.DisableUserCharacters;
-      CodePage := 1251;
-      CharacterToCodePage(C, CodePage);
-      Printer.SetCodePage(CodePage);
-      Printer.PrintText(WideStringToAnsiString(CodePage, C));
+      C := AText[i];
+      if Printer.IsUserChar(C) then
+      begin
+        Printer.PrintUserChar(C);
+      end else
+      begin
+        CharacterToCodePage(C, CodePage);
+        Printer.SetCodePage(CharacterSetToPrinterCodePage(CodePage));
+
+        Logger.Debug(WideFormat('TEscPrinter.PrintText(''%s'')', [Trim(AText)]));
+        Printer.PrintText(WideStringToAnsiString(CodePage, C));
+      end;
     end;
   end;
   Printer.DisableUserCharacters;

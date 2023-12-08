@@ -208,7 +208,10 @@ begin
   if Driver.GetPropertyNumber(PIDX_State) = OPOS_S_CLOSED then
   begin
     FptrCheck(Driver.OpenService(OPOS_CLASSKEY_FPTR, 'DeviceName', nil));
-    Driver.SetPropertyNumber(PIDX_PowerNotify, OPOS_PN_ENABLED);
+    if Driver.GetPropertyNumber(PIDX_CapPowerReporting) <> 0 then
+    begin
+      Driver.SetPropertyNumber(PIDX_PowerNotify, OPOS_PN_ENABLED);
+    end;
   end;
 end;
 
@@ -367,6 +370,8 @@ begin
 end;
 
 procedure TWebkassaImplTest.TestFiscalReceipt;
+var
+  Description: WideString;
 begin
   OpenClaimEnable;
   CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
@@ -377,7 +382,12 @@ begin
   CheckEquals(FPTR_PS_FISCAL_RECEIPT, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
 
   //FptrCheck(Driver.PrintRecItem('Item 1', 123.45, 1000, 0, 123.45, 'ЙЦ'));
-  FptrCheck(Driver.PrintRecItem('яЕП. ╧ 5                                  ьнйнкюдмюъ окхрйю MILKA BUBBLES лнкнвмши', 590, 1000, 4, 590, 'ЬР'));
+
+  Description := '';
+  Description := Description + WideChar(1170) + WideChar(1171);
+  Description := 'яЕП. ╧ 5                                  ' +
+    'ьнйнкюдмюъ окхрйю MILKA BUBBLES лнкнвмши' + Description;
+  FptrCheck(Driver.PrintRecItem(Description, 590, 1000, 4, 590, 'ЬР'));
   FptrCheck(Driver.PrintRecTotal(12345, 12345, '0'));
 
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));

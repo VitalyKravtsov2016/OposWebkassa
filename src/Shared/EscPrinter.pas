@@ -11,6 +11,11 @@ uses
   ByteUtils, PrinterPort, RegExpr, StringUtils, LogFile, FileUtils;
 
 const
+  SupportedCodePages: array [0..36] of Integer = (
+    437,720,737,755,775,850,852,855,856,857,858,860,862,863,864,865,866,874,
+    1250,1251,1252,1253,1254,1255,1256,1257,1258,
+    28591,28592,28593,28594,28595,28596,28597,28598,28599,28605);
+
   ESC   = #$1B;
   CRLF  = #13#10;
 
@@ -306,6 +311,7 @@ type
   private
     FLogger: ILogFile;
     FPort: IPrinterPort;
+    FCodePage: Integer;
     FUserCharCode: Byte;
     FInTransaction: Boolean;
     FUserCharacterMode: Integer;
@@ -441,8 +447,9 @@ type
     procedure PrintUserChar(Char: WideChar);
     function IsUserChar(Char: WideChar): Boolean;
 
-    property Logger: ILogFile read FLogger;
     property Port: IPrinterPort read FPort;
+    property Logger: ILogFile read FLogger;
+    property CodePage: Integer read FCodePage;
     property DeviceMetrics: TDeviceMetrics read FDeviceMetrics write FDeviceMetrics;
   end;
 
@@ -458,11 +465,6 @@ const
 
 const
   BoolToInt: array [Boolean] of Integer = (0, 1);
-
-  SupportedCodePages: array [0..36] of Integer = (
-    437,720,737,755,775,850,852,855,856,857,858,860,862,863,864,865,866,874,
-    1250,1251,1252,1253,1254,1255,1256,1257,1258,
-    28591,28592,28593,28594,28595,28596,28597,28598,28599,28605);
 
 function CharacterSetToPrinterCodePage(CharacterSet: Integer): Integer;
 begin
@@ -516,7 +518,6 @@ var
   i: Integer;
   Code: Word;
 begin
-  Result := False;
   for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
   begin
     Code := Word(Char);
@@ -756,6 +757,7 @@ procedure TEscPrinter.SelectUserCharacter(n: Byte);
 begin
   Logger.Debug(Format('TEscPrinter.SelectUserCharacter(%d)', [n]));
   if n = FUserCharacterMode then Exit;
+
   Send(#$1B#$25 + Chr(n));
   FUserCharacterMode := n;
 end;
@@ -767,7 +769,7 @@ end;
 
 procedure TEscPrinter.DisableUserCharacters;
 begin
-  SelectUserCharacter(1);
+  SelectUserCharacter(0);
 end;
 
 procedure TEscPrinter.CheckUserCharCode(Code: Byte);
@@ -1125,7 +1127,9 @@ end;
 procedure TEscPrinter.SetCodePage(CodePage: Integer);
 begin
   Logger.Debug(Format('TEscPrinter.SetCodePage(%d)', [CodePage]));
+  if FCodePage = CodePage then Exit;
   Send(#$1B#$74 + Chr(CodePage));
+  FCodePage := CodePage;
 end;
 
 procedure TEscPrinter.SetUpsideDownPrinting(Value: Boolean);
@@ -1569,7 +1573,7 @@ end;
 
 procedure TEscPrinter.PrintText(Text: AnsiString);
 begin
-  Logger.Debug(Format('TEscPrinter.PrintText(''%s'')', [TrimRight(Text)]));
+  //Logger.Debug(Format('TEscPrinter.PrintText(''%s'')', [TrimRight(Text)]));
   Send(Text);
 end;
 
@@ -1649,7 +1653,7 @@ var
   FontFileName: WideString;
 begin
   try
-    SelectUserCharacter(1);
+    EnableUserCharacters;
     Bitmap := TBitmap.Create;
     try
       // FONT_TYPE_A
@@ -1692,7 +1696,7 @@ begin
     finally
       Bitmap.Free;
     end;
-    SelectUserCharacter(0);
+    DisableUserCharacters;
   except
     on E: Exception do
     begin

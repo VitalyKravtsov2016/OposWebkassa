@@ -433,9 +433,9 @@ end;
 function BarcodeAlignmentToBCAlignment(BarcodeAlignment: Integer): Integer;
 begin
   case BarcodeAlignment of
-    BARCODE_ALIGNMENT_CENTER: Result := PTR_BC_CENTER;
-    BARCODE_ALIGNMENT_LEFT  : Result := PTR_BC_LEFT;
-    BARCODE_ALIGNMENT_RIGHT : Result := PTR_BC_RIGHT;
+    ALIGN_LEFT    : Result := PTR_BC_LEFT;
+    ALIGN_CENTER  : Result := PTR_BC_CENTER;
+    ALIGN_RIGHT   : Result := PTR_BC_RIGHT;
   else
     Result := PTR_BC_CENTER;
   end;
@@ -444,9 +444,9 @@ end;
 function BarcodeAlignmentToBMPAlignment(BarcodeAlignment: Integer): Integer;
 begin
   case BarcodeAlignment of
-    BARCODE_ALIGNMENT_CENTER: Result := PTR_BM_CENTER;
-    BARCODE_ALIGNMENT_LEFT  : Result := PTR_BM_LEFT;
-    BARCODE_ALIGNMENT_RIGHT : Result := PTR_BM_RIGHT;
+    ALIGN_CENTER  : Result := PTR_BM_CENTER;
+    ALIGN_LEFT    : Result := PTR_BM_LEFT;
+    ALIGN_RIGHT   : Result := PTR_BM_RIGHT;
   else
     Result := PTR_BM_CENTER;
   end;
@@ -2349,6 +2349,7 @@ begin
       FPrinter := CreatePrinter;
     end;
     CheckPtr(Printer.Open(FParams.PrinterName));
+    FOposDevice.CapPowerReporting := Printer.CapPowerReporting;
 
     Logger.Debug(Logger.Separator);
     Logger.Debug('LOG START');

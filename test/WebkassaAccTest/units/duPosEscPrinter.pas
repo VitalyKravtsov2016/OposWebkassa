@@ -51,6 +51,7 @@ type
     procedure TestPowerStateEvent;
     procedure TestPrintReceipt;
     procedure TestPrintNormal;
+    procedure TestCharacterToCodePage;
   end;
 
 implementation
@@ -78,6 +79,10 @@ procedure TPosEscPrinterTest.SetUp;
 begin
   inherited SetUp;
   FLogger := TLogFile.Create;
+  FLogger.Enabled := True;
+  FLogger.MaxCount := 10;
+  FLogger.FilePath := 'Logs';
+  FLogger.DeviceName := 'DeviceName';
   FEvents := TStringList.Create;
   //FPrinterPort := CreateSerialPort;
   FPrinterPort := CreateRawPort;
@@ -341,14 +346,56 @@ var
 begin
   OpenClaimEnable;
   Printer.CharacterSet := PTR_CS_UNICODE;
+  if Printer.CapTransaction then
+  begin
+    PtrCheck(Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_TRANSACTION));
+  end;
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'Line 1' + CRLF));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'Line 2' + CRLF));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'Line 3' + CRLF));
 
-  Text := '';
-  //Text := 'KAZAKH CHARACTERS A: ';
+  Text := 'KAZAKH CHARACTERS A: ';
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Text + CRLF));
+
+  Text := ' ¿«¿’— »≈ —»Ã¬ŒÀ€ A: ';
   for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
   begin
     Text := Text + WideChar(KazakhUnicodeChars[i]);
   end;
   PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Text + CRLF));
+
+  Text := 'ARABIC CHARACTERS A: ';
+  Text := Text + WideChar($062B) + WideChar($062C) + WideChar($0635);
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Text + CRLF));
+
+  if Printer.CapTransaction then
+  begin
+    PtrCheck(Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_NORMAL));
+  end;
+end;
+
+procedure TPosEscPrinterTest.TestCharacterToCodePage;
+var
+  S: string;
+  C: WideChar;
+  CodePage: Integer;
+begin
+  CodePage := 1251;
+  C := WideChar($0410); // Russian capital A
+  CharacterToCodePage(C, CodePage);
+  CheckEquals(1251, CodePage);
+
+  C := WideChar(KazakhUnicodeChars[0]);
+  CharacterToCodePage(C, CodePage);
+  CheckEquals(1251, CodePage);
+
+  C := WideChar($2593);
+  CharacterToCodePage(C, CodePage);
+  CheckEquals(1251, CodePage);
+
+  C := WideChar($063A);
+  CharacterToCodePage(C, CodePage);
+  CheckEquals(720, CodePage);
 end;
 
 initialization
