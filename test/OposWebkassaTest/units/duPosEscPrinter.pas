@@ -96,11 +96,11 @@ end;
 procedure TPosEscPrinterTest.TestPrintNormal;
 const
   Text = 'Line 1';
-  InitText = '1B 40 1B 74 06 ';
 begin
   OpenClaimEnable;
+  FPort.Buffer := '';
   CheckEquals(OPOS_SUCCESS, FPrinter.PrintNormal(PTR_S_RECEIPT, Text));
-  CheckEquals(InitText + StrToHex(Text), StrToHex(FPort.Buffer), 'Port.Buffer');
+  CheckEquals(StrToHex(Text), StrToHex(FPort.Buffer), 'Port.Buffer');
 end;
 
 

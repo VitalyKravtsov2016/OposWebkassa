@@ -433,9 +433,9 @@ end;
 function BarcodeAlignmentToBCAlignment(BarcodeAlignment: Integer): Integer;
 begin
   case BarcodeAlignment of
-    ALIGN_LEFT    : Result := PTR_BC_LEFT;
-    ALIGN_CENTER  : Result := PTR_BC_CENTER;
-    ALIGN_RIGHT   : Result := PTR_BC_RIGHT;
+    BARCODE_ALIGNMENT_LEFT   : Result := PTR_BC_LEFT;
+    BARCODE_ALIGNMENT_CENTER : Result := PTR_BC_CENTER;
+    BARCODE_ALIGNMENT_RIGHT  : Result := PTR_BC_RIGHT;
   else
     Result := PTR_BC_CENTER;
   end;
@@ -444,9 +444,9 @@ end;
 function BarcodeAlignmentToBMPAlignment(BarcodeAlignment: Integer): Integer;
 begin
   case BarcodeAlignment of
-    ALIGN_CENTER  : Result := PTR_BM_CENTER;
-    ALIGN_LEFT    : Result := PTR_BM_LEFT;
-    ALIGN_RIGHT   : Result := PTR_BM_RIGHT;
+    BARCODE_ALIGNMENT_CENTER : Result := PTR_BM_CENTER;
+    BARCODE_ALIGNMENT_LEFT   : Result := PTR_BM_LEFT;
+    BARCODE_ALIGNMENT_RIGHT  : Result := PTR_BM_RIGHT;
   else
     Result := PTR_BM_CENTER;
   end;
@@ -3646,7 +3646,7 @@ begin
       Barcode.Height := 0;
       Barcode.BarcodeType := DIO_BARCODE_QRCODE;
       Barcode.ModuleWidth := 4;
-      Barcode.Alignment := ALIGN_CENTER;
+      Barcode.Alignment := BARCODE_ALIGNMENT_CENTER;
       Barcode.Parameter1 := 0;
       Barcode.Parameter2 := 0;
       Barcode.Parameter3 := 0;

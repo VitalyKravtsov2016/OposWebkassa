@@ -265,6 +265,8 @@ end;
 procedure TWebkassaImplTest2.OpenService;
 begin
   FPrinter.Expects('Open').WithParams(['ThermalU']).Returns(0);
+  FPrinter.Expects('Get_CapPowerReporting').Returns(True);
+
   FptrCheck(Driver.OpenService(OPOS_CLASSKEY_FPTR, 'DeviceName', TRCSEvents.Create(Self)));
   FPrinter.Verify('OpenService');
 end;

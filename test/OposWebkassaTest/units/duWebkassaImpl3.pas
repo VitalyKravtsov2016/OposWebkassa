@@ -199,6 +199,7 @@ begin
   Barcode.Alignment := BARCODE_ALIGNMENT_CENTER;
 
   FPrinter.Expects('Open').WithParams(['ThermalU']).Returns(0);
+  FPrinter.Expects('Get_CapPowerReporting').Returns(True);
   FPrinter.Expects('ClaimDevice').WithParams([1000]).Returns(0);
   FPrinter.Expects('Set_DeviceEnabled').WithParams([True]);
   FPrinter.Expects('Get_ResultCode').Returns(0);
@@ -227,10 +228,52 @@ begin
   FDriver.PrintBarcode2(Barcode);
   FDriver.Close;
 
-
-
   FPrinter.Verify('Verify success');
 end;
+
+(*
+
+Expected:
+Open(ThermalU): 0
+ClaimDevice(1000): 0
+Set_DeviceEnabled(True)
+Get_ResultCode(): 0
+Get_CharacterSetList(): 997,998,999
+Set_CharacterSet(997)
+Get_CapMapCharacterSet(): True
+Set_MapCharacterSet(True)
+Set_RecLineChars(42)
+Set_RecLineSpacing(30)
+Set_RecLineHeight(24)
+Get_CapRecBitmap(): True
+Set_BinaryConversion(1)
+PrintMemoryBitmap(2, 424=:>000000000000003>000000280000001<0000001<0000000100010000000000700000000000000000000000020000000000000000000000??????0000000000000000000<<033300<<0333033?0??<033?0??<00?33<<300?33<<3000??<?<000??<?<00?000<?00?000<?00<00?0<00<00?0<03<?3<??03<?3<??03??3?3<03??3?3<003<<<<?003<<<<?00?<??3<00?<??3<003003<?003003<?00<?333<00<?333<03333333033333330, 1, -11, -2): 0
+Set_BinaryConversion(0)
+Set_DeviceEnabled(False)
+Close(): 0
+
+Called: 
+Open(ThermalU): 0
+Get_CapPowerReporting() <-- Don't match expectations
+Close(): 0
+Set_DeviceEnabled(True)
+Get_ResultCode(): 0
+Get_CharacterSetList(): 997,998,999
+Set_CharacterSet(997)
+Get_CapMapCharacterSet(): True
+Set_MapCharacterSet(True)
+Set_RecLineChars(42)
+Set_RecLineSpacing(30)
+Set_RecLineHeight(24)
+Get_CapRecBitmap(): True
+Set_BinaryConversion(1)
+PrintMemoryBitmap(2, 424=:>000000000000003>000000280000001<0000001<0000000100010000000000700000000000000000000000020000000000000000000000??????0000000000000000000<<033300<<0333033?0??<033?0??<00?33<<300?33<<3000??<?<000??<?<00?000<?00?000<?00<00?0<00<00?0<03<?3<??03<?3<??03??3?3<03??3?3<003<<<<?003<<<<?00?<??3<00?<??3<003003<?003003<?00<?333<00<?333<03333333033333330, 1, -11, -2): 0
+Set_BinaryConversion(0)
+
+
+
+*)
+
 
 procedure TWebkassaImplTest3.TestPrintQRCode;
 const
