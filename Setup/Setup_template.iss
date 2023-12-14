@@ -24,6 +24,9 @@ OutputBaseFilename=Setup
 [Components]
 Name: "main"; Description: "Driver files"; Types: full compact custom; Flags: fixed
 [Files]
+; OpenSSL
+Source: "Setup\libeay32.dll"; DestDir: "{app}\Bin"; Flags: ignoreversion; Components: main
+Source: "Setup\ssleay32.dll"; DestDir: "{app}\Bin"; Flags: ignoreversion; Components: main
 ; Libraries
 Source: "Setup\zint.dll"; DestDir: "{app}\Bin"; Flags: ignoreversion; components: main;
 Source: "Setup\zlib1.dll"; DestDir: "{app}\Bin"; Flags: ignoreversion; components: main;
