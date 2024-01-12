@@ -14,6 +14,11 @@ uses
   // This
   LogFile, JsonUtils, DriverError;
 
+(*
+ Ардак настоятельно рекомендует по возможности исключить команды Cashboxes и Employee/List, насколько я понял
+[11.01.2024 19:35:05.648 ] [00002640] [DEBUG] Post: http://localhost:1332/api/Cashboxes
+[27.12.2023 14:57:41.800 ] [00006196] [DEBUG] Post: https://devkkm.webkassa.kz/api/Employee/List
+*)
 
 const
   // OperationType

@@ -716,6 +716,10 @@ begin
   FPredefinedPaymentLines := '0,1,2,3';
   FReservedWord := '';
   FChangeDue := '';
+
+  FUnitsUpdated := False;
+  FCashboxesUpdated := False;
+  FCashiersUpdated := False;
 end;
 
 function TWebkassaImpl.IllegalError: Integer;
@@ -2549,9 +2553,6 @@ begin
     begin
       FParams.CheckPrameters;
       FClient.Connect;
-      UpdateCashBoxes;
-      UpdateCashiers;
-      UpdateUnits;
 
       Printer.DeviceEnabled := True;
       CheckPtr(Printer.ResultCode);
@@ -2588,8 +2589,6 @@ begin
       Printer.DeviceEnabled := False;
     end;
     FDeviceEnabled := Value;
-    FUnitsUpdated := False;
-    FCashBoxesUpdated := False;
     FOposDevice.DeviceEnabled := Value;
   end;
 end;
@@ -2724,7 +2723,6 @@ begin
     begin
       FCashBox.Assign(ACashBox);
     end;
-
     FCashBoxesUpdated := True;
   finally
     Command.FRee;
@@ -3013,7 +3011,7 @@ begin
   Document.Addlines(Format('ÍÄÑ Ñåðèÿ %s', [Params.VATSeries]),
     Format('¹ %s', [Params.VATNumber]));
   Document.AddSeparator;
-  Document.AddLine(Document.AlignCenter(FCashBox.Name));
+  Document.AddLine(Document.AlignCenter(Params.CashboxNumber));
   Document.AddLine(Document.AlignCenter(Format('ÑÌÅÍÀ ¹%d', [Command.Data.ShiftNumber])));
   Document.AddLine(OperationTypeToText(Command.Request.OperationType));
 
@@ -4141,7 +4139,7 @@ begin
     Document.Addlines(Format('ÍÄÑ Ñåðèÿ %s', [Params.VATSeries]),
       Format('¹ %s', [Params.VATNumber]));
     Document.AddSeparator;
-    Document.AddLine(Document.AlignCenter(FCashBox.Name));
+    Document.AddLine(Document.AlignCenter(Params.CashboxNumber));
     Document.AddLine(Document.AlignCenter(Format('ÑÌÅÍÀ ¹%d', [ShiftNumber])));
     Document.AddLine(Command.Data.OperationTypeText);
     Document.AddSeparator;
@@ -4156,6 +4154,7 @@ begin
         ItemQuantity := Item.Count;
       end;
       UnitName := '';
+      UpdateUnits;
       UnitItem := FUnits.ItemByCode(Item.UnitCode);
       if UnitItem <> nil then
         UnitName := UnitItem.NameKz;
