@@ -71,7 +71,6 @@ type
     FPrinter: TRecPrinter;
     procedure UpdateFontNames;
     procedure UpdateDeviceNames;
-
     procedure UpdateBaudRates;
     procedure UpdatePortNames;
     procedure UpdateStopBits;
@@ -79,6 +78,7 @@ type
     procedure UpdateParity;
     procedure UpdateFlowControl;
     function CreatePrinter(PrinterType: Integer): TRecPrinter;
+
     property Printer: TRecPrinter read GetPrinter;
   public
     destructor Destroy; override;
@@ -248,11 +248,11 @@ end;
 function TfmPrinter.CreatePrinter(PrinterType: Integer): TRecPrinter;
 begin
   case PrinterType of
-    PrinterTypePosPrinter: Result := TOposPrinter.Create(Parameters);
-    PrinterTypeWinPrinter: Result := TWinPrinter.Create(Parameters);
-    PrinterTypeEscPrinterSerial: Result := TSerialEscPrinter.Create(Parameters);
-    PrinterTypeEscPrinterNetwork: Result := TNetworkEscPrinter.Create(Parameters);
-    PrinterTypeEscPrinterWindows: Result := TWindowsEscPrinter.Create(Parameters);
+    PrinterTypePosPrinter: Result := TOposPrinter.Create(Device);
+    PrinterTypeWinPrinter: Result := TWinPrinter.Create(Device);
+    PrinterTypeEscPrinterSerial: Result := TSerialEscPrinter.Create(Device);
+    PrinterTypeEscPrinterNetwork: Result := TNetworkEscPrinter.Create(Device);
+    PrinterTypeEscPrinterWindows: Result := TWindowsEscPrinter.Create(Device);
   else
     raise Exception.CreateFmt('Неизвестный тип принтера, %d', [PrinterType]);
   end;

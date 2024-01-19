@@ -44,6 +44,7 @@ begin
   Parameters.LogFileEnabled := chbLogEnabled.Checked;
   Parameters.LogMaxCount := seMaxLogFileCount.Value;
   Parameters.LogFilePath := edtLogFilePath.Text;
+  Device.UpdateObject;
 end;
 
 procedure TfmFptrLog.ModifiedClick(Sender: TObject);

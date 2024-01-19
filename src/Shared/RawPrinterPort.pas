@@ -66,7 +66,7 @@ end;
 
 procedure TRawPrinterPort.Flush;
 begin
-  FLogger.Debug('DirectPrint => ' + StrToHexText(FBuffer));
+  //FLogger.Debug('DirectPrint => ' + StrToHexText(FBuffer));
   try
     DirectPrint(FPrinterName, FBuffer);
   except

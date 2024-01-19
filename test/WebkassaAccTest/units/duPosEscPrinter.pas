@@ -376,7 +376,6 @@ end;
 
 procedure TPosEscPrinterTest.TestCharacterToCodePage;
 var
-  S: string;
   C: WideChar;
   CodePage: Integer;
 begin

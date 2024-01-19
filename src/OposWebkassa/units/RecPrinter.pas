@@ -12,7 +12,7 @@ uses
   OposPOSPrinter_CCO_TLB,
   // This
   PosWinPrinter, PosEscPrinter, LogFile, PrinterParameters,
-  SerialPort, SocketPort, RawPrinterPort;
+  SerialPort, SocketPort, RawPrinterPort, FiscalPrinterDevice;
 
 
 type
@@ -20,21 +20,23 @@ type
 
   TRecPrinter = class
   private
-    FLogger: ILogFile;
     FLines: TTntStrings;
     FPrinterObj: TObject;
     FPrinter: IOPOSPOSPrinter;
-    FParams: TPrinterParameters;
+    FDevice: TFiscalPrinterDevice;
 
+    function GetLogger: ILogFile;
+    function GetParams: TPrinterParameters;
     procedure Check(AResultCode: Integer);
     procedure AddProp(const PropName: WideString; PropVal: Variant;
       PropText: WideString = '');
     procedure AddProps;
 
+    property Logger: ILogFile read GetLogger;
     property Printer: IOPOSPOSPrinter read FPrinter;
-    property Params: TPrinterParameters read FParams;
+    property Params: TPrinterParameters read GetParams;
   public
-    constructor Create(AParams: TPrinterParameters);
+    constructor Create(ADevice: TFiscalPrinterDevice);
     destructor Destroy; override;
 
     function GetFontNames: WideString;
@@ -48,7 +50,7 @@ type
 
   TWinPrinter = class(TRecPrinter)
   public
-    constructor Create(AParams: TPrinterParameters);
+    constructor Create(ADevice: TFiscalPrinterDevice);
     function ReadDeviceList: WideString; override;
   end;
 
@@ -56,7 +58,7 @@ type
 
   TOposPrinter = class(TRecPrinter)
   public
-    constructor Create(AParams: TPrinterParameters);
+    constructor Create(ADevice: TFiscalPrinterDevice);
     function ReadDeviceList: WideString; override;
   end;
 
@@ -66,7 +68,7 @@ type
   private
     function CreateSerialPort: TSerialPort;
   public
-    constructor Create(AParams: TPrinterParameters);
+    constructor Create(ADevice: TFiscalPrinterDevice);
     function ReadDeviceList: WideString; override;
   end;
 
@@ -76,7 +78,7 @@ type
   private
     function CreateSocketPort: TSocketPort;
   public
-    constructor Create(AParams: TPrinterParameters);
+    constructor Create(ADevice: TFiscalPrinterDevice);
     function ReadDeviceList: WideString; override;
   end;
 
@@ -86,7 +88,7 @@ type
   private
     function CreatePort: TRawPrinterPort;
   public
-    constructor Create(AParams: TPrinterParameters);
+    constructor Create(ADevice: TFiscalPrinterDevice);
     function ReadDeviceList: WideString; override;
   end;
 
@@ -109,20 +111,16 @@ const
 
 { TRecPrinter }
 
-constructor TRecPrinter.Create(AParams: TPrinterParameters);
+constructor TRecPrinter.Create(ADevice: TFiscalPrinterDevice);
 begin
   inherited Create;
-  FParams := AParams;
-  FLogger := TLogFile.Create;
+  FDevice := ADevice;
   FLines := TTntStringList.Create;
 end;
 
 destructor TRecPrinter.Destroy;
 begin
   FLines.Free;
-  FLogger := nil;
-  FPrinter := nil;
-  FPrinterObj.Free;
   inherited Destroy;
 end;
 
@@ -141,7 +139,7 @@ const
   BoolToStr: array [Boolean] of string = ('[ ]', '[X]');
 begin
   FLines.Clear;
-  Check(Printer.Open(FParams.PrinterName));
+  Check(Printer.Open(Params.PrinterName));
   try
     Check(Printer.ClaimDevice(0));
     Printer.DeviceEnabled := True;
@@ -312,9 +310,9 @@ begin
   AddProp('CheckHealthText', Printer.CheckHealthText);
 end;
 
-function TRecPrinter.PrintTestReceipt: WideString;
+function TRecPrinter.PrintTestReceipt2: WideString;
 begin
-  Check(Printer.Open(FParams.PrinterName));
+  Check(Printer.Open(Params.PrinterName));
   try
     Check(Printer.ClaimDevice(0));
     Printer.DeviceEnabled := True;
@@ -325,7 +323,7 @@ begin
   end;
 end;
 
-function TRecPrinter.PrintTestReceipt2: WideString;
+function TRecPrinter.PrintTestReceipt: WideString;
 
   procedure CheckPtr(AResultCode: Integer);
   begin
@@ -340,14 +338,14 @@ var
   i: Integer;
   Lines: TStrings;
 begin
-  Check(Printer.Open(FParams.PrinterName));
+  Check(Printer.Open(Params.PrinterName));
   Lines := TStringList.Create;
   try
     Lines.Text := CashOutReceiptText;
     Check(Printer.ClaimDevice(0));
     Printer.DeviceEnabled := True;
-    if Pos(FParams.FontName, Printer.RecLineCharsList) <> 0 then
-      Printer.RecLineChars := StrToInt(FParams.FontName);
+    if Pos(Params.FontName, Printer.RecLineCharsList) <> 0 then
+      Printer.RecLineChars := StrToInt(Params.FontName);
 
     if Printer.CapTransaction then
     begin
@@ -357,7 +355,7 @@ begin
     begin
       CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, TrimRight(Lines[i]) + CRLF));
     end;
-    for i := 0 to Printer.RecLinesToPaperCut-1 do
+    for i := 0 to Printer.RecLinesToPaperCut do
     begin
       CheckPtr(Printer.PrintNormal(PTR_S_RECEIPT, CRLF));
     end;
@@ -377,7 +375,7 @@ var
   Lines: TTntStrings;
 begin
   Lines := TTntStringList.Create;
-  Check(Printer.Open(FParams.PrinterName));
+  Check(Printer.Open(Params.PrinterName));
   try
     Lines.Text := StringReplace(Printer.FontTypefaceList, ',', CRLF, [
       rfReplaceAll, rfIgnoreCase]);
@@ -388,15 +386,24 @@ begin
   end;
 end;
 
+function TRecPrinter.GetLogger: ILogFile;
+begin
+  Result := FDevice.Logger;
+end;
+
+function TRecPrinter.GetParams: TPrinterParameters;
+begin
+  Result := FDevice.Parameters;
+end;
+
 { TWinPrinter }
 
-constructor TWinPrinter.Create(AParams: TPrinterParameters);
+constructor TWinPrinter.Create(ADevice: TFiscalPrinterDevice);
 var
   PosWinPrinter: TPosWinPrinter;
 begin
-  inherited Create(AParams);
-  FParams := AParams;
-  PosWinPrinter := TPosWinPrinter.Create2(nil, FLogger);
+  inherited Create(ADevice);
+  PosWinPrinter := TPosWinPrinter.Create2(nil, Logger);
   FPrinterObj := PosWinPrinter;
   FPrinter := PosWinPrinter;
 end;
@@ -408,10 +415,9 @@ end;
 
 { TOposPrinter }
 
-constructor TOposPrinter.Create(AParams: TPrinterParameters);
+constructor TOposPrinter.Create(ADevice: TFiscalPrinterDevice);
 begin
-  inherited Create(AParams);
-  FParams := AParams;
+  inherited Create(ADevice);
   FPrinter := TOPOSPOSPrinter.Create(nil).ControlInterface;
   FPrinterObj := nil;
 end;
@@ -435,13 +441,12 @@ end;
 
 { TSerialEscPrinter }
 
-constructor TSerialEscPrinter.Create(AParams: TPrinterParameters);
+constructor TSerialEscPrinter.Create(ADevice: TFiscalPrinterDevice);
 var
   PosEscPrinter: TPosEscPrinter;
 begin
-  inherited Create(AParams);
-  FParams := AParams;
-  PosEscPrinter := TPosEscPrinter.Create2(nil, CreateSerialPort, FLogger);
+  inherited Create(ADevice);
+  PosEscPrinter := TPosEscPrinter.Create2(nil, CreateSerialPort, Logger);
   FPrinterObj := PosEscPrinter;
   FPrinter := PosEscPrinter;
 end;
@@ -458,7 +463,7 @@ begin
   SerialParams.FlowControl := Params.FlowControl;
   SerialParams.ReconnectPort := Params.ReconnectPort;
   SerialParams.ByteTimeout := Params.SerialTimeout;
-  Result := TSerialPort.Create(SerialParams, FLogger);
+  Result := TSerialPort.Create(SerialParams, Logger);
 end;
 
 function TSerialEscPrinter.ReadDeviceList: WideString;
@@ -468,13 +473,12 @@ end;
 
 { TNetworkEscPrinter }
 
-constructor TNetworkEscPrinter.Create(AParams: TPrinterParameters);
+constructor TNetworkEscPrinter.Create(ADevice: TFiscalPrinterDevice);
 var
   PosEscPrinter: TPosEscPrinter;
 begin
-  inherited Create(AParams);
-  FParams := AParams;
-  PosEscPrinter := TPosEscPrinter.Create2(nil, CreateSocketPort, FLogger);
+  inherited Create(ADevice);
+  PosEscPrinter := TPosEscPrinter.Create2(nil, CreateSocketPort, Logger);
   FPrinterObj := PosEscPrinter;
   FPrinter := PosEscPrinter;
 end;
@@ -487,7 +491,7 @@ begin
   SocketParams.RemotePort := Params.RemotePort;
   SocketParams.ByteTimeout := Params.ByteTimeout;
   SocketParams.MaxRetryCount := 1;
-  Result := TSocketPort.Create(SocketParams, FLogger);
+  Result := TSocketPort.Create(SocketParams, Logger);
 end;
 
 function TNetworkEscPrinter.ReadDeviceList: WideString;
@@ -497,20 +501,19 @@ end;
 
 { TWindowsEscPrinter }
 
-constructor TWindowsEscPrinter.Create(AParams: TPrinterParameters);
+constructor TWindowsEscPrinter.Create(ADevice: TFiscalPrinterDevice);
 var
   PosEscPrinter: TPosEscPrinter;
 begin
-  inherited Create(AParams);
-  FParams := AParams;
-  PosEscPrinter := TPosEscPrinter.Create2(nil, CreatePort, FLogger);
+  inherited Create(ADevice);
+  PosEscPrinter := TPosEscPrinter.Create2(nil, CreatePort, Logger);
   FPrinterObj := PosEscPrinter;
   FPrinter := PosEscPrinter;
 end;
 
 function TWindowsEscPrinter.CreatePort: TRawPrinterPort;
 begin
-  Result := TRawPrinterPort.Create(FLogger, Params.PrinterName);
+  Result := TRawPrinterPort.Create(Logger, Params.PrinterName);
 end;
 
 function TWindowsEscPrinter.ReadDeviceList: WideString;

@@ -67,17 +67,8 @@ end;
 
 function TfmFptrConnection.CreateDriver: TWebkassaClient;
 var
-  Logger: ILogFile;
   Driver: TWebkassaClient;
 begin
-  Logger := TLogFile.Create;
-  Logger.MaxCount := Parameters.LogMaxCount;
-  Logger.Enabled := Parameters.LogFileEnabled;
-  Logger.FilePath := Parameters.LogFilePath;
-  Logger.DeviceName := DeviceName;
-  Logger.Debug('LOG START');
-  Parameters.WriteLogParameters;
-
   Driver := TWebkassaClient.Create(Logger);
   Driver.RaiseErrors := True;
   Driver.Login := Parameters.Login;

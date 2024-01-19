@@ -55,7 +55,6 @@ uses
   OposFiscalPrinter_CCO_TLB in '..\Opos\OposFiscalPrinter_CCO_TLB.pas',
   uZintBarcode in '..\Shared\uZintBarcode.pas',
   uZintInterface in '..\Shared\uZintInterface.pas',
-  RecPrinter in 'units\RecPrinter.pas',
   OposDevice in '..\Opos\OposDevice.pas',
   POSPrinterLog in '..\Opos\POSPrinterLog.pas',
   EscPrinter in '..\Shared\EscPrinter.pas',
@@ -77,7 +76,6 @@ uses
   xmlParser in '..\Shared\XMLParser.pas',
   DIOHandlers in '..\Shared\DIOHandlers.pas',
   DIOHandler in '..\Shared\DIOHandler.pas',
-  DriverContext in '..\Shared\DriverContext.pas',
   PrinterTypes in '..\Shared\PrinterTypes.pas',
   BarcodeUtils in '..\Shared\BarcodeUtils.pas';
 

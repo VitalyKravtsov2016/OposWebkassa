@@ -1050,6 +1050,9 @@ begin
   Logger.Debug('TEscPrinter.Initialize');
   Send(#$1B#$40);
   ClearUserChars;
+  FCodePage := 0;
+  FUserCharacterMode := 0;
+  FInTransaction := False;
 end;
 
 procedure TEscPrinter.SetBeepParams(N, T: Byte);
@@ -1573,7 +1576,7 @@ end;
 
 procedure TEscPrinter.PrintText(Text: AnsiString);
 begin
-  //Logger.Debug(Format('TEscPrinter.PrintText(''%s'')', [TrimRight(Text)]));
+  Logger.Debug(Format('TEscPrinter.PrintText(''%s'')', [TrimRight(Text)]));
   Send(Text);
 end;
 

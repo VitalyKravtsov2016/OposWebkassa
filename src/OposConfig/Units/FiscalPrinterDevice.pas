@@ -7,7 +7,7 @@ uses
   OposDevice,
   // This
   untPages, FptrTypes, PrinterParameters, PrinterParametersX,
-  fmuPages, LogFile, DriverContext;
+  fmuPages, LogFile;
 
 type
   TFptrPage = class;
@@ -18,18 +18,21 @@ type
 
   TFiscalPrinterDevice = class(TOposDevice)
   private
-    FContext: TDriverContext;
+    FLogger: ILogFile;
+    FParameters: TPrinterParameters;
+
     procedure AddPage(Pages: TfmPages; PageClass: TFptrPageClass);
-    function GetLogger: ILogFile;
-    function GetParameters: TPrinterParameters;
   public
     constructor CreateDevice(AOwner: TOposDevices);
     destructor Destroy; override;
+
     procedure SetDefaults; override;
     procedure SaveParams; override;
     procedure ShowDialog; override;
-    property Logger: ILogFile read GetLogger;
-    property Parameters: TPrinterParameters read GetParameters;
+    procedure UpdateObject;
+
+    property Logger: ILogFile read FLogger;
+    property Parameters: TPrinterParameters read FParameters;
   end;
 
   { TFptrPage }
@@ -60,12 +63,14 @@ uses
 constructor TFiscalPrinterDevice.CreateDevice(AOwner: TOposDevices);
 begin
   inherited Create(AOwner, 'FiscalPrinter', 'FiscalPrinter', FiscalPrinterProgID);
-  FContext := TDriverContext.Create;
+  FLogger := TLogFile.Create;
+  FParameters := TPrinterParameters.Create(FLogger);
 end;
 
 destructor TFiscalPrinterDevice.Destroy;
 begin
-  FContext.Free;
+  FLogger := nil;
+  FParameters.Free;
   inherited Destroy;
 end;
 
@@ -92,11 +97,15 @@ procedure TFiscalPrinterDevice.ShowDialog;
 var
   fm: TfmPages;
 begin
+
   fm := TfmPages.Create(nil);
   try
     fm.Device := Self;
     fm.Caption := 'Fiscal printer';
     LoadParameters(Parameters, DeviceName, Logger);
+    UpdateObject;
+    Logger.Debug('LOG START');
+    Parameters.WriteLogParameters;
     //
     AddPage(fm, TfmFptrConnection);
     AddPage(fm, TfmPrinter);
@@ -119,14 +128,12 @@ begin
   end;
 end;
 
-function TFiscalPrinterDevice.GetParameters: TPrinterParameters;
+procedure TFiscalPrinterDevice.UpdateObject;
 begin
-  Result := FContext.Parameters;
-end;
-
-function TFiscalPrinterDevice.GetLogger: ILogFile;
-begin
-  Result := FContext.Logger;
+  Logger.MaxCount := Parameters.LogMaxCount;
+  Logger.Enabled := Parameters.LogFileEnabled;
+  Logger.FilePath := Parameters.LogFilePath;
+  Logger.DeviceName := DeviceName;
 end;
 
 { TFptrPage }
