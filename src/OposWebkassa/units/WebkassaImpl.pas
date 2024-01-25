@@ -838,7 +838,10 @@ function TWebkassaImpl.Claim(Timeout: Integer): Integer;
 begin
   try
     FOposDevice.ClaimDevice(Timeout);
+    FParams.CheckPrameters;
+    FClient.Connect;
     CheckPtr(Printer.ClaimDevice(Timeout));
+
     Result := ClearResult;
   except
     on E: Exception do
@@ -2719,9 +2722,6 @@ begin
   begin
     if Value then
     begin
-      FParams.CheckPrameters;
-      FClient.Connect;
-
       Printer.DeviceEnabled := True;
       CheckPtr(Printer.ResultCode);
 

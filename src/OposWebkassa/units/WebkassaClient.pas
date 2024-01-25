@@ -1704,6 +1704,11 @@ procedure TWebkassaClient.Connect;
 var
   Command: TAuthCommand;
 begin
+  if not TestMode then
+  begin
+    Transport.Connect;
+  end;
+
   if Token = '' then
   begin
     Command := TAuthCommand.Create;
@@ -1722,8 +1727,7 @@ end;
 
 procedure TWebkassaClient.Disconnect;
 begin
-  FTransport.Free;
-  FTransport := nil;
+  Transport.Disconnect;
 end;
 
 procedure TWebkassaClient.RaiseLastError;

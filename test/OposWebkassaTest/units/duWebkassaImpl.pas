@@ -70,6 +70,7 @@ type
     procedure TestXReport;
     procedure PrintHeaderAndCut;
   published
+    procedure TestClaim;
     procedure TestZReport;
     procedure TestCashIn;
     procedure TestCashOut;
@@ -155,6 +156,24 @@ begin
   FWaitEvent.Free;
   FLines.Free;
   inherited TearDown;
+end;
+
+procedure TWebkassaImplTest.TestClaim;
+begin
+  FDriver.TestMode := False;
+  FDriver.Client.TestMode := False;
+  FDriver.Params.WebkassaAddress := 'ajkshd827134tu1gy2j';
+
+  OpenService;
+  try
+    ClaimDevice;
+    Fail('Claim did not raise exception when no connection to server');
+  except
+    on E: Exception do
+    begin
+      CheckEquals('111, OPOS_E_FAILURE []', E.Message, 'E.Message');
+    end;
+  end;
 end;
 
 procedure TWebkassaImplTest.WaitForEvent;
