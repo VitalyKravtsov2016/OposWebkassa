@@ -74,8 +74,6 @@ uses
   Translation in '..\Shared\Translation.pas',
   DirectIOAPI in 'units\DirectIOAPI.pas',
   xmlParser in '..\Shared\XMLParser.pas',
-  DIOHandlers in '..\Shared\DIOHandlers.pas',
-  DIOHandler in '..\Shared\DIOHandler.pas',
   PrinterTypes in '..\Shared\PrinterTypes.pas',
   BarcodeUtils in '..\Shared\BarcodeUtils.pas';
 

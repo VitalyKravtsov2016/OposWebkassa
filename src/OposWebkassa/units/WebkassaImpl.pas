@@ -22,7 +22,7 @@ uses
   SalesReceipt, TextDocument, ReceiptItem, StringUtils, DebugUtils, VatRate,
   uZintBarcode, uZintInterface, FileUtils, PosWinPrinter, PosEscPrinter,
   SerialPort, PrinterPort, SocketPort, ReceiptTemplate, RawPrinterPort,
-  DIOHandler, PrinterTypes, DirectIOAPI, BarcodeUtils, PrinterParametersReg;
+  PrinterTypes, DirectIOAPI, BarcodeUtils, PrinterParametersReg;
 
 const
   FPTR_DEVICE_DESCRIPTION = 'WebKassa OPOS driver';
@@ -51,7 +51,6 @@ type
   private
     FLines: TTntStrings;
     FCheckNumber: WideString;
-    FCashboxStatusJson: TlkJSON;
     FCashboxStatus: TlkJSONbase;
     FTestMode: Boolean;
     FLoadParamsEnabled: Boolean;
@@ -73,7 +72,6 @@ type
     FParams: TPrinterParameters;
     FOposDevice: TOposServiceDevice19;
     FPrinterState: TFiscalPrinterState;
-    FDIOHandlers: TDIOHandlers;
     FVatValues: array [MinVatID..MaxVatID] of Integer;
     FLineChars: Integer;
     FLineHeight: Integer;
@@ -96,11 +94,19 @@ type
       const CheckNumber: WideString): WideString;
     procedure BeginDocument(APrintHeader: boolean);
     procedure UpdateTemplateItem(Item: TTemplateItem);
-    procedure CreateDIOHandlers;
     procedure PrintBarcodeAsGraphics(const Barcode: TBarcodeRec);
     procedure PrintDocItem(Item: TDocItem);
     procedure PtrPrintNormal(Station: Integer; const Data: WideString);
     function RenderBarcodeRec(Barcode: TBarcodeRec): AnsiString;
+    procedure DioPrintBarcode(var pData: Integer; var pString: WideString);
+    procedure DioPrintBarcodeHex(var pData: Integer;
+      var pString: WideString);
+    procedure DioSetDriverParameter(var pData: Integer;
+      var pString: WideString);
+    procedure DioGetDriverParameter(var pData: Integer;
+      var pString: WideString);
+    procedure DioGetReceiptResponse(var pData: Integer;
+      var pString: WideString);
   public
     procedure PrintDocumentSafe(Document: TTextDocument);
     procedure CheckCanPrint;
@@ -168,7 +174,6 @@ type
     property Document: TTextDocument read FDocument;
     property Duplicate: TTextDocument read FDuplicate;
     property StateDoc: TlkJSONbase read FCashboxStatus;
-    property DIOHandlers: TDIOHandlers read FDIOHandlers;
     property Printer: IOPOSPOSPrinter read GetPrinter write SetPrinter;
     property PrinterState: Integer read GetPrinterState write SetPrinterState;
   private
@@ -394,9 +399,6 @@ type
 
 implementation
 
-uses
-  DIOHandlers;
-
 const
   BoolToInt: array [Boolean] of Integer = (0, 1);
 
@@ -472,11 +474,7 @@ begin
   FCashBox := TCashBox.Create(nil);
   FCashier := TCashier.Create(nil);
   FClient.RaiseErrors := True;
-  FCashboxStatusJson := TlkJSON.Create;
   FLines := TTntStringList.Create;
-  FDIOHandlers := TDIOHandlers.Create(FParams);
-  CreateDIOHandlers;
-
   FLoadParamsEnabled := True;
 end;
 
@@ -489,7 +487,6 @@ begin
   FPrinterObj.Free;
 
   FLines.Free;
-  FCashboxStatusJson.Free;
   FClient.Free;
   FParams.Free;
   FUnits.Free;
@@ -503,20 +500,8 @@ begin
   FCashBox.Free;
   FCashier.Free;
   FCashiers.Free;
-  FDIOHandlers.Free;
+  FCashboxStatus.Free;
   inherited Destroy;
-end;
-
-procedure TWebkassaImpl.CreateDIOHandlers;
-begin
-  FDIOHandlers.Clear;
-  TDIOBarcode.CreateCommand(FDIOHandlers, DIO_PRINT_BARCODE, Self);
-  TDIOBarcodeHex.CreateCommand(FDIOHandlers, DIO_PRINT_BARCODE_HEX, Self);
-  TDIOPrintHeader.CreateCommand(FDIOHandlers, DIO_PRINT_HEADER, Self);
-  TDIOPrintTrailer.CreateCommand(FDIOHandlers, DIO_PRINT_TRAILER, Self);
-  TDIOSetDriverParameter.CreateCommand(FDIOHandlers, DIO_SET_DRIVER_PARAMETER, Self);
-  TDIOGetDriverParameter.CreateCommand(FDIOHandlers, DIO_GET_DRIVER_PARAMETER, Self);
-  TDIOPrintReceiptDuplicate.CreateCommand(FDIOHandlers, DIO_PRINT_RECEIPT_DUPLICATE, Self);
 end;
 
 procedure TWebkassaImpl.BeginDocument(APrintHeader: boolean);
@@ -916,20 +901,205 @@ begin
   end;
 end;
 
+procedure TWebkassaImpl.DioPrintBarcode(var pData: Integer; var pString: WideString);
+var
+  Barcode: TBarcodeRec;
+begin
+  if Pos(';', pString) = 0 then
+  begin
+    Barcode.BarcodeType := pData;
+    Barcode.Data := pString;
+    Barcode.Text := pString;
+    Barcode.Height := 0;
+    Barcode.ModuleWidth := 4;
+    Barcode.Alignment := 0;
+    Barcode.Parameter1 := 0;
+    Barcode.Parameter2 := 0;
+    Barcode.Parameter3 := 0;
+    Barcode.Parameter4 := 0;
+    Barcode.Parameter5 := 0;
+  end else
+  begin
+    Barcode.BarcodeType := pData;
+    Barcode.Data := GetString(pString, 1, ValueDelimiters);
+    Barcode.Text := GetString(pString, 2, ValueDelimiters);
+    Barcode.Height := GetInteger(pString, 3, ValueDelimiters);
+    Barcode.ModuleWidth := GetInteger(pString, 4, ValueDelimiters);
+    Barcode.Alignment := GetInteger(pString, 5, ValueDelimiters);
+    Barcode.Parameter1 := GetInteger(pString, 6, ValueDelimiters);
+    Barcode.Parameter2 := GetInteger(pString, 7, ValueDelimiters);
+    Barcode.Parameter3 := GetInteger(pString, 8, ValueDelimiters);
+    Barcode.Parameter4 := GetInteger(pString, 9, ValueDelimiters);
+    Barcode.Parameter5 := GetInteger(pString, 10, ValueDelimiters);
+  end;
+  PrintBarcode(BarcodeToStr(Barcode));
+end;
+
+procedure TWebkassaImpl.DioPrintBarcodeHex(var pData: Integer;
+  var pString: WideString);
+var
+  Barcode: TBarcodeRec;
+begin
+  if Pos(';', pString) = 0 then
+  begin
+    Barcode.BarcodeType := pData;
+    Barcode.Data := HexToStr(pString);
+    Barcode.Text := pString;
+
+    (*
+    Barcode.Height := Printer.Params.BarcodeHeight;
+    Barcode.ModuleWidth := Printer.Params.BarcodeModuleWidth;
+    Barcode.Alignment := Printer.Params.BarcodeAlignment;
+    Barcode.Parameter1 := Printer.Params.BarcodeParameter1;
+    Barcode.Parameter2 := Printer.Params.BarcodeParameter2;
+    Barcode.Parameter3 := Printer.Params.BarcodeParameter3;
+    *)
+  end else
+  begin
+    Barcode.BarcodeType := pData;
+    Barcode.Data := HexToStr(GetString(pString, 1, ValueDelimiters));
+    Barcode.Text := GetString(pString, 2, ValueDelimiters);
+    Barcode.Height := GetInteger(pString, 3, ValueDelimiters);
+    Barcode.ModuleWidth := GetInteger(pString, 4, ValueDelimiters);
+    Barcode.Alignment := GetInteger(pString, 5, ValueDelimiters);
+    Barcode.Parameter1 := GetInteger(pString, 6, ValueDelimiters);
+    Barcode.Parameter2 := GetInteger(pString, 7, ValueDelimiters);
+    Barcode.Parameter3 := GetInteger(pString, 8, ValueDelimiters);
+  end;
+  PrintBarcode(BarcodeToStr(Barcode));
+end;
+
+procedure TWebkassaImpl.DioSetDriverParameter(var pData: Integer;
+  var pString: WideString);
+begin
+  case pData of
+    DriverParameterPrintEnabled: Params.PrintEnabled := StrToBool(pString);
+    DriverParameterBarcode: Receipt.Barcode := pString;
+    DriverParameterExternalCheckNumber:
+    begin
+      if pString <> '' then
+        ExternalCheckNumber := pString;
+    end;
+    DriverParameterFiscalSign: Receipt.FiscalSign := pString;
+  end;
+end;
+
+procedure TWebkassaImpl.DioGetDriverParameter(var pData: Integer;
+  var pString: WideString);
+begin
+  case pData of
+    DriverParameterPrintEnabled: pString := BoolToStr(Params.PrintEnabled);
+    DriverParameterBarcode: pString := Receipt.Barcode;
+    DriverParameterExternalCheckNumber: pString := ExternalCheckNumber;
+    DriverParameterFiscalSign: pString := Receipt.FiscalSign;
+  end;
+end;
+
+procedure TWebkassaImpl.DioGetReceiptResponse(var pData: Integer;
+  var pString: WideString);
+begin
+  if AnsiCompareText(pString, 'CheckNumber') = 0 then
+  begin
+    pString := FClient.SendReceiptCommand.Data.CheckNumber;
+    Exit;
+  end;
+  if AnsiCompareText(pString, 'DateTime') = 0 then
+  begin
+    pString := FClient.SendReceiptCommand.Data.DateTime;
+    Exit;
+  end;
+  if AnsiCompareText(pString, 'OfflineMode') = 0 then
+  begin
+    pString := BoolToStr(FClient.SendReceiptCommand.Data.OfflineMode);
+    Exit;
+  end;
+  if AnsiCompareText(pString, 'CashboxOfflineMode') = 0 then
+  begin
+    pString := BoolToStr(FClient.SendReceiptCommand.Data.CashboxOfflineMode);
+    Exit;
+  end;
+  if AnsiCompareText(pString, 'Cashbox.UniqueNumber') = 0 then
+  begin
+    pString := FClient.SendReceiptCommand.Data.Cashbox.UniqueNumber;
+    Exit;
+  end;
+  if AnsiCompareText(pString, 'Cashbox.RegistrationNumber') = 0 then
+  begin
+    pString := FClient.SendReceiptCommand.Data.Cashbox.RegistrationNumber;
+    Exit;
+  end;
+  if AnsiCompareText(pString, 'Cashbox.IdentityNumber') = 0 then
+  begin
+    pString := FClient.SendReceiptCommand.Data.Cashbox.IdentityNumber;
+    Exit;
+  end;
+  if AnsiCompareText(pString, 'Cashbox.Address') = 0 then
+  begin
+    pString := FClient.SendReceiptCommand.Data.Cashbox.Address;
+    Exit;
+  end;
+  if AnsiCompareText(pString, 'Cashbox.Ofd.Code') = 0 then
+  begin
+    pString := IntToStr(FClient.SendReceiptCommand.Data.Cashbox.Ofd.Code);
+    Exit;
+  end;
+  if AnsiCompareText(pString, 'Cashbox.Ofd.Host') = 0 then
+  begin
+    pString := FClient.SendReceiptCommand.Data.Cashbox.Ofd.Host;
+    Exit;
+  end;
+  if AnsiCompareText(pString, 'Cashbox.Ofd.Name') = 0 then
+  begin
+    pString := FClient.SendReceiptCommand.Data.Cashbox.Ofd.Name;
+    Exit;
+  end;
+  if AnsiCompareText(pString, 'CheckOrderNumber') = 0 then
+  begin
+    pString := IntToStr(FClient.SendReceiptCommand.Data.CheckOrderNumber);
+    Exit;
+  end;
+  if AnsiCompareText(pString, 'ShiftNumber') = 0 then
+  begin
+    pString := IntToStr(FClient.SendReceiptCommand.Data.ShiftNumber);
+    Exit;
+  end;
+  if AnsiCompareText(pString, 'EmployeeName') = 0 then
+  begin
+    pString := FClient.SendReceiptCommand.Data.EmployeeName;
+    Exit;
+  end;
+  if AnsiCompareText(pString, 'TicketUrl') = 0 then
+  begin
+    pString := FClient.SendReceiptCommand.Data.TicketUrl;
+    Exit;
+  end;
+  if AnsiCompareText(pString, 'TicketPrintUrl') = 0 then
+  begin
+    pString := FClient.SendReceiptCommand.Data.TicketPrintUrl;
+    Exit;
+  end;
+  RaiseIllegalError(Format('Receipt field "%s" not supported', [pString]));
+end;
+
 function TWebkassaImpl.DirectIO(Command: Integer; var pData: Integer;
   var pString: WideString): Integer;
-var
-  Handler: TDIOHandler;
 begin
+
   try
     FOposDevice.CheckOpened;
-
-    Handler := DIOHandlers.findItem(Command);
-    if Handler <> nil then
-    begin
-      Handler.DirectIO(pData, pString);
-    end else
-    begin
+    case Command of
+      DIO_PRINT_BARCODE: DioPrintBarcode(pData, pString);
+      DIO_PRINT_BARCODE_HEX: DioPrintBarcodeHex(pData, pString);
+      DIO_PRINT_HEADER: ;
+      DIO_PRINT_TRAILER: ;
+      DIO_SET_DRIVER_PARAMETER: DioSetDriverParameter(pData, pString);
+      DIO_GET_DRIVER_PARAMETER: DioGetDriverParameter(pData, pString);
+      DIO_PRINT_RECEIPT_DUPLICATE: PrintReceiptDuplicate2(pString);
+      DIO_GET_RECEIPT_RESPONSE_PARAM: DioGetReceiptResponse(pData, pString);
+      DIO_GET_RECEIPT_RESPONSE_FIELD: pString := GetJsonField(FClient.SendReceiptCommand.ResponseJson, pString);
+      DIO_GET_REQUEST_JSON_FIELD: pString := GetJsonField(FClient.CommandJson, pString);
+      DIO_GET_RESPONSE_JSON_FIELD: pString := GetJsonField(FClient.AnswerJson, pString);
+    else
       if Receipt.IsOpened then
       begin
         Receipt.DirectIO(Command, pData, pString);
@@ -1030,6 +1200,7 @@ end;
 
 procedure TWebkassaImpl.ClearCashboxStatus;
 begin
+  FCashboxStatus.Free;
   FCashboxStatus := nil;
 end;
 
@@ -1044,7 +1215,7 @@ begin
       Request.Token := Client.Token;
       Request.CashboxUniqueNumber := Params.CashboxNumber;
       Client.ReadCashboxStatus(Request);
-      FCashboxStatus := FCashboxStatusJson.ParseText(FClient.AnswerJson);
+      FCashboxStatus := TlkJSON.ParseText(FClient.AnswerJson);
     finally
       Request.Free;
     end;
@@ -1844,7 +2015,6 @@ var
   Separator: WideString;
   Command: TZXReportCommand;
 
-  Json: TlkJSON;
   Doc: TlkJSONbase;
   Node: TlkJSONbase;
   Count: Integer;
@@ -1854,7 +2024,6 @@ var
 begin
   CheckCanPrint;
 
-  Json := TlkJSON.Create;
   Command := TZXReportCommand.Create;
   try
     Command.Request.Token := FClient.Token;
@@ -1865,7 +2034,7 @@ begin
       FClient.XReport(Command);
 
     ClearCashboxStatus;
-    Doc := Json.ParseText(FClient.AnswerJson);
+    Doc := TlkJSON.ParseText(FClient.AnswerJson);
 
     Total :=
       (Command.Data.EndNonNullable.Sell - Command.Data.StartNonNullable.Sell) -
@@ -1969,7 +2138,6 @@ begin
     PrintDocumentSafe(Document);
   finally
     Command.Free;
-    Json.Free;
   end;
 end;
 
@@ -3141,17 +3309,18 @@ function TWebkassaImpl.GetJsonField(JsonText: WideString;
 var
   P: Integer;
   S: WideString;
-  Json: TlkJSON;
   Root: TlkJSONbase;
+  Json: TlkJSONbase;
   Field: WideString;
 begin
   Result := '';
   if JsonText = '' then Exit;
   if FieldName = '' then Exit;
 
-  Json := TlkJSON.Create;
-  try
-    Root := Json.ParseText(JsonText);
+  Json := TlkJSON.ParseText(JsonText);
+  if Json <> nil then
+  begin
+    Root := Json;
     S := FieldName;
     Result := '';
     repeat
@@ -3174,7 +3343,6 @@ begin
       end;
     until P = 0;
     Result := Root.Value;
-  finally
     Json.Free;
   end;
 end;

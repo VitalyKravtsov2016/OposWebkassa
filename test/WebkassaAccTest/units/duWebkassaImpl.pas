@@ -371,6 +371,10 @@ end;
 
 procedure TWebkassaImplTest.TestFiscalReceipt;
 var
+  pData: Integer;
+  pString: WideString;
+  TicketUrl: WideString;
+  TicketUrl2: WideString;
   Description: WideString;
 begin
   OpenClaimEnable;
@@ -394,6 +398,28 @@ begin
 
   FptrCheck(Driver.EndFiscalReceipt(False));
   CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+
+  pData := 0;
+  pString := 'TicketUrl';
+  FptrCheck(Driver.DirectIO(DIO_GET_RECEIPT_RESPONSE_PARAM, pData, pString));
+  CheckNotEquals(pString, 'TicketUrl', 'pString did not changed');
+  CheckNotEquals(pString, '', 'pString = ""');
+  TicketUrl := pString;
+
+  pString := 'Data.TicketUrl';
+  FptrCheck(Driver.DirectIO(DIO_GET_RECEIPT_RESPONSE_FIELD, pData, pString));
+  CheckNotEquals(pString, 'Data.TicketUrl', 'pString did not changed');
+  CheckNotEquals(pString, '', 'pString = ""');
+  TicketUrl2 := pString;
+
+  CheckEquals(TicketUrl, TicketUrl2, 'pString <> TicketUrl');
+
+  pString := 'Data.TicketUrl';
+  FptrCheck(Driver.DirectIO(DIO_GET_RESPONSE_JSON_FIELD, pData, pString));
+  CheckNotEquals(pString, 'Data.TicketUrl', 'pString did not changed');
+  CheckNotEquals(pString, '', 'pString = ""');
+
+  CheckEquals(pString, TicketUrl2, 'pString <> TicketUrl2');
 end;
 
 procedure TWebkassaImplTest.TestPrintReceiptDuplicate;

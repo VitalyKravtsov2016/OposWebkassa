@@ -315,9 +315,21 @@ type
     property OfdToken: Integer read FOfdToken write FOfdToken;
   end;
 
+  { TJsonCommand }
+
+  TJsonCommand = class(TJsonPersistent)
+  private
+    FRequestJson: WideString;
+    FResponseJson: WideString;
+  public
+    procedure Assign(Source: TPersistent); override;
+    property RequestJson: WideString read FRequestJson write FRequestJson;
+    property ResponseJson: WideString read FResponseJson write FResponseJson;
+  end;
+
   { TSendReceiptCommand }
 
-  TSendReceiptCommand = class(TJsonPersistent)
+  TSendReceiptCommand = class(TJsonCommand)
   private
     FData: TSendReceiptCommandResponse;
     FRequest: TSendReceiptCommandRequest;
@@ -325,6 +337,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
+    procedure Assign(Source: TPersistent); override;
     property Request: TSendReceiptCommandRequest read FRequest;
   published
     property Data: TSendReceiptCommandResponse read FData write SetData;
@@ -386,6 +399,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
+    procedure Assign(Source: TPersistent); override;
   published
 		property CheckNumber: WideString read FCheckNumber write FCheckNumber;
 		property DateTime: WideString read FDateTime write FDateTime;
@@ -1362,6 +1376,7 @@ type
     FErrorResult: TErrorResult;
     FTestErrorResult: TErrorResult;
     FRegKeyName: WideString;
+    FSendReceiptCommand: TSendReceiptCommand;
 
     function GetTransport: TIdHTTP;
     function CheckLastError: Boolean;
@@ -1410,6 +1425,7 @@ type
     property RaiseErrors: Boolean read FRaiseErrors write FRaiseErrors;
     property AnswerJson: WideString read FAnswerJson write FAnswerJson;
     property CommandJson: WideString read FCommandJson write FCommandJson;
+    property SendReceiptCommand: TSendReceiptCommand read FSendReceiptCommand;
     property CashboxNumber: WideString read FCashboxNumber write FCashboxNumber;
     property TestErrorResult: TErrorResult read FTestErrorResult write FTestErrorResult;
   end;
@@ -1551,6 +1567,7 @@ begin
   FErrorResult := TErrorResult.Create;
   FDomainNames := TStringList.Create;
   FRegKeyName := 'SHTRIH-M\WebKassa';
+  FSendReceiptCommand := TSendReceiptCommand.Create;
 end;
 
 destructor TWebkassaClient.Destroy;
@@ -1558,6 +1575,7 @@ begin
   FTransport.Free;
   FErrorResult.Free;
   FDomainNames.Free;
+  FSendReceiptCommand.Free;
   inherited Destroy;
 end;
 
@@ -1922,15 +1940,14 @@ begin
 end;
 
 function TWebkassaClient.SendReceipt(Command: TSendReceiptCommand): Boolean;
-var
-  JsonText: WideString;
 begin
-  JsonText := ObjectToJson(Command.Request);
-  JsonText := Post(GetAddress + 'api/check', JsonText);
+  Command.RequestJson := ObjectToJson(Command.Request);
+  Command.ResponseJson := Post(GetAddress + 'api/check', Command.RequestJson);
   Result := CheckLastError;
   if Result then
   begin
-    JsonToObject(JsonText, Command);
+    JsonToObject(Command.ResponseJson, Command);
+    FSendReceiptCommand.Assign(Command);
   end;
 end;
 
@@ -2533,9 +2550,6 @@ begin
     FIdentityNumber := Src.FIdentityNumber;
     FAddress := Src.FAddress;
     FOfd.Assign(Src.Ofd);
-  end else
-  begin
-    inherited Assign(Source);
   end;
 end;
 
@@ -2828,8 +2842,7 @@ begin
     FFullName := Src.FullName;
     FEmail := Src.Email;
     FCashboxes.Assign(Src.Cashboxes);
-  end else
-    inherited Assign(Source);
+  end;
 end;
 
 { TCashierCommand }
@@ -3126,6 +3139,15 @@ end;
 
 { TSendReceiptCommand }
 
+procedure TSendReceiptCommand.Assign(Source: TPersistent);
+begin
+  if Source is TSendReceiptCommand then
+  begin
+    inherited Assign(Source);
+    Data.Assign((Source as TSendReceiptCommand).Data);
+  end;
+end;
+
 constructor TSendReceiptCommand.Create;
 begin
   inherited Create;
@@ -3196,6 +3218,27 @@ begin
 end;
 
 { TSendReceiptCommandResponse }
+
+procedure TSendReceiptCommandResponse.Assign(Source: TPersistent);
+var
+  Src: TSendReceiptCommandResponse;
+begin
+  if Source is TSendReceiptCommandResponse then
+  begin
+    Src := Source as TSendReceiptCommandResponse;
+
+		Cashbox.Assign(Src.Cashbox);
+		CheckNumber := Src.CheckNumber;
+		DateTime := Src.DateTime;
+		OfflineMode := Src.OfflineMode;
+		CashboxOfflineMode := Src.CashboxOfflineMode;
+		CheckOrderNumber := Src.CheckOrderNumber;
+		ShiftNumber := Src.ShiftNumber;
+		EmployeeName := Src.EmployeeName;
+		TicketUrl := Src.TicketUrl;
+		TicketPrintUrl := Src.TicketPrintUrl;
+  end;
+end;
 
 constructor TSendReceiptCommandResponse.Create;
 begin
@@ -3292,9 +3335,6 @@ begin
     Src := Source as TErrorItem;
     FCode := Src.Code;
     FText := Src.Text;
-  end else
-  begin
-    inherited Assign(Source);
   end;
 end;
 
@@ -3382,8 +3422,7 @@ begin
     IsOffline := Src.IsOffline;
     CurrentStatus := Src.CurrentStatus;
     Shift := SRc.Shift;
-  end else
-    inherited Assign(Source);
+  end;
 end;
 
 { TCashBoxes }
@@ -3427,6 +3466,17 @@ begin
     if AnsiCompareText(Result.Email, email) = 0 then Exit;
   end;
   Result := nil;
+end;
+
+{ TJsonCommand }
+
+procedure TJsonCommand.Assign(Source: TPersistent);
+begin
+  if Source is TJsonCommand then
+  begin
+    RequestJson := (Source as TJsonCommand).RequestJson;
+    ResponseJson := (Source as TJsonCommand).ResponseJson;
+  end;
 end;
 
 initialization

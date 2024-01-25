@@ -89,9 +89,7 @@ uses
   duOposUtils in 'units\duOposUtils.pas',
   duWebkassaImpl2 in 'units\duWebkassaImpl2.pas',
   duPosEscPrinter in 'units\duPosEscPrinter.pas',
-  DIOHandler in '..\..\src\Shared\DIOHandler.pas',
   PrinterTypes in '..\..\src\Shared\PrinterTypes.pas',
-  DIOHandlers in '..\..\src\Shared\DIOHandlers.pas',
   BarcodeUtils in '..\..\src\Shared\BarcodeUtils.pas';
 
 {$R *.RES}
