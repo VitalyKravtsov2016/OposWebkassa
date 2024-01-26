@@ -41,6 +41,9 @@ begin
   Result := E.Message;
   if E is WideException then
     Result := (E as WideException).Message;
+
+  if Result = '' then
+    Result := E.ClassName;
 end;
 
 { WideException }

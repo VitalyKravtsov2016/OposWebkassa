@@ -51,7 +51,6 @@ type
     property ResultCodeExtended: Integer read FResultCodeExtended;
   end;
 
-procedure RaiseIllegalError; overload;
 procedure RaiseIllegalError(const AMessage: WideString); overload;
 procedure RaiseOPOSException(AResultCode: Integer); overload;
 procedure RaiseExtendedError(AResultCodeExtended: Integer); overload;
@@ -119,11 +118,6 @@ end;
 procedure RaiseIllegalError(const AMessage: WideString); overload;
 begin
   RaiseOposException(OPOS_E_ILLEGAL, AMessage);
-end;
-
-procedure RaiseIllegalError; overload;
-begin
-  RaiseOposException(OPOS_E_ILLEGAL);
 end;
 
 { EOPOSExtendedError }

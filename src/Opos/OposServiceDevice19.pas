@@ -497,7 +497,7 @@ end;
 procedure TOposServiceDevice19.SetPowerNotify(const Value: Integer);
 begin
   if (Value = OPOS_PN_ENABLED)and(CapPowerReporting = OPOS_PR_NONE) then
-    RaiseIllegalError;
+    RaiseIllegalError('CapPowerReporting = OPOS_PR_NONE');
 
   FPowerNotify := Value;
 end;

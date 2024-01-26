@@ -838,9 +838,9 @@ function TWebkassaImpl.Claim(Timeout: Integer): Integer;
 begin
   try
     FOposDevice.ClaimDevice(Timeout);
-    FParams.CheckPrameters;
-    FClient.Connect;
     CheckPtr(Printer.ClaimDevice(Timeout));
+    FParams.CheckPrameters;
+    ReadCashboxStatus;
 
     Result := ClearResult;
   except
@@ -1539,7 +1539,7 @@ function TWebkassaImpl.GetTotalizer(VatID, OptArgs: Integer;
       FPTR_TT_RECEIPT: Result := Receipt.GetTotal;
       FPTR_TT_GRAND: Result := ReadGrandTotal;
     else
-      RaiseIllegalError;
+      RaiseIllegalError(Format('OptArgs value not supported, %d', [OptArgs]));
     end;
   end;
 
@@ -1796,7 +1796,7 @@ begin
 
     if (PrinterState <> FPTR_PS_FISCAL_RECEIPT_ENDING) and
       (PrinterState <> FPTR_PS_FISCAL_RECEIPT_TOTAL) then
-      raiseExtendedError(OPOS_EFPTR_WRONG_STATE);
+      raiseExtendedError(OPOS_EFPTR_WRONG_STATE, 'Invalid state');
 
     FReceipt.PrintRecNotPaid(Description, Amount);
     Result := ClearResult;
@@ -1917,7 +1917,7 @@ begin
   try
     if (PrinterState <> FPTR_PS_FISCAL_RECEIPT) and
       (PrinterState <> FPTR_PS_FISCAL_RECEIPT_TOTAL) then
-      raiseExtendedError(OPOS_EFPTR_WRONG_STATE);
+      raiseExtendedError(OPOS_EFPTR_WRONG_STATE, 'OPOS_EFPTR_WRONG_STATE');
 
     if FCheckTotal and (FReceipt.GetTotal <> Total) then
     begin

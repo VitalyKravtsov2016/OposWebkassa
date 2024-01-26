@@ -334,7 +334,7 @@ end;
 procedure TCustomReceipt.CheckNotVoided;
 begin
   if FIsVoided then
-    raiseExtendedError(OPOS_EFPTR_WRONG_STATE);
+    raiseExtendedError(OPOS_EFPTR_WRONG_STATE, 'Receipt is voided');
 end;
 
 procedure TCustomReceipt.DirectIO(Command: Integer; var pData: Integer;

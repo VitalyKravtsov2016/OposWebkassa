@@ -69,8 +69,8 @@ type
     procedure PrintReceipt3;
     procedure TestXReport;
     procedure PrintHeaderAndCut;
-  published
     procedure TestClaim;
+  published
     procedure TestZReport;
     procedure TestCashIn;
     procedure TestCashOut;
@@ -162,7 +162,7 @@ procedure TWebkassaImplTest.TestClaim;
 begin
   FDriver.TestMode := False;
   FDriver.Client.TestMode := False;
-  FDriver.Params.WebkassaAddress := 'ajkshd827134tu1gy2j';
+  FDriver.Params.WebkassaAddress := 'https://devkkm.webkassa.kz23';
 
   OpenService;
   try
@@ -171,7 +171,7 @@ begin
   except
     on E: Exception do
     begin
-      CheckEquals('111, OPOS_E_FAILURE []', E.Message, 'E.Message');
+      CheckEquals('111, OPOS_E_FAILURE [Socket Error # 11001 Host not found.]', E.Message, 'E.Message');
     end;
   end;
 end;
