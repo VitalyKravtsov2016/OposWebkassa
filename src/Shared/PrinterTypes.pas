@@ -14,6 +14,7 @@ type
   TBarcodeRec = record
     Data: WideString; // barcode data
     Text: WideString; // barcode text
+    Width: Integer;
     Height: Integer;
     BarcodeType: Integer;
     ModuleWidth: Integer;
@@ -86,6 +87,7 @@ begin
   Result.Parameter3 := GetInteger(Data, 9, ValueDelimiters);
   Result.Parameter4 := GetInteger(Data, 10, ValueDelimiters);
   Result.Parameter5 := GetInteger(Data, 11, ValueDelimiters);
+  Result.Width := GetInteger(Data, 12, ValueDelimiters);
 end;
 
 function BarcodeToStr(const Barcode: TBarcodeRec): string;

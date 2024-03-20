@@ -98,9 +98,9 @@ var
   CommandJson: string;
   Command: TChangeTokenCommand;
 begin
+  FClient.Token := '0b8557d0139945a582fcfee661ffad49';
   Command := TChangeTokenCommand.Create;
   try
-    Command.Request.Token := '0b8557d0139945a582fcfee661ffad49';
     Command.Request.CashboxUniqueNumber := 'SWK00000019';
     Command.Request.OfdToken := 12345678;
 
@@ -341,9 +341,9 @@ var
   Item: TJournalReportItem;
   Command: TJournalReportCommand;
 begin
+  FClient.Token := '0b8557d0139945a582fcfee661ffad49';
   Command := TJournalReportCommand.Create;
   try
-    Command.Request.Token := '0b8557d0139945a582fcfee661ffad49';
     Command.Request.CashboxUniqueNumber := 'SWK00000019';
     Command.Request.ShiftNumber := 3;
     FClient.AnswerJson := ReadFileData(GetModulePath + 'JournalReportAnswer.txt');
@@ -488,9 +488,9 @@ var
   CommandJson: string;
   Command: TUploadOrderCommand;
 begin
+  FClient.token := '6a4eaa2e4b744950blelce3312470d3d';
   Command := TUploadOrderCommand.Create;
   try
-    Command.Request.token := '6a4eaa2e4b744950blelce3312470d3d';
     Command.Request.OrderNumber := '123456789-123';
     Command.Request.CustomerEmail := 'pochta@pochta.com';
 	  Command.Request.CustomerPhone := '+77771234455';
@@ -538,9 +538,9 @@ var
   CommandJson: string;
   Command: TMoneyOperationCommand;
 begin
+  FClient.token := '0b8557d0139945a582fcfee661ffad49';
   Command := TMoneyOperationCommand.Create;
   try
-    Command.Request.token := '0b8557d0139945a582fcfee661ffad49';
 	  Command.Request.CashboxUniqueNumber := 'SWK00000019';
 	  Command.Request.OperationType := 1;
 	  Command.Request.Sum := 1500;

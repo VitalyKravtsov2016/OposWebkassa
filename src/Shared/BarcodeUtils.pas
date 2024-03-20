@@ -6,26 +6,28 @@ uses
   // VCL
   Types, Graphics, uZintInterface;
 
-procedure ScaleBitmap(Bitmap: TBitmap; Scale: Integer);
+procedure ScaleGraphic(Graphic: TGraphic; Scale: Integer);
 procedure RenderBarcode(Bitmap: TBitmap; Symbol: PZSymbol; Is1D: Boolean);
 
 implementation
 
-procedure ScaleBitmap(Bitmap: TBitmap; Scale: Integer);
+procedure ScaleGraphic(Graphic: TGraphic; Scale: Integer);
 var
   P: TPoint;
   DstBitmap: TBitmap;
 begin
+  if Scale <= 1 then Exit;
+
   DstBitmap := TBitmap.Create;
   try
     DstBitmap.Monochrome := True;
     DstBitmap.PixelFormat := pf1Bit;
-    P.X := Bitmap.Width * Scale;
-    P.Y := Bitmap.Height * Scale;
+    P.X := Graphic.Width * Scale;
+    P.Y := Graphic.Height * Scale;
     DstBitmap.Width := P.X;
     DstBitmap.Height := P.Y;
-    DstBitmap.Canvas.StretchDraw(Rect(0, 0, P.X, P.Y), Bitmap);
-    Bitmap.Assign(DstBitmap);
+    DstBitmap.Canvas.StretchDraw(Rect(0, 0, P.X, P.Y), Graphic);
+    Graphic.Assign(DstBitmap);
   finally
     DstBitmap.Free;
   end;

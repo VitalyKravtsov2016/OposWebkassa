@@ -88,6 +88,7 @@ begin
   FPrinterPort := CreateRawPort;
   FPrinter := TPosEscPrinter.Create2(nil, FPrinterPort, FLogger);
   FPrinter.OnStatusUpdateEvent := StatusUpdateEvent;
+  FPrinter.BarcodeInGraphics := False;
 end;
 
 procedure TPosEscPrinterTest.StatusUpdateEvent(ASender: TObject; Data: Integer);
@@ -217,8 +218,16 @@ const
   CRLF = #13#10;
 begin
   OpenClaimEnable;
-  PtrCheck(Printer.PrintBarCode(PTR_S_RECEIPT, Barcode + CRLF, PTR_BCS_DATAMATRIX, 0, 4,
-    PTR_BC_CENTER, PTR_BC_TEXT_NONE));
+
+  FPrinter.BarcodeInGraphics := False;
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'FPrinter.BarcodeInGraphics = False' + CRLF));
+  PtrCheck(Printer.PrintBarCode(PTR_S_RECEIPT, Barcode + CRLF,
+    PTR_BCS_QRCODE, 200, 200, PTR_BC_CENTER, PTR_BC_TEXT_NONE));
+
+  FPrinter.BarcodeInGraphics := True;
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'FPrinter.BarcodeInGraphics = True' + CRLF));
+  PtrCheck(Printer.PrintBarCode(PTR_S_RECEIPT, Barcode + CRLF,
+    PTR_BCS_QRCODE, 200, 200, PTR_BC_CENTER, PTR_BC_TEXT_NONE));
 end;
 
 procedure TPosEscPrinterTest.TestPrintBarCodeEsc;

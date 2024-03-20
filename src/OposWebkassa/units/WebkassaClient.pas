@@ -1790,13 +1790,11 @@ var
 const
   MaxConnectCount = 3;
 begin
-  IsTokenExpired := False;
+  Connect;
+
   for RepCount := 1 to MaxConnectCount do
   begin
-    if IsTokenExpired then
-    begin
-      Request := ChangeTokenInJson(Request, Token);
-    end;
+    Request := ChangeTokenInJson(Request, Token);
     Result := PostJson(URL, Request);
     IsTokenExpired := FErrorResult.IsTokenExpired;
     if not IsTokenExpired then Break;

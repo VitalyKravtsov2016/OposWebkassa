@@ -130,6 +130,7 @@ begin
     Params.LogFileEnabled := True;
     Params.LogMaxCount := 10;
     Params.LogFilePath := GetModulePath + 'Logs';
+    Params.PrintBarcode := PrintBarcodeGraphics;
 (*
     Params.Login := 'webkassa4@softit.kz';
     Params.Password := 'Kassa123';
@@ -837,7 +838,7 @@ procedure TWebkassaImplTest.TestPrint2DBarcode;
 
     FptrCheck(Driver.PrintNormal(FPTR_S_RECEIPT, 'DIO_BARCODE_DATAMATRIX' + CRLF));
     FptrCheck(DirectIO2(7, DIO_BARCODE_DATAMATRIX, Barcode));
-
+    
     FptrCheck(Driver.PrintNormal(FPTR_S_RECEIPT, 'DIO_BARCODE_AZTEC' + CRLF));
     FptrCheck(DirectIO2(7, DIO_BARCODE_AZTEC, Barcode));
   end;

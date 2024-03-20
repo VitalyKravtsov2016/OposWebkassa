@@ -94,10 +94,10 @@ type
       const CheckNumber: WideString): WideString;
     procedure BeginDocument(APrintHeader: boolean);
     procedure UpdateTemplateItem(Item: TTemplateItem);
-    procedure PrintBarcodeAsGraphics(const Barcode: TBarcodeRec);
+    procedure PrintBarcodeAsGraphics(Barcode: TBarcodeRec);
     procedure PrintDocItem(Item: TDocItem);
     procedure PtrPrintNormal(Station: Integer; const Data: WideString);
-    function RenderBarcodeRec(Barcode: TBarcodeRec): AnsiString;
+    function RenderBarcodeRec(var Barcode: TBarcodeRec): AnsiString;
     procedure DioPrintBarcode(var pData: Integer; var pString: WideString);
     procedure DioPrintBarcodeHex(var pData: Integer;
       var pString: WideString);
@@ -384,7 +384,7 @@ type
     procedure PrintQRCodeAsGraphics(const BarcodeData: AnsiString);
     function RenderQRCode(const BarcodeData: AnsiString): AnsiString;
     procedure PrintBarcode(const Barcode: string);
-    procedure PrintBarcode2(const Barcode: TBarcodeRec);
+    procedure PrintBarcode2(Barcode: TBarcodeRec);
 
     property Logger: ILogFile read FLogger;
     property CashBox: TCashBox read FCashBox;
@@ -451,6 +451,105 @@ begin
     BARCODE_ALIGNMENT_RIGHT  : Result := PTR_BM_RIGHT;
   else
     Result := PTR_BM_CENTER;
+  end;
+end;
+
+function BTypeToZBType(BarcodeType: Integer): TZBType;
+begin
+  case BarcodeType of
+    DIO_BARCODE_EAN13_INT: Result := tBARCODE_EANX;
+    DIO_BARCODE_CODE128A: Result := tBARCODE_CODE128;
+    DIO_BARCODE_CODE128B: Result := tBARCODE_CODE128;
+    DIO_BARCODE_CODE128C: Result := tBARCODE_CODE128;
+    DIO_BARCODE_CODE39: Result := tBARCODE_CODE39;
+    DIO_BARCODE_CODE25INTERLEAVED: Result := tBARCODE_C25INTER;
+    DIO_BARCODE_CODE25INDUSTRIAL: Result := tBARCODE_C25IND;
+    DIO_BARCODE_CODE25MATRIX: Result := tBARCODE_C25MATRIX;
+    DIO_BARCODE_CODE39EXTENDED: Result := tBARCODE_EXCODE39;
+    DIO_BARCODE_CODE93: Result := tBARCODE_CODE93;
+    DIO_BARCODE_CODE93EXTENDED: Result := tBARCODE_CODE93;
+    DIO_BARCODE_MSI: Result := tBARCODE_MSI_PLESSEY;
+    DIO_BARCODE_POSTNET: Result := tBARCODE_POSTNET;
+    DIO_BARCODE_CODABAR: Result := tBARCODE_CODABAR;
+    DIO_BARCODE_EAN8: Result := tBARCODE_EANX;
+    DIO_BARCODE_EAN13: Result := tBARCODE_EANX;
+    DIO_BARCODE_UPC_A: Result := tBARCODE_UPCA;
+    DIO_BARCODE_UPC_E0: Result := tBARCODE_UPCE;
+    DIO_BARCODE_UPC_E1: Result := tBARCODE_UPCE;
+    DIO_BARCODE_EAN128A: Result := tBARCODE_EAN128;
+    DIO_BARCODE_EAN128B: Result := tBARCODE_EAN128;
+    DIO_BARCODE_EAN128C: Result := tBARCODE_EAN128;
+    DIO_BARCODE_CODE11: Result := tBARCODE_CODE11;
+    DIO_BARCODE_C25IATA: Result := tBARCODE_C25IATA;
+    DIO_BARCODE_C25LOGIC: Result := tBARCODE_C25LOGIC;
+    DIO_BARCODE_DPLEIT: Result := tBARCODE_DPLEIT;
+    DIO_BARCODE_DPIDENT: Result := tBARCODE_DPIDENT;
+    DIO_BARCODE_CODE16K: Result := tBARCODE_CODE16K;
+    DIO_BARCODE_CODE49: Result := tBARCODE_CODE49;
+    DIO_BARCODE_FLAT: Result := tBARCODE_FLAT;
+    DIO_BARCODE_RSS14: Result := tBARCODE_RSS14;
+    DIO_BARCODE_RSS_LTD: Result := tBARCODE_RSS_LTD;
+    DIO_BARCODE_RSS_EXP: Result := tBARCODE_RSS_EXP;
+    DIO_BARCODE_TELEPEN: Result := tBARCODE_TELEPEN;
+    DIO_BARCODE_FIM: Result := tBARCODE_FIM;
+    DIO_BARCODE_LOGMARS: Result := tBARCODE_LOGMARS;
+    DIO_BARCODE_PHARMA: Result := tBARCODE_PHARMA;
+    DIO_BARCODE_PZN: Result := tBARCODE_PZN;
+    DIO_BARCODE_PHARMA_TWO: Result := tBARCODE_PHARMA_TWO;
+    DIO_BARCODE_PDF417: Result := tBARCODE_PDF417;
+    DIO_BARCODE_PDF417TRUNC: Result := tBARCODE_PDF417TRUNC;
+    DIO_BARCODE_MAXICODE: Result := tBARCODE_MAXICODE;
+    DIO_BARCODE_QRCODE: Result := tBARCODE_QRCODE;
+    DIO_BARCODE_DATAMATRIX: Result := tBARCODE_DATAMATRIX;
+    DIO_BARCODE_AUSPOST: Result := tBARCODE_AUSPOST;
+    DIO_BARCODE_AUSREPLY: Result := tBARCODE_AUSREPLY;
+    DIO_BARCODE_AUSROUTE: Result := tBARCODE_AUSROUTE;
+    DIO_BARCODE_AUSREDIRECT: Result := tBARCODE_AUSREDIRECT;
+    DIO_BARCODE_ISBNX: Result := tBARCODE_ISBNX;
+    DIO_BARCODE_RM4SCC: Result := tBARCODE_RM4SCC;
+    DIO_BARCODE_EAN14: Result := tBARCODE_EAN14;
+    DIO_BARCODE_CODABLOCKF: Result := tBARCODE_CODABLOCKF;
+    DIO_BARCODE_NVE18: Result := tBARCODE_NVE18;
+    DIO_BARCODE_JAPANPOST: Result := tBARCODE_JAPANPOST;
+    DIO_BARCODE_KOREAPOST: Result := tBARCODE_KOREAPOST;
+    DIO_BARCODE_RSS14STACK: Result := tBARCODE_RSS14STACK;
+    DIO_BARCODE_RSS14STACK_OMNI: Result := tBARCODE_RSS14STACK_OMNI;
+    DIO_BARCODE_RSS_EXPSTACK: Result := tBARCODE_RSS_EXPSTACK;
+    DIO_BARCODE_PLANET: Result := tBARCODE_PLANET;
+    DIO_BARCODE_MICROPDF417: Result := tBARCODE_MICROPDF417;
+    DIO_BARCODE_ONECODE: Result := tBARCODE_ONECODE;
+    DIO_BARCODE_PLESSEY: Result := tBARCODE_PLESSEY;
+    DIO_BARCODE_TELEPEN_NUM: Result := tBARCODE_TELEPEN_NUM;
+    DIO_BARCODE_ITF14: Result := tBARCODE_ITF14;
+    DIO_BARCODE_KIX: Result := tBARCODE_KIX;
+    DIO_BARCODE_AZTEC: Result := tBARCODE_AZTEC;
+    DIO_BARCODE_DAFT: Result := tBARCODE_DAFT;
+    DIO_BARCODE_MICROQR: Result := tBARCODE_MICROQR;
+    DIO_BARCODE_HIBC_128: Result := tBARCODE_HIBC_128;
+    DIO_BARCODE_HIBC_39: Result := tBARCODE_HIBC_39;
+    DIO_BARCODE_HIBC_DM: Result := tBARCODE_HIBC_DM;
+    DIO_BARCODE_HIBC_QR: Result := tBARCODE_HIBC_QR;
+    DIO_BARCODE_HIBC_PDF: Result := tBARCODE_HIBC_PDF;
+    DIO_BARCODE_HIBC_MICPDF: Result := tBARCODE_HIBC_MICPDF;
+    DIO_BARCODE_HIBC_BLOCKF: Result := tBARCODE_HIBC_BLOCKF;
+    DIO_BARCODE_HIBC_AZTEC: Result := tBARCODE_HIBC_AZTEC;
+    DIO_BARCODE_AZRUNE: Result := tBARCODE_AZRUNE;
+    DIO_BARCODE_CODE32: Result := tBARCODE_CODE32;
+    DIO_BARCODE_EANX_CC: Result := tBARCODE_EANX_CC;
+    DIO_BARCODE_EAN128_CC: Result := tBARCODE_EAN128_CC;
+    DIO_BARCODE_RSS14_CC: Result := tBARCODE_RSS14_CC;
+    DIO_BARCODE_RSS_LTD_CC: Result := tBARCODE_RSS_LTD_CC;
+    DIO_BARCODE_RSS_EXP_CC: Result := tBARCODE_RSS_EXP_CC;
+    DIO_BARCODE_UPCA_CC: Result := tBARCODE_UPCA_CC;
+    DIO_BARCODE_UPCE_CC: Result := tBARCODE_UPCE_CC;
+    DIO_BARCODE_RSS14STACK_CC: Result := tBARCODE_RSS14STACK_CC;
+    DIO_BARCODE_RSS14_OMNI_CC: Result := tBARCODE_RSS14_OMNI_CC;
+    DIO_BARCODE_RSS_EXPSTACK_CC: Result := tBARCODE_RSS_EXPSTACK_CC;
+    DIO_BARCODE_CHANNEL: Result := tBARCODE_CHANNEL;
+    DIO_BARCODE_CODEONE: Result := tBARCODE_CODEONE;
+    DIO_BARCODE_GRIDMATRIX: Result := tBARCODE_GRIDMATRIX;
+  else
+    raise Exception.CreateFmt('Barcode type not supported, %d', [BarcodeType]);
   end;
 end;
 
@@ -914,6 +1013,7 @@ begin
     Barcode.Data := pString;
     Barcode.Text := pString;
     Barcode.Height := 0;
+    Barcode.Width := 0;
     Barcode.ModuleWidth := 4;
     Barcode.Alignment := 0;
     Barcode.Parameter1 := 0;
@@ -934,6 +1034,7 @@ begin
     Barcode.Parameter3 := GetInteger(pString, 8, ValueDelimiters);
     Barcode.Parameter4 := GetInteger(pString, 9, ValueDelimiters);
     Barcode.Parameter5 := GetInteger(pString, 10, ValueDelimiters);
+    Barcode.Width := 0;
   end;
   PrintBarcode(BarcodeToStr(Barcode));
 end;
@@ -3820,7 +3921,11 @@ begin
       Barcode.Parameter5 := 0;
       PrintBarcode2(Barcode);
     end;
-    STYLE_BARCODE: PrintBarcode2(StrToBarcode(Item.Text));
+    STYLE_BARCODE:
+    begin
+      Barcode := StrToBarcode(Item.Text);
+      PrintBarcode2(Barcode);
+    end;
   else
     Text := Item.Text;
     FPrefix := '';
@@ -3996,7 +4101,7 @@ begin
     Render.ShowHumanReadableText := False;
     Render.EncodeNow;
     RenderBarcode(Bitmap, Render.Symbol, False);
-    ScaleBitmap(Bitmap, 2);
+    ScaleGraphic(Bitmap, 2);
     Bitmap.SaveToStream(Stream);
 
     if Stream.Size > 0 then
@@ -4022,13 +4127,13 @@ begin
     Data := RenderQRCode(BarcodeData);
     Data := OposStrToNibble(Data);
     CheckPtr(Printer.PrintMemoryBitmap(PTR_S_RECEIPT, Data,
-      PTR_BMT_BMP, PTR_BM_ASIS, PTR_BM_CENTER));
+      PTR_BMT_BMP, 200, PTR_BM_CENTER));
   finally
     Printer.BinaryConversion := OPOS_BC_NONE;
   end;
 end;
 
-procedure TWebkassaImpl.PrintBarcodeAsGraphics(const Barcode: TBarcodeRec);
+procedure TWebkassaImpl.PrintBarcodeAsGraphics(Barcode: TBarcodeRec);
 var
   Data: AnsiString;
   BMPAlignment: Integer;
@@ -4036,121 +4141,19 @@ begin
   if not Printer.CapRecBitmap then
     RaiseIllegalError('Bitmaps are not supported');
 
-
   Printer.BinaryConversion := OPOS_BC_NIBBLE;
   try
     Data := RenderBarcodeRec(Barcode);
     Data := OposStrToNibble(Data);
     BMPAlignment := BarcodeAlignmentToBMPAlignment(Barcode.Alignment);
     CheckPtr(Printer.PrintMemoryBitmap(PTR_S_RECEIPT, Data,
-      PTR_BMT_BMP, PTR_BM_ASIS, BMPAlignment));
+      PTR_BMT_BMP, Barcode.Width, BMPAlignment));
   finally
     Printer.BinaryConversion := OPOS_BC_NONE;
   end;
 end;
 
-function TWebkassaImpl.RenderBarcodeRec(Barcode: TBarcodeRec): AnsiString;
-
-  function BTypeToZBType(BarcodeType: Integer): TZBType;
-  begin
-    case BarcodeType of
-      DIO_BARCODE_EAN13_INT: Result := tBARCODE_EANX;
-      DIO_BARCODE_CODE128A: Result := tBARCODE_CODE128;
-      DIO_BARCODE_CODE128B: Result := tBARCODE_CODE128;
-      DIO_BARCODE_CODE128C: Result := tBARCODE_CODE128;
-      DIO_BARCODE_CODE39: Result := tBARCODE_CODE39;
-      DIO_BARCODE_CODE25INTERLEAVED: Result := tBARCODE_C25INTER;
-      DIO_BARCODE_CODE25INDUSTRIAL: Result := tBARCODE_C25IND;
-      DIO_BARCODE_CODE25MATRIX: Result := tBARCODE_C25MATRIX;
-      DIO_BARCODE_CODE39EXTENDED: Result := tBARCODE_EXCODE39;
-      DIO_BARCODE_CODE93: Result := tBARCODE_CODE93;
-      DIO_BARCODE_CODE93EXTENDED: Result := tBARCODE_CODE93;
-      DIO_BARCODE_MSI: Result := tBARCODE_MSI_PLESSEY;
-      DIO_BARCODE_POSTNET: Result := tBARCODE_POSTNET;
-      DIO_BARCODE_CODABAR: Result := tBARCODE_CODABAR;
-      DIO_BARCODE_EAN8: Result := tBARCODE_EANX;
-      DIO_BARCODE_EAN13: Result := tBARCODE_EANX;
-      DIO_BARCODE_UPC_A: Result := tBARCODE_UPCA;
-      DIO_BARCODE_UPC_E0: Result := tBARCODE_UPCE;
-      DIO_BARCODE_UPC_E1: Result := tBARCODE_UPCE;
-      DIO_BARCODE_EAN128A: Result := tBARCODE_EAN128;
-      DIO_BARCODE_EAN128B: Result := tBARCODE_EAN128;
-      DIO_BARCODE_EAN128C: Result := tBARCODE_EAN128;
-      DIO_BARCODE_CODE11: Result := tBARCODE_CODE11;
-      DIO_BARCODE_C25IATA: Result := tBARCODE_C25IATA;
-      DIO_BARCODE_C25LOGIC: Result := tBARCODE_C25LOGIC;
-      DIO_BARCODE_DPLEIT: Result := tBARCODE_DPLEIT;
-      DIO_BARCODE_DPIDENT: Result := tBARCODE_DPIDENT;
-      DIO_BARCODE_CODE16K: Result := tBARCODE_CODE16K;
-      DIO_BARCODE_CODE49: Result := tBARCODE_CODE49;
-      DIO_BARCODE_FLAT: Result := tBARCODE_FLAT;
-      DIO_BARCODE_RSS14: Result := tBARCODE_RSS14;
-      DIO_BARCODE_RSS_LTD: Result := tBARCODE_RSS_LTD;
-      DIO_BARCODE_RSS_EXP: Result := tBARCODE_RSS_EXP;
-      DIO_BARCODE_TELEPEN: Result := tBARCODE_TELEPEN;
-      DIO_BARCODE_FIM: Result := tBARCODE_FIM;
-      DIO_BARCODE_LOGMARS: Result := tBARCODE_LOGMARS;
-      DIO_BARCODE_PHARMA: Result := tBARCODE_PHARMA;
-      DIO_BARCODE_PZN: Result := tBARCODE_PZN;
-      DIO_BARCODE_PHARMA_TWO: Result := tBARCODE_PHARMA_TWO;
-      DIO_BARCODE_PDF417: Result := tBARCODE_PDF417;
-      DIO_BARCODE_PDF417TRUNC: Result := tBARCODE_PDF417TRUNC;
-      DIO_BARCODE_MAXICODE: Result := tBARCODE_MAXICODE;
-      DIO_BARCODE_QRCODE: Result := tBARCODE_QRCODE;
-      DIO_BARCODE_DATAMATRIX: Result := tBARCODE_DATAMATRIX;
-      DIO_BARCODE_AUSPOST: Result := tBARCODE_AUSPOST;
-      DIO_BARCODE_AUSREPLY: Result := tBARCODE_AUSREPLY;
-      DIO_BARCODE_AUSROUTE: Result := tBARCODE_AUSROUTE;
-      DIO_BARCODE_AUSREDIRECT: Result := tBARCODE_AUSREDIRECT;
-      DIO_BARCODE_ISBNX: Result := tBARCODE_ISBNX;
-      DIO_BARCODE_RM4SCC: Result := tBARCODE_RM4SCC;
-      DIO_BARCODE_EAN14: Result := tBARCODE_EAN14;
-      DIO_BARCODE_CODABLOCKF: Result := tBARCODE_CODABLOCKF;
-      DIO_BARCODE_NVE18: Result := tBARCODE_NVE18;
-      DIO_BARCODE_JAPANPOST: Result := tBARCODE_JAPANPOST;
-      DIO_BARCODE_KOREAPOST: Result := tBARCODE_KOREAPOST;
-      DIO_BARCODE_RSS14STACK: Result := tBARCODE_RSS14STACK;
-      DIO_BARCODE_RSS14STACK_OMNI: Result := tBARCODE_RSS14STACK_OMNI;
-      DIO_BARCODE_RSS_EXPSTACK: Result := tBARCODE_RSS_EXPSTACK;
-      DIO_BARCODE_PLANET: Result := tBARCODE_PLANET;
-      DIO_BARCODE_MICROPDF417: Result := tBARCODE_MICROPDF417;
-      DIO_BARCODE_ONECODE: Result := tBARCODE_ONECODE;
-      DIO_BARCODE_PLESSEY: Result := tBARCODE_PLESSEY;
-      DIO_BARCODE_TELEPEN_NUM: Result := tBARCODE_TELEPEN_NUM;
-      DIO_BARCODE_ITF14: Result := tBARCODE_ITF14;
-      DIO_BARCODE_KIX: Result := tBARCODE_KIX;
-      DIO_BARCODE_AZTEC: Result := tBARCODE_AZTEC;
-      DIO_BARCODE_DAFT: Result := tBARCODE_DAFT;
-      DIO_BARCODE_MICROQR: Result := tBARCODE_MICROQR;
-      DIO_BARCODE_HIBC_128: Result := tBARCODE_HIBC_128;
-      DIO_BARCODE_HIBC_39: Result := tBARCODE_HIBC_39;
-      DIO_BARCODE_HIBC_DM: Result := tBARCODE_HIBC_DM;
-      DIO_BARCODE_HIBC_QR: Result := tBARCODE_HIBC_QR;
-      DIO_BARCODE_HIBC_PDF: Result := tBARCODE_HIBC_PDF;
-      DIO_BARCODE_HIBC_MICPDF: Result := tBARCODE_HIBC_MICPDF;
-      DIO_BARCODE_HIBC_BLOCKF: Result := tBARCODE_HIBC_BLOCKF;
-      DIO_BARCODE_HIBC_AZTEC: Result := tBARCODE_HIBC_AZTEC;
-      DIO_BARCODE_AZRUNE: Result := tBARCODE_AZRUNE;
-      DIO_BARCODE_CODE32: Result := tBARCODE_CODE32;
-      DIO_BARCODE_EANX_CC: Result := tBARCODE_EANX_CC;
-      DIO_BARCODE_EAN128_CC: Result := tBARCODE_EAN128_CC;
-      DIO_BARCODE_RSS14_CC: Result := tBARCODE_RSS14_CC;
-      DIO_BARCODE_RSS_LTD_CC: Result := tBARCODE_RSS_LTD_CC;
-      DIO_BARCODE_RSS_EXP_CC: Result := tBARCODE_RSS_EXP_CC;
-      DIO_BARCODE_UPCA_CC: Result := tBARCODE_UPCA_CC;
-      DIO_BARCODE_UPCE_CC: Result := tBARCODE_UPCE_CC;
-      DIO_BARCODE_RSS14STACK_CC: Result := tBARCODE_RSS14STACK_CC;
-      DIO_BARCODE_RSS14_OMNI_CC: Result := tBARCODE_RSS14_OMNI_CC;
-      DIO_BARCODE_RSS_EXPSTACK_CC: Result := tBARCODE_RSS_EXPSTACK_CC;
-      DIO_BARCODE_CHANNEL: Result := tBARCODE_CHANNEL;
-      DIO_BARCODE_CODEONE: Result := tBARCODE_CODEONE;
-      DIO_BARCODE_GRIDMATRIX: Result := tBARCODE_GRIDMATRIX;
-    else
-      raise Exception.CreateFmt('Barcode type not supported, %d', [BarcodeType]);
-    end;
-  end;
-
-
+function TWebkassaImpl.RenderBarcodeRec(var Barcode: TBarcodeRec): AnsiString;
 var
   SCale: Integer;
   Bitmap: TBitmap;
@@ -4159,12 +4162,8 @@ var
 begin
   Result := '';
 
-  Scale := 0;
-  if Barcode.Height = 0 then
-  begin
-    Barcode.Height := 100;
-    Scale := 4;
-  end;
+  if Barcode.ModuleWidth in [0..1] then
+    Barcode.ModuleWidth := 4;
 
   Bitmap := TBitmap.Create;
   Render := TZintBarcode.Create;
@@ -4181,12 +4180,18 @@ begin
     Render.EncodeNow;
     RenderBarcode(Bitmap, Render.Symbol, False);
 
-    if Scale = 0 then
+    Scale := Barcode.ModuleWidth;
+    if (Scale mod 2) = 0 then
     begin
-      Scale := Barcode.Height div Bitmap.Height;
-      if not (Scale in [2..10]) then Scale := 2;
+      Scale := Scale div 2;
+      Barcode.Width := Bitmap.Width * Scale * 2;
+      Barcode.Height := Bitmap.Height * Scale * 2;
+    end else
+    begin
+      Barcode.Width := Bitmap.Width * Scale;
+      Barcode.Height := Bitmap.Height * Scale;
     end;
-    ScaleBitmap(Bitmap, Scale);
+    ScaleGraphic(Bitmap, Scale);
     Bitmap.SaveToStream(Stream);
 
     if Stream.Size > 0 then
@@ -4213,7 +4218,7 @@ begin
   end;
 end;
 
-procedure TWebkassaImpl.PrintBarcode2(const Barcode: TBarcodeRec);
+procedure TWebkassaImpl.PrintBarcode2(Barcode: TBarcodeRec);
 
   function BarcodeTypeToSymbology(BarcodeType: Integer): Integer;
   begin
@@ -4249,6 +4254,19 @@ procedure TWebkassaImpl.PrintBarcode2(const Barcode: TBarcodeRec);
     end;
   end;
 
+  function Is2DBarcode(BarcodeType: Integer): Boolean;
+  begin
+    Result := False;
+    case BarcodeType of
+      DIO_BARCODE_MAXICODE,
+      DIO_BARCODE_QRCODE,
+      DIO_BARCODE_DATAMATRIX,
+      DIO_BARCODE_MICROPDF417,
+      DIO_BARCODE_AZTEC,
+      DIO_BARCODE_MICROQR: Result := True;
+    end;
+  end;
+
 var
   Symbology: Integer;
   Alignment: Integer;
@@ -4260,7 +4278,7 @@ begin
       Symbology := BarcodeTypeToSymbology(Barcode.BarcodeType);
       Alignment := BarcodeAlignmentToBCAlignment(Barcode.Alignment);
       CheckPtr(Printer.PrintBarCode(FPTR_S_RECEIPT, Barcode.Data, Symbology,
-        Barcode.Height, 0, Alignment, PTR_BC_TEXT_NONE));
+        Barcode.Height, Barcode.Width, Alignment, PTR_BC_TEXT_NONE));
     end else
     begin
       PrintBarcodeAsGraphics(Barcode);
