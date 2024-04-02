@@ -67,11 +67,11 @@ type
     procedure TearDown; override;
   public
     procedure PrintReceipt3;
-    procedure TestXReport;
     procedure PrintHeaderAndCut;
     procedure TestClaim;
   published
     procedure TestZReport;
+    procedure TestXReport;
     procedure TestCashIn;
     procedure TestCashOut;
     procedure TestNonFiscal;
@@ -389,6 +389,11 @@ end;
 procedure TWebkassaImplTest.TestXReport;
 begin
   OpenClaimEnable;
+
+  FDriver.Client.AnswerJson := ReadFileData(GetModulePath + 'ZXReportAnswer2.txt');
+  CheckEquals(0, Driver.PrintXReport, 'Driver.PrintXReport');
+
+  FDriver.Client.AnswerJson := ReadFileData(GetModulePath + 'ZXReportAnswer3.txt');
   CheckEquals(0, Driver.PrintXReport, 'Driver.PrintXReport');
 end;
 

@@ -79,8 +79,8 @@ begin
   FLogger.DeviceName := 'DeviceName';
 
   //FPrinterPort := CreateSocketPort;
-  //FPrinterPort := CreateSerialPort;
-  FPrinterPort := CreateRawPort;
+  FPrinterPort := CreateSerialPort;
+  //FPrinterPort := CreateRawPort;
   FPrinterPort.Open;
   FPrinter := TEscPrinter.Create(FPrinterPort, FLogger);
 end;
@@ -101,7 +101,7 @@ function TESCPrinterTest.CreateSerialPort: TSerialPort;
 var
   SerialParams: TSerialParams;
 begin
-  SerialParams.PortName := 'COM3';
+  SerialParams.PortName := 'COM25';
   SerialParams.BaudRate := 19200;
   SerialParams.DataBits := 8;
   SerialParams.StopBits := ONESTOPBIT;
@@ -438,9 +438,17 @@ begin
   end;
 end;
 
+(*
+_RP80
+_7.03 ESC/POS
+_2013-01-05
+_RONGTA
+*)
+
 procedure TESCPrinterTest.TestReadPrinterID;
 begin
   CheckEquals('7.03 ESC/POS', FPrinter.ReadPrinterID(65), 'Firmware version');
+
   CheckEquals('7.03 ESC/POS', FPrinter.ReadFirmwareVersion, 'Firmware version');
   CheckEquals('EPSON', FPrinter.ReadPrinterID(66), 'Manufacturer');
   CheckEquals('EPSON', FPrinter.ReadManufacturer, 'Manufacturer');

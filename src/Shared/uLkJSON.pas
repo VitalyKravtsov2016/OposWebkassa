@@ -198,8 +198,8 @@ type
     procedure SetChild(idx: Integer; const AValue: TlkJSONbase);
       virtual;
     function GetCount: Integer; virtual;
-    function GetField(AName: Variant):TlkJSONbase; virtual;
   public
+    function GetField(AName: Variant):TlkJSONbase; virtual;
     function Get(AName: Variant):TlkJSONbase;
     property Field[AName: Variant]: TlkJSONbase read GetField;
     property Count: Integer read GetCount;
@@ -269,12 +269,11 @@ type
     function ForEachElement(idx: Integer; var nm: string):
       TlkJSONbase; virtual;
 
-    function GetField(AName: Variant):TlkJSONbase; override;
-
     function _Add(obj: TlkJSONbase): Integer; virtual;
     procedure _Delete(iIndex: Integer); virtual;
     function _IndexOf(obj: TlkJSONbase): Integer; virtual;
   public
+    function GetField(AName: Variant):TlkJSONbase; override;
     procedure ForEach(fnCallBack: TlkJSONFuncEnum; pUserData:
       pointer);
     procedure AfterConstruction; override;
@@ -407,8 +406,8 @@ type
 {$ENDIF USE_HASH}
     function ForEachElement(idx: Integer; var nm: string): TlkJSONbase;
       override;
-    function GetField(AName: Variant):TlkJSONbase; override;
   public
+    function GetField(AName: Variant):TlkJSONbase; override;
     property UseHash: Boolean read FUseHash;
 {$IFDEF USE_HASH}
     property HashTable: TlkHashTable read GetHashTable;

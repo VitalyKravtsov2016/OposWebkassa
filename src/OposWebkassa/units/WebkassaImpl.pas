@@ -2121,6 +2121,8 @@ var
 
   Doc: TlkJSONbase;
   Node: TlkJSONbase;
+  SectionNode: TlkJSONbase;
+  Field: TlkJSONbase;
   Count: Integer;
   Amount: Currency;
   SellNode: TlkJSONbase;
@@ -2139,6 +2141,8 @@ begin
 
     ClearCashboxStatus;
     Doc := TlkJSON.ParseText(FClient.AnswerJson);
+    if Doc = nil then
+      raise Exception.Create('Doc parse failed');
 
     Total :=
       (Command.Data.EndNonNullable.Sell - Command.Data.StartNonNullable.Sell) -
@@ -2157,25 +2161,33 @@ begin
       Document.AddLine(Document.AlignCenter('X-Œ“◊≈“'));
     Document.AddLine(Document.AlignCenter(Format('—Ã≈Õ¿ π%d', [Command.Data.ShiftNumber])));
     Document.AddLine(Document.AlignCenter(Format('%s-%s', [Command.Data.StartOn, Command.Data.ReportOn])));
-    Node := Doc.Get('Data').Get('Sections');
-    if Node.Count > 0 then
+    Node := Doc.GetField('Data');
+    if Node <> nil then
     begin
-      Document.AddLine(Separator);
-      Document.AddLine(Document.AlignCenter('Œ“◊≈“ œŒ —≈ ÷»ﬂÃ'));
-      Document.AddLine(Separator);
-      for i := 0 to Node.Count-1 do
+      Node := Node.GetField('Sections');
+      if (Node <> nil)and(Node.Count > 0) then
       begin
-        Count := Node.Child[i].Get('Code').Value;
-        Document.AddLines('—≈ ÷»ﬂ', IntToStr(Count + 1));
-        OperationsNode := Node.Child[i].Field['Operations'];
-        if OperationsNode <> nil then
+        Document.AddLine(Separator);
+        Document.AddLine(Document.AlignCenter('Œ“◊≈“ œŒ —≈ ÷»ﬂÃ'));
+        Document.AddLine(Separator);
+        for i := 0 to Node.Count-1 do
         begin
-          SellNode := OperationsNode.Field['Sell'];
-          if SellNode <> nil then
+          SectionNode := Node.Child[i];
+          if SectionNode <> nil then
           begin
-            Count := SellNode.Get('Count').Value;
-            Amount := SellNode.Get('Amount').Value;
-            Document.AddLines(Format('%.4d œ–Œƒ¿∆', [Count]), AmountToStr(Amount));
+            Count := SectionNode.Get('Code').Value;
+            Document.AddLines('—≈ ÷»ﬂ', IntToStr(Count + 1));
+            OperationsNode := SectionNode.Field['Operations'];
+            if OperationsNode <> nil then
+            begin
+              SellNode := OperationsNode.Field['Sell'];
+              if SellNode <> nil then
+              begin
+                Count := SellNode.Get('Count').Value;
+                Amount := SellNode.Get('Amount').Value;
+                Document.AddLines(Format('%.4d œ–Œƒ¿∆', [Count]), AmountToStr(Amount));
+              end;
+            end;
           end;
         end;
       end;
@@ -2220,15 +2232,52 @@ begin
     Document.AddLine(Text, STYLE_DWIDTH_HEIGHT);
     AddPayments(Document, Command.Data.ReturnBuy.PaymentsByTypesApiModel);
 
+    Count := 0;
+    Amount := 0;
     Document.AddLine('¬Õ≈—≈Õ»…');
-    Node := Doc.Get('Data').Get('MoneyPlacementOperations').Get('Deposit');
-    Count := Node.Get('Count').Value;
-    Amount := Node.Get('Amount').Value;
+    Node := Doc.GetField('Data');
+    if Node <> nil then
+    begin
+      Node := Node.GetField('MoneyPlacementOperations');
+      if Node <> nil then
+      begin
+        Node := Node.GetField('Deposit');
+        if Node <> nil then
+        begin
+          Field := Node.GetField('Count');
+          if Field <> nil then
+            Count := Field.Value;
+
+          Field := Node.GetField('Amount');
+          if Field <> nil then
+            Amount := Field.Value;
+        end;
+      end;
+    end;
     Document.AddLines(Format('%.4d', [Count]), AmountToStr(Amount));
+
+    Count := 0;
+    Amount := 0;
     Document.AddLine('»«⁄ﬂ“»…');
-    Node := Doc.Get('Data').Get('MoneyPlacementOperations').Get('WithDrawal');
-    Count := Node.Get('Count').Value;
-    Amount := Node.Get('Amount').Value;
+    Node := Doc.GetField('Data');
+    if Node <> nil then
+    begin
+      Node := Node.GetField('MoneyPlacementOperations');
+      if Node <> nil then
+      begin
+        Node := Node.GetField('WithDrawal');
+        if Node <> nil then
+        begin
+          Field := Node.GetField('Count');
+          if Field <> nil then
+            Count := Field.Value;
+
+          Field := Node.GetField('Amount');
+          if Field <> nil then
+            Amount := Field.Value;
+        end;
+      end;
+    end;
     Document.AddLines(Format('%.4d', [Count]), AmountToStr(Amount));
 
     Document.AddLines('Õ¿À»◊Õ€’ ¬  ¿——≈', AmountToStr(Command.Data.SumInCashbox));
