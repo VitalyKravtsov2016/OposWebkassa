@@ -936,33 +936,49 @@ begin
   end;
 end;
 
+(*
 function TEscPrinter.GetRasterBitmapData(Bitmap: TBitmap): AnsiString;
 var
   B: Byte;
-  Bit: Byte;
   x, y: Integer;
+  mx: Integer;
 begin
   Result := '';
+  mx := (Bitmap.Width + 7) div 8;
   for y := 1 to Bitmap.Height do
+  for x := 1 to mx do
   begin
-    B := 0;
-    x := 1;
-    while x <= Bitmap.Width do
-    begin
-      for Bit := 0 to 7 do
-      begin
-        if x > Bitmap.Width then Break;
-        if Bitmap.Canvas.Pixels[x, y] = clBlack then
-        begin
-          SetBit(B, Bit);
-        end;
-        Inc(x);
-      end;
-      Result := Result + Chr(B);
-    end;
+    B := PByteArray(Bitmap.ScanLine[y-1])[x-1] xor $FF;
+    Result := Result + Chr(B);
   end;
 end;
+*)
 
+function TEscPrinter.GetRasterBitmapData(Bitmap: TBitmap): AnsiString;
+var
+  B: Byte;
+  x, y: Integer;
+  mx: Integer;
+  Index: Integer;
+begin
+  mx := (Bitmap.Width + 7) div 8;
+  Result := StringOfChar(#0, mx * Bitmap.Height);
+  for y := 1 to Bitmap.Height do
+  for x := 1 to mx*8 do
+  begin
+    if (x <= Bitmap.Width)and(y <= Bitmap.Height) then
+    begin
+      if Bitmap.Canvas.Pixels[x, y] = clBlack then
+      begin
+        Index := (y-1)*mx + ((x-1) div 8) + 1;
+        B := Ord(Result[Index]);
+        SetBit(B, (x-1) mod 8);
+        Result[Index] := Chr(B);
+      end;
+    end;
+  end;
+  Result := SwapBytes(Result);
+end;
 
 function TEscPrinter.GetImageData(Image: TGraphic): AnsiString;
 begin
@@ -1360,7 +1376,7 @@ begin
   Logger.Debug('TEscPrinter.PrintRasterBMP');
 
   x := (Image.Width + 7) div 8;
-  y := (Image.Height + 7) div 8;
+  y := Image.Height;
   Send(#$1D#$76#$30 + Chr(Mode) + Chr(Lo(x)) + Chr(Hi(x)) +
     Chr(Lo(y)) + Chr(Hi(y)) + GetRasterImageData(Image));
 end;

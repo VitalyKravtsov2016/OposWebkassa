@@ -31,6 +31,7 @@ type
     property Printer: TESCPrinter read FPrinter;
   published
     procedure TestBitmap;
+    procedure TestPrintRasterBMP;
     procedure TestReadPrinterID;
     procedure TestInitialize;
     procedure TestPrintText;
@@ -433,6 +434,21 @@ begin
     FPrinter.PrintBmp(BMP_MODE_NORMAL);
     FPrinter.SetJustification(JUSTIFICATION_RIGHT);
     FPrinter.PrintBmp(BMP_MODE_NORMAL);
+  finally
+    Bitmap.Free;
+  end;
+end;
+
+procedure TESCPrinterTest.TestPrintRasterBMP;
+var
+  Bitmap: TBitmap;
+begin
+  Bitmap := TBitmap.Create;
+  try
+    Bitmap.LoadFromFile(GetModulePath + 'ShtrihM.bmp');
+
+    FPrinter.Initialize;
+    FPrinter.PrintRasterBMP(0, Bitmap);
   finally
     Bitmap.Free;
   end;

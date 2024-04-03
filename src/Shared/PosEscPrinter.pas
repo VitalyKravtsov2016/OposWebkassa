@@ -188,6 +188,7 @@ type
     FOnOutputCompleteEvent: TOPOSPOSPrinterOutputCompleteEvent;
     FOnStatusUpdateEvent: TOPOSPOSPrinterStatusUpdateEvent;
     FBarcodeInGraphics: Boolean;
+    FPrintRasterGraphics: Boolean;
 
     property Device: TOposServiceDevice19 read FDevice;
   public
@@ -609,6 +610,7 @@ type
     property DevicePollTime: Integer read FDevicePollTime write FDevicePollTime;
 
     property BarcodeInGraphics: Boolean read FBarcodeInGraphics write FBarcodeInGraphics;
+    property PrintRasterGraphics: Boolean read FPrintRasterGraphics write FPrintRasterGraphics;
     property OnDirectIOEvent: TOPOSPOSPrinterDirectIOEvent read FOnDirectIOEvent write FOnDirectIOEvent;
     property OnErrorEvent: TOPOSPOSPrinterErrorEvent read FOnErrorEvent write FOnErrorEvent;
     property OnOutputCompleteEvent: TOPOSPOSPrinterOutputCompleteEvent read FOnOutputCompleteEvent write FOnOutputCompleteEvent;
@@ -966,6 +968,7 @@ begin
   FSlpSidewaysMaxLines := 0;
   FLastPrintMode := [];
   FDevicePollTime := 3000;
+  PrintRasterGraphics := True;
 end;
 
 function TPosEscPrinter.ClearResult: Integer;
@@ -2185,8 +2188,14 @@ begin
   end;
   FPrinter.PrintAndFeed(10);
   FPrinter.SetJustification(Justification);
-  FPrinter.DownloadBMP(Graphic);
-  FPrinter.PrintBmp(BMPMode);
+  if PrintRasterGraphics then
+  begin
+    FPrinter.PrintRasterBMP(BMPMode, Graphic);
+  end else
+  begin
+    FPrinter.DownloadBMP(Graphic);
+    FPrinter.PrintBmp(BMPMode);
+  end;
   FPrinter.SetJustification(JUSTIFICATION_LEFT);
   FPrinter.PrintAndFeed(10);
 end;
