@@ -404,6 +404,11 @@ const
     'Строка для печати 2                       ' + CRLF +
     'Строка для печати 3                       ';
 begin
+  FDriver.Params.NumHeaderLines := 0;
+  FDriver.Params.NumTrailerLines := 0;
+  FDriver.Params.HeaderText := '';
+  FDriver.Params.TrailerText := '';
+
   OpenClaimEnable;
   CheckEquals(0, Driver.ResetPrinter, 'ResetPrinter');
   CheckEquals(0, Driver.BeginNonFiscal, 'BeginNonFiscal');

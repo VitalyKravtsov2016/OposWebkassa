@@ -609,12 +609,7 @@ begin
   Document.LineChars := Printer.RecLineChars;
   Document.LineHeight := Printer.RecLineHeight;
   Document.LineSpacing := Printer.RecLineSpacing;
-  if APrintHeader and not (Params.HeaderPrinted) then
-  begin
-    Document.AddText(Params.HeaderText);
-    Params.HeaderPrinted := False;
-    SaveUsrParameters(FParams, FOposDevice.DeviceName, FLogger);
-  end;
+  Document.AddText(Params.HeaderText);
 end;
 
 function TWebkassaImpl.AmountToStr(Value: Currency): AnsiString;
@@ -4091,8 +4086,6 @@ begin
           PrintLine(Text);
         end;
       end;
-      Params.HeaderPrinted := True;
-      SaveUsrParameters(FParams, FOposDevice.DeviceName, FLogger);
     end else
     begin
       for i := 1 to RecLinesToPaperCut do
