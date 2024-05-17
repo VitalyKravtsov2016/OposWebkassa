@@ -92,7 +92,7 @@ type
     procedure AddItems(Items: TList);
     function ReadReceiptJson(ShiftNumber: Integer;
       const CheckNumber: WideString): WideString;
-    procedure BeginDocument(APrintHeader: boolean);
+    procedure BeginDocument;
     procedure UpdateTemplateItem(Item: TTemplateItem);
     procedure PrintBarcodeAsGraphics(Barcode: TBarcodeRec);
     procedure PrintDocItem(Item: TDocItem);
@@ -603,13 +603,12 @@ begin
   inherited Destroy;
 end;
 
-procedure TWebkassaImpl.BeginDocument(APrintHeader: boolean);
+procedure TWebkassaImpl.BeginDocument;
 begin
   Document.Clear;
   Document.LineChars := Printer.RecLineChars;
   Document.LineHeight := Printer.RecLineHeight;
   Document.LineSpacing := Printer.RecLineSpacing;
-  Document.AddText(Params.HeaderText);
 end;
 
 function TWebkassaImpl.AmountToStr(Value: Currency): AnsiString;
@@ -859,8 +858,7 @@ begin
     FReceipt := CreateReceipt(FFiscalReceiptType);
     FReceipt.BeginFiscalReceipt(PrintHeader);
     FExternalCheckNumber := CreateGUIDStr;
-
-    BeginDocument(PrintHeader);
+    BeginDocument;
 
     Result := ClearResult;
   except
@@ -891,7 +889,7 @@ begin
     CheckEnabled;
     CheckState(FPTR_PS_MONITOR);
     SetPrinterState(FPTR_PS_NONFISCAL);
-    BeginDocument(False);
+    BeginDocument;
     Result := ClearResult;
   except
     on E: Exception do
@@ -2145,7 +2143,7 @@ begin
       (Command.Data.EndNonNullable.ReturnSell - Command.Data.StartNonNullable.ReturnSell) +
       (Command.Data.EndNonNullable.ReturnBuy - Command.Data.StartNonNullable.ReturnBuy);
 
-    BeginDocument(True);
+    BeginDocument;
     Separator := StringOfChar('-', Document.LineChars);
     Document.AddLines('»ÕÕ/¡»Õ', Command.Data.CashboxRN);
     Document.AddLines('«ÕÃ', Command.Data.CashboxSN);

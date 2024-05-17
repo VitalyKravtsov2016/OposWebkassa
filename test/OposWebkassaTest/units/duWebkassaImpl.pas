@@ -286,10 +286,6 @@ end;
 procedure TWebkassaImplTest.TestCashIn;
 const
   CashInReceiptText: string =
-    '                                          ' + CRLF +
-    '   Восточно-Казастанская область, город   ' + CRLF +
-    '  Усть-Каменогорск, ул. Грейдерная, 1/10  ' + CRLF +
-    '            ТОО PetroRetail               ' + CRLF +
     'БИН                                       ' + CRLF +
     'ЗНМ  ИНК ОФД                              ' + CRLF +
     'Дата:                                     ' + CRLF +
@@ -334,10 +330,6 @@ end;
 procedure TWebkassaImplTest.TestCashOut;
 const
   CashOutReceiptText: string =
-    '                                          ' + CRLF +
-    '   Восточно-Казастанская область, город   ' + CRLF +
-    '  Усть-Каменогорск, ул. Грейдерная, 1/10  ' + CRLF +
-    '            ТОО PetroRetail               ' + CRLF +
     'БИН                                       ' + CRLF +
     'ЗНМ  ИНК ОФД                              ' + CRLF +
     'Дата:                                     ' + CRLF +
@@ -465,10 +457,6 @@ end;
 
 const
   Receipt3Text: string =
-    '                                          ' + CRLF +
-    '   Восточно-Казастанская область, город   ' + CRLF +
-    '  Усть-Каменогорск, ул. Грейдерная, 1/10  ' + CRLF +
-    '            ТОО PetroRetail               ' + CRLF +
     'НДС Серия VATSeries            № VATNumber' + CRLF +
     '------------------------------------------' + CRLF +
     '               SWK00032685                ' + CRLF +
