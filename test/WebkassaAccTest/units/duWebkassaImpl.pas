@@ -249,6 +249,7 @@ begin
   ClaimDevice;
   EnableDevice;
   FptrCheck(Driver.ResetPrinter, 'ResetPrinter');
+  Driver.SetPropertyNumber(PIDXFptr_CheckTotal, 1);
 end;
 
 procedure TWebkassaImplTest.TestCashIn;
@@ -269,11 +270,11 @@ begin
   FptrCheck(Driver.PrintRecCash(10));
   FptrCheck(Driver.PrintRecCash(20));
   FptrCheck(Driver.PrintRecCash(30));
-  FptrCheck(Driver.PrintRecTotal(0, 10, ''));
+  FptrCheck(Driver.PrintRecTotal(60, 10, ''));
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_TOTAL, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
-  FptrCheck(Driver.PrintRecTotal(0, 20, ''));
+  FptrCheck(Driver.PrintRecTotal(60, 20, ''));
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_TOTAL, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
-  FptrCheck(Driver.PrintRecTotal(0, 30, ''));
+  FptrCheck(Driver.PrintRecTotal(60, 30, ''));
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   FptrCheck(Driver.EndFiscalReceipt(not FPrintHeader));
   CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
@@ -297,11 +298,11 @@ begin
   FptrCheck(Driver.PrintRecCash(10));
   FptrCheck(Driver.PrintRecCash(20));
   FptrCheck(Driver.PrintRecCash(30));
-  FptrCheck(Driver.PrintRecTotal(0, 10, ''));
+  FptrCheck(Driver.PrintRecTotal(60, 10, ''));
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_TOTAL, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
-  FptrCheck(Driver.PrintRecTotal(0, 20, ''));
+  FptrCheck(Driver.PrintRecTotal(60, 20, ''));
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_TOTAL, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
-  FptrCheck(Driver.PrintRecTotal(0, 30, ''));
+  FptrCheck(Driver.PrintRecTotal(60, 30, ''));
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   FptrCheck(Driver.EndFiscalReceipt(True));
   CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
@@ -393,7 +394,7 @@ begin
   Description := '—Â. π 5                                  ' +
     'ÿŒ ŒÀ¿ƒÕ¿ﬂ œÀ»“ ¿ MILKA BUBBLES ÃŒÀŒ◊Õ€…' + Description;
   FptrCheck(Driver.PrintRecItem(Description, 590, 1000, 4, 590, '¯Ú'));
-  FptrCheck(Driver.PrintRecTotal(12345, 12345, '0'));
+  FptrCheck(Driver.PrintRecTotal(590, 12345, '0'));
 
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
 
@@ -488,7 +489,7 @@ begin
   FptrCheck(Driver.DirectIO(DIO_PRINT_RECEIPT_DUPLICATE, pData, ExternalCheckNumber),
     'DirectIO(DIO_PRINT_RECEIPT_DUPLICATE, 0, ExternalCheckNumber)');
 
-  //CheckEquals(47, Printer.Lines.Count, 'Printer.Lines.Count');
+  CheckEquals(39, Printer.Lines.Count, 'Printer.Lines.Count');
   for i := 0 to 4 do
   begin
     CheckEquals(TrimRight(ReceiptLines[i]), TrimRight(Printer.Lines[i]), 'Line ' + IntToStr(i));
@@ -674,7 +675,6 @@ begin
   Params.RoundType := RoundTypeNone;
 
   OpenClaimEnable;
-  Driver.SetPropertyNumber(PIDXFptr_CheckTotal, 1);
   CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
   CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
@@ -716,7 +716,6 @@ begin
   Params.RoundType := RoundTypeTotal;
 
   OpenClaimEnable;
-  Driver.SetPropertyNumber(PIDXFptr_CheckTotal, 1);
   CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
   CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
@@ -758,7 +757,6 @@ begin
   Params.RoundType := RoundTypeItems;
 
   OpenClaimEnable;
-  Driver.SetPropertyNumber(PIDXFptr_CheckTotal, 1);
   CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
   CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));

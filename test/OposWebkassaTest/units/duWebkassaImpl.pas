@@ -91,6 +91,7 @@ type
     procedure TestGetJsonField;
     procedure TestEncoding;
     procedure TestBarcode;
+    procedure TestFiscalreceiptType;
   end;
 
 implementation
@@ -1304,6 +1305,25 @@ const
 begin
   Driver.PrintQRCodeAsGraphics(BarcodeData);
 
+end;
+
+procedure TWebkassaImplTest.TestFiscalreceiptType;
+var
+  ErrorString: WideString;
+begin
+  OpenClaimEnable;
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, 10);
+  CheckEquals(OPOS_E_ILLEGAL, Driver.BeginFiscalReceipt(True), 'BeginFiscalReceipt.1');
+  ErrorString := Driver.GetPropertyString(PIDXFptr_ErrorString);
+  CheckEquals('Invalid property value, FiscalReceiptType=''10''', ErrorString, 'ErrorString');
+
+  CheckEquals(OPOS_E_EXTENDED, Driver.EndFiscalReceipt(False), 'EndFiscalReceipt.1');
+  ErrorString := Driver.GetPropertyString(PIDXFptr_ErrorString);
+  CheckEquals('Wrong printer state', ErrorString, 'ErrorString');
+
+  CheckEquals(OPOS_E_ILLEGAL, Driver.BeginFiscalReceipt(True), 'BeginFiscalReceipt.2');
+  ErrorString := Driver.GetPropertyString(PIDXFptr_ErrorString);
+  CheckEquals('Invalid property value, FiscalReceiptType=''10''', ErrorString, 'ErrorString');
 end;
 
 initialization

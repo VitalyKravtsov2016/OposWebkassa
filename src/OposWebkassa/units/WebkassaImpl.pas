@@ -837,9 +837,9 @@ begin
   try
     CheckEnabled;
     CheckState(FPTR_PS_MONITOR);
-    SetPrinterState(FPTR_PS_FISCAL_DOCUMENT);
     Document.LineChars := Printer.RecLineChars;
-
+    
+    SetPrinterState(FPTR_PS_FISCAL_DOCUMENT);
     Result := ClearResult;
   except
     on E: Exception do
@@ -848,18 +848,21 @@ begin
 end;
 
 function TWebkassaImpl.BeginFiscalReceipt(PrintHeader: WordBool): Integer;
+var
+  AReceipt: TCustomReceipt;
 begin
   try
     CheckEnabled;
     CheckState(FPTR_PS_MONITOR);
-    SetPrinterState(FPTR_PS_FISCAL_RECEIPT);
 
+    AReceipt := CreateReceipt(FFiscalReceiptType);
     FReceipt.Free;
-    FReceipt := CreateReceipt(FFiscalReceiptType);
+    FReceipt := AReceipt;
     FReceipt.BeginFiscalReceipt(PrintHeader);
     FExternalCheckNumber := CreateGUIDStr;
     BeginDocument;
 
+    SetPrinterState(FPTR_PS_FISCAL_RECEIPT);
     Result := ClearResult;
   except
     on E: Exception do
@@ -888,8 +891,9 @@ begin
   try
     CheckEnabled;
     CheckState(FPTR_PS_MONITOR);
-    SetPrinterState(FPTR_PS_NONFISCAL);
     BeginDocument;
+
+    SetPrinterState(FPTR_PS_NONFISCAL);
     Result := ClearResult;
   except
     on E: Exception do
@@ -1236,6 +1240,7 @@ begin
       FDuplicate.Assign(Document);
     end;
     ClearCashboxStatus;
+
     SetPrinterState(FPTR_PS_MONITOR);
     Result := ClearResult;
   except
@@ -1265,6 +1270,7 @@ begin
     CheckEnabled;
     CheckState(FPTR_PS_NONFISCAL);
     PrintDocumentSafe(Document);
+    
     SetPrinterState(FPTR_PS_MONITOR);
     Result := ClearResult;
   except
@@ -2056,6 +2062,7 @@ begin
       raiseExtendedError(OPOS_EFPTR_WRONG_STATE);
 
     FReceipt.PrintRecVoid(Description);
+    
     SetPrinterState(FPTR_PS_FISCAL_RECEIPT_ENDING);
     Result := ClearResult;
   except
@@ -2330,9 +2337,10 @@ function TWebkassaImpl.ResetPrinter: Integer;
 begin
   try
     CheckEnabled;
-    SetPrinterState(FPTR_PS_MONITOR);
     FReceipt.Free;
     FReceipt := TCustomReceipt.Create;
+
+    SetPrinterState(FPTR_PS_MONITOR);
     Result := ClearResult;
   except
     on E: Exception do
