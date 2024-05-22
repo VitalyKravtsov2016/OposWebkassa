@@ -8,7 +8,8 @@ uses
   // Opos
   OposFptrUtils,
   // This
-  OPOSWebkassaLib_TLB, WebkassaImpl, LogFile;
+  OPOSWebkassaLib_TLB, WebkassaImpl, LogFile,
+  WebkassaClient, PrinterParameters;
 
 type
   { ToleFiscalPrinter }
@@ -23,9 +24,16 @@ type
     function GetLogger: ILogFile;
     function GetDriver: TWebkassaImpl;
     function GetLock: TCriticalSection;
- public
+    function GetClient: TWebkassaClient;
+    function GetParams: TPrinterParameters;
+  public
+    function DirectIO2(Command: Integer; const pData: Integer;
+      const pString: WideString): Integer;
+
     property Logger: ILogFile read GetLogger;
     property Driver: TWebkassaImpl read GetDriver;
+    property Client: TWebkassaClient read GetClient;
+    property Params: TPrinterParameters read GetParams;
   public
     destructor Destroy; override;
 
@@ -348,6 +356,26 @@ begin
   FLock.Free;
   FDriver.Free;
   inherited Destroy;
+end;
+
+function ToleFiscalPrinter.DirectIO2(Command: Integer; const pData: Integer; const pString: WideString): Integer;
+var
+  pData2: Integer;
+  pString2: WideString;
+begin
+  pData2 := pData;
+  pString2 := pString;
+  Result := DirectIO(Command, pData2, pString2);
+end;
+
+function ToleFiscalPrinter.GetParams: TPrinterParameters;
+begin
+  Result := Driver.Params;
+end;
+
+function ToleFiscalPrinter.GetClient: TWebkassaClient;
+begin
+  Result := Driver.Client;
 end;
 
 function ToleFiscalPrinter.GetLogger: ILogFile;

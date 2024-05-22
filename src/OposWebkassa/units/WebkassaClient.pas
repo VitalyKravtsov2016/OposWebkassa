@@ -12,7 +12,7 @@ uses
   // Indy
   IdHTTP, IdSSLOpenSSL, IdHeaderList,
   // This
-  LogFile, JsonUtils, DriverError;
+  LogFile, JsonUtils, DriverError, FileUtils;
 
 (*
  Ардак настоятельно рекомендует по возможности исключить команды Cashboxes и Employee/List, насколько я понял
@@ -1774,6 +1774,11 @@ begin
   Json := TlkJSON.Create;
   try
     Doc := Json.ParseText(Request);
+    if Doc = nil then
+    begin
+      //WriteFileData('InvalidRequest.txt', Request);
+      Exit;
+    end;
     Node := Doc.Field['Token'];
     if Node <> nil then
       Node.Value := Token;

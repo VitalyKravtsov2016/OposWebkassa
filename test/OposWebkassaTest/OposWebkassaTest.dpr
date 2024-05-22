@@ -1,6 +1,7 @@
 program OposWebkassaTest;
 
 uses
+  FastMM4, 
   SysUtils,
   TestFramework,
   GUITestRunner,

@@ -28,24 +28,24 @@ type
     FLines: TStrings;
     FWaitEvent: TEvent;
     FEvents: TOposEvents;
-    FDriver: TWebkassaImpl;
     FPrinter: TMockPosPrinter;
+    FDriver: TWebkassaImpl;
 
     procedure CheckLines;
     procedure WaitForEventsCount(Count: Integer);
   protected
     procedure ShowLines;
-    procedure CheckNoEvent;
-    procedure WaitForEvent;
+    procedure OpenService;
     procedure ClaimDevice;
     procedure EnableDevice;
-    procedure OpenService;
+    procedure CheckNoEvent;
+    procedure WaitForEvent;
     procedure SetTemplateDefault;
     procedure FptrCheck(Code: Integer);
+    procedure AddEvent(Event: TOposEvent);
 
     property Events: TOposEvents read FEvents;
     property Driver: TWebkassaImpl read FDriver;
-    procedure AddEvent(Event: TOposEvent);
   private
     // IOposEvents
     procedure DataEvent(Status: Integer);
@@ -92,6 +92,7 @@ type
     procedure TestEncoding;
     procedure TestBarcode;
     procedure TestFiscalreceiptType;
+    procedure TestFiscalreceiptType2;
   end;
 
 implementation
@@ -156,6 +157,7 @@ begin
   FEvents.Free;
   FWaitEvent.Free;
   FLines.Free;
+  FPrinter.Free;
   inherited TearDown;
 end;
 
@@ -1304,7 +1306,6 @@ const
   BarcodeData = 'http://dev.kofd.kz/consumer?i=925871425876&f=211030200207&s=15443.72&t=20220826T210014';
 begin
   Driver.PrintQRCodeAsGraphics(BarcodeData);
-
 end;
 
 procedure TWebkassaImplTest.TestFiscalreceiptType;
@@ -1324,6 +1325,30 @@ begin
   CheckEquals(OPOS_E_ILLEGAL, Driver.BeginFiscalReceipt(True), 'BeginFiscalReceipt.2');
   ErrorString := Driver.GetPropertyString(PIDXFptr_ErrorString);
   CheckEquals('Invalid property value, FiscalReceiptType=''10''', ErrorString, 'ErrorString');
+end;
+
+
+procedure TWebkassaImplTest.TestFiscalreceiptType2;
+begin
+  OpenClaimEnable;
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, 4);
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+  FptrCheck(Driver.DirectIO2(30, 72, '4'));
+  FptrCheck(Driver.DirectIO2(30, 73, '1'));
+  FptrCheck(Driver.PrintRecItem('ТР'#$1A' 4:'#$10#$18'-92-'#$1A'4/'#$1A'5', 2050, 10000, 4, 205, 'л'));
+  FptrCheck(Driver.DirectIO2(30, 72, '4'));
+  FptrCheck(Driver.DirectIO2(30, 73, '33'));
+  FptrCheck(Driver.DirectIO2(30, 81, '5'));
+  FptrCheck(Driver.DirectIO2(30, 80, '000000487435878"*y35ebWE2Slls'));
+  FptrCheck(Driver.PrintRecItem('С'#$18#$13#$10'Р'#$15'ТЫ WINSTON XSTYLE SILVER', 870, 1000, 4, 870, 'шт'));
+  FptrCheck(Driver.DirectIO2(120, 0, '2402209000'));
+  FptrCheck(Driver.PrintRecTotal(2920, 5000, '0'));
+  FptrCheck(Driver.PrintRecMessage(#$1E'ператор: Танекенова  '#$10'йнур'));
+  FptrCheck(Driver.PrintRecMessage('Транз.:    2965055 '));
+  FptrCheck(Driver.DirectIO2(30, 302, '1'));
+  FptrCheck(Driver.DirectIO2(30, 300, '2965055'));
+  FptrCheck(Driver.PrintRecMessage('Транз. продажи: 2965015 (2920,00 тг));'));
+  FptrCheck(Driver.EndFiscalReceipt(False));
 end;
 
 initialization

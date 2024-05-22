@@ -183,6 +183,7 @@ begin
   FDriver.Free;
   FEvents.Free;
   FWaitEvent.Free;
+  FPrinter.Free;
   inherited TearDown;
 end;
 

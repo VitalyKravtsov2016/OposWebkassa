@@ -4,7 +4,9 @@ interface
 
 uses
   // VCL
-  Windows, Classes, SysUtils, Variants, TypInfo, Types, ObjAuto, RTLConsts;
+  Windows, Classes, SysUtils, Variants, TypInfo, Types, ObjAuto, RTLConsts,
+  // Tnt
+  TntSysUtils;
 
 type
   TChars = set of Char;
@@ -102,6 +104,7 @@ type
     procedure WriteStr(Value: string);
     procedure WriteCollection(Value: TJsonCollection; const Prefix: string);
     procedure WriteProperties(Instance: TJsonPersistent; const Prefix: string);
+    procedure WritePropertyValue(Text: WideString);
   public
     constructor Create(AStream: TStream);
     procedure WriteObject(Instance: TJsonPersistent);
@@ -602,6 +605,27 @@ begin
   end;
 end;
 
+function DecodeString(const Text: WideString): WideString;
+var
+  i: Integer;
+  Code: Integer;
+begin
+  Result := '';
+  for i := 1 to Length(Text) do
+  begin
+    Code := Ord(Text[i]);
+    if Code >= $20 then
+      Result := Result + Text[i];
+  end;
+end;
+
+procedure TJsonWriter.WritePropertyValue(Text: WideString);
+begin
+  Text := DecodeString(Text);
+  Text := Tnt_WideStringReplace(Text, '"', '\"', [rfReplaceAll, rfIgnoreCase]);
+  WriteWideString('"' + Text + '"');
+end;
+
 function TJsonWriter.WriteProperty(Instance: TJsonPersistent; PropInfo: PPropInfo;
   const Prefix: string): Boolean;
 var
@@ -626,7 +650,7 @@ begin
       if Instance.IsRequiredField(PropName) or (Text <> '') then
       begin
         WriteStr(Prefix + '"' + PropName + '":');
-        WriteWideString('"' + Text + '"');
+        WritePropertyValue(Text);
         Result := True;
       end;
     end;

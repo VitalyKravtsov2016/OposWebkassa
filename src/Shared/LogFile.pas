@@ -600,8 +600,8 @@ end;
 
 class function TLogFile.StrToText(const Text: WideString): WideString;
 var
-  Code: Byte;
   i: Integer;
+  Code: Integer;
   IsPrevCharNormal: Boolean;
 begin
   Result := '';
