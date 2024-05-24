@@ -4,7 +4,7 @@ interface
 
 uses
   // VCL
-  Windows, SysUtils, Classes, SyncObjs,
+  Windows, SysUtils, Classes, SyncObjs, Math,
   // DUnit
   TestFramework,
   // Opos
@@ -132,6 +132,9 @@ begin
   FDriver.Params.NumTrailerLines := 3;
   FDriver.Params.RoundType := RoundTypeNone;
   FDriver.Params.CurrencyName := 'руб';
+  FDriver.Params.PaymentType2 := PaymentTypeCard;
+  FDriver.Params.PaymentType3 := PaymentTypeCredit;
+  FDriver.Params.PaymentType4 := PaymentTypeMobile;
 
   FDriver.Params.HeaderText :=
     '                                          ' + CRLF +
@@ -277,6 +280,7 @@ begin
   ResultCode := Driver.GetPropertyNumber(PIDX_ResultCode);
   CheckEquals(OPOS_SUCCESS, ResultCode, 'OPOS_SUCCESS');
   CheckEquals(1, Driver.GetPropertyNumber(PIDX_DeviceEnabled), 'DeviceEnabled');
+  Driver.SetPropertyNumber(PIDXFptr_CheckTotal, 1);
 end;
 
 procedure TWebkassaImplTest.OpenClaimEnable;
@@ -315,12 +319,12 @@ begin
   FptrCheck(Driver.PrintRecCash(20));
   FptrCheck(Driver.PrintRecMessage('Message 2'));
   FptrCheck(Driver.PrintRecCash(30));
-  FptrCheck(Driver.PrintRecTotal(0, 10, ''));
+  FptrCheck(Driver.PrintRecTotal(60, 10, ''));
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_TOTAL, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
-  FptrCheck(Driver.PrintRecTotal(0, 20, ''));
+  FptrCheck(Driver.PrintRecTotal(60, 20, ''));
   FptrCheck(Driver.PrintRecMessage('Message 3'));
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_TOTAL, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
-  FptrCheck(Driver.PrintRecTotal(0, 30, ''));
+  FptrCheck(Driver.PrintRecTotal(60, 30, ''));
   FptrCheck(Driver.PrintRecMessage('Message 4'));
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   FptrCheck(Driver.EndFiscalReceipt(False));
@@ -359,12 +363,12 @@ begin
   FptrCheck(Driver.PrintRecCash(20));
   FptrCheck(Driver.PrintRecMessage('Message 2'));
   FptrCheck(Driver.PrintRecCash(30));
-  FptrCheck(Driver.PrintRecTotal(0, 10, ''));
+  FptrCheck(Driver.PrintRecTotal(60, 10, ''));
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_TOTAL, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
-  FptrCheck(Driver.PrintRecTotal(0, 20, ''));
+  FptrCheck(Driver.PrintRecTotal(60, 20, ''));
   FptrCheck(Driver.PrintRecMessage('Message 3'));
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_TOTAL, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
-  FptrCheck(Driver.PrintRecTotal(0, 30, ''));
+  FptrCheck(Driver.PrintRecTotal(60, 30, ''));
   FptrCheck(Driver.PrintRecMessage('Message 4'));
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   FptrCheck(Driver.EndFiscalReceipt(False));
@@ -443,7 +447,11 @@ begin
     CheckEquals(FPTR_PS_FISCAL_RECEIPT, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
 
     FptrCheck(Driver.PrintRecItem('Item 1', 123.45, 1000, 0, 123.45, 'кг'));
-    FptrCheck(Driver.PrintRecTotal(123.45, 123.45, '1'));
+
+    FptrCheck(Driver.PrintRecTotal(123.45, 10, '0'));
+    FptrCheck(Driver.PrintRecTotal(123.45, 20, '1'));
+    FptrCheck(Driver.PrintRecTotal(123.45, 30, '2'));
+    FptrCheck(Driver.PrintRecTotal(123.45, 63.45, '3'));
 
     CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
     CheckEquals(OPOS_E_EXTENDED, Driver.EndFiscalReceipt(False));
@@ -484,7 +492,10 @@ const
     'Наценка:                              5.00' + CRLF +
     //'ИТОГ                               =108.27' + CRLF +
     'ИТОГ          =108.27' + CRLF +
-    'Банковская карта:                  =123.45' + CRLF +
+    'Наличные:                           =63.45' + CRLF +
+    'Банковская карта:                   =10.00' + CRLF +
+    'Кредит:                             =20.00' + CRLF +
+    'Мобильный платеж:                   =30.00' + CRLF +
     '  СДАЧА                             =15.18' + CRLF +
     'в т.ч. НДС 12%                      =12.14' + CRLF +
     '------------------------------------------' + CRLF +
@@ -513,6 +524,8 @@ var
   Json: TlkJSON;
   Text: WideString;
   Doc: TlkJSONbase;
+  PaymentType: Integer;
+  PaymentAmount: Double;
 begin
   OpenClaimEnable;
   PrintReceipt3;
@@ -522,6 +535,27 @@ begin
     Doc := Json.ParseText(FDriver.Client.CommandJson);
     Text := Doc.Field['Positions'].Child[0].Field['Mark'].Value;
     CheckEquals(ItemBarcode, Text, 'ItemBarcode');
+
+    // Payment 0
+    PaymentAmount := Doc.Field['Payments'].Child[0].Field['Sum'].Value;
+    PaymentType := Doc.Field['Payments'].Child[0].Field['PaymentType'].Value;
+    CheckEquals(0, PaymentType, 'PaymentType0');
+    CheckEquals(63.45, PaymentAmount, 0.001, 'PaymentAmount0');
+    // Payment 1
+    PaymentAmount := Doc.Field['Payments'].Child[1].Field['Sum'].Value;
+    PaymentType := Doc.Field['Payments'].Child[1].Field['PaymentType'].Value;
+    CheckEquals(1, PaymentType, 'PaymentType1');
+    CheckEquals(10, PaymentAmount, 0.001, 'PaymentAmount1');
+    // Payment 2
+    PaymentAmount := Doc.Field['Payments'].Child[2].Field['Sum'].Value;
+    PaymentType := Doc.Field['Payments'].Child[2].Field['PaymentType'].Value;
+    CheckEquals(2, PaymentType, 'PaymentType2');
+    CheckEquals(20, PaymentAmount, 0.001, 'PaymentAmount2');
+    // Payment 3
+    PaymentAmount := Doc.Field['Payments'].Child[3].Field['Sum'].Value;
+    PaymentType := Doc.Field['Payments'].Child[3].Field['PaymentType'].Value;
+    CheckEquals(4, PaymentType, 'PaymentType3');
+    CheckEquals(30, PaymentAmount, 0.001, 'PaymentAmount3');
   finally
     Json.Free;
   end;
@@ -605,7 +639,11 @@ begin
   FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_AMOUNT_SURCHARGE, 'Надбавка 5', 5));
   // Total
   FptrCheck(Driver.PrintRecMessage('Message 3'));
-  FptrCheck(Driver.PrintRecTotal(123.45, 123.45, '1'));
+  FptrCheck(Driver.PrintRecTotal(108.27, 63.45, '0'));
+  FptrCheck(Driver.PrintRecTotal(108.27, 10, '1'));
+  FptrCheck(Driver.PrintRecTotal(108.27, 20, '2'));
+  FptrCheck(Driver.PrintRecTotal(108.27, 30, '3'));
+
   FptrCheck(Driver.PrintRecMessage('Message 4'));
 
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
@@ -1158,7 +1196,7 @@ begin
   FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка', 0.45, 1));
   FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка 10', 10));
   FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_AMOUNT_SURCHARGE, 'Надбавка 5', 5));
-  FptrCheck(Driver.PrintRecTotal(123.45, 123.45, '1'));
+  FptrCheck(Driver.PrintRecTotal(108.27, 123.45, '1'));
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   CheckEquals(OPOS_SUCCESS, Driver.EndFiscalReceipt(False));
 
@@ -1235,10 +1273,12 @@ end;
 procedure TWebkassaImplTest.CheckLines;
 var
   i: Integer;
+  Count: Integer;
 begin
   ShowLines;
   //CheckEquals(FLines.Count, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
-  for i := 0 to FLines.Count-1 do
+  Count := Math.Min(FLines.Count, FPrinter.Lines.Count);
+  for i := 0 to Count-1 do
   begin
     if FLines[i] <> FPrinter.Lines[i] then
     begin

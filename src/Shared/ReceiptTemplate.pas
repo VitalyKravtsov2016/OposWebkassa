@@ -439,6 +439,16 @@ begin
   Item.Alignment := ALIGN_RIGHT;
   Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
   Trailer.NewLine;
+  // Payment4
+  Trailer.AddText('Мобильный платеж:');
+  Item := Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'Payment4';
+  Item.FormatText := '=%s';
+  Item.Alignment := ALIGN_RIGHT;
+  Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
+  Trailer.NewLine;
   // Change
   Trailer.AddText('  СДАЧА');
   Item := Trailer.Add;

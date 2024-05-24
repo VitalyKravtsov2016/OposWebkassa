@@ -1441,6 +1441,7 @@ begin
     PaymentTypeCard: Result := 'Банковская карта';
     PaymentTypeCredit: Result := 'Кредит';
     PaymentTypeTare: Result := 'Оплата тарой';
+    PaymentTypeMobile: Result := 'Мобильный платеж';
   else
     Result := '';
   end;

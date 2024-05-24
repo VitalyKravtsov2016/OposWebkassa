@@ -3672,6 +3672,13 @@ begin
       Result := Format('%.2f', [Amount]);
     Exit;
   end;
+  if WideCompareText(Item.Text, 'Payment4') = 0 then
+  begin
+    Amount := Abs(Receipt.Payments[4]);
+    if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
+      Result := Format('%.2f', [Amount]);
+    Exit;
+  end;
   if WideCompareText(Item.Text, 'Change') = 0 then
   begin
     Amount := Abs(Receipt.Change);

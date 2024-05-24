@@ -166,9 +166,18 @@ begin
   FReceipt.BeginFiscalReceipt(False);
   FReceipt.PrintRecItem('Item 1', 578, 3302, 4, 175, '');
   CheckEquals(578, FReceipt.GetTotal, 'FReceipt.Total');
-  FReceipt.PrintRecTotal(578, 578, '1');
+  FReceipt.PrintRecTotal(578, 10, '0');
+  FReceipt.PrintRecTotal(578, 20, '1');
+  FReceipt.PrintRecTotal(578, 30, '2');
+  FReceipt.PrintRecTotal(578, 40, '3');
+  FReceipt.PrintRecTotal(578, 478, '4');
   CheckEquals(0, FReceipt.Change, 'Receipt.Change');
   FReceipt.EndFiscalReceipt(False);
+  CheckEquals(10, FReceipt.Payments[0], 'Payments[0]');
+  CheckEquals(20, FReceipt.Payments[1], 'Payments[1]');
+  CheckEquals(30, FReceipt.Payments[2], 'Payments[2]');
+  CheckEquals(40, FReceipt.Payments[3], 'Payments[3]');
+  CheckEquals(478, FReceipt.Payments[4], 'Payments[4]');
 end;
 
 procedure TSalesReceiptTest.TestDirectIO;
