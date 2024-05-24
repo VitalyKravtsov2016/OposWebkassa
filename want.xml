@@ -195,8 +195,6 @@ See http://www.suigeneris.org/want/ for details.
       <rangechecks value="false" />
       <iochecks value="false" />
       <build value="true" />
-      <debug     value="true" />
-	  <arguments value="-DDEBUG -V" /> 
     </dcc>
   </target>
 
