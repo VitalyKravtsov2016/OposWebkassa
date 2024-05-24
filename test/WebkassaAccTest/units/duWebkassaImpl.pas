@@ -860,6 +860,8 @@ end;
 
 procedure TWebkassaImplTest.TestGetData;
 var
+  Amount: Currency;
+  Amount2: Currency;
   OptArgs: Integer;
   Data: WideString;
   DataExpected: WideString;
@@ -868,11 +870,24 @@ begin
   OptArgs := 0;
   Data := '';
   FptrCheck(Driver.GetData(FPTR_GD_GRAND_TOTAL, OptArgs, Data));
+  Amount := StrToInt64(Data)/100;
   DataExpected := Driver.Driver.ReadCashboxStatus.Field['Data'].Field[
     'CurrentState'].Field['XReport'].Field['SumInCashbox'].Value;
   DataExpected := IntToStr(Trunc(StrToCurr(DataExpected) * 100));
   CheckEquals(DataExpected, Data, 'FPTR_GD_GRAND_TOTAL');
   FptrCheck(Driver.GetData(FPTR_GD_DAILY_TOTAL, OptArgs, Data));
+
+  TestCashIn;
+
+  FptrCheck(Driver.GetData(FPTR_GD_GRAND_TOTAL, OptArgs, Data));
+  Amount2 := StrToInt64(Data)/100;
+  CheckEquals(Amount + 60, Amount2, 'Amount.0');
+
+  TestCashOut;
+
+  FptrCheck(Driver.GetData(FPTR_GD_GRAND_TOTAL, OptArgs, Data));
+  Amount2 := StrToInt64(Data)/100;
+  CheckEquals(Amount, Amount2, 'Amount.1');
 end;
 
 
