@@ -123,7 +123,7 @@ begin
   if Driver = nil then
   begin
     Driver := ToleFiscalPrinter.Create;
-    //Driver.Driver.Printer := Printer;
+    Driver.Driver.Printer := Printer;
     Driver.Driver.LoadParamsEnabled := False;
 
     Params.PrintBarcode := PrintBarcodeESCCommands;
@@ -426,85 +426,97 @@ end;
 
 procedure TWebkassaImplTest.TestPrintReceiptDuplicate;
 const
-  ReceiptLines: array [0..38] of string = (
-    '|bC              ДУБЛИКАТ',
-    '       ТОО SOFT IT KAZAKHSTAN',
-    '          БИН 131240010479',
-    'НДС Серия 00000            № 0000000',
-    '------------------------------------',
-    '             Касса 2.0.2',
-    '              Смена 213',
-    '      Порядковый номер чека №13',
-    'Чек №1176446355471',
-    'Кассир apykhtin@ibtsmail.ru',
-    'ПРОДАЖА',
-    '------------------------------------',
-    '  1. Сер. № 5',
-    '           ШОКОЛАДНАЯ ПЛИТКА MILKA',
-    'BUBBLES МОЛОЧНЫЙ',
-    '   1 шт x 590,00',
-    '   Стоимость                  590,00',
-    '------------------------------------',
-    'Наличные:                  12 345,00',
-    'Сдача:                     11 755,00',
-    '|bCИТОГО:                        590,00',
-    '------------------------------------',
-    'Фискальный признак: 1176446355471',
-    'Время: 25.09.2023 17:20:28',
-    'Оператор фискальных данных: АО',
-    '"КазТранском"',
-    'Для проверки чека зайдите на сайт:',
-    'dev.kofd.kz/consumer',
-    '------------------------------------',
-    '|bC           ФИСКАЛЬНЫЙ ЧЕК',
-    'http://dev.kofd.kz/consumer?i=174431930345',
-    '1&f=427490326691&s=590.00&t=20230925T17202',
-    '8            ИНК ОФД: 657',
-    '             WEBKASSA.KZ',
-    '          ЗНМ: SWK00033444',
-    '             WEBKASSA.KZ',
-    '           Callцентр 039458039850',
-    '          Горячая линия 20948802934',
-    '            СПАСИБО ЗА ПОКУПКУ');
+  ReceiptText: string =
+    '|bC              ДУБЛИКАТ' + CRLF +
+
+    '       ТОО SOFT IT KAZAKHSTAN' + CRLF +
+    '          БИН 131240010479' + CRLF +
+    'НДС Серия 00000            № 0000000' + CRLF +
+    '------------------------------------' + CRLF +
+    '             Касса 2.0.2' + CRLF +
+    '              Смена 213' + CRLF +
+    '      Порядковый номер чека №13' + CRLF +
+    'Чек №1176446355471' + CRLF +
+    'Кассир apykhtin@ibtsmail.ru' + CRLF +
+    'ПРОДАЖА' + CRLF +
+    '------------------------------------' + CRLF +
+    '  1. Сер. № 5' + CRLF +
+    '           ШОКОЛАДНАЯ ПЛИТКА MILKA' + CRLF +
+    'BUBBLES МОЛОЧНЫЙ' + CRLF +
+    '   1 шт x 590,00' + CRLF +
+    '   Стоимость                  590,00' + CRLF +
+    '------------------------------------' + CRLF +
+    'Наличные:                  12 345,00' + CRLF +
+    'Сдача:                     11 755,00' + CRLF +
+    '|bCИТОГО:                        590,00' + CRLF +
+    '------------------------------------' + CRLF +
+    'Фискальный признак: 1176446355471' + CRLF +
+    'Время: 25.09.2023 17:20:28' + CRLF +
+    'Оператор фискальных данных: АО' + CRLF +
+    '"КазТранском"' + CRLF +
+    'Для проверки чека зайдите на сайт:' + CRLF +
+    'dev.kofd.kz/consumer' + CRLF +
+    '------------------------------------' + CRLF +
+    '|bC           ФИСКАЛЬНЫЙ ЧЕК' + CRLF +
+    'http://dev.kofd.kz/consumer?i=174431930345' + CRLF +
+    '1&f=427490326691&s=590.00&t=20230925T17202' + CRLF +
+    '8            ИНК ОФД: 657' + CRLF +
+    '             WEBKASSA.KZ' + CRLF +
+    '          ЗНМ: SWK00033444' + CRLF +
+    '             WEBKASSA.KZ' + CRLF +
+    '           Callцентр 039458039850' + CRLF +
+    '          Горячая линия 20948802934' + CRLF +
+    '            СПАСИБО ЗА ПОКУПКУ';
 
 var
   i: Integer;
   pData: Integer;
   pString: WideString;
+  ReceiptLines: TTntStrings;
   ExternalCheckNumber: WideString;
 begin
-  TestFiscalReceipt;
+  ReceiptLines := TTntStringList.Create;
+  try
+    ReceiptLines.Text := ReceiptText;
 
-  Printer.Clear;
-  FptrCheck(Printer.Lines.Count, 'Printer.Lines.Count');
-  CheckEquals('', Printer.Lines.Text, 'Printer.Lines.Text');
+    TestFiscalReceipt;
 
-  pString := '';
-  pData := DriverParameterExternalCheckNumber;
-  FptrCheck(Driver.DirectIO(DIO_GET_DRIVER_PARAMETER, pData, pString),
-    'Driver.DirectIO(DIO_GET_DRIVER_PARAMETER, pData, pString)');
+    Printer.Clear;
+    CheckEquals(0, Printer.Lines.Count, 'Printer.Lines.Count');
+    CheckEquals('', Printer.Lines.Text, 'Printer.Lines.Text');
 
-  pData := 0;
-  ExternalCheckNumber := pString;
-  FptrCheck(Driver.DirectIO(DIO_PRINT_RECEIPT_DUPLICATE, pData, ExternalCheckNumber),
-    'DirectIO(DIO_PRINT_RECEIPT_DUPLICATE, 0, ExternalCheckNumber)');
+    pString := '';
+    pData := DriverParameterExternalCheckNumber;
+    FptrCheck(Driver.DirectIO(DIO_GET_DRIVER_PARAMETER, pData, pString),
+      'Driver.DirectIO(DIO_GET_DRIVER_PARAMETER, pData, pString)');
 
-  CheckEquals(39, Printer.Lines.Count, 'Printer.Lines.Count');
-  for i := 0 to 4 do
-  begin
-    CheckEquals(TrimRight(ReceiptLines[i]), TrimRight(Printer.Lines[i]), 'Line ' + IntToStr(i));
-  end;
-  for i := 9 to 21 do
-  begin
-    CheckEquals(TrimRight(ReceiptLines[i]), TrimRight(Printer.Lines[i]), 'Line ' + IntToStr(i));
-  end;
-  for i := 24 to 29 do
-  begin
-    CheckEquals(TrimRight(ReceiptLines[i]), TrimRight(Printer.Lines[i]), 'Line ' + IntToStr(i));
-  end;
-  for i := 34 to 38 do
-  begin
-    CheckEquals(TrimRight(ReceiptLines[i]), TrimRight(Printer.Lines[i]), 'Line ' + IntToStr(i));
+    pData := 0;
+    ExternalCheckNumber := pString;
+    FptrCheck(Driver.DirectIO(DIO_PRINT_RECEIPT_DUPLICATE, pData, ExternalCheckNumber),
+      'DirectIO(DIO_PRINT_RECEIPT_DUPLICATE, 0, ExternalCheckNumber)');
+
+    WriteFileData('Duplicate1.txt', REceiptLines.Text);
+    WriteFileData('Duplicate2.txt', Printer.Lines.Text);
+
+    CheckEquals(41, Printer.Lines.Count, 'Printer.Lines.Count');
+    for i := 0 to 4 do
+    begin
+      CheckEquals(TrimRight(ReceiptLines[i]), TrimRight(Printer.Lines[i]), 'Line ' + IntToStr(i));
+    end;
+    for i := 9 to 21 do
+    begin
+      CheckEquals(TrimRight(ReceiptLines[i]), TrimRight(Printer.Lines[i]), 'Line ' + IntToStr(i));
+    end;
+    for i := 24 to 29 do
+    begin
+      CheckEquals(TrimRight(ReceiptLines[i]), TrimRight(Printer.Lines[i]), 'Line ' + IntToStr(i));
+    end;
+    for i := 34 to 38 do
+    begin
+      CheckEquals(TrimRight(ReceiptLines[i]), TrimRight(Printer.Lines[i]), 'Line ' + IntToStr(i));
+    end;
+  finally
+    ReceiptLines.Free;
   end;
 end;
 
@@ -663,7 +675,7 @@ var
   Total: Currency;
 begin
   FptrCheck(Driver.GetData(FPTR_GD_CURRENT_TOTAL, IData, Data));
-  Total := StrToCurr(Data)/100;
+  Total := StrToCurr(Data);
   CheckEquals(Amount, Total, 'Total');
 end;
 
@@ -870,24 +882,24 @@ begin
   OptArgs := 0;
   Data := '';
   FptrCheck(Driver.GetData(FPTR_GD_GRAND_TOTAL, OptArgs, Data));
-  Amount := StrToInt64(Data)/100;
+  Amount := StrToCurr(Data);
   DataExpected := Driver.Driver.ReadCashboxStatus.Field['Data'].Field[
     'CurrentState'].Field['XReport'].Field['SumInCashbox'].Value;
-  DataExpected := IntToStr(Trunc(StrToCurr(DataExpected) * 100));
+  DataExpected := Format('%.2f', [StrToCurr(DataExpected)]);
   CheckEquals(DataExpected, Data, 'FPTR_GD_GRAND_TOTAL');
   FptrCheck(Driver.GetData(FPTR_GD_DAILY_TOTAL, OptArgs, Data));
 
   TestCashIn;
 
   FptrCheck(Driver.GetData(FPTR_GD_GRAND_TOTAL, OptArgs, Data));
-  Amount2 := StrToInt64(Data)/100;
-  CheckEquals(Amount + 60, Amount2, 'Amount.0');
+  Amount2 := StrToCurr(Data);
+  CheckEquals(Amount + 60, Amount2, 0.001, 'Amount.0');
 
   TestCashOut;
 
   FptrCheck(Driver.GetData(FPTR_GD_GRAND_TOTAL, OptArgs, Data));
-  Amount2 := StrToInt64(Data)/100;
-  CheckEquals(Amount, Amount2, 'Amount.1');
+  Amount2 := StrToCurr(Data);
+  CheckEquals(Amount, Amount2, 0.001, 'Amount.1');
 end;
 
 

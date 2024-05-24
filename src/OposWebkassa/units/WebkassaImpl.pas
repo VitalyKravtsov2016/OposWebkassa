@@ -112,7 +112,6 @@ type
     procedure CheckCanPrint;
     function GetVatRate(Code: Integer): TVatRate;
     function AmountToStr(Value: Currency): AnsiString;
-    function AmountToOutStr(Value: Currency): AnsiString;
     function AmountToStrEq(Value: Currency): AnsiString;
     procedure SetPrinter(const Value: IOPOSPOSPrinter);
     function ReadDailyTotal: Currency;
@@ -620,14 +619,6 @@ begin
   begin
     Result := Format('%.*f', [Params.AmountDecimalPlaces, Value]);
   end;
-end;
-
-function TWebkassaImpl.AmountToOutStr(Value: Currency): AnsiString;
-var
-  L: Int64;
-begin
-  L := Trunc(Value * Math.Power(10, Params.AmountDecimalPlaces));
-  Result := IntToStr(L);
 end;
 
 function TWebkassaImpl.AmountToStrEq(Value: Currency): AnsiString;
@@ -1409,14 +1400,14 @@ begin
     case DataItem of
       FPTR_GD_FIRMWARE: ;
       FPTR_GD_PRINTER_ID: Data := Params.CashboxNumber;
-      FPTR_GD_CURRENT_TOTAL: Data := AmountToOutStr(Receipt.GetTotal());
-      FPTR_GD_DAILY_TOTAL: Data := AmountToOutStr(ReadDailyTotal);
-      FPTR_GD_GRAND_TOTAL: Data := AmountToOutStr(ReadGrandTotal);
-      FPTR_GD_MID_VOID: Data := AmountToOutStr(0);
-      FPTR_GD_NOT_PAID: Data := AmountToOutStr(0);
+      FPTR_GD_CURRENT_TOTAL: Data := AmountToStr(Receipt.GetTotal());
+      FPTR_GD_DAILY_TOTAL: Data := AmountToStr(ReadDailyTotal);
+      FPTR_GD_GRAND_TOTAL: Data := AmountToStr(ReadGrandTotal);
+      FPTR_GD_MID_VOID: Data := AmountToStr(0);
+      FPTR_GD_NOT_PAID: Data := AmountToStr(0);
       FPTR_GD_RECEIPT_NUMBER: Data := FCheckNumber;
-      FPTR_GD_REFUND: Data := AmountToOutStr(ReadRefundTotal);
-      FPTR_GD_REFUND_VOID: Data := AmountToOutStr(0);
+      FPTR_GD_REFUND: Data := AmountToStr(ReadRefundTotal);
+      FPTR_GD_REFUND_VOID: Data := AmountToStr(0);
       FPTR_GD_Z_REPORT:
       begin
         ZReportNumber := ReadCashboxStatus.Get('Data').Get(
@@ -1425,7 +1416,7 @@ begin
           ZReportNumber := ZReportNumber - 1;
         Data := IntToStr(ZReportNumber);
       end;
-      FPTR_GD_FISCAL_REC: Data := AmountToOutStr(ReadSellTotal);
+      FPTR_GD_FISCAL_REC: Data := AmountToStr(ReadSellTotal);
       FPTR_GD_FISCAL_DOC,
       FPTR_GD_FISCAL_DOC_VOID,
       FPTR_GD_FISCAL_REC_VOID,
@@ -1646,7 +1637,7 @@ function TWebkassaImpl.GetTotalizer(VatID, OptArgs: Integer;
 begin
   try
     case VatID of
-      FPTR_GT_GROSS: Data := AmountToOutStr(ReadGrossTotalizer(OptArgs));
+      FPTR_GT_GROSS: Data := AmountToStr(ReadGrossTotalizer(OptArgs));
       (*
       FPTR_GT_NET                      =  2;
       FPTR_GT_DISCOUNT                 =  3;
@@ -4514,7 +4505,7 @@ begin
     Command.Request.Token := FClient.Token;
     Command.Request.CashboxUniqueNumber := Params.CashboxNumber;
     Command.Request.ExternalCheckNumber := ExternalCheckNumber;
-    Command.Request.isDuplicate := True;
+    Command.Request.isDuplicate := False;
     Command.Request.paperKind := GetPaperKind;
     FClient.ReadReceiptText(Command);
     for i := 0 to Command.Data.Lines.Count-1 do

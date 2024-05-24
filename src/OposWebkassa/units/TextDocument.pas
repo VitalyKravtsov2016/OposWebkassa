@@ -183,6 +183,22 @@ begin
   until Length(Text) = 0;
 end;
 
+(*
+function TTextDocument.InsertItem(Index: Integer; const Line: WideString; Style: Integer): TDocItem;
+var
+  Item: TDocItem;
+begin
+  Item := TDocItem.Create(nil);
+  Item.FText := Line;
+  Item.FStyle := Style;
+  Item.FLineChars := LineChars;
+  Item.FLineHeight := LineHeight;
+  Item.FLineSpacing := LineSpacing;
+  Result := Item;
+  Items.Insert(Index);
+end;
+*)
+
 function TTextDocument.AddItem(const Line: WideString; Style: Integer): TDocItem;
 var
   Item: TDocItem;
