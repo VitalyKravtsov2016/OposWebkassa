@@ -13,7 +13,7 @@ type
   TfmMain = class(TForm)
     btnOpen: TBitBtn;
     OpenDialog: TOpenDialog;
-    btnClose: TButton;
+    btnClose: TTntButton;
     procedure btnOpenClick(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);

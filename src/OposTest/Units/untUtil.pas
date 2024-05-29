@@ -6,7 +6,7 @@ uses
   // This
   Classes, ComCtrls, ExtCtrls, StdCtrls, Controls, Forms, Registry,
   // Tnt
-  TntStdCtrls, TntRegistry;
+  TntStdCtrls, TntRegistry, TntComCtrls, TntExtCtrls;
 
 procedure SaveFormParams(Form: TForm; const RegKey: WideString);
 procedure LoadFormParams(Form: TForm; const RegKey: WideString);
@@ -63,8 +63,8 @@ begin
           TTntComboBox(Item).ItemIndex := Reg.ReadInteger(ValueName);
         if Item is TTntCheckBox then
           TTntCheckBox(Item).Checked := Reg.ReadBool(ValueName);
-        if Item is TRadioGroup then
-          TRadioGroup(Item).ItemIndex := Reg.ReadInteger(ValueName);
+        if Item is TTntRadioGroup then
+          TTntRadioGroup(Item).ItemIndex := Reg.ReadInteger(ValueName);
         if Item is TDateTimePicker then
           TDateTimePicker(Item).DateTime := Reg.ReadDateTime(ValueName);
       end;
@@ -116,8 +116,8 @@ begin
       if Item is TTntCheckBox then
         Reg.WriteBool(ValueName, TTntCheckBox(Item).Checked);
 
-      if Item is TRadioGroup then
-        Reg.WriteInteger(ValueName, TRadioGroup(Item).ItemIndex);
+      if Item is TTntRadioGroup then
+        Reg.WriteInteger(ValueName, TTntRadioGroup(Item).ItemIndex);
 
       if Item is TDateTimePicker then
         Reg.WriteDateTime(ValueName, TDateTimePicker(Item).DateTime);

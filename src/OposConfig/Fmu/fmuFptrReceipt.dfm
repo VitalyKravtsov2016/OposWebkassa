@@ -24,13 +24,13 @@ object fmFptrReceipt: TfmFptrReceipt
     Top = 0
     Width = 581
     Height = 417
-    ActivePage = tsReceipt
+    ActivePage = tsXmlTemplate
     Align = alTop
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 0
-    object tsReceipt: TTabSheet
+    object tsReceipt: TTntTabSheet
       Caption = #1042#1080#1076' '#1095#1077#1082#1072
-      object reReceipt: TRichEdit
+      object reReceipt: TTntRichEdit
         Left = 0
         Top = 0
         Width = 573
@@ -48,7 +48,7 @@ object fmFptrReceipt: TfmFptrReceipt
         TabOrder = 0
       end
     end
-    object tsXmlTemplate: TTabSheet
+    object tsXmlTemplate: TTntTabSheet
       Caption = #1060#1086#1088#1084#1072#1090' '#1095#1077#1082#1072
       ImageIndex = 1
       object seTemplate: TSynEdit
@@ -70,10 +70,11 @@ object fmFptrReceipt: TfmFptrReceipt
         Gutter.Font.Style = []
         Highlighter = SynXMLSyn
         OnChange = ReceiptChange
+        FontSmoothing = fsmNone
       end
     end
   end
-  object chbTemplateEnabled: TCheckBox
+  object chbTemplateEnabled: TTntCheckBox
     Left = 8
     Top = 424
     Width = 361
@@ -83,6 +84,9 @@ object fmFptrReceipt: TfmFptrReceipt
     TabOrder = 1
   end
   object SynXMLSyn: TSynXMLSyn
+    Options.AutoDetectEnabled = False
+    Options.AutoDetectLineLimit = 0
+    Options.Visible = False
     WantBracesParsed = False
     Left = 48
     Top = 32

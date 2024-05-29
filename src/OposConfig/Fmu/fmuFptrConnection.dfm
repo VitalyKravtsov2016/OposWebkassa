@@ -81,7 +81,7 @@ object fmFptrConnection: TfmFptrConnection
       Value = 0
       OnChange = ModifiedClick
     end
-    object edtWebkassaAddress: TEdit
+    object edtWebkassaAddress: TTntEdit
       Left = 168
       Top = 24
       Width = 289
@@ -91,7 +91,7 @@ object fmFptrConnection: TfmFptrConnection
       Text = 'edtWebkassaAddress'
       OnChange = ModifiedClick
     end
-    object edtLogin: TEdit
+    object edtLogin: TTntEdit
       Left = 168
       Top = 88
       Width = 289
@@ -101,7 +101,7 @@ object fmFptrConnection: TfmFptrConnection
       Text = 'edtLogin'
       OnChange = ModifiedClick
     end
-    object edtPassword: TEdit
+    object edtPassword: TTntEdit
       Left = 168
       Top = 120
       Width = 289
@@ -111,7 +111,7 @@ object fmFptrConnection: TfmFptrConnection
       Text = 'edtPassword'
       OnChange = ModifiedClick
     end
-    object btnTestConnection: TButton
+    object btnTestConnection: TTntButton
       Left = 168
       Top = 224
       Width = 145
@@ -121,7 +121,7 @@ object fmFptrConnection: TfmFptrConnection
       TabOrder = 6
       OnClick = btnTestConnectionClick
     end
-    object cbCashboxNumber: TComboBox
+    object cbCashboxNumber: TTntComboBox
       Left = 168
       Top = 152
       Width = 289
@@ -133,7 +133,7 @@ object fmFptrConnection: TfmFptrConnection
       Text = 'cbCashboxNumber'
       OnChange = ModifiedClick
     end
-    object btnUpdateCashBoxNumbers: TButton
+    object btnUpdateCashBoxNumbers: TTntButton
       Left = 320
       Top = 224
       Width = 137
@@ -143,7 +143,7 @@ object fmFptrConnection: TfmFptrConnection
       TabOrder = 7
       OnClick = btnUpdateCashBoxNumbersClick
     end
-    object edtResultCode: TEdit
+    object edtResultCode: TTntEdit
       Left = 168
       Top = 184
       Width = 290

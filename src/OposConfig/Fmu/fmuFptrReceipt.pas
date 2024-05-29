@@ -8,7 +8,7 @@ uses
   // JVCL
   JvExStdCtrls, JvRichEdit,
   // Tnt
-  TntSysUtils,
+  TntSysUtils, TntComCtrls, 
   // 3'd
   SynMemo, SynEdit, TntStdCtrls,
   // This
@@ -23,18 +23,18 @@ type
   TfmFptrReceipt = class(TFptrPage)
     SynXMLSyn: TSynXMLSyn;
     PageControl1: TPageControl;
-    tsReceipt: TTabSheet;
-    tsXmlTemplate: TTabSheet;
-    reReceipt: TRichEdit;
+    tsReceipt: TTntTabSheet;
+    tsXmlTemplate: TTntTabSheet;
+    reReceipt: TTntRichEdit;
     seTemplate: TSynEdit;
-    chbTemplateEnabled: TCheckBox;
+    chbTemplateEnabled: TTntCheckBox;
     procedure ReceiptChange(Sender: TObject);
   public
     procedure UpdatePage; override;
     procedure UpdateObject; override;
 
-    procedure UpdateReceiptText(const TemplateXml: string);
-    procedure UpdateReceiptText2(const TemplateXml: string);
+    procedure UpdateReceiptText(const TemplateXml: WideString);
+    procedure UpdateReceiptText2(const TemplateXml: WideString);
   end;
 
 implementation
@@ -43,7 +43,7 @@ implementation
 
 { TfmFptrReceipt }
 
-procedure TfmFptrReceipt.UpdateReceiptText(const TemplateXml: string);
+procedure TfmFptrReceipt.UpdateReceiptText(const TemplateXml: WideString);
 begin
   reReceipt.Lines.BeginUpdate;
   try
@@ -66,7 +66,7 @@ begin
   end;
 end;
 
-procedure TfmFptrReceipt.UpdateReceiptText2(const TemplateXml: string);
+procedure TfmFptrReceipt.UpdateReceiptText2(const TemplateXml: WideString);
 var
   i: Integer;
   TextItem: TDocItem;

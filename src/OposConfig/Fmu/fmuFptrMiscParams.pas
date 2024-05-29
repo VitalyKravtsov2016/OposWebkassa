@@ -14,17 +14,17 @@ type
   { TfmFptrPayType }
 
   TfmFptrMiscParams = class(TFptrPage)
-    cbRoundType: TComboBox;
+    cbRoundType: TTntComboBox;
     lblRoundType: TTntLabel;
-    edtVATSeries: TEdit;
+    edtVATSeries: TTntEdit;
     lblVATSeries: TTntLabel;
-    edtVATNumber: TEdit;
+    edtVATNumber: TTntEdit;
     lblVATNumber: TTntLabel;
-    cbAmountDecimalPlaces: TComboBox;
+    cbAmountDecimalPlaces: TTntComboBox;
     lblAmountDecimalPlaces: TTntLabel;
-    edtCurrencyName: TEdit;
+    edtCurrencyName: TTntEdit;
     lblCurrencyName: TTntLabel;
-    chbPrintEnabled: TCheckBox;
+    chbPrintEnabled: TTntCheckBox;
     procedure ModifiedClick(Sender: TObject);
   public
     procedure UpdatePage; override;

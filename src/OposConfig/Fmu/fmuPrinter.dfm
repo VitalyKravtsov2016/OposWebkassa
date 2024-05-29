@@ -13,7 +13,7 @@ object fmPrinter: TfmPrinter
   OldCreateOrder = False
   DesignSize = (
     455
-    399)
+    400)
   PixelsPerInch = 96
   TextHeight = 13
   object lblResultCode: TTntLabel
@@ -39,7 +39,7 @@ object fmPrinter: TfmPrinter
     ScrollBars = ssVertical
     TabOrder = 1
   end
-  object btnTestConnection: TButton
+  object btnTestConnection: TTntButton
     Left = 240
     Top = 368
     Width = 105
@@ -49,7 +49,7 @@ object fmPrinter: TfmPrinter
     TabOrder = 2
     OnClick = btnTestConnectionClick
   end
-  object btnPrintReceipt: TButton
+  object btnPrintReceipt: TTntButton
     Left = 352
     Top = 368
     Width = 97
@@ -67,7 +67,7 @@ object fmPrinter: TfmPrinter
     ActivePage = tsCommonParams
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 0
-    object tsCommonParams: TTabSheet
+    object tsCommonParams: TTntTabSheet
       Caption = #1054#1073#1097#1080#1077
       object lblPrinterName: TTntLabel
         Left = 8
@@ -199,31 +199,31 @@ object fmPrinter: TfmPrinter
         OnClick = ModifiedClick
       end
     end
-    object tsSocketParams: TTabSheet
+    object tsSocketParams: TTntTabSheet
       Caption = #1057#1077#1090#1077#1074#1099#1077' '#1087#1072#1088#1072#1084#1077#1090#1088#1099
       ImageIndex = 1
-      object lblRemoteHost: TLabel
+      object lblRemoteHost: TTntLabel
         Left = 8
         Top = 16
         Width = 27
         Height = 13
         Caption = #1061#1086#1089#1090':'
       end
-      object lblByteTimeout: TLabel
+      object lblByteTimeout: TTntLabel
         Left = 8
         Top = 80
         Width = 110
         Height = 13
         Caption = #1058#1072#1081#1084#1072#1091#1090' '#1087#1088#1080#1077#1084#1072', '#1084#1089'.:'
       end
-      object lblRemotePort: TLabel
+      object lblRemotePort: TTntLabel
         Left = 8
         Top = 48
         Width = 28
         Height = 13
         Caption = #1055#1086#1088#1090':'
       end
-      object edtRemoteHost: TEdit
+      object edtRemoteHost: TTntEdit
         Left = 128
         Top = 16
         Width = 137
@@ -255,7 +255,7 @@ object fmPrinter: TfmPrinter
         OnChange = ModifiedClick
       end
     end
-    object tsSerialParams: TTabSheet
+    object tsSerialParams: TTntTabSheet
       Caption = #1055#1086#1089#1083#1077#1076#1086#1074#1072#1090#1077#1083#1100#1085#1099#1081' '#1087#1086#1088#1090
       ImageIndex = 2
       object lblPortName: TTntLabel
@@ -300,7 +300,7 @@ object fmPrinter: TfmPrinter
         Height = 13
         Caption = #1059#1087#1088#1072#1074#1083#1077#1085#1080#1077':'
       end
-      object Label1: TLabel
+      object Label1: TTntLabel
         Left = 8
         Top = 120
         Width = 69

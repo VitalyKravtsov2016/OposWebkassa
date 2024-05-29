@@ -50,7 +50,7 @@ object fmTranslation: TfmTranslation
     TabOrder = 1
     OnClick = btnAddClick
   end
-  object chbTranslationEnabled: TCheckBox
+  object chbTranslationEnabled: TTntCheckBox
     Left = 8
     Top = 336
     Width = 225

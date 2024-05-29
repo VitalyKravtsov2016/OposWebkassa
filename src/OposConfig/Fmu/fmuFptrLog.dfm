@@ -33,7 +33,7 @@ object fmFptrLog: TfmFptrLog
     Height = 13
     Caption = #1052#1072#1082#1089#1080#1084#1072#1083#1100#1085#1086#1077' '#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1092#1072#1081#1083#1086#1074':'
   end
-  object Label1: TLabel
+  object Label1: TTntLabel
     Left = 24
     Top = 104
     Width = 199

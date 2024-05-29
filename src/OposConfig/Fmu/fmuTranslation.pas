@@ -16,7 +16,7 @@ type
   TfmTranslation = class(TFptrPage)
     StringGrid: TTntStringGrid;
     btnAdd: TTntButton;
-    chbTranslationEnabled: TCheckBox;
+    chbTranslationEnabled: TTntCheckBox;
     procedure ModifiedClick(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure btnAddClick(Sender: TObject);

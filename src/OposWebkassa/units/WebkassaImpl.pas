@@ -3659,7 +3659,6 @@ begin
   end;
   if WideCompareText(Item.Text, 'TaxAmount') = 0 then
   begin
-    Amount := 0;
     VatRate := Params.VatRates.ItemByID(1);
     Amount := Abs(Receipt.GetVatAmount(VatRate));
     if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then

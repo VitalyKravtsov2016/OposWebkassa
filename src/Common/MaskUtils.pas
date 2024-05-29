@@ -40,7 +40,7 @@ type
   TMaskDirectives = set of (mdReverseDir, mdUpperCase, mdLowerCase,
     mdLiteralChar);
   TMaskedText = type string;
-  TEditMask = type string;
+  TTntEditMask = type string;
 
 function FormatMaskText(const EditMask: string; const Value: string): string;
 function MaskGetMaskSave(const EditMask: string): Boolean;

@@ -40,7 +40,7 @@ object fmFptrPayType: TfmFptrPayType
     Height = 13
     Caption = #1058#1080#1087' '#1086#1087#1083#1072#1090#1099' 4:'
   end
-  object Label1: TLabel
+  object Label1: TTntLabel
     Left = 8
     Top = 120
     Width = 369
@@ -50,7 +50,7 @@ object fmFptrPayType: TfmFptrPayType
       #1077#1076#1080#1090'" '#1080#1089#1082#1083#1102#1095#1077#1085#1099', '#13#10#1076#1086#1073#1072#1074#1080#1083#1089#1103' '#1085#1086#1074#1099#1081' '#1090#1080#1087' '#1086#1087#1083#1072#1090#1099' "'#1084#1086#1073#1080#1083#1100#1085#1099#1081' '#1087#1083#1072#1090#1077#1078'"' +
       '.'
   end
-  object cbPaymentType2: TComboBox
+  object cbPaymentType2: TTntComboBox
     Left = 96
     Top = 16
     Width = 410
@@ -67,7 +67,7 @@ object fmFptrPayType: TfmFptrPayType
       #1058#1072#1088#1072
       #1052#1086#1073#1080#1083#1100#1085#1099#1077)
   end
-  object cbPaymentType3: TComboBox
+  object cbPaymentType3: TTntComboBox
     Left = 96
     Top = 48
     Width = 410
@@ -84,7 +84,7 @@ object fmFptrPayType: TfmFptrPayType
       #1058#1072#1088#1072
       #1052#1086#1073#1080#1083#1100#1085#1099#1077)
   end
-  object cbPaymentType4: TComboBox
+  object cbPaymentType4: TTntComboBox
     Left = 96
     Top = 80
     Width = 410

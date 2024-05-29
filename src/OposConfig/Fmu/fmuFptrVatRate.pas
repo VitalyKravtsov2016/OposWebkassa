@@ -4,11 +4,11 @@ interface
 
 uses
   // VCL
-  StdCtrls, Controls, ComCtrls, Classes, SysUtils,
+  StdCtrls, Controls, ComCtrls, Classes, SysUtils, Spin, Mask,
   // Tnt
-  TntClasses, TntStdCtrls, TntRegistry,
+  TntClasses, TntRegistry, TntStdCtrls, TntComCtrls,
   // This
-  FiscalPrinterDevice, PrinterParameters, FptrTypes, Spin, Mask;
+  FiscalPrinterDevice, PrinterParameters, FptrTypes;
 
 type
   { TfmFptrVatCode }
@@ -16,14 +16,14 @@ type
   TfmFptrVatRate = class(TFptrPage)
     lblVatCode: TTntLabel;
     lblVatRate: TTntLabel;
-    lvVatCodes: TListView;
+    lvVatCodes: TTntListView;
     btnDelete: TTntButton;
     btnAdd: TTntButton;
     seVatCode: TSpinEdit;
-    edtVatName: TEdit;
+    edtVatName: TTntEdit;
     TntLabel1: TTntLabel;
-    chbVatCodeEnabled: TCheckBox;
-    edtVatRate: TEdit;
+    chbVatCodeEnabled: TTntCheckBox;
+    edtVatRate: TTntEdit;
     procedure btnAddClick(Sender: TObject);
     procedure btnDeleteClick(Sender: TObject);
     procedure ModifiedClick(Sender: TObject);
@@ -53,7 +53,7 @@ begin
 		  for i := 0 to Parameters.VatRates.Count-1 do
       begin
         Item := Items.Add;
-        Item.Caption := IntToStr(Parameters.VatRates[i].Code);
+        Item.Caption := IntToStr(Parameters.VatRates[i].ID);
         Item.SubItems.Add(Format('%.2f', [Parameters.VatRates[i].Rate]));
         Item.SubItems.Add(Parameters.VatRates[i].Name);
         if i = 0 then

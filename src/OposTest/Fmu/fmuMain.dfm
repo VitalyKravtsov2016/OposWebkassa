@@ -49,11 +49,11 @@ object fmMain: TfmMain
     ActivePage = tsFiscalPrinter
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 0
-    object tsFiscalPrinter: TTabSheet
+    object tsFiscalPrinter: TTntTabSheet
       BorderWidth = 3
       Caption = 'Fiscal printer'
     end
-    object tsPosPrinter: TTabSheet
+    object tsPosPrinter: TTntTabSheet
       Caption = 'POS printer'
       ImageIndex = 1
     end

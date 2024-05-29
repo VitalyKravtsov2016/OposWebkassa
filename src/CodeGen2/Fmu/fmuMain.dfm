@@ -32,7 +32,7 @@ object fmMain: TfmMain
       88880FBFBFBFBF0888880BFB0000000888888000888888880008888888888888
       8008888888880888080888888888800088888888888888888888}
   end
-  object btnClose: TButton
+  object btnClose: TTntButton
     Left = 192
     Top = 56
     Width = 91

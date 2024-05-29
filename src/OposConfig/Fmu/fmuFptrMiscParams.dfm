@@ -54,7 +54,7 @@ object fmFptrMiscParams: TfmFptrMiscParams
     Height = 13
     Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1074#1072#1083#1102#1090#1099':'
   end
-  object cbRoundType: TComboBox
+  object cbRoundType: TTntComboBox
     Left = 96
     Top = 16
     Width = 434
@@ -69,7 +69,7 @@ object fmFptrMiscParams: TfmFptrMiscParams
       #1048#1090#1086#1075' '#1095#1077#1082#1072
       #1055#1086#1079#1080#1094#1080#1080' '#1095#1077#1082#1072)
   end
-  object edtVATSeries: TEdit
+  object edtVATSeries: TTntEdit
     Left = 96
     Top = 48
     Width = 434
@@ -79,7 +79,7 @@ object fmFptrMiscParams: TfmFptrMiscParams
     Text = 'edtVATSeries'
     OnChange = ModifiedClick
   end
-  object edtVATNumber: TEdit
+  object edtVATNumber: TTntEdit
     Left = 96
     Top = 80
     Width = 434
@@ -89,7 +89,7 @@ object fmFptrMiscParams: TfmFptrMiscParams
     Text = 'edtVATNumber'
     OnChange = ModifiedClick
   end
-  object cbAmountDecimalPlaces: TComboBox
+  object cbAmountDecimalPlaces: TTntComboBox
     Left = 264
     Top = 112
     Width = 266
@@ -103,7 +103,7 @@ object fmFptrMiscParams: TfmFptrMiscParams
       '0'
       '2')
   end
-  object edtCurrencyName: TEdit
+  object edtCurrencyName: TTntEdit
     Left = 128
     Top = 144
     Width = 402
@@ -113,7 +113,7 @@ object fmFptrMiscParams: TfmFptrMiscParams
     Text = 'edtCurrencyName'
     OnChange = ModifiedClick
   end
-  object chbPrintEnabled: TCheckBox
+  object chbPrintEnabled: TTntCheckBox
     Left = 8
     Top = 176
     Width = 233

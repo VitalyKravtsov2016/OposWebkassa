@@ -123,7 +123,7 @@ begin
   if Driver = nil then
   begin
     Driver := ToleFiscalPrinter.Create;
-    Driver.Driver.Printer := Printer;
+    //Driver.Driver.Printer := Printer;
     Driver.Driver.LoadParamsEnabled := False;
 
     Params.PrintBarcode := PrintBarcodeESCCommands;
@@ -131,6 +131,9 @@ begin
     Params.LogMaxCount := 10;
     Params.LogFilePath := GetModulePath + 'Logs';
     Params.PrintBarcode := PrintBarcodeGraphics;
+    Params.TemplateEnabled := True;
+    Params.Template.LoadFromFile('Receipt.xml');
+
 (*
     Params.Login := 'webkassa4@softit.kz';
     Params.Password := 'Kassa123';

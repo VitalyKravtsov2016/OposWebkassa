@@ -16,7 +16,7 @@ object fmFptrBarcode: TfmFptrBarcode
   Position = poScreenCenter
   PixelsPerInch = 96
   TextHeight = 13
-  object rgBarcode: TRadioGroup
+  object rgBarcode: TTntRadioGroup
     Left = 8
     Top = 8
     Width = 393
@@ -24,7 +24,7 @@ object fmFptrBarcode: TfmFptrBarcode
     Caption = #1055#1077#1095#1072#1090#1100' '#1096#1090#1088#1080#1093#1082#1086#1076#1086#1074
     TabOrder = 0
   end
-  object rbBarcodeESCCommands: TRadioButton
+  object rbBarcodeESCCommands: TTntRadioButton
     Left = 40
     Top = 40
     Width = 273
@@ -33,7 +33,7 @@ object fmFptrBarcode: TfmFptrBarcode
     TabOrder = 1
     OnClick = ModifiedClick
   end
-  object rbBarcodeGraphics: TRadioButton
+  object rbBarcodeGraphics: TTntRadioButton
     Left = 40
     Top = 72
     Width = 281
@@ -42,7 +42,7 @@ object fmFptrBarcode: TfmFptrBarcode
     TabOrder = 2
     OnClick = ModifiedClick
   end
-  object rbBarcodeText: TRadioButton
+  object rbBarcodeText: TTntRadioButton
     Left = 40
     Top = 104
     Width = 281
@@ -51,7 +51,7 @@ object fmFptrBarcode: TfmFptrBarcode
     TabOrder = 3
     OnClick = ModifiedClick
   end
-  object rbBarcodeNone: TRadioButton
+  object rbBarcodeNone: TTntRadioButton
     Left = 40
     Top = 136
     Width = 281

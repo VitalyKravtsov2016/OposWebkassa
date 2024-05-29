@@ -40,7 +40,7 @@ object fmFptrVatRate: TfmFptrVatRate
     Height = 13
     Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1085#1072#1083#1086#1075#1072':'
   end
-  object lvVatCodes: TListView
+  object lvVatCodes: TTntListView
     Left = 8
     Top = 136
     Width = 372
@@ -99,7 +99,7 @@ object fmFptrVatRate: TfmFptrVatRate
     Value = 1
     OnChange = ModifiedClick
   end
-  object edtVatName: TEdit
+  object edtVatName: TTntEdit
     Left = 104
     Top = 80
     Width = 145
@@ -108,7 +108,7 @@ object fmFptrVatRate: TfmFptrVatRate
     TabOrder = 2
     OnChange = ModifiedClick
   end
-  object chbVatCodeEnabled: TCheckBox
+  object chbVatCodeEnabled: TTntCheckBox
     Left = 8
     Top = 112
     Width = 241
@@ -117,7 +117,7 @@ object fmFptrVatRate: TfmFptrVatRate
     TabOrder = 5
     OnClick = ModifiedClick
   end
-  object edtVatRate: TEdit
+  object edtVatRate: TTntEdit
     Left = 104
     Top = 48
     Width = 145

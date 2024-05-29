@@ -14,13 +14,13 @@ type
   { TfmFptrPayType }
 
   TfmFptrPayType = class(TFptrPage)
-    cbPaymentType2: TComboBox;
+    cbPaymentType2: TTntComboBox;
     lblPaymentType2: TTntLabel;
-    cbPaymentType3: TComboBox;
+    cbPaymentType3: TTntComboBox;
     lblPaymentType3: TTntLabel;
-    cbPaymentType4: TComboBox;
+    cbPaymentType4: TTntComboBox;
     lblPaymentType4: TTntLabel;
-    Label1: TLabel;
+    Label1: TTntLabel;
     procedure ModifiedClick(Sender: TObject);
   public
     procedure UpdatePage; override;

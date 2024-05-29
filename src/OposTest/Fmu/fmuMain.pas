@@ -7,7 +7,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ComCtrls, StdCtrls,
   // Tnt
-  TntStdCtrls, TntSysUtils,
+  TntStdCtrls, TntSysUtils, TntComCtrls, 
   // This
   BaseForm, fmuAbout, VersionInfo, fmuFiscalPrinter, fmuPosPrinter;
 
@@ -18,8 +18,8 @@ type
     btnAbout: TTntButton;
     btnClose: TTntButton;
     PageControl1: TPageControl;
-    tsFiscalPrinter: TTabSheet;
-    tsPosPrinter: TTabSheet;
+    tsFiscalPrinter: TTntTabSheet;
+    tsPosPrinter: TTntTabSheet;
     procedure FormCreate(Sender: TObject);
     procedure btnAboutClick(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);

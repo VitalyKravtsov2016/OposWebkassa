@@ -12,7 +12,7 @@ uses
   Opos, OposPtr, Oposhi, OposUtils, OposDevice,
   // This
   untUtil, PrinterParameters, FptrTypes, FiscalPrinterDevice, FileUtils,
-  WebkassaImpl, RecPrinter, SerialPort;
+  WebkassaImpl, RecPrinter, SerialPort, TntComCtrls;
 
 type
   { TfmPrinter }
@@ -20,24 +20,24 @@ type
   TfmPrinter = class(TFptrPage)
     memResult: TMemo;
     lblResultCode: TTntLabel;
-    btnTestConnection: TButton;
-    btnPrintReceipt: TButton;
+    btnTestConnection: TTntButton;
+    btnPrintReceipt: TTntButton;
     PageControl1: TPageControl;
-    tsCommonParams: TTabSheet;
-    tsSocketParams: TTabSheet;
-    lblRemoteHost: TLabel;
-    edtRemoteHost: TEdit;
+    tsCommonParams: TTntTabSheet;
+    tsSocketParams: TTntTabSheet;
+    lblRemoteHost: TTntLabel;
+    edtRemoteHost: TTntEdit;
     seRemotePort: TSpinEdit;
     seByteTimeout: TSpinEdit;
-    lblByteTimeout: TLabel;
-    lblRemotePort: TLabel;
+    lblByteTimeout: TTntLabel;
+    lblRemotePort: TTntLabel;
     lblPrinterName: TTntLabel;
     lblPrinterType: TTntLabel;
     lblFontName: TTntLabel;
     cbPrinterName: TTntComboBox;
     cbPrinterType: TTntComboBox;
     cbFontName: TTntComboBox;
-    tsSerialParams: TTabSheet;
+    tsSerialParams: TTntTabSheet;
     lblPortName: TTntLabel;
     cbPortName: TTntComboBox;
     cbBaudRate: TTntComboBox;
@@ -50,7 +50,7 @@ type
     lblParity: TTntLabel;
     lblFlowControl: TTntLabel;
     cbFlowControl: TTntComboBox;
-    Label1: TLabel;
+    Label1: TTntLabel;
     seSerialTimeout: TSpinEdit;
     lblDevicePollTime: TTntLabel;
     seDevicePollTime: TSpinEdit;
@@ -355,3 +355,5 @@ begin
 end;
 
 end.
+
+

@@ -4,21 +4,23 @@ interface
 
 uses
   // VCL
-  StdCtrls, Controls, Classes, ComObj, SysUtils,
+  StdCtrls, Controls, Classes, ComObj, SysUtils, ExtCtrls, 
   // 3'd
-  SynMemo, SynEdit, TntStdCtrls,
+  SynMemo, SynEdit,
+  // Tnt
+  TntStdCtrls, TntExtCtrls,
   // This
-  PrinterParameters, FiscalPrinterDevice, FptrTypes, ExtCtrls;
+  PrinterParameters, FiscalPrinterDevice, FptrTypes;
 
 type
   { TfmFptrBarcode }
 
   TfmFptrBarcode = class(TFptrPage)
-    rgBarcode: TRadioGroup;
-    rbBarcodeESCCommands: TRadioButton;
-    rbBarcodeGraphics: TRadioButton;
-    rbBarcodeText: TRadioButton;
-    rbBarcodeNone: TRadioButton;
+    rgBarcode: TTntRadioGroup;
+    rbBarcodeESCCommands: TTntRadioButton;
+    rbBarcodeGraphics: TTntRadioButton;
+    rbBarcodeText: TTntRadioButton;
+    rbBarcodeNone: TTntRadioButton;
     procedure ModifiedClick(Sender: TObject);
   public
     procedure UpdatePage; override;
@@ -57,3 +59,5 @@ begin
 end;
 
 end.
+
+
