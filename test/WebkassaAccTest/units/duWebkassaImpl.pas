@@ -141,8 +141,8 @@ begin
     Params.CashboxNumber := 'SWK00033444';
 
     Params.ConnectTimeout := 10;
-    Params.WebkassaAddress := 'https://devkkm.webkassa.kz';
-    //Params.WebkassaAddress := 'http://localhost:1332';
+    //Params.WebkassaAddress := 'https://devkkm.webkassa.kz';
+    Params.WebkassaAddress := 'http://localhost:1332';
 
     Params.NumHeaderLines := 4;
     Params.NumTrailerLines := 3;

@@ -1,0 +1,96 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{E128E3B6-57E1-4A54-BEB3-F40BC171BFC2}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="OposConfig\OposConfig.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="OposTest\OposTest.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="OposWebkassa\OposWebkassa.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\test\OposWebkassaTest\OposWebkassaTest.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\test\OposWebkassaTest\OposWebkassaTestLib.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\test\WebkassaAccTest\WebkassaAccTest.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="OposConfig">
+        <MSBuild Projects="OposConfig\OposConfig.dproj"/>
+    </Target>
+    <Target Name="OposConfig:Clean">
+        <MSBuild Projects="OposConfig\OposConfig.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="OposConfig:Make">
+        <MSBuild Projects="OposConfig\OposConfig.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="OposTest">
+        <MSBuild Projects="OposTest\OposTest.dproj"/>
+    </Target>
+    <Target Name="OposTest:Clean">
+        <MSBuild Projects="OposTest\OposTest.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="OposTest:Make">
+        <MSBuild Projects="OposTest\OposTest.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="OposWebkassa">
+        <MSBuild Projects="OposWebkassa\OposWebkassa.dproj"/>
+    </Target>
+    <Target Name="OposWebkassa:Clean">
+        <MSBuild Projects="OposWebkassa\OposWebkassa.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="OposWebkassa:Make">
+        <MSBuild Projects="OposWebkassa\OposWebkassa.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="OposWebkassaTest">
+        <MSBuild Projects="..\test\OposWebkassaTest\OposWebkassaTest.dproj"/>
+    </Target>
+    <Target Name="OposWebkassaTest:Clean">
+        <MSBuild Projects="..\test\OposWebkassaTest\OposWebkassaTest.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="OposWebkassaTest:Make">
+        <MSBuild Projects="..\test\OposWebkassaTest\OposWebkassaTest.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="OposWebkassaTestLib">
+        <MSBuild Projects="..\test\OposWebkassaTest\OposWebkassaTestLib.dproj"/>
+    </Target>
+    <Target Name="OposWebkassaTestLib:Clean">
+        <MSBuild Projects="..\test\OposWebkassaTest\OposWebkassaTestLib.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="OposWebkassaTestLib:Make">
+        <MSBuild Projects="..\test\OposWebkassaTest\OposWebkassaTestLib.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="WebkassaAccTest">
+        <MSBuild Projects="..\test\WebkassaAccTest\WebkassaAccTest.dproj"/>
+    </Target>
+    <Target Name="WebkassaAccTest:Clean">
+        <MSBuild Projects="..\test\WebkassaAccTest\WebkassaAccTest.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="WebkassaAccTest:Make">
+        <MSBuild Projects="..\test\WebkassaAccTest\WebkassaAccTest.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="OposConfig;OposTest;OposWebkassa;OposWebkassaTest;OposWebkassaTestLib;WebkassaAccTest"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="OposConfig:Clean;OposTest:Clean;OposWebkassa:Clean;OposWebkassaTest:Clean;OposWebkassaTestLib:Clean;WebkassaAccTest:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="OposConfig:Make;OposTest:Make;OposWebkassa:Make;OposWebkassaTest:Make;OposWebkassaTestLib:Make;WebkassaAccTest:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

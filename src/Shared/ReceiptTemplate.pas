@@ -462,9 +462,9 @@ begin
   // Taxes
   Trailer.AddText('â ò.÷. ÍÄÑ 12%');
   Item := Trailer.Add;
-  Item.ItemType := TEMPLATE_TYPE_JSON_REC_FIELD;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
   Item.TextStyle := STYLE_NORMAL;
-  Item.Text := 'Data.Tax';
+  Item.Text := 'TaxAmount';
   Item.FormatText := '=%s';
   Item.Alignment := ALIGN_RIGHT;
   Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;

@@ -1,0 +1,264 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{AE7F64AD-E642-4AA5-8E3F-9F983CAAF563}</ProjectGuid>
+        <MainSource>OposWebkassaTestLib.dpr</MainSource>
+        <Base>True</Base>
+        <Config Condition="'$(Config)'==''">Debug</Config>
+        <TargetedPlatforms>38017</TargetedPlatforms>
+        <AppType>Library</AppType>
+        <FrameworkType>None</FrameworkType>
+        <ProjectVersion>19.2</ProjectVersion>
+        <Platform Condition="'$(Platform)'==''">Win32</Platform>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Android' and '$(Base)'=='true') or '$(Base_Android)'!=''">
+        <Base_Android>true</Base_Android>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Android64' and '$(Base)'=='true') or '$(Base_Android64)'!=''">
+        <Base_Android64>true</Base_Android64>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='iOSDevice64' and '$(Base)'=='true') or '$(Base_iOSDevice64)'!=''">
+        <Base_iOSDevice64>true</Base_iOSDevice64>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='iOSSimulator' and '$(Base)'=='true') or '$(Base_iOSSimulator)'!=''">
+        <Base_iOSSimulator>true</Base_iOSSimulator>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Base)'=='true') or '$(Base_Win32)'!=''">
+        <Base_Win32>true</Base_Win32>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Win64' and '$(Base)'=='true') or '$(Base_Win64)'!=''">
+        <Base_Win64>true</Base_Win64>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Config)'=='Release' or '$(Cfg_1)'!=''">
+        <Cfg_1>true</Cfg_1>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='iOSSimulator' and '$(Cfg_1)'=='true') or '$(Cfg_1_iOSSimulator)'!=''">
+        <Cfg_1_iOSSimulator>true</Cfg_1_iOSSimulator>
+        <CfgParent>Cfg_1</CfgParent>
+        <Cfg_1>true</Cfg_1>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Config)'=='Debug' or '$(Cfg_2)'!=''">
+        <Cfg_2>true</Cfg_2>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='iOSSimulator' and '$(Cfg_2)'=='true') or '$(Cfg_2_iOSSimulator)'!=''">
+        <Cfg_2_iOSSimulator>true</Cfg_2_iOSSimulator>
+        <CfgParent>Cfg_2</CfgParent>
+        <Cfg_2>true</Cfg_2>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base)'!=''">
+        <DCC_E>false</DCC_E>
+        <DCC_F>false</DCC_F>
+        <DCC_K>false</DCC_K>
+        <DCC_N>true</DCC_N>
+        <DCC_S>false</DCC_S>
+        <DCC_ImageBase>00400000</DCC_ImageBase>
+        <DCC_Alignment>1</DCC_Alignment>
+        <DCC_DebugInformation>1</DCC_DebugInformation>
+        <DCC_WriteableConstants>true</DCC_WriteableConstants>
+        <DCC_Optimize>false</DCC_Optimize>
+        <DCC_GenerateStackFrames>true</DCC_GenerateStackFrames>
+        <DCC_SymbolReferenceInfo>1</DCC_SymbolReferenceInfo>
+        <DCC_DebugInfoInExe>true</DCC_DebugInfoInExe>
+        <DCC_ExeOutput>Bin</DCC_ExeOutput>
+        <DCC_DcuOutput>DCU</DCC_DcuOutput>
+        <DCC_UsePackage>vcl;rtl;vclx;dbrtl;Ean7;qrpt;bdertl;vcldb;EanRave7;Rave50VCL;Ean7Editors;VclSmp;RxCtl7;TntUnicodeVcl_R70;RxDB7;RxBDE7;Jcl;CnPack_D7;adortl;AdvOfficePagerPkgd7;JclVcl;JvCoreD7R;JvSystemD7R;JvStdCtrlsD7R;JvAppFrmD7R;JvBandsD7R;JvCmpD7R;JvCryptD7R;JvCtrlsD7R;JvCustomD7R;JvDlgsD7R;JvDockingD7R;JvDotNetCtrlsD7R;JvEDID7R;JvGlobusD7R;JvHMID7R;JvInterpreterD7R;JvJansD7R;JvManagedThreadsD7R;JvMMD7R;JvNetD7R;JvPageCompsD7R;JvPluginD7R;JvPrintPreviewD7R;JvRuntimeDesignD7R;JvTimeFrameworkD7R;JvValidatorsD7R;tdbf_d7d;tdbf_d7r;RaizeComponentsVcl;RaizeComponentsVclDb;PNG_D7;PngComponentsD7;indy;vcldbx;teeui;teedb;tee;JvDBD7R;JvBDED7R;JvWizardD7R;JvXPCtrlsD7R;vclactnband;visualclx;visualdbclx;dsnap;dsnapcon;dbexpress;dss;inet;xmlrtl;vclie;inetdbbde;inetdbxpress;webdsnap;soaprtl;dbxcds;websnap;ibxpress;IntrawebDB_50_70;Intraweb_50_70;TIE_http_https;vclshlctrls;Rave50CLX;GmXml_D7;inetdb;IndyCore70;IndySystem70;IndyProtocols70;$(DCC_UsePackage)</DCC_UsePackage>
+        <DCC_SYMBOL_DEPRECATED>false</DCC_SYMBOL_DEPRECATED>
+        <DCC_SYMBOL_PLATFORM>false</DCC_SYMBOL_PLATFORM>
+        <DCC_UNIT_PLATFORM>false</DCC_UNIT_PLATFORM>
+        <GenDll>true</GenDll>
+        <SanitizedProjectName>OposWebkassaTestLib</SanitizedProjectName>
+        <VerInfo_Locale>1049</VerInfo_Locale>
+        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;DUnitX;Winapi;System.Win;System.Internal;Vcl;$(DCC_Namespace)</DCC_Namespace>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base_Android)'!=''">
+        <Android_LauncherIcon192>$(BDS)\bin\Artwork\Android\FM_LauncherIcon_192x192.png</Android_LauncherIcon192>
+        <VerInfo_Keys>package=com.embarcadero.$(MSBuildProjectName);label=$(MSBuildProjectName);versionCode=1;versionName=1.0.0;persistent=False;restoreAnyVersion=False;installLocation=auto;largeHeap=False;theme=TitleBar;hardwareAccelerated=true;apiKey=</VerInfo_Keys>
+        <BT_BuildType>Debug</BT_BuildType>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base_Android64)'!=''">
+        <Android_LauncherIcon192>$(BDS)\bin\Artwork\Android\FM_LauncherIcon_192x192.png</Android_LauncherIcon192>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base_iOSDevice64)'!=''">
+        <iOS_AppStore1024>$(BDS)\bin\Artwork\iOS\iPhone\FM_ApplicationIcon_1024x1024.png</iOS_AppStore1024>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base_iOSSimulator)'!=''">
+        <VerInfo_Keys>CFBundleName=$(MSBuildProjectName);CFBundleDevelopmentRegion=en;CFBundleDisplayName=$(MSBuildProjectName);CFBundleIdentifier=$(MSBuildProjectName);CFBundleInfoDictionaryVersion=7.1;CFBundleVersion=1.0.0;CFBundleShortVersionString=1.0.0;CFBundlePackageType=APPL;CFBundleSignature=????;LSRequiresIPhoneOS=true;CFBundleAllowMixedLocalizations=YES;CFBundleExecutable=$(MSBuildProjectName);UIDeviceFamily=iPhone &amp; iPad;NSLocationAlwaysUsageDescription=The reason for accessing the location information of the user;NSLocationWhenInUseUsageDescription=The reason for accessing the location information of the user;NSLocationAlwaysAndWhenInUseUsageDescription=The reason for accessing the location information of the user;UIBackgroundModes=;NSContactsUsageDescription=The reason for accessing the contacts;NSPhotoLibraryUsageDescription=The reason for accessing the photo library;NSPhotoLibraryAddUsageDescription=The reason for adding to the photo library;NSCameraUsageDescription=The reason for accessing the camera;NSFaceIDUsageDescription=The reason for accessing the face id;NSMicrophoneUsageDescription=The reason for accessing the microphone;NSSiriUsageDescription=The reason for accessing Siri;ITSAppUsesNonExemptEncryption=false;NSBluetoothAlwaysUsageDescription=The reason for accessing bluetooth;NSBluetoothPeripheralUsageDescription=The reason for accessing bluetooth peripherals;NSCalendarsUsageDescription=The reason for accessing the calendar data;NSRemindersUsageDescription=The reason for accessing the reminders;NSMotionUsageDescription=The reason for accessing the accelerometer;NSSpeechRecognitionUsageDescription=The reason for requesting to send user data to Apple&apos;s speech recognition servers</VerInfo_Keys>
+        <VerInfo_UIDeviceFamily>iPhoneAndiPad</VerInfo_UIDeviceFamily>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base_Win32)'!=''">
+        <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
+        <BT_BuildType>Debug</BT_BuildType>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName)</VerInfo_Keys>
+        <VerInfo_Locale>1033</VerInfo_Locale>
+        <Icon_MainIcon>OposWebkassaTestLib_Icon.ico</Icon_MainIcon>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base_Win64)'!=''">
+        <Icon_MainIcon>OposWebkassaTestLib_Icon.ico</Icon_MainIcon>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_1)'!=''">
+        <DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
+        <DCC_DebugInformation>0</DCC_DebugInformation>
+        <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
+        <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_1_iOSSimulator)'!=''">
+        <DCC_RemoteDebug>true</DCC_RemoteDebug>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_2)'!=''">
+        <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_2_iOSSimulator)'!=''">
+        <DCC_RemoteDebug>true</DCC_RemoteDebug>
+    </PropertyGroup>
+    <ItemGroup>
+        <DelphiCompile Include="$(MainSource)">
+            <MainSource>MainSource</MainSource>
+        </DelphiCompile>
+        <DCCReference Include="..\..\src\Shared\LogFile.pas"/>
+        <DCCReference Include="..\..\src\Opos\Opos.pas"/>
+        <DCCReference Include="..\..\src\Opos\OposUtils.pas"/>
+        <DCCReference Include="..\..\src\Opos\OposEvents.pas"/>
+        <DCCReference Include="..\..\src\Opos\OposFptr.pas"/>
+        <DCCReference Include="..\..\src\Opos\OposFptrhi.pas"/>
+        <DCCReference Include="..\..\src\Opos\Oposhi.pas"/>
+        <DCCReference Include="..\..\src\Opos\OposStat.pas"/>
+        <DCCReference Include="..\..\src\Opos\OposSemaphore.pas"/>
+        <DCCReference Include="..\..\src\Opos\OposFptrUtils.pas"/>
+        <DCCReference Include="..\..\src\Opos\OposException.pas"/>
+        <DCCReference Include="..\..\src\Shared\WException.pas"/>
+        <DCCReference Include="..\..\src\OposWebkassa\units\WebkassaClient.pas"/>
+        <DCCReference Include="..\..\src\Shared\JsonUtils.pas"/>
+        <DCCReference Include="..\..\src\Shared\FileUtils.pas"/>
+        <DCCReference Include="..\..\src\Opos\OposEventsRCS.pas"/>
+        <DCCReference Include="..\..\src\Shared\DebugUtils.pas"/>
+        <DCCReference Include="..\..\src\OposWebkassa\OposWebkassaLib_TLB.pas"/>
+        <DCCReference Include="..\..\src\Opos\OposServiceDevice19.pas"/>
+        <DCCReference Include="..\..\src\Shared\NotifyThread.pas"/>
+        <DCCReference Include="..\..\src\Shared\VersionInfo.pas"/>
+        <DCCReference Include="..\..\src\Shared\DriverError.pas"/>
+        <DCCReference Include="..\..\src\OposWebkassa\units\FiscalPrinterState.pas"/>
+        <DCCReference Include="..\..\src\OposWebkassa\units\CustomReceipt.pas"/>
+        <DCCReference Include="..\..\src\OposWebkassa\units\NonfiscalDoc.pas"/>
+        <DCCReference Include="..\..\src\Shared\ServiceVersion.pas"/>
+        <DCCReference Include="..\..\src\Shared\DeviceService.pas"/>
+        <DCCReference Include="..\..\src\OposWebkassa\units\CashOutReceipt.pas"/>
+        <DCCReference Include="..\..\src\OposWebkassa\units\CashInReceipt.pas"/>
+        <DCCReference Include="units\duWebkassaClient.pas"/>
+        <DCCReference Include="..\..\src\Opos\OposPOSPrinter_CCO_TLB.pas"/>
+        <DCCReference Include="..\..\src\Shared\PrinterParameters.pas"/>
+        <DCCReference Include="..\..\src\Shared\PrinterParametersX.pas"/>
+        <DCCReference Include="..\..\src\Shared\PrinterParametersIni.pas"/>
+        <DCCReference Include="..\..\src\Shared\TntIniFiles.pas"/>
+        <DCCReference Include="..\..\src\Shared\SmIniFile.pas"/>
+        <DCCReference Include="..\..\src\Shared\StringUtils.pas"/>
+        <DCCReference Include="..\..\src\Shared\RegExpr.pas"/>
+        <DCCReference Include="..\..\src\OposWebkassa\units\MathUtils.pas"/>
+        <DCCReference Include="..\..\src\OposWebkassa\units\WebkassaImpl.pas"/>
+        <DCCReference Include="..\..\src\OposWebkassa\units\SalesReceipt.pas"/>
+        <DCCReference Include="..\..\src\OposWebkassa\units\ReceiptItem.pas"/>
+        <DCCReference Include="..\..\src\Opos\OposEsc.pas"/>
+        <DCCReference Include="..\..\src\OposWebkassa\units\TextDocument.pas"/>
+        <DCCReference Include="..\..\src\Opos\OposPtr.pas"/>
+        <DCCReference Include="units\duSalesReceipt.pas"/>
+        <DCCReference Include="..\..\src\Shared\PrinterParametersReg.pas"/>
+        <DCCReference Include="..\..\src\Shared\uLkJSON.pas"/>
+        <DCCReference Include="..\..\src\Shared\VatRate.pas"/>
+        <DCCReference Include="units\duTranslation.pas"/>
+        <DCCReference Include="units\duOposDevice.pas"/>
+        <DCCReference Include="units\MockPosPrinter2.pas"/>
+        <DCCReference Include="..\..\src\Opos\OposPtrUtils.pas"/>
+        <DCCReference Include="..\..\src\Opos\OposPtrhi.pas"/>
+        <DCCReference Include="units\RCSEvents.pas"/>
+        <DCCReference Include="units\RCSEvents_TLB.pas"/>
+        <DCCReference Include="..\..\src\Shared\PosEscPrinter.pas"/>
+        <DCCReference Include="..\..\src\Shared\uZintBarcode.pas"/>
+        <DCCReference Include="..\..\src\Shared\uZintInterface.pas"/>
+        <DCCReference Include="..\..\src\Opos\POSPrinterLog.pas"/>
+        <DCCReference Include="units\duReceiptTemplate.pas"/>
+        <DCCReference Include="..\..\src\Shared\EscPrinter.pas"/>
+        <DCCReference Include="..\..\src\Shared\ByteUtils.pas"/>
+        <DCCReference Include="..\..\src\Shared\PosWinPrinter.pas"/>
+        <DCCReference Include="..\..\src\Shared\PrinterPort.pas"/>
+        <DCCReference Include="..\..\src\Shared\SerialPort.pas"/>
+        <DCCReference Include="..\..\src\Shared\DeviceNotification.pas"/>
+        <DCCReference Include="..\..\src\Shared\PortUtil.pas"/>
+        <DCCReference Include="..\..\src\Shared\TextReport.pas"/>
+        <DCCReference Include="..\..\src\Shared\SocketPort.pas"/>
+        <DCCReference Include="..\..\src\Shared\SerialPorts.pas"/>
+        <DCCReference Include="..\..\src\Shared\ReceiptTemplate.pas"/>
+        <DCCReference Include="..\..\src\Shared\MockPrinterPort.pas"/>
+        <DCCReference Include="..\..\src\Shared\RawPrinterPort.pas"/>
+        <DCCReference Include="..\..\src\Shared\Translation.pas"/>
+        <DCCReference Include="units\duPrinterParameters.pas"/>
+        <DCCReference Include="..\..\src\OposWebkassa\units\DirectIOAPI.pas"/>
+        <DCCReference Include="units\duWebkassaImpl3.pas"/>
+        <DCCReference Include="units\duTextDocument.pas"/>
+        <DCCReference Include="..\..\src\Shared\XMLParser.pas"/>
+        <DCCReference Include="units\MockPosPrinter.pas"/>
+        <DCCReference Include="units\duWebkassaImpl.pas"/>
+        <DCCReference Include="units\duOposUtils.pas"/>
+        <DCCReference Include="units\duWebkassaImpl2.pas"/>
+        <DCCReference Include="units\duPosEscPrinter.pas"/>
+        <DCCReference Include="..\..\src\Shared\PrinterTypes.pas"/>
+        <DCCReference Include="..\..\src\Shared\BarcodeUtils.pas"/>
+        <BuildConfiguration Include="Debug">
+            <Key>Cfg_2</Key>
+            <CfgParent>Base</CfgParent>
+        </BuildConfiguration>
+        <BuildConfiguration Include="Base">
+            <Key>Base</Key>
+        </BuildConfiguration>
+        <BuildConfiguration Include="Release">
+            <Key>Cfg_1</Key>
+            <CfgParent>Base</CfgParent>
+        </BuildConfiguration>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Delphi.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Delphi.Personality>
+                <Source>
+                    <Source Name="MainSource">OposWebkassaTestLib.dpr</Source>
+                </Source>
+            </Delphi.Personality>
+            <Platforms>
+                <Platform value="Android">False</Platform>
+                <Platform value="Android64">True</Platform>
+                <Platform value="iOSDevice64">True</Platform>
+                <Platform value="iOSSimulator">False</Platform>
+                <Platform value="Linux64">True</Platform>
+                <Platform value="OSX32">False</Platform>
+                <Platform value="OSX64">True</Platform>
+                <Platform value="Win32">True</Platform>
+                <Platform value="Win64">False</Platform>
+            </Platforms>
+        </BorlandProject>
+        <ProjectFileVersion>12</ProjectFileVersion>
+    </ProjectExtensions>
+    <Import Project="$(BDS)\Bin\CodeGear.Delphi.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')"/>
+    <Import Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj" Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')"/>
+</Project>

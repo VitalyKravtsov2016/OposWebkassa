@@ -211,6 +211,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
+
     function IsTokenExpired: Boolean;
     procedure Assign(Source: TPersistent); override;
   published
@@ -2081,7 +2082,7 @@ var
   JsonText: WideString;
 begin
   JsonText := ObjectToJson(Command.Request);
-  JsonText := Post(GetAddress + 'api/zreport/extended', JsonText);
+  JsonText := Post(GetAddress + 'api/zreport', JsonText);
   Result := CheckLastError;
   if Result then
   begin
@@ -2125,7 +2126,7 @@ var
   JsonText: WideString;
 begin
   JsonText := ObjectToJson(Command.Request);
-  JsonText := Post(GetAddress + 'api/xreport/extended', JsonText);
+  JsonText := Post(GetAddress + 'api/xreport', JsonText);
   Result := CheckLastError;
   if Result then
   begin

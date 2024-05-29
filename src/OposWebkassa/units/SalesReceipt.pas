@@ -11,7 +11,7 @@ uses
   TntClasses,
   // This
   CustomReceipt, ReceiptItem, gnugettext, WException, MathUtils,
-  TextDocument, PrinterTypes;
+  TextDocument, PrinterTypes, VatRate;
 
 const
   MaxPayments = 4;
@@ -29,6 +29,7 @@ type
     FRecType: TRecType;
     FRoundType: Integer;
     FPayments: TPayments;
+    FVatRates: TVatRates;
     FItems: TReceiptItems;
     FCharges: TAdjustments;
     FDiscounts: TAdjustments;
@@ -51,7 +52,6 @@ type
   public
     ReguestJson: WideString;
     AnswerJson: WideString;
-    ReceiptJson: WideString;
 
     constructor CreateReceipt(ARecType: TRecType;
       AAmountDecimalPlaces: Integer; ARoundType: Integer);
@@ -135,6 +135,7 @@ type
     property Items: TReceiptItems read FItems;
     property RoundType: Integer read FRoundType;
     property Payments: TPayments read FPayments;
+    property VatRates: TVatRates read FVatRates;
     property Discount: Currency read GetDiscount;
     property Charges: TAdjustments read FCharges;
     property Discounts: TAdjustments read FDiscounts;
@@ -180,6 +181,7 @@ begin
   FAmountDecimalPlaces := AAmountDecimalPlaces;
 
   FRecItems := TList.Create;
+  FVatRates := TVatRates.Create;
   FItems := TReceiptItems.Create;
   FCharges := TAdjustments.Create;
   FDiscounts := TAdjustments.Create;
@@ -188,8 +190,9 @@ end;
 destructor TSalesReceipt.Destroy;
 begin
   FItems.Free;
-  FRecItems.Free;
   FCharges.Free;
+  FRecItems.Free;
+  FVatRates.Free;
   FDiscounts.Free;
   inherited Destroy;
 end;
@@ -265,6 +268,7 @@ end;
 procedure TSalesReceipt.EndFiscalReceipt(APrintHeader: Boolean);
 begin
   FIsOpened := False;
+  Calc
 end;
 
 function TSalesReceipt.AddItem: TSalesReceiptItem;

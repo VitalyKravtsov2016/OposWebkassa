@@ -55,7 +55,7 @@ object fmFptrReceipt: TfmFptrReceipt
         Left = 0
         Top = 0
         Width = 573
-        Height = 422
+        Height = 389
         Align = alClient
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText

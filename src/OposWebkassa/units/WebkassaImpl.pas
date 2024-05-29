@@ -90,8 +90,6 @@ type
     function ReceiptFieldByText(Receipt: TSalesReceipt;
       Item: TTemplateItem): WideString;
     procedure AddItems(Items: TList);
-    function ReadReceiptJson(ShiftNumber: Integer;
-      const CheckNumber: WideString): WideString;
     procedure BeginDocument;
     procedure UpdateTemplateItem(Item: TTemplateItem);
     procedure PrintBarcodeAsGraphics(Barcode: TBarcodeRec);
@@ -1402,7 +1400,7 @@ begin
       FPTR_GD_PRINTER_ID: Data := Params.CashboxNumber;
       FPTR_GD_CURRENT_TOTAL: Data := AmountToStr(Receipt.GetTotal());
       FPTR_GD_DAILY_TOTAL: Data := AmountToStr(ReadDailyTotal);
-      FPTR_GD_GRAND_TOTAL: Data := AmountToStr(ReadGrandTotal);
+      FPTR_GD_GRAND_TOTAL: Data := IntToStr(Round(ReadGrandTotal * 100));
       FPTR_GD_MID_VOID: Data := AmountToStr(0);
       FPTR_GD_NOT_PAID: Data := AmountToStr(0);
       FPTR_GD_RECEIPT_NUMBER: Data := FCheckNumber;
@@ -3194,7 +3192,6 @@ begin
     begin
       Receipt.ReguestJson := FClient.CommandJson;
       Receipt.AnswerJson := FClient.AnswerJson;
-      Receipt.ReceiptJson := ReadReceiptJson(Command.Data.ShiftNumber, Command.Data.CheckNumber);
       PrintReceiptTemplate(Receipt, Params.Template);
     end else
     begin
@@ -3202,30 +3199,6 @@ begin
     end;
     PrintDocumentSafe(Document);
     Printer.RecLineChars := Params.RecLineChars;
-  finally
-    Command.Free;
-  end;
-end;
-
-function TWebkassaImpl.ReadReceiptJson(ShiftNumber: Integer;
-  const CheckNumber: WideString): WideString;
-var
-  Command: TReceiptCommand;
-begin
-  if FTestMode then
-  begin
-    Result := FReceiptJson;
-    Exit;
-  end;
-
-  Command := TReceiptCommand.Create;
-  try
-    Command.Request.Token := Client.Token;
-    Command.Request.CashboxUniqueNumber := Params.CashboxNumber;
-    Command.Request.Number := CheckNumber;
-    Command.Request.ShiftNumber := ShiftNumber;
-    FClient.ReadReceipt(Command);
-    Result := FClient.AnswerJson;
   finally
     Command.Free;
   end;
@@ -3412,7 +3385,6 @@ begin
   begin
     Document.AddLines('  ÑÄÀ×À', AmountToStrEq(Receipt.Change));
   end;
-
   // VAT amounts
   for i := 0 to Params.VatRates.Count-1 do
   begin
@@ -3499,7 +3471,6 @@ begin
     TEMPLATE_TYPE_SEPARATOR: Result := StringOfChar('-', Item.LineChars);
     TEMPLATE_TYPE_JSON_REQ_FIELD: Result := GetJsonField(Receipt.ReguestJson, Item.Text);
     TEMPLATE_TYPE_JSON_ANS_FIELD: Result := GetJsonField(Receipt.AnswerJson, Item.Text);
-    TEMPLATE_TYPE_JSON_REC_FIELD: Result := GetJsonField(Receipt.ReceiptJson, Item.Text);
     TEMPLATE_TYPE_NEWLINE: Result := CRLF;
   else
     Result := '';
@@ -3677,6 +3648,13 @@ begin
       Result := Format('%.2f', [Amount]);
     Exit;
   end;
+  if WideCompareText(Item.Text, 'TaxAmount') = 0 then
+  begin
+    Amount := Abs(Receipt.TaxAmount);
+    if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
+      Result := Format('%.2f', [Amount]);
+    Exit;
+  end;
   if WideCompareText(Item.Text, 'OperationTypeText') = 0 then
   begin
     Result := GetRecTypeText(Receipt.RecType);
@@ -3732,7 +3710,6 @@ begin
         RecTexItem := ReceiptItem as TRecTexItem;
         Document.AddLine(RecTexItem.Text, RecTexItem.Style);
       end;
-
 
       if ReceiptItem is TSalesReceiptItem then
       begin
