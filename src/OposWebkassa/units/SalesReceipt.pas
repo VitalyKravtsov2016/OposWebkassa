@@ -29,7 +29,6 @@ type
     FRecType: TRecType;
     FRoundType: Integer;
     FPayments: TPayments;
-    FVatRates: TVatRates;
     FItems: TReceiptItems;
     FCharges: TAdjustments;
     FDiscounts: TAdjustments;
@@ -128,6 +127,7 @@ type
 
     procedure PrintRecMessage(const Message: WideString); override;
     procedure PrintBarcode(const Barcode: string); override;
+    function GetVatAmount(const VatRate: TVatRate): Currency;
 
     property Change: Currency read FChange;
     property Charge: Currency read GetCharge;
@@ -135,7 +135,6 @@ type
     property Items: TReceiptItems read FItems;
     property RoundType: Integer read FRoundType;
     property Payments: TPayments read FPayments;
-    property VatRates: TVatRates read FVatRates;
     property Discount: Currency read GetDiscount;
     property Charges: TAdjustments read FCharges;
     property Discounts: TAdjustments read FDiscounts;
@@ -181,7 +180,6 @@ begin
   FAmountDecimalPlaces := AAmountDecimalPlaces;
 
   FRecItems := TList.Create;
-  FVatRates := TVatRates.Create;
   FItems := TReceiptItems.Create;
   FCharges := TAdjustments.Create;
   FDiscounts := TAdjustments.Create;
@@ -192,7 +190,6 @@ begin
   FItems.Free;
   FCharges.Free;
   FRecItems.Free;
-  FVatRates.Free;
   FDiscounts.Free;
   inherited Destroy;
 end;
@@ -268,7 +265,6 @@ end;
 procedure TSalesReceipt.EndFiscalReceipt(APrintHeader: Boolean);
 begin
   FIsOpened := False;
-  Calc
 end;
 
 function TSalesReceipt.AddItem: TSalesReceiptItem;
@@ -591,11 +587,6 @@ begin
     Result := Ceil(Result);
 end;
 
-function TSalesReceipt.GetTotalByVAT(VatInfo: Integer): Currency;
-begin
-  Result := FItems.GetTotalByVAT(VatInfo);
-end;
-
 function TSalesReceipt.GetPayment: Currency;
 var
   i: Integer;
@@ -657,6 +648,21 @@ begin
   Item.Barcode := Barcode;
 end;
 
+function TSalesReceipt.GetTotalByVAT(VatInfo: Integer): Currency;
+begin
+  Result := Items.GetTotalByVAT(VatInfo) + Charges.GetTotalByVAT(VatInfo)
+    - Discounts.GetTotalByVAT(VatInfo)
+end;
 
+function TSalesReceipt.GetVatAmount(const VatRate: TVatRate): Currency;
+var
+  Amount: Currency;
+begin
+  Result := 0;
+  if VatRate = nil then Exit;
+
+  Amount := GetTotalByVAT(VatRate.ID);
+  Result := RoundAmount(Amount * VATRate.Rate / (100 + VATRate.Rate));
+end;
 
 end.

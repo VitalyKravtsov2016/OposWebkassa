@@ -120,6 +120,7 @@ type
     function GetCharge: Currency;
     function GetDiscount: Currency;
     procedure Add(Item: TAdjustment);
+    function GetTotalByVAT(AVatInfo: Integer): Currency;
 
     property Count: Integer read GetCount;
     property Items[Index: Integer]: TAdjustment read GetItem; default;
@@ -458,6 +459,15 @@ end;
 function TAdjustments.GetTotal: Currency;
 begin
   Result := GetCharge - GetDiscount;
+end;
+
+function TAdjustments.GetTotalByVAT(AVatInfo: Integer): Currency;
+var
+  i: Integer;
+begin
+  Result := 0;
+  for i := 0 to Count-1 do
+    Result := Result + Items[i].GetTotalByVAT(AVatInfo);
 end;
 
 end.

@@ -75,11 +75,11 @@ type
   public
     procedure Assign(Source: TPersistent); override;
 
-    property Style: Integer read FStyle;
-    property Text: WideString read FText;
-    property LineChars: Integer read FLineChars;
-    property LineHeight: Integer read FLineHeight;
-    property LineSpacing: Integer read FLineSpacing;
+    property Style: Integer read FStyle write FStyle;
+    property Text: WideString read FText write FText;
+    property LineChars: Integer read FLineChars write FLineChars;
+    property LineHeight: Integer read FLineHeight write FLineHeight;
+    property LineSpacing: Integer read FLineSpacing write FLineSpacing;
   end;
 
 function AlignCenter2(const Line: WideString; LineWidth: Integer): WideString;

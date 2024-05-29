@@ -103,7 +103,7 @@ begin
   CheckEquals('2138e09uhi432uy', FParams.PrinterName, 'PrinterName');
   CheckEquals(0, FParams.PrinterType, 'PrinterType');
   CheckEquals(2, FParams.VatRates.Count, 'VatRates.Count');
-  CheckEquals(123, FParams.VatRates[0].Code, 'VatRates[0].Code');
+  CheckEquals(123, FParams.VatRates[0].ID, 'VatRates[0].ID');
   CheckEquals(34.45, FParams.VatRates[0].Rate, 0.001, 'VatRates[0].Rate');
   CheckEquals('2j3erkuy237', FParams.VatRates[0].Name, 'VatRates[0].Name');
   CheckEquals(False, FParams.VatRateEnabled, 'VatRateEnabled');
@@ -132,7 +132,7 @@ begin
   CheckEquals(DefPrinterName, FParams.PrinterName, 'PrinterName');
   CheckEquals(DefPrinterType, FParams.PrinterType, 'PrinterType');
   CheckEquals(1, FParams.VatRates.Count, 'VatRates.Count');
-  CheckEquals(1, FParams.VatRates[0].Code, 'VatRates[0].Code');
+  CheckEquals(1, FParams.VatRates[0].ID, 'VatRates[0].ID');
   CheckEquals(12, FParams.VatRates[0].Rate, 0.001, 'VatRates[0].Rate');
   CheckEquals('ÍÄÑ 12%', FParams.VatRates[0].Name, 'VatRates[0].Name');
   CheckEquals(True, FParams.VatRateEnabled, 'VatRateEnabled');

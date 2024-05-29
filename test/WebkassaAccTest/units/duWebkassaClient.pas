@@ -70,8 +70,8 @@ begin
   begin
     FClient := TWebkassaClient.Create(FLogger);
     FClient.RaiseErrors := True;
-    //FClient.Address := 'https://devkkm.webkassa.kz';
-    FClient.Address := 'http://localhost:1332';
+    FClient.Address := 'https://devkkm.webkassa.kz';
+    //FClient.Address := 'http://localhost:1332';
 
     //  асса не имеет активного активационного номера
     FClient.Login := 'apykhtin@ibtsmail.ru';

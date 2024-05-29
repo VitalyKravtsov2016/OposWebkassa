@@ -141,8 +141,8 @@ begin
     Params.CashboxNumber := 'SWK00033444';
 
     Params.ConnectTimeout := 10;
-    //Params.WebkassaAddress := 'https://devkkm.webkassa.kz';
-    Params.WebkassaAddress := 'http://localhost:1332';
+    Params.WebkassaAddress := 'https://devkkm.webkassa.kz';
+    //Params.WebkassaAddress := 'http://localhost:1332';
 
     Params.NumHeaderLines := 4;
     Params.NumTrailerLines := 3;
@@ -872,8 +872,8 @@ end;
 
 procedure TWebkassaImplTest.TestGetData;
 var
-  Amount: Currency;
-  Amount2: Currency;
+  Amount: Int64;
+  Amount2: Int64;
   OptArgs: Integer;
   Data: WideString;
   DataExpected: WideString;
@@ -882,23 +882,23 @@ begin
   OptArgs := 0;
   Data := '';
   FptrCheck(Driver.GetData(FPTR_GD_GRAND_TOTAL, OptArgs, Data));
-  Amount := StrToCurr(Data);
+  Amount := StrToInt64(Data);
   DataExpected := Driver.Driver.ReadCashboxStatus.Field['Data'].Field[
     'CurrentState'].Field['XReport'].Field['SumInCashbox'].Value;
-  DataExpected := Format('%.2f', [StrToCurr(DataExpected)]);
+  DataExpected := Format('%d', [Round(StrToCurr(DataExpected)*100)]);
   CheckEquals(DataExpected, Data, 'FPTR_GD_GRAND_TOTAL');
   FptrCheck(Driver.GetData(FPTR_GD_DAILY_TOTAL, OptArgs, Data));
 
   TestCashIn;
 
   FptrCheck(Driver.GetData(FPTR_GD_GRAND_TOTAL, OptArgs, Data));
-  Amount2 := StrToCurr(Data);
-  CheckEquals(Amount + 60, Amount2, 0.001, 'Amount.0');
+  Amount2 := StrToInt64(Data);
+  CheckEquals(Amount + 6000, Amount2, 'Amount.0');
 
   TestCashOut;
 
   FptrCheck(Driver.GetData(FPTR_GD_GRAND_TOTAL, OptArgs, Data));
-  Amount2 := StrToCurr(Data);
+  Amount2 := StrToInt64(Data);
   CheckEquals(Amount, Amount2, 0.001, 'Amount.1');
 end;
 

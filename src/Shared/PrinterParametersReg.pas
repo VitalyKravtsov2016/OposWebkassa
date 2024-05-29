@@ -145,7 +145,7 @@ var
   Reg: TTntRegistry;
   Names: TTntStrings;
   KeyName: WideString;
-  VatCode: Integer;
+  VatID: Integer;
   VatRate: Double;
   VatName: WideString;
 begin
@@ -305,10 +305,10 @@ begin
           begin
             if Reg.OpenKey(Names[i], False) then
             begin
-              VatCode := Reg.ReadInteger('Code');
+              VatID := Reg.ReadInteger('ID');
               VatRate := Reg.ReadFloat('Rate');
               VatName := Reg.ReadString('Name');
-              Parameters.VatRates.Add(VatCode, VatRate, VatName);
+              Parameters.VatRates.Add(VatID, VatRate, VatName);
               Reg.CloseKey;
             end;
           end;
@@ -393,7 +393,7 @@ begin
         Item := Parameters.VatRates[i];
         if Reg.OpenKey(IntToStr(i), True) then
         begin
-          Reg.WriteInteger('Code', Item.Code);
+          Reg.WriteInteger('ID', Item.ID);
           Reg.WriteFloat('Rate', Item.Rate);
           Reg.WriteString('Name', Item.Name);
           Reg.CloseKey;

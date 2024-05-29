@@ -17,8 +17,8 @@ type
   public
     constructor Create;
 
-    function ItemByCode(Code: Integer): TVatRate;
-    function Add(ACode: Integer; ARate: Double; const AName: string): TVatRate;
+    function ItemByID(ID: Integer): TVatRate;
+    function Add(AID: Integer; ARate: Double; const AName: string): TVatRate;
     property Items[Index: Integer]: TVatRate read GetItem; default;
   end;
 
@@ -26,21 +26,21 @@ type
 
   TVatRate = class(TCollectionItem)
   private
-    FCode: Integer;
+    FID: Integer;
     FRate: Double;
-    FName: WideString;
     FTotal: Currency;
+    FName: WideString;
   public
-    constructor Create2(AOwner: TVatRates; ACode: Integer; ARate: Double;
+    constructor Create2(AOwner: TVatRates; AID: Integer; ARate: Double;
       const AName: string);
 
     function GetTax(Amount: Currency): Currency;
     procedure Assign(Source: TPersistent); override;
 
-    property Rate: Double read FRate write FRate;
-    property Code: Integer read FCode write FCode;
-    property Name: WideString read FName write FName;
-    property Total: Currency read FTotal write FTotal;
+    property ID: Integer read FID;
+    property Rate: Double read FRate;
+    property Name: WideString read FName;
+    property Total: Currency read FTotal;
   end;
 
 implementation
@@ -52,19 +52,19 @@ begin
   inherited Create(TVatRate);
 end;
 
-function TVatRates.Add(ACode: Integer; ARate: Double; const AName: string): TVatRate;
+function TVatRates.Add(AID: Integer; ARate: Double; const AName: string): TVatRate;
 begin
-  Result := TVatRate.Create2(Self, ACode, ARate, AName);
+  Result := TVatRate.Create2(Self, AID, ARate, AName);
 end;
 
-function TVatRates.ItemByCode(Code: Integer): TVatRate;
+function TVatRates.ItemByID(ID: Integer): TVatRate;
 var
   i: Integer;
 begin
   for i := 0 to Count-1 do
   begin
     Result := Items[i];
-    if Result.Code = Code then Exit;
+    if Result.ID = ID then Exit;
   end;
   Result := nil;
 end;
@@ -76,11 +76,11 @@ end;
 
 { TVatRate }
 
-constructor TVatRate.Create2(AOwner: TVatRates; ACode: Integer; ARate: Double;
+constructor TVatRate.Create2(AOwner: TVatRates; AID: Integer; ARate: Double;
   const AName: string);
 begin
   inherited Create(AOwner);
-  FCode := ACode;
+  FID := AID;
   FRate := ARate;
   FName := AName;
 end;
@@ -98,7 +98,7 @@ begin
   if Source is TVatRate then
   begin
     Src := Source as TVatRate;
-    FCode := Src.Code;
+    FID := Src.ID;
     FRate := Src.Rate;
     FName := Src.Name;
     FTotal := Src.Total;

@@ -436,8 +436,8 @@ begin
   for i := 0 to VatRates.Count-1 do
   begin
     VatRate := VatRates[i];
-    Logger.Debug(Format('VAT: code=%d, rate=%.2f, name="%s"', [
-      VatRate.Code, VatRate.Rate, VatRate.Name]));
+    Logger.Debug(Format('VAT: ID=%d, rate=%.2f, name="%s"', [
+      VatRate.ID, VatRate.Rate, VatRate.Name]));
   end;
   Logger.Debug(Logger.Separator);
 end;

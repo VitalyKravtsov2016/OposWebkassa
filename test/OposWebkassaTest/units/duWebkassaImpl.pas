@@ -668,6 +668,7 @@ begin
   Driver.SetPropertyNumber(PIDXFptr_DuplicateReceipt, 1);
   PrintReceipt3;
   FLines.AddStrings(FPrinter.Lines);
+  FLines.Add('ƒ”¡À» ¿“');
   FLines.AddStrings(FPrinter.Lines);
   FPrinter.Lines.Clear;
   CheckEquals(OPOS_SUCCESS, Driver.PrintDuplicateReceipt, 'PrintDuplicateReceipt');
@@ -1276,7 +1277,14 @@ var
   Count: Integer;
 begin
   ShowLines;
-  //CheckEquals(FLines.Count, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
+  (*
+  if FLines.Text <> FPrinter.Lines.Text then
+  begin
+    FLines.SaveToFile('CheckLines1.txt');
+    FPrinter.Lines.SaveToFile('CheckLines2.txt');
+  end;
+  CheckEquals(FLines.Count, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
+  *)
   Count := Math.Min(FLines.Count, FPrinter.Lines.Count);
   for i := 0 to Count-1 do
   begin

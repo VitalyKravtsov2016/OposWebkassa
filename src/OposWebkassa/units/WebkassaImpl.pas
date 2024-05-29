@@ -108,7 +108,7 @@ type
   public
     procedure PrintDocumentSafe(Document: TTextDocument);
     procedure CheckCanPrint;
-    function GetVatRate(Code: Integer): TVatRate;
+    function GetVatRate(ID: Integer): TVatRate;
     function AmountToStr(Value: Currency): AnsiString;
     function AmountToStrEq(Value: Currency): AnsiString;
     procedure SetPrinter(const Value: IOPOSPOSPrinter);
@@ -1218,6 +1218,8 @@ begin
 end;
 
 function TWebkassaImpl.EndFiscalReceipt(PrintHeader: WordBool): Integer;
+var
+  Item: TDocItem;
 begin
   try
     FPrinterState.CheckState(FPTR_PS_FISCAL_RECEIPT_ENDING);
@@ -1227,6 +1229,13 @@ begin
     begin
       FDuplicateReceipt := False;
       FDuplicate.Assign(Document);
+      // Add duplicate sign
+      Item := FDuplicate.Items.Insert(0) as TDocItem;
+      Item.Text := 'ƒ”¡À» ¿“' + CRLF;
+      Item.Style := STYLE_DWIDTH_HEIGHT;
+      Item.LineChars := Document.LineChars;
+      Item.LineHeight := Document.LineHeight;
+      Item.LineSpacing := Document.LineSpacing;
     end;
     ClearCashboxStatus;
 
@@ -3059,12 +3068,12 @@ begin
   end;
 end;
 
-function TWebkassaImpl.GetVatRate(Code: Integer): TVatRate;
+function TWebkassaImpl.GetVatRate(ID: Integer): TVatRate;
 begin
   Result := nil;
   if Params.VatRateEnabled then
   begin
-    Result := Params.VatRates.ItemByCode(Code);
+    Result := Params.VatRates.ItemByID(ID);
   end;
 end;
 
@@ -3389,11 +3398,10 @@ begin
   for i := 0 to Params.VatRates.Count-1 do
   begin
     VatRate := Params.VatRates[i];
-    Amount := Receipt.GetTotalByVAT(VatRate.Code);
+    Amount := Receipt.GetVatAmount(VatRate);
     if Amount <> 0 then
     begin
-      Amount := Receipt.RoundAmount(Amount * VATRate.Rate / (100 + VATRate.Rate));
-      Document.AddLines(Format('‚ Ú.˜. %s', [VATRate.Name]),
+      Document.AddLines(Format('‚ Ú.˜. %s', [VatRate.Name]),
         AmountToStrEq(Amount));
     end;
   end;
@@ -3581,6 +3589,7 @@ function TWebkassaImpl.ReceiptFieldByText(Receipt: TSalesReceipt;
 
 var
   Amount: Currency;
+  VatRate: TVatRate;
 begin
   Result := '';
   if WideCompareText(Item.Text, 'Discount') = 0 then
@@ -3650,7 +3659,9 @@ begin
   end;
   if WideCompareText(Item.Text, 'TaxAmount') = 0 then
   begin
-    Amount := Abs(Receipt.TaxAmount);
+    Amount := 0;
+    VatRate := Params.VatRates.ItemByID(1);
+    Amount := Abs(Receipt.GetVatAmount(VatRate));
     if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
       Result := Format('%.2f', [Amount]);
     Exit;
@@ -4035,7 +4046,7 @@ var
 const
   PrintHeader = True;
 begin
-  PrintLine('');
+  //PrintLine(''); !!!
   if Printer.CapRecPapercut then
   begin
     RecLinesToPaperCut := Printer.RecLinesToPaperCut;
