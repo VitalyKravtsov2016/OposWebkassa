@@ -2940,24 +2940,23 @@ begin
   CodePage := 1251;
   if TestCodePage(AText, CodePage) then
   begin
+    Logger.Debug(WideFormat('TPosEscPrinter.PrintText(''%s'')', [Trim(AText)]));
     Printer.SetCodePage(CharacterSetToPrinterCodePage(CodePage));
-
-    Logger.Debug(WideFormat('TEscPrinter.PrintText(''%s'')', [Trim(AText)]));
     Printer.PrintText(WideStringToAnsiString(CodePage, AText));
   end else
   begin
     for i := 1 to Length(AText) do
     begin
       C := AText[i];
+      Logger.Debug(WideFormat('TPosEscPrinter.PrintChar(''%s'')', [C]));
       if Printer.IsUserChar(C) then
       begin
         Printer.PrintUserChar(C);
       end else
       begin
+        Printer.DisableUserCharacters;
         CharacterToCodePage(C, CodePage);
         Printer.SetCodePage(CharacterSetToPrinterCodePage(CodePage));
-
-        Logger.Debug(WideFormat('TEscPrinter.PrintText(''%s'')', [Trim(AText)]));
         Printer.PrintText(WideStringToAnsiString(CodePage, C));
       end;
     end;

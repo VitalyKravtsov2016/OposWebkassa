@@ -4045,7 +4045,7 @@ var
 const
   PrintHeader = True;
 begin
-  //PrintLine(''); !!!
+  PrintLine(''); 
   if Printer.CapRecPapercut then
   begin
     RecLinesToPaperCut := Printer.RecLinesToPaperCut;

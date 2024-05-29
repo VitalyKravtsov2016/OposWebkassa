@@ -755,9 +755,9 @@ end;
 
 procedure TEscPrinter.SelectUserCharacter(n: Byte);
 begin
-  Logger.Debug(Format('TEscPrinter.SelectUserCharacter(%d)', [n]));
   if n = FUserCharacterMode then Exit;
-
+  
+  Logger.Debug(Format('TEscPrinter.SelectUserCharacter(%d)', [n]));
   Send(#$1B#$25 + Chr(n));
   FUserCharacterMode := n;
 end;
@@ -1145,8 +1145,9 @@ end;
 
 procedure TEscPrinter.SetCodePage(CodePage: Integer);
 begin
-  Logger.Debug(Format('TEscPrinter.SetCodePage(%d)', [CodePage]));
   if FCodePage = CodePage then Exit;
+
+  Logger.Debug(Format('TEscPrinter.SetCodePage(%d)', [CodePage]));
   Send(#$1B#$74 + Chr(CodePage));
   FCodePage := CodePage;
 end;
@@ -1592,7 +1593,7 @@ end;
 
 procedure TEscPrinter.PrintText(Text: AnsiString);
 begin
-  Logger.Debug(Format('TEscPrinter.PrintText(''%s'')', [TrimRight(Text)]));
+  //Logger.Debug(Format('TEscPrinter.PrintText(''%s'')', [TrimRight(Text)]));
   Send(Text);
 end;
 
