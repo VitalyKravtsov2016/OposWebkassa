@@ -170,7 +170,7 @@ type
     FTranslationEnabled: Boolean;
     FTemplateEnabled: Boolean;
     FTemplate: TReceiptTemplate;
-    FCurrencyName: string;
+    FCurrencyName: WideString;
     FLineSpacing: Integer;
     FPrintEnabled: Boolean;
 
@@ -253,7 +253,7 @@ type
     property TranslationEnabled: Boolean read FTranslationEnabled write FTranslationEnabled;
     property TemplateEnabled: Boolean read FTemplateEnabled write FTemplateEnabled;
     property Template: TReceiptTemplate read FTemplate;
-    property CurrencyName: string read FCurrencyName write FCurrencyName;
+    property CurrencyName: WideString read FCurrencyName write FCurrencyName;
     property LineSpacing: Integer read FLineSpacing write FLineSpacing;
     property PrintEnabled: Boolean read FPrintEnabled write FPrintEnabled;
   end;

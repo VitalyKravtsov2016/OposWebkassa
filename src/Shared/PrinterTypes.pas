@@ -92,7 +92,7 @@ end;
 
 function BarcodeToStr(const Barcode: TBarcodeRec): string;
 begin
-  Result := Format('%s;%s;%d;%d;%d;%d;%d;%d;%d',[
+  Result := WideFormat('%s;%s;%d;%d;%d;%d;%d;%d;%d',[
     Barcode.Data,
     Barcode.Text,
     Barcode.Height,

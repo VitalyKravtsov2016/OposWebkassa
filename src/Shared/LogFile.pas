@@ -499,7 +499,7 @@ begin
         CloseFile;
         for i := 0 to MAX_FILES_COUNT-1 do
         begin
-          NewFileName := ChangeFileExt(FFileName, Format('_%d.log', [i]));
+          NewFileName := ChangeFileExt(FFileName, Tnt_WideFormat('_%d.log', [i]));
           if not FileExists(NewFileName) then
           begin
             RenameFile(FFileName, NewFileName);

@@ -394,8 +394,7 @@ begin
 
   Description := '';
   Description := Description + WideChar(1170) + WideChar(1171);
-  Description := 'яЕП. ╧ 5                                  ' +
-    'ьнйнкюдмюъ окхрйю MILKA BUBBLES лнкнвмши' + Description;
+  Description := 'ьнйнкюдмюъ окхрйю MILKA BUBBLES лнкнвмши' + Description;
   FptrCheck(Driver.PrintRecItem(Description, 590, 1000, 4, 590, 'ЬР'));
   FptrCheck(Driver.PrintRecTotal(590, 12345, '0'));
 
@@ -888,7 +887,7 @@ begin
   Amount := StrToInt64(Data);
   DataExpected := Driver.Driver.ReadCashboxStatus.Field['Data'].Field[
     'CurrentState'].Field['XReport'].Field['SumInCashbox'].Value;
-  DataExpected := Format('%d', [Round(StrToCurr(DataExpected)*100)]);
+  DataExpected := WideFormat('%d', [Round(StrToCurr(DataExpected)*100)]);
   CheckEquals(DataExpected, Data, 'FPTR_GD_GRAND_TOTAL');
   FptrCheck(Driver.GetData(FPTR_GD_DAILY_TOTAL, OptArgs, Data));
 

@@ -31,7 +31,7 @@ type
     procedure SetRootName(const Name: WideString);
     procedure SaveToFile(const FileName: WideString);
     procedure LoadFromFile(const FileName: WideString);
-    procedure LoadFromString(const Data: string);
+    procedure LoadFromString(const Data: WideString);
 
     property Root: TXmlItem read FRoot;
     property Xml: WideString read GetXml;
@@ -184,7 +184,7 @@ end;
 
 function TXmlParser.GetXml: WideString;
 var
-  Data: string;
+  Data: WideString;
   Stream: TMemoryStream;
 begin
   Result := '';
@@ -242,7 +242,7 @@ begin
   UpdateItems;
 end;
 
-procedure TXmlParser.LoadFromString(const Data: string);
+procedure TXmlParser.LoadFromString(const Data: WideString);
 var
   Stream: TMemoryStream;
 begin

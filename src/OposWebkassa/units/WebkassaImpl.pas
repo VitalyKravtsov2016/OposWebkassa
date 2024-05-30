@@ -408,7 +408,7 @@ function GetSystemLocaleStr: WideString;
 const
   BoolToStr: array [Boolean] of WideString = ('0', '1');
 begin
-  Result := Format('LCID: %d, LangID: %d.%d, FarEast: %s, FarEast: %s',
+  Result := Tnt_WideFormat('LCID: %d, LangID: %d.%d, FarEast: %s, FarEast: %s',
     [SysLocale.DefaultLCID, SysLocale.PriLangID, SysLocale.SubLangID,
     BoolToStr[SysLocale.FarEast], BoolToStr[SysLocale.MiddleEast]]);
 end;
@@ -615,7 +615,7 @@ begin
     Result := IntToStr(Round(Value));
   end else
   begin
-    Result := Format('%.*f', [Params.AmountDecimalPlaces, Value]);
+    Result := Tnt_WideFormat('%.*f', [Params.AmountDecimalPlaces, Value]);
   end;
 end;
 
@@ -1457,7 +1457,7 @@ begin
       FPTR_DT_RTC:
       begin
         DecodeDateTime(Now, Year, Month, Day, Hour, Minute, Second, MilliSecond);
-        Date := Format('%.2d%.2d%.4d%.2d%.2d',[Day, Month, Year, Hour, Minute]);
+        Date := Tnt_WideFormat('%.2d%.2d%.4d%.2d%.2d',[Day, Month, Year, Hour, Minute]);
       end;
     else
       InvalidPropertyValue('DateType', IntToStr(FDateType));
@@ -2020,7 +2020,7 @@ begin
     if FCheckTotal and (FReceipt.GetTotal <> Total) then
     begin
       raiseExtendedError(OPOS_EFPTR_BAD_ITEM_AMOUNT,
-        Format('App total %s, but receipt total %s', [
+        Tnt_WideFormat('App total %s, but receipt total %s', [
         AmountToStr(Total), AmountToStr(FReceipt.GetTotal)]));
     end;
 
@@ -2203,28 +2203,28 @@ begin
     Document.AddLines('ÂÎÇÂÐÀÒÎÂ ÏÎÊÓÏÎÊ', AmountToStr(Command.Data.StartNonNullable.ReturnBuy));
 
     Document.AddLine('×ÅÊÎÂ ÏÐÎÄÀÆ');
-    Line1 := Format('%.4d', [Command.Data.Sell.Count]);
+    Line1 := Tnt_WideFormat('%.4d', [Command.Data.Sell.Count]);
     Line2 := AmountToStr(Total);
     Text := Line1 + StringOfChar(' ', (Document.LineChars div 2)-Length(Line1)-Length(Line2)) + Line2;
     Document.AddLine(Text, STYLE_DWIDTH_HEIGHT);
     AddPayments(Document, Command.Data.Sell.PaymentsByTypesApiModel);
 
     Document.AddLine('×ÅÊÎÂ ÏÎÊÓÏÎÊ');
-    Line1 := Format('%.4d', [Command.Data.Buy.Count]);
+    Line1 := Tnt_WideFormat('%.4d', [Command.Data.Buy.Count]);
     Line2 := AmountToStr(Command.Data.Buy.Taken);
     Text := Line1 + StringOfChar(' ', (Document.LineChars div 2)-Length(Line1)-Length(Line2)) + Line2;
     Document.AddLine(Text, STYLE_DWIDTH_HEIGHT);
     AddPayments(Document, Command.Data.Buy.PaymentsByTypesApiModel);
 
     Document.AddLine('×ÅÊÎÂ ÂÎÇÂÐÀÒÎÂ ÏÐÎÄÀÆ');
-    Line1 := Format('%.4d', [Command.Data.ReturnSell.Count]);
+    Line1 := Tnt_WideFormat('%.4d', [Command.Data.ReturnSell.Count]);
     Line2 := AmountToStr(Command.Data.ReturnSell.Taken);
     Text := Line1 + StringOfChar(' ', (Document.LineChars div 2)-Length(Line1)-Length(Line2)) + Line2;
     Document.AddLine(Text, STYLE_DWIDTH_HEIGHT);
     AddPayments(Document, Command.Data.ReturnSell.PaymentsByTypesApiModel);
 
     Document.AddLine('×ÅÊÎÂ ÂÎÇÂÐÀÒÎÂ ÏÎÊÓÏÎÊ');
-    Line1 := Format('%.4d', [Command.Data.ReturnBuy.Count]);
+    Line1 := Tnt_WideFormat('%.4d', [Command.Data.ReturnBuy.Count]);
     Line2 := AmountToStr(Command.Data.ReturnBuy.Taken);
     Text := Line1 + StringOfChar(' ', (Document.LineChars div 2)-Length(Line1)-Length(Line2)) + Line2;
     Document.AddLine(Text, STYLE_DWIDTH_HEIGHT);
@@ -3301,7 +3301,7 @@ var
   BarcodeItem: TBarcodeItem;
 begin
   Document.Addlines(Format('ÍÄÑ Ñåðèÿ %s', [Params.VATSeries]),
-    Format('¹ %s', [Params.VATNumber]));
+    Tnt_WideFormat('¹ %s', [Params.VATNumber]));
   Document.AddSeparator;
   Document.AddLine(Document.AlignCenter(Params.CashboxNumber));
   Document.AddLine(Document.AlignCenter(Format('ÑÌÅÍÀ ¹%d', [Command.Data.ShiftNumber])));
@@ -3509,7 +3509,7 @@ begin
   begin
     if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(ReceiptItem.Price <> 0) then
     begin
-      Result := Format('%.2f', [ReceiptItem.Price]);
+      Result := Tnt_WideFormat('%.2f', [ReceiptItem.Price]);
     end;
     Exit;
   end;
@@ -3520,14 +3520,14 @@ begin
   end;
   if WideCompareText(Item.Text, 'Quantity') = 0 then
   begin
-    Result := Format('%.3f', [ReceiptItem.Quantity]);
+    Result := Tnt_WideFormat('%.3f', [ReceiptItem.Quantity]);
     Exit;
   end;
   if WideCompareText(Item.Text, 'UnitPrice') = 0 then
   begin
     if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(ReceiptItem.UnitPrice <> 0) then
     begin
-      Result := Format('%.2f', [ReceiptItem.UnitPrice]);
+      Result := Tnt_WideFormat('%.2f', [ReceiptItem.UnitPrice]);
     end;
     Exit;
   end;
@@ -3551,7 +3551,7 @@ begin
     Amount := Abs(ReceiptItem.Discounts.GetTotal);
     if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
     begin
-      Result := Format('%.2f', [Amount]);
+      Result := Tnt_WideFormat('%.2f', [Amount]);
     end;
     Exit;
   end;
@@ -3559,14 +3559,14 @@ begin
   begin
     Amount := Abs(ReceiptItem.Charges.GetTotal);
     if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
-    Result := Format('%.2f', [Amount]);
+    Result := Tnt_WideFormat('%.2f', [Amount]);
     Exit;
   end;
   if WideCompareText(Item.Text, 'Total') = 0 then
   begin
     Amount := Abs(ReceiptItem.GetTotalAmount(Params.RoundType));
     if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
-      Result := Format('%.2f', [Amount]);
+      Result := Tnt_WideFormat('%.2f', [Amount]);
     Exit;
   end;
   raise Exception.CreateFmt('Receipt item %s not found', [Item.Text]);
@@ -3597,7 +3597,7 @@ begin
     Amount := Abs(Receipt.Discounts.GetTotal);
     if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
     begin
-      Result := Format('%.2f', [Amount]);
+      Result := Tnt_WideFormat('%.2f', [Amount]);
     end;
     Exit;
   end;
@@ -3605,56 +3605,56 @@ begin
   begin
     Amount := Abs(Receipt.Charges.GetTotal);
     if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
-    Result := Format('%.2f', [Amount]);
+    Result := Tnt_WideFormat('%.2f', [Amount]);
     Exit;
   end;
   if WideCompareText(Item.Text, 'Total') = 0 then
   begin
     Amount := Abs(Receipt.GetTotal);
     if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
-      Result := Format('%.2f', [Amount]);
+      Result := Tnt_WideFormat('%.2f', [Amount]);
     Exit;
   end;
   if WideCompareText(Item.Text, 'Payment0') = 0 then
   begin
     Amount := Abs(Receipt.Payments[0]);
     if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
-      Result := Format('%.2f', [Amount]);
+      Result := Tnt_WideFormat('%.2f', [Amount]);
     Exit;
   end;
   if WideCompareText(Item.Text, 'Payment1') = 0 then
   begin
     Amount := Abs(Receipt.Payments[1]);
     if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
-      Result := Format('%.2f', [Amount]);
+      Result := Tnt_WideFormat('%.2f', [Amount]);
     Exit;
   end;
   if WideCompareText(Item.Text, 'Payment2') = 0 then
   begin
     Amount := Abs(Receipt.Payments[2]);
     if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
-      Result := Format('%.2f', [Amount]);
+      Result := Tnt_WideFormat('%.2f', [Amount]);
     Exit;
   end;
   if WideCompareText(Item.Text, 'Payment3') = 0 then
   begin
     Amount := Abs(Receipt.Payments[3]);
     if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
-      Result := Format('%.2f', [Amount]);
+      Result := Tnt_WideFormat('%.2f', [Amount]);
     Exit;
   end;
   if WideCompareText(Item.Text, 'Payment4') = 0 then
   begin
     Amount := Abs(Receipt.Payments[4]);
     if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
-      Result := Format('%.2f', [Amount]);
+      Result := Tnt_WideFormat('%.2f', [Amount]);
     Exit;
   end;
   if WideCompareText(Item.Text, 'Change') = 0 then
   begin
     Amount := Abs(Receipt.Change);
     if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
-      Result := Format('%.2f', [Amount]);
+      Result := Tnt_WideFormat('%.2f', [Amount]);
     Exit;
   end;
   if WideCompareText(Item.Text, 'TaxAmount') = 0 then
@@ -3662,7 +3662,7 @@ begin
     VatRate := Params.VatRates.ItemByID(1);
     Amount := Abs(Receipt.GetVatAmount(VatRate));
     if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
-      Result := Format('%.2f', [Amount]);
+      Result := Tnt_WideFormat('%.2f', [Amount]);
     Exit;
   end;
   if WideCompareText(Item.Text, 'OperationTypeText') = 0 then
@@ -3822,7 +3822,7 @@ begin
       end;
 
       if Item.FormatText <> '' then
-        Item.Value := Format(Item.FormatText, [Item.Value]);
+        Item.Value := Tnt_WideFormat(Item.FormatText, [Item.Value]);
 
       case Item.Alignment of
         ALIGN_RIGHT:
@@ -4358,7 +4358,7 @@ begin
     FClient.ReadReceipt(Command);
 
     Document.Addlines(Format('ÍÄÑ Ñåðèÿ %s', [Params.VATSeries]),
-      Format('¹ %s', [Params.VATNumber]));
+      Tnt_WideFormat('¹ %s', [Params.VATNumber]));
     Document.AddSeparator;
     Document.AddLine(Document.AlignCenter(Params.CashboxNumber));
     Document.AddLine(Document.AlignCenter(Format('ÑÌÅÍÀ ¹%d', [ShiftNumber])));

@@ -844,7 +844,7 @@ begin
   CheckUserCharCode(ACode);
   Bitmap := TBitmap.Create;
   try
-    FileName := GetModulePath + Format('UserChars\UnicodeChar_%d_%d.bmp', [AFont, Ord(AChar)]);
+    FileName := GetModulePath + WideFormat('UserChars\UnicodeChar_%d_%d.bmp', [AFont, Ord(AChar)]);
     Bitmap.LoadFromFile(FileName);
     // Write
     UserChar.c1 := ACode;

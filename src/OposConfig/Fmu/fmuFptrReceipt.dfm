@@ -24,7 +24,7 @@ object fmFptrReceipt: TfmFptrReceipt
     Top = 0
     Width = 581
     Height = 417
-    ActivePage = tsXmlTemplate
+    ActivePage = tsReceipt
     Align = alTop
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 0

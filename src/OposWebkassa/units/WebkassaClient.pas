@@ -1485,7 +1485,7 @@ begin
    else
      Result := 'Неизвестная ошибка';
    end;
-   Result := Format('%d, %s', [Code, Result]);
+   Result := WideFormat('%d, %s', [Code, Result]);
 end;
 
 (*
@@ -1745,7 +1745,7 @@ begin
       for i := 0 to FErrorResult.Errors.Count-1 do
       begin
         Item := FErrorResult.Errors[i];
-        Text := Text + Format('%d, %s', [Item.Code, Item.Text]) + #13#10;
+        Text := Text + WideFormat('%d, %s', [Item.Code, Item.Text]) + #13#10;
       end;
       RaiseError(-1, Text);
     end;

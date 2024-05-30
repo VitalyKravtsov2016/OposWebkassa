@@ -7,7 +7,7 @@
 			<ItemType>1</ItemType>
 			<TextStyle>0</TextStyle>
 			<Alignment>0</Alignment>
-			<FormatText>НДС Серия %s</FormatText>
+			<FormatText>ҚҚС Сериясы/НДС Серия %s</FormatText>
 			<LineChars>0</LineChars>
 			<LineSpacing>0</LineSpacing>
 		</Item>
@@ -37,7 +37,7 @@
 			<ItemType>4</ItemType>
 			<TextStyle>0</TextStyle>
 			<Alignment>0</Alignment>
-			<FormatText>ЗНМ: %s</FormatText>
+			<FormatText>МЗН/ЗНМ: %s</FormatText>
 			<LineChars>0</LineChars>
 			<LineSpacing>0</LineSpacing>
 		</Item>
@@ -47,7 +47,7 @@
 			<ItemType>4</ItemType>
 			<TextStyle>0</TextStyle>
 			<Alignment>2</Alignment>
-			<FormatText>СМЕНА №%s</FormatText>
+			<FormatText>Ауысым/СМЕНА №%s</FormatText>
 			<LineChars>0</LineChars>
 			<LineSpacing>0</LineSpacing>
 		</Item>
@@ -62,7 +62,7 @@
 			<LineSpacing>0</LineSpacing>
 		</Item>
 		<Item>
-			<Text>Код ККМ КГД (РНМ):</Text>
+			<Text>БКМ ММК (МТН) Коды/Код ККМ КГД (РНМ):</Text>
 			<Enabled>0</Enabled>
 			<ItemType>0</ItemType>
 			<TextStyle>0</TextStyle>
@@ -92,10 +92,10 @@
 			<LineSpacing>0</LineSpacing>
 		</Item>
 		<Item>
-			<Text>сатуға арналған</Text>
+			<Text>OperationTypeText</Text>
 			<Enabled>0</Enabled>
-			<ItemType>0</ItemType>
-			<TextStyle>1</TextStyle>
+			<ItemType>2</ItemType>
+			<TextStyle>0</TextStyle>
 			<Alignment>0</Alignment>
 			<FormatText></FormatText>
 			<LineChars>0</LineChars>
@@ -139,17 +139,17 @@
 			<ItemType>2</ItemType>
 			<TextStyle>0</TextStyle>
 			<Alignment>0</Alignment>
-			<FormatText>%s</FormatText>
+			<FormatText>%s x </FormatText>
 			<LineChars>0</LineChars>
 			<LineSpacing>0</LineSpacing>
 		</Item>
 		<Item>
-			<Text>Price</Text>
+			<Text>UnitPrice</Text>
 			<Enabled>0</Enabled>
 			<ItemType>2</ItemType>
 			<TextStyle>0</TextStyle>
 			<Alignment>0</Alignment>
-			<FormatText>%s</FormatText>
+			<FormatText> %s</FormatText>
 			<LineChars>0</LineChars>
 			<LineSpacing>0</LineSpacing>
 		</Item>
@@ -174,7 +174,7 @@
 			<LineSpacing>0</LineSpacing>
 		</Item>
 		<Item>
-			<Text>Скидка</Text>
+			<Text>Жеңілдік/Скидка</Text>
 			<Enabled>0</Enabled>
 			<ItemType>0</ItemType>
 			<TextStyle>0</TextStyle>
@@ -204,7 +204,7 @@
 			<LineSpacing>0</LineSpacing>
 		</Item>
 		<Item>
-			<Text>Наценка</Text>
+			<Text>Белгілеу/Наценка</Text>
 			<Enabled>0</Enabled>
 			<ItemType>0</ItemType>
 			<TextStyle>0</TextStyle>
@@ -236,7 +236,7 @@
 	</RecItem>
 	<Trailer>
 		<Item>
-			<Text>Скидка:</Text>
+			<Text>Жеңілдік/Скидка:</Text>
 			<Enabled>0</Enabled>
 			<ItemType>0</ItemType>
 			<TextStyle>0</TextStyle>
@@ -266,7 +266,7 @@
 			<LineSpacing>0</LineSpacing>
 		</Item>
 		<Item>
-			<Text>Наценка:</Text>
+			<Text>Белгілеу/Наценка:</Text>
 			<Enabled>0</Enabled>
 			<ItemType>0</ItemType>
 			<TextStyle>0</TextStyle>
@@ -296,7 +296,7 @@
 			<LineSpacing>0</LineSpacing>
 		</Item>
 		<Item>
-			<Text>ИТОГ</Text>
+			<Text>БАРЛЫҒЫ/ИТОГ</Text>
 			<Enabled>0</Enabled>
 			<ItemType>0</ItemType>
 			<TextStyle>5</TextStyle>
@@ -326,7 +326,7 @@
 			<LineSpacing>0</LineSpacing>
 		</Item>
 		<Item>
-			<Text>Наличные:</Text>
+			<Text>Қолма-қол/Наличные:</Text>
 			<Enabled>0</Enabled>
 			<ItemType>0</ItemType>
 			<TextStyle>0</TextStyle>
@@ -356,7 +356,7 @@
 			<LineSpacing>0</LineSpacing>
 		</Item>
 		<Item>
-			<Text>Банковская карта:</Text>
+			<Text>Банк картасы/Банковская карта:</Text>
 			<Enabled>0</Enabled>
 			<ItemType>0</ItemType>
 			<TextStyle>0</TextStyle>
@@ -406,17 +406,7 @@
 			<LineSpacing>0</LineSpacing>
 		</Item>
 		<Item>
-			<Text></Text>
-			<Enabled>0</Enabled>
-			<ItemType>7</ItemType>
-			<TextStyle>0</TextStyle>
-			<Alignment>0</Alignment>
-			<FormatText></FormatText>
-			<LineChars>0</LineChars>
-			<LineSpacing>0</LineSpacing>
-		</Item>
-		<Item>
-			<Text>Мобильный:</Text>
+			<Text>Оплата тарой:</Text>
 			<Enabled>0</Enabled>
 			<ItemType>0</ItemType>
 			<TextStyle>0</TextStyle>
@@ -446,7 +436,47 @@
 			<LineSpacing>0</LineSpacing>
 		</Item>
 		<Item>
-			<Text>СДАЧА</Text>
+			<Text></Text>
+			<Enabled>0</Enabled>
+			<ItemType>7</ItemType>
+			<TextStyle>0</TextStyle>
+			<Alignment>0</Alignment>
+			<FormatText></FormatText>
+			<LineChars>0</LineChars>
+			<LineSpacing>0</LineSpacing>
+		</Item>
+		<Item>
+			<Text>Мобильный платеж:</Text>
+			<Enabled>0</Enabled>
+			<ItemType>0</ItemType>
+			<TextStyle>0</TextStyle>
+			<Alignment>0</Alignment>
+			<FormatText></FormatText>
+			<LineChars>0</LineChars>
+			<LineSpacing>0</LineSpacing>
+		</Item>
+		<Item>
+			<Text>Payment4</Text>
+			<Enabled>1</Enabled>
+			<ItemType>2</ItemType>
+			<TextStyle>0</TextStyle>
+			<Alignment>2</Alignment>
+			<FormatText>=%s</FormatText>
+			<LineChars>0</LineChars>
+			<LineSpacing>0</LineSpacing>
+		</Item>
+		<Item>
+			<Text></Text>
+			<Enabled>0</Enabled>
+			<ItemType>7</ItemType>
+			<TextStyle>0</TextStyle>
+			<Alignment>0</Alignment>
+			<FormatText></FormatText>
+			<LineChars>0</LineChars>
+			<LineSpacing>0</LineSpacing>
+		</Item>
+		<Item>
+			<Text>ӨЗГЕРТУ/СДАЧА</Text>
 			<Enabled>0</Enabled>
 			<ItemType>0</ItemType>
 			<TextStyle>0</TextStyle>
@@ -506,7 +536,7 @@
 			<LineSpacing>0</LineSpacing>
 		</Item>
 		<Item>
-			<Text>Фискальный признак:</Text>
+			<Text>Фискалдық белгі/Фискальный признак:</Text>
 			<Enabled>0</Enabled>
 			<ItemType>0</ItemType>
 			<TextStyle>0</TextStyle>
@@ -536,7 +566,7 @@
 			<LineSpacing>0</LineSpacing>
 		</Item>
 		<Item>
-			<Text>Время:</Text>
+			<Text>Уақыты/Время:</Text>
 			<Enabled>0</Enabled>
 			<ItemType>0</ItemType>
 			<TextStyle>0</TextStyle>
@@ -596,7 +626,7 @@
 			<LineSpacing>0</LineSpacing>
 		</Item>
 		<Item>
-			<Text>Для проверки чека зайдите на сайт:</Text>
+			<Text>Чекті тексеру үшін сайтқа кіріңіз/Для проверки чека зайдите на сайт:</Text>
 			<Enabled>0</Enabled>
 			<ItemType>0</ItemType>
 			<TextStyle>0</TextStyle>
@@ -636,7 +666,7 @@
 			<LineSpacing>0</LineSpacing>
 		</Item>
 		<Item>
-			<Text>ФИСКАЛЬНЫЙ ЧЕK</Text>
+			<Text>ФИСКАЛДЫҚ ЧЕК/ФИСКАЛЬНЫЙ ЧЕK</Text>
 			<Enabled>0</Enabled>
 			<ItemType>0</ItemType>
 			<TextStyle>0</TextStyle>
@@ -681,7 +711,7 @@
 			<ItemType>4</ItemType>
 			<TextStyle>0</TextStyle>
 			<Alignment>1</Alignment>
-			<FormatText>ИНК ОФД: %s</FormatText>
+			<FormatText>СНК ОФД/ИНК ОФД: %s</FormatText>
 			<LineChars>0</LineChars>
 			<LineSpacing>0</LineSpacing>
 		</Item>

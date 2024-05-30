@@ -2346,7 +2346,7 @@ begin
 
         if FPrinter.CapRead then
         begin
-          FDeviceDescription := Format('%s %s %s %s', [
+          FDeviceDescription := WideFormat('%s %s %s %s', [
             FPrinter.ReadManufacturer, FPrinter.ReadPrinterName,
             FPrinter.ReadFirmwareVersion, FPrinter.ReadSerialNumber]);
           StartDeviceThread;
@@ -2940,7 +2940,7 @@ begin
   CodePage := 1251;
   if TestCodePage(AText, CodePage) then
   begin
-    Logger.Debug(WideFormat('TPosEscPrinter.PrintText(''%s'')', [Trim(AText)]));
+    Logger.Debug(WideFormat('TPosEscPrinter.PrintText(''%s'')', [AText]));
     Printer.SetCodePage(CharacterSetToPrinterCodePage(CodePage));
     Printer.PrintText(WideStringToAnsiString(CodePage, AText));
   end else

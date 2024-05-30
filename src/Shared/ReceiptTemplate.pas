@@ -33,8 +33,8 @@ type
     procedure SaveToXml(var Xml: WideString);
     procedure LoadFromXml(const Xml: WideString);
 
-    procedure SaveToFile(const FileName: string);
-    procedure LoadFromFile(const FileName: string);
+    procedure SaveToFile(const FileName: WideString);
+    procedure LoadFromFile(const FileName: WideString);
 
     property Logger: ILogFile read FLogger;
     property Header: TTemplateItems read FHeader;
@@ -137,7 +137,7 @@ begin
   Parser.Free;
 end;
 
-procedure TReceiptTemplate.LoadFromFile(const FileName: string);
+procedure TReceiptTemplate.LoadFromFile(const FileName: WideString);
 var
   Parser: TXmlParser;
 begin
@@ -207,7 +207,7 @@ begin
   Parser.Free;
 end;
 
-procedure TReceiptTemplate.SaveToFile(const FileName: string);
+procedure TReceiptTemplate.SaveToFile(const FileName: WideString);
 var
   Parser: TXmlParser;
 begin
