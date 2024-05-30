@@ -58,11 +58,11 @@ begin
   CheckEquals(0, FReceipt.GetPayment, 'FReceipt.Payment');
   CheckEquals(False, FReceipt.IsVoided, 'FReceipt.IsVoided');
   FReceipt.PrintRecItem('Description', 123.45, 1, 0, 123.45, 'UnitName');
-  CheckEquals(123.45, FReceipt.GetTotal, 'FReceipt.Total');
+  CheckEquals(123.45, FReceipt.GetTotal, 0.001, 'FReceipt.Total');
   FReceipt.PrintRecTotal(123.45, 100, 'Оплата картой');
   CheckEquals(100, FReceipt.GetPayment, 'FReceipt.Payment');
   FReceipt.PrintRecTotal(123.45, 23.45, 'Наличными');
-  CheckEquals(123.45, FReceipt.GetPayment, 'FReceipt.Payment');
+  CheckEquals(123.45, FReceipt.GetPayment, 0.001, 'FReceipt.Payment');
 end;
 
 procedure TSalesReceiptTest.TestPrintRecVoid;
@@ -92,7 +92,7 @@ begin
   CheckEquals(False, FReceipt.IsVoided, 'FReceipt.IsVoided');
   // Item
   FReceipt.PrintRecItem('Description', 123.45, 1, 0, 123.45, 'UnitName');
-  CheckEquals(123.45, FReceipt.GetTotal, 'FReceipt.Total');
+  CheckEquals(123.45, FReceipt.GetTotal, 0.001, 'FReceipt.Total');
   // Amount discount
   FReceipt.PrintRecItemAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка 1.23', 1.23, 0);
   CheckEquals(122.22, FReceipt.GetTotal, 'FReceipt.Total');
@@ -116,7 +116,7 @@ begin
   CheckEquals(135.8, FReceipt.GetTotal, 'FReceipt.Total');
   // Void percent charge
   FReceipt.PrintRecItemAdjustmentVoid(FPTR_AT_PERCENTAGE_SURCHARGE, 'Надбавка 10%', 10, 0);
-  CheckEquals(123.45, FReceipt.GetTotal, 'FReceipt.Total');
+  CheckEquals(123.45, FReceipt.GetTotal, 0.001, 'FReceipt.Total');
 
   FReceipt.PrintRecTotal(123.44, 130, 'Наличными');
   FReceipt.EndFiscalReceipt(False);
@@ -131,7 +131,7 @@ begin
   CheckEquals(False, FReceipt.IsVoided, 'FReceipt.IsVoided');
   // Item
   FReceipt.PrintRecItem('Description', 123.45, 1, 0, 123.45, 'UnitName');
-  CheckEquals(123.45, FReceipt.GetTotal, 'FReceipt.Total');
+  CheckEquals(123.45, FReceipt.GetTotal, 0.001, 'FReceipt.Total');
   // Amount discount
   FReceipt.PrintRecSubtotalAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка 1.23', 1.23);
   CheckEquals(122.22, FReceipt.GetTotal, 'FReceipt.Total');

@@ -79,8 +79,11 @@ begin
   Item.Text := 'Test3';
   Item.FormatText := 'FormatText3';
 
-  FileName := GetModulePath + '\Receipt.xml';
+  FileName := GetModulePath + 'Receipt.xml';
+  DeleteFile(FileName);
+  CheckEquals(False, FileExists(FileName), 'FileExists(FileName).0');
   FDocument.SaveToFile(FileName);
+  CheckEquals(True, FileExists(FileName), 'FileExists(FileName).1');
 
   FDocument.Clear;
   CheckEquals(0, FDocument.Header.Count, 'FDocument.Header.Count');

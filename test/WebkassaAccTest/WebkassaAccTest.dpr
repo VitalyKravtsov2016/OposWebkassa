@@ -81,7 +81,6 @@ uses
   RawPrinterPort in '..\..\src\Shared\RawPrinterPort.pas',
   Translation in '..\..\src\Shared\Translation.pas',
   DirectIOAPI in '..\..\src\OposWebkassa\units\DirectIOAPI.pas',
-  xmlParser in '..\..\src\Shared\XMLParser.pas',
   DriverContext in '..\..\src\Shared\DriverContext.pas',
   PrinterTypes in '..\..\src\Shared\PrinterTypes.pas',
   BarcodeUtils in '..\..\src\Shared\BarcodeUtils.pas',

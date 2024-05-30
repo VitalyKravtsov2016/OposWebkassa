@@ -8,169 +8,183 @@
   resources were bound to the produced executable.
 */
 
-#define JclVclResources_RsNAEndPage 64816
-#define JclVclResources_RsNAEndDocument 64817
-#define JclVclResources_RsNATransmission 64818
-#define JclResources_RsIntelCacheDescrEA 64832
-#define JclResources_RsIntelCacheDescrEB 64833
-#define JclResources_RsIntelCacheDescrEC 64834
-#define JclResources_RsIntelCacheDescrF0 64835
-#define JclResources_RsIntelCacheDescrF1 64836
-#define JclResources_RsIntelCacheDescrFF 64837
-#define JclResources_RsOSVersionWin81 64838
-#define JclResources_RsOSVersionWinServer2012R2 64839
-#define JclResources_RsInvalidMMFName 64840
-#define JclResources_RsInvalidMMFEmpty 64841
-#define JclResources_RsWin32Error 64842
-#define JclVclResources_RsSpoolerDocName 64843
-#define JclVclResources_RsInvalidPrinter 64844
-#define JclVclResources_RsNAStartDocument 64845
-#define JclVclResources_RsNASendData 64846
-#define JclVclResources_RsNAStartPage 64847
-#define JclResources_RsIntelCacheDescrB4 64848
-#define JclResources_RsIntelCacheDescrBA 64849
-#define JclResources_RsIntelCacheDescrC0 64850
-#define JclResources_RsIntelCacheDescrCA 64851
-#define JclResources_RsIntelCacheDescrD0 64852
-#define JclResources_RsIntelCacheDescrD1 64853
-#define JclResources_RsIntelCacheDescrD2 64854
-#define JclResources_RsIntelCacheDescrD6 64855
-#define JclResources_RsIntelCacheDescrD7 64856
-#define JclResources_RsIntelCacheDescrD8 64857
-#define JclResources_RsIntelCacheDescrDC 64858
-#define JclResources_RsIntelCacheDescrDD 64859
-#define JclResources_RsIntelCacheDescrDE 64860
-#define JclResources_RsIntelCacheDescrE2 64861
-#define JclResources_RsIntelCacheDescrE3 64862
-#define JclResources_RsIntelCacheDescrE4 64863
-#define JclResources_RsIntelCacheDescr7A 64864
-#define JclResources_RsIntelCacheDescr7B 64865
-#define JclResources_RsIntelCacheDescr7C 64866
-#define JclResources_RsIntelCacheDescr7D 64867
-#define JclResources_RsIntelCacheDescr7F 64868
-#define JclResources_RsIntelCacheDescr80 64869
-#define JclResources_RsIntelCacheDescr82 64870
-#define JclResources_RsIntelCacheDescr83 64871
-#define JclResources_RsIntelCacheDescr84 64872
-#define JclResources_RsIntelCacheDescr85 64873
-#define JclResources_RsIntelCacheDescr86 64874
-#define JclResources_RsIntelCacheDescr87 64875
-#define JclResources_RsIntelCacheDescrB0 64876
-#define JclResources_RsIntelCacheDescrB1 64877
-#define JclResources_RsIntelCacheDescrB2 64878
-#define JclResources_RsIntelCacheDescrB3 64879
-#define JclResources_RsIntelCacheDescr59 64880
-#define JclResources_RsIntelCacheDescr5A 64881
-#define JclResources_RsIntelCacheDescr5B 64882
-#define JclResources_RsIntelCacheDescr5C 64883
-#define JclResources_RsIntelCacheDescr5D 64884
-#define JclResources_RsIntelCacheDescr60 64885
-#define JclResources_RsIntelCacheDescr66 64886
-#define JclResources_RsIntelCacheDescr67 64887
-#define JclResources_RsIntelCacheDescr68 64888
-#define JclResources_RsIntelCacheDescr70 64889
-#define JclResources_RsIntelCacheDescr71 64890
-#define JclResources_RsIntelCacheDescr72 64891
-#define JclResources_RsIntelCacheDescr73 64892
-#define JclResources_RsIntelCacheDescr76 64893
-#define JclResources_RsIntelCacheDescr78 64894
-#define JclResources_RsIntelCacheDescr79 64895
-#define JclResources_RsIntelCacheDescr46 64896
-#define JclResources_RsIntelCacheDescr47 64897
-#define JclResources_RsIntelCacheDescr48 64898
-#define JclResources_RsIntelCacheDescr49 64899
-#define JclResources_RsIntelCacheDescr4A 64900
-#define JclResources_RsIntelCacheDescr4B 64901
-#define JclResources_RsIntelCacheDescr4C 64902
-#define JclResources_RsIntelCacheDescr4D 64903
-#define JclResources_RsIntelCacheDescr4E 64904
-#define JclResources_RsIntelCacheDescr4F 64905
-#define JclResources_RsIntelCacheDescr50 64906
-#define JclResources_RsIntelCacheDescr51 64907
-#define JclResources_RsIntelCacheDescr52 64908
-#define JclResources_RsIntelCacheDescr55 64909
-#define JclResources_RsIntelCacheDescr56 64910
-#define JclResources_RsIntelCacheDescr57 64911
-#define JclResources_RsIntelCacheDescr25 64912
-#define JclResources_RsIntelCacheDescr29 64913
-#define JclResources_RsIntelCacheDescr2C 64914
-#define JclResources_RsIntelCacheDescr30 64915
-#define JclResources_RsIntelCacheDescr39 64916
-#define JclResources_RsIntelCacheDescr3A 64917
-#define JclResources_RsIntelCacheDescr3B 64918
-#define JclResources_RsIntelCacheDescr3C 64919
-#define JclResources_RsIntelCacheDescr3D 64920
-#define JclResources_RsIntelCacheDescr3E 64921
-#define JclResources_RsIntelCacheDescr40 64922
-#define JclResources_RsIntelCacheDescr41 64923
-#define JclResources_RsIntelCacheDescr42 64924
-#define JclResources_RsIntelCacheDescr43 64925
-#define JclResources_RsIntelCacheDescr44 64926
-#define JclResources_RsIntelCacheDescr45 64927
-#define JclResources_RsIntelCacheDescr01 64928
-#define JclResources_RsIntelCacheDescr02 64929
-#define JclResources_RsIntelCacheDescr03 64930
-#define JclResources_RsIntelCacheDescr04 64931
-#define JclResources_RsIntelCacheDescr05 64932
-#define JclResources_RsIntelCacheDescr06 64933
-#define JclResources_RsIntelCacheDescr08 64934
-#define JclResources_RsIntelCacheDescr09 64935
-#define JclResources_RsIntelCacheDescr0A 64936
-#define JclResources_RsIntelCacheDescr0B 64937
-#define JclResources_RsIntelCacheDescr0C 64938
-#define JclResources_RsIntelCacheDescr0D 64939
-#define JclResources_RsIntelCacheDescr0E 64940
-#define JclResources_RsIntelCacheDescr21 64941
-#define JclResources_RsIntelCacheDescr22 64942
-#define JclResources_RsIntelCacheDescr23 64943
-#define GIFImage_sProgressSaving 64944
-#define GIFImage_sProgressConverting 64945
-#define GIFImage_sProgressRendering 64946
-#define GIFImage_sProgressCopying 64947
-#define GIFImage_sProgressOptimizing 64948
-#define DBConsts_SBcdOverflow 64949
-#define DBConsts_SInvalidBcdValue 64950
-#define DBConsts_SCouldNotParseTimeStamp 64951
-#define DBConsts_SInvalidSqlTimeStamp 64952
-#define JclResources_RsEReplacementChar 64953
-#define JclResources_RsUnableToOpenKeyRead 64954
-#define JclResources_RsUnableToAccessValue 64955
-#define JclResources_RsWrongDataType 64956
-#define JclResources_RsInconsistentPath 64957
-#define JclResources_RsSynchCreateMutex 64958
-#define JclResources_RsIntelCacheDescr00 64959
-#define GIFImage_sBadHeight 64960
-#define GIFImage_sBadWidth 64961
-#define GIFImage_sFailedPaste 64962
-#define GIFImage_sScreenSizeExceeded 64963
-#define GIFImage_sNoColorTable 64964
-#define GIFImage_sBadPixelCoordinates 64965
-#define GIFImage_sInvalidPixelFormat 64966
-#define GIFImage_sBadDimension 64967
-#define GIFImage_sNoDIB 64968
-#define GIFImage_sInvalidStream 64969
-#define GIFImage_sInvalidColor 64970
-#define GIFImage_sEmptyColorMap 64971
-#define GIFImage_sEmptyImage 64972
-#define GIFImage_sInvalidReduction 64973
-#define GIFImage_sGIFImageFile 64974
-#define GIFImage_sProgressLoading 64975
-#define GIFImage_sBadColorIndex 64976
-#define GIFImage_sBadVersion 64977
-#define GIFImage_sBadSignature 64978
-#define GIFImage_sScreenBadColorSize 64979
-#define GIFImage_sImageBadColorSize 64980
-#define GIFImage_sUnknownExtension 64981
-#define GIFImage_sBadExtensionLabel 64982
-#define GIFImage_sOutOfMemDIB 64983
-#define GIFImage_sDecodeTooFewBits 64984
-#define GIFImage_sDecodeCircular 64985
-#define GIFImage_sBadTrailer 64986
-#define GIFImage_sBadExtensionInstance 64987
-#define GIFImage_sBadBlockSize 64988
-#define GIFImage_sBadBlock 64989
-#define GIFImage_sUnsupportedClass 64990
-#define GIFImage_sInvalidData 64991
+#define JclVclResources_RsNATransmission 64800
+#define JclResources_RsIntelCacheDescrEC 64816
+#define JclResources_RsIntelCacheDescrF0 64817
+#define JclResources_RsIntelCacheDescrF1 64818
+#define JclResources_RsIntelCacheDescrFF 64819
+#define JclResources_RsOSVersionWin81 64820
+#define JclResources_RsOSVersionWinServer2012R2 64821
+#define JclResources_RsInvalidMMFName 64822
+#define JclResources_RsInvalidMMFEmpty 64823
+#define JclResources_RsWin32Error 64824
+#define JclVclResources_RsSpoolerDocName 64825
+#define JclVclResources_RsInvalidPrinter 64826
+#define JclVclResources_RsNAStartDocument 64827
+#define JclVclResources_RsNASendData 64828
+#define JclVclResources_RsNAStartPage 64829
+#define JclVclResources_RsNAEndPage 64830
+#define JclVclResources_RsNAEndDocument 64831
+#define JclResources_RsIntelCacheDescrC0 64832
+#define JclResources_RsIntelCacheDescrCA 64833
+#define JclResources_RsIntelCacheDescrD0 64834
+#define JclResources_RsIntelCacheDescrD1 64835
+#define JclResources_RsIntelCacheDescrD2 64836
+#define JclResources_RsIntelCacheDescrD6 64837
+#define JclResources_RsIntelCacheDescrD7 64838
+#define JclResources_RsIntelCacheDescrD8 64839
+#define JclResources_RsIntelCacheDescrDC 64840
+#define JclResources_RsIntelCacheDescrDD 64841
+#define JclResources_RsIntelCacheDescrDE 64842
+#define JclResources_RsIntelCacheDescrE2 64843
+#define JclResources_RsIntelCacheDescrE3 64844
+#define JclResources_RsIntelCacheDescrE4 64845
+#define JclResources_RsIntelCacheDescrEA 64846
+#define JclResources_RsIntelCacheDescrEB 64847
+#define JclResources_RsIntelCacheDescr7C 64848
+#define JclResources_RsIntelCacheDescr7D 64849
+#define JclResources_RsIntelCacheDescr7F 64850
+#define JclResources_RsIntelCacheDescr80 64851
+#define JclResources_RsIntelCacheDescr82 64852
+#define JclResources_RsIntelCacheDescr83 64853
+#define JclResources_RsIntelCacheDescr84 64854
+#define JclResources_RsIntelCacheDescr85 64855
+#define JclResources_RsIntelCacheDescr86 64856
+#define JclResources_RsIntelCacheDescr87 64857
+#define JclResources_RsIntelCacheDescrB0 64858
+#define JclResources_RsIntelCacheDescrB1 64859
+#define JclResources_RsIntelCacheDescrB2 64860
+#define JclResources_RsIntelCacheDescrB3 64861
+#define JclResources_RsIntelCacheDescrB4 64862
+#define JclResources_RsIntelCacheDescrBA 64863
+#define JclResources_RsIntelCacheDescr5B 64864
+#define JclResources_RsIntelCacheDescr5C 64865
+#define JclResources_RsIntelCacheDescr5D 64866
+#define JclResources_RsIntelCacheDescr60 64867
+#define JclResources_RsIntelCacheDescr66 64868
+#define JclResources_RsIntelCacheDescr67 64869
+#define JclResources_RsIntelCacheDescr68 64870
+#define JclResources_RsIntelCacheDescr70 64871
+#define JclResources_RsIntelCacheDescr71 64872
+#define JclResources_RsIntelCacheDescr72 64873
+#define JclResources_RsIntelCacheDescr73 64874
+#define JclResources_RsIntelCacheDescr76 64875
+#define JclResources_RsIntelCacheDescr78 64876
+#define JclResources_RsIntelCacheDescr79 64877
+#define JclResources_RsIntelCacheDescr7A 64878
+#define JclResources_RsIntelCacheDescr7B 64879
+#define JclResources_RsIntelCacheDescr48 64880
+#define JclResources_RsIntelCacheDescr49 64881
+#define JclResources_RsIntelCacheDescr4A 64882
+#define JclResources_RsIntelCacheDescr4B 64883
+#define JclResources_RsIntelCacheDescr4C 64884
+#define JclResources_RsIntelCacheDescr4D 64885
+#define JclResources_RsIntelCacheDescr4E 64886
+#define JclResources_RsIntelCacheDescr4F 64887
+#define JclResources_RsIntelCacheDescr50 64888
+#define JclResources_RsIntelCacheDescr51 64889
+#define JclResources_RsIntelCacheDescr52 64890
+#define JclResources_RsIntelCacheDescr55 64891
+#define JclResources_RsIntelCacheDescr56 64892
+#define JclResources_RsIntelCacheDescr57 64893
+#define JclResources_RsIntelCacheDescr59 64894
+#define JclResources_RsIntelCacheDescr5A 64895
+#define JclResources_RsIntelCacheDescr2C 64896
+#define JclResources_RsIntelCacheDescr30 64897
+#define JclResources_RsIntelCacheDescr39 64898
+#define JclResources_RsIntelCacheDescr3A 64899
+#define JclResources_RsIntelCacheDescr3B 64900
+#define JclResources_RsIntelCacheDescr3C 64901
+#define JclResources_RsIntelCacheDescr3D 64902
+#define JclResources_RsIntelCacheDescr3E 64903
+#define JclResources_RsIntelCacheDescr40 64904
+#define JclResources_RsIntelCacheDescr41 64905
+#define JclResources_RsIntelCacheDescr42 64906
+#define JclResources_RsIntelCacheDescr43 64907
+#define JclResources_RsIntelCacheDescr44 64908
+#define JclResources_RsIntelCacheDescr45 64909
+#define JclResources_RsIntelCacheDescr46 64910
+#define JclResources_RsIntelCacheDescr47 64911
+#define JclResources_RsIntelCacheDescr03 64912
+#define JclResources_RsIntelCacheDescr04 64913
+#define JclResources_RsIntelCacheDescr05 64914
+#define JclResources_RsIntelCacheDescr06 64915
+#define JclResources_RsIntelCacheDescr08 64916
+#define JclResources_RsIntelCacheDescr09 64917
+#define JclResources_RsIntelCacheDescr0A 64918
+#define JclResources_RsIntelCacheDescr0B 64919
+#define JclResources_RsIntelCacheDescr0C 64920
+#define JclResources_RsIntelCacheDescr0D 64921
+#define JclResources_RsIntelCacheDescr0E 64922
+#define JclResources_RsIntelCacheDescr21 64923
+#define JclResources_RsIntelCacheDescr22 64924
+#define JclResources_RsIntelCacheDescr23 64925
+#define JclResources_RsIntelCacheDescr25 64926
+#define JclResources_RsIntelCacheDescr29 64927
+#define GIFImage_sProgressRendering 64928
+#define GIFImage_sProgressCopying 64929
+#define GIFImage_sProgressOptimizing 64930
+#define DBConsts_SBcdOverflow 64931
+#define DBConsts_SInvalidBcdValue 64932
+#define DBConsts_SCouldNotParseTimeStamp 64933
+#define DBConsts_SInvalidSqlTimeStamp 64934
+#define JclResources_RsEReplacementChar 64935
+#define JclResources_RsUnableToOpenKeyRead 64936
+#define JclResources_RsUnableToAccessValue 64937
+#define JclResources_RsWrongDataType 64938
+#define JclResources_RsInconsistentPath 64939
+#define JclResources_RsSynchCreateMutex 64940
+#define JclResources_RsIntelCacheDescr00 64941
+#define JclResources_RsIntelCacheDescr01 64942
+#define JclResources_RsIntelCacheDescr02 64943
+#define GIFImage_sFailedPaste 64944
+#define GIFImage_sScreenSizeExceeded 64945
+#define GIFImage_sNoColorTable 64946
+#define GIFImage_sBadPixelCoordinates 64947
+#define GIFImage_sInvalidPixelFormat 64948
+#define GIFImage_sBadDimension 64949
+#define GIFImage_sNoDIB 64950
+#define GIFImage_sInvalidStream 64951
+#define GIFImage_sInvalidColor 64952
+#define GIFImage_sEmptyColorMap 64953
+#define GIFImage_sEmptyImage 64954
+#define GIFImage_sInvalidReduction 64955
+#define GIFImage_sGIFImageFile 64956
+#define GIFImage_sProgressLoading 64957
+#define GIFImage_sProgressSaving 64958
+#define GIFImage_sProgressConverting 64959
+#define GIFImage_sBadSignature 64960
+#define GIFImage_sScreenBadColorSize 64961
+#define GIFImage_sImageBadColorSize 64962
+#define GIFImage_sUnknownExtension 64963
+#define GIFImage_sBadExtensionLabel 64964
+#define GIFImage_sOutOfMemDIB 64965
+#define GIFImage_sDecodeTooFewBits 64966
+#define GIFImage_sDecodeCircular 64967
+#define GIFImage_sBadTrailer 64968
+#define GIFImage_sBadExtensionInstance 64969
+#define GIFImage_sBadBlockSize 64970
+#define GIFImage_sBadBlock 64971
+#define GIFImage_sUnsupportedClass 64972
+#define GIFImage_sInvalidData 64973
+#define GIFImage_sBadHeight 64974
+#define GIFImage_sBadWidth 64975
+#define XMLConst_SNoAttributes 64976
+#define XMLConst_SInvalidNodeType 64977
+#define XMLConst_SMismatchedRegItems 64978
+#define XMLConst_SNotSingleTextNode 64979
+#define XMLConst_SNoDOMParseOptions 64980
+#define XMLConst_SNodeReadOnly 64981
+#define XMLConst_SNoRefresh 64982
+#define XMLConst_SMissingFileName 64983
+#define XMLConst_SLine 64984
+#define JConsts_sChangeJPGSize 64985
+#define JConsts_sJPEGError 64986
+#define JConsts_sJPEGImageFile 64987
+#define GIFImage_sOutOfData 64988
+#define GIFImage_sTooManyColors 64989
+#define GIFImage_sBadColorIndex 64990
+#define GIFImage_sBadVersion 64991
 #define IdResourceStringsSSPI_RSHTTPSSPIUnknwonCredentialUse 64992
 #define IdResourceStringsSSPI_RSHTTPSSPIDoAuquireCredentialHandle 64993
 #define IdResourceStringsSSPI_RSHTTPSSPICompleteTokenNotSupported 64994
@@ -179,14 +193,14 @@
 #define OleConst_SInvalidLicense 64997
 #define OleConst_SNotLicensed 64998
 #define XMLConst_SDuplicateRegistration 64999
-#define XMLConst_SDOMNotSupported 65000
-#define XMLConst_SNodeExpected 65001
-#define XMLConst_SMSDOMNotInstalled 65002
-#define JConsts_sChangeJPGSize 65003
-#define JConsts_sJPEGError 65004
-#define JConsts_sJPEGImageFile 65005
-#define GIFImage_sOutOfData 65006
-#define GIFImage_sTooManyColors 65007
+#define XMLConst_SNoMatchingDOMVendor 65000
+#define XMLConst_SNoDOMNodeEx 65001
+#define XMLConst_SDOMNotSupported 65002
+#define XMLConst_SNodeExpected 65003
+#define XMLConst_SMSDOMNotInstalled 65004
+#define XMLConst_SNotActive 65005
+#define XMLConst_SNodeNotFound 65006
+#define XMLConst_SMissingNode 65007
 #define IdResourceStringsSSPI_RSHTTPSSPIKDCCertExpired 65008
 #define IdResourceStringsSSPI_RSHTTPSSPIKDCCertRevoked 65009
 #define IdResourceStringsSSPI_RSHTTPSSPISignatureNeeded 65010
@@ -717,11 +731,7 @@
 #define SysConst_SInvalidInput 65535
 STRINGTABLE
 BEGIN
-	JclVclResources_RsNAEndPage,	"Unable to \"End page\""
-	JclVclResources_RsNAEndDocument,	"Unable to \"End document\""
 	JclVclResources_RsNATransmission,	"Not all chars have been sent correctly to printer"
-	JclResources_RsIntelCacheDescrEA,	"3rd-level cache: 12 MByte, 24-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescrEB,	"3rd-level cache: 18 MByte, 24-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescrEC,	"3rd-level cache: 24 MByte, 24-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescrF0,	"64-Byte Prefetching"
 	JclResources_RsIntelCacheDescrF1,	"128-Byte Prefetching"
@@ -736,8 +746,8 @@ BEGIN
 	JclVclResources_RsNAStartDocument,	"Unable to \"Start document\""
 	JclVclResources_RsNASendData,	"Unable to send data to printer"
 	JclVclResources_RsNAStartPage,	"Unable to \"Start page\""
-	JclResources_RsIntelCacheDescrB4,	"Data TLB1: 4 KByte pages, 4-way set associative, 256 entries"
-	JclResources_RsIntelCacheDescrBA,	"Data TLB1: 4 KByte pages, 4-way set associative, 64 entries"
+	JclVclResources_RsNAEndPage,	"Unable to \"End page\""
+	JclVclResources_RsNAEndDocument,	"Unable to \"End document\""
 	JclResources_RsIntelCacheDescrC0,	"Data TLB: 4 KByte and 4 MByte pages, 4-way set associative, 8 entries"
 	JclResources_RsIntelCacheDescrCA,	"Shared 2nd-Level TLB: 4 KByte pages, 4-way associative, 512 entries"
 	JclResources_RsIntelCacheDescrD0,	"3rd-level cache: 512 KByte, 4-way set associative, 64 byte line size"
@@ -752,8 +762,8 @@ BEGIN
 	JclResources_RsIntelCacheDescrE2,	"3rd-level cache: 2 MByte, 16-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescrE3,	"3rd-level cache: 4 MByte, 16-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescrE4,	"3rd-level cache: 8 MByte, 16-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescr7A,	"2nd-level cache: 256 KBytes, 8-way set associative, 64 bytes line size, 2 lines per sector"
-	JclResources_RsIntelCacheDescr7B,	"2nd-level cache: 512 KBytes, 8-way set associative, 64 bytes line size, 2 lines per sector"
+	JclResources_RsIntelCacheDescrEA,	"3rd-level cache: 12 MByte, 24-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescrEB,	"3rd-level cache: 18 MByte, 24-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr7C,	"2nd-level cache: 1 MBytes, 8-way set associative, 64 bytes line size, 2 lines per sector"
 	JclResources_RsIntelCacheDescr7D,	"2nd-level cache: 2 MBytes, 8-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr7F,	"2nd-level cache: 512 KBytes, 2-way set associative, 64 byte line size"
@@ -768,8 +778,8 @@ BEGIN
 	JclResources_RsIntelCacheDescrB1,	"Instruction TLB: 2 MByte pages, 4-way, 8 entries or 4 MByte pages, 4-way, 4 entries"
 	JclResources_RsIntelCacheDescrB2,	"Instruction TLB: 4 KByte pages, 4-way set associative, 64 entries"
 	JclResources_RsIntelCacheDescrB3,	"Data TLB: 4 KByte pages, 4-way set associative, 128 entries"
-	JclResources_RsIntelCacheDescr59,	"Data TLB0: 4 KByte pages, fully associative, 16 entries"
-	JclResources_RsIntelCacheDescr5A,	"Data TLB0: 2 MByte or 4 MByte pages, 4-way set associative, 32 entries"
+	JclResources_RsIntelCacheDescrB4,	"Data TLB1: 4 KByte pages, 4-way set associative, 256 entries"
+	JclResources_RsIntelCacheDescrBA,	"Data TLB1: 4 KByte pages, 4-way set associative, 64 entries"
 	JclResources_RsIntelCacheDescr5B,	"Data TLB: 4 KByte and 4 MByte pages, 64 Entries"
 	JclResources_RsIntelCacheDescr5C,	"Data TLB: 4 KByte and 4 MByte pages, 128 Entries"
 	JclResources_RsIntelCacheDescr5D,	"Data TLB: 4 KByte and 4 MByte pages, 256 Entries"
@@ -784,8 +794,8 @@ BEGIN
 	JclResources_RsIntelCacheDescr76,	"Instruction TLB: 2M/4M pages, fully associative, 8 entries"
 	JclResources_RsIntelCacheDescr78,	"2nd-level cache: 1 MBytes, 4-way set associative, 64 bytes line size"
 	JclResources_RsIntelCacheDescr79,	"2nd-level cache: 128 KBytes, 8-way set associative, 64 bytes line size, 2 lines per sector"
-	JclResources_RsIntelCacheDescr46,	"3rd-level cache: 4 MBytes, 4-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescr47,	"3rd-level cache: 8 MBytes, 4-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescr7A,	"2nd-level cache: 256 KBytes, 8-way set associative, 64 bytes line size, 2 lines per sector"
+	JclResources_RsIntelCacheDescr7B,	"2nd-level cache: 512 KBytes, 8-way set associative, 64 bytes line size, 2 lines per sector"
 	JclResources_RsIntelCacheDescr48,	"3rd-level cache: 8 MByte, 8-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr49,	"2nd-level cache: 4 MBytes, 16-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr4A,	"3rd-level cache: 6MByte, 12-way set associative, 64 byte line size"
@@ -800,8 +810,8 @@ BEGIN
 	JclResources_RsIntelCacheDescr55,	"Instruction TLB: 2-MByte or 4-MByte pages, fully associative, 7 entries"
 	JclResources_RsIntelCacheDescr56,	"Data TLB0: 4 MByte pages, 4-way set associative, 16 entries"
 	JclResources_RsIntelCacheDescr57,	"Data TLB0: 4 KByte pages, 4-way associative, 16 entries"
-	JclResources_RsIntelCacheDescr25,	"3rd level cache: 2 MBytes, 8-way set associative, 64 byte line size, 2 lines per sector"
-	JclResources_RsIntelCacheDescr29,	"3rd level cache: 4 MBytes, 8-way set associative, 64 byte line size, 2 lines per sector"
+	JclResources_RsIntelCacheDescr59,	"Data TLB0: 4 KByte pages, fully associative, 16 entries"
+	JclResources_RsIntelCacheDescr5A,	"Data TLB0: 2 MByte or 4 MByte pages, 4-way set associative, 32 entries"
 	JclResources_RsIntelCacheDescr2C,	"1st level data cache: 32 KBytes, 8-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr30,	"1st level instruction cache: 32 KBytes, 8-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr39,	"2nd-level cache: 128 KBytes, 4-way set associative, sectored cache, 64-byte line size"
@@ -816,8 +826,8 @@ BEGIN
 	JclResources_RsIntelCacheDescr43,	"2nd-level cache: 512 KBytes, 4-way set associative, 32 byte line size"
 	JclResources_RsIntelCacheDescr44,	"2nd-level cache: 1 MBytes, 4-way set associative, 32 byte line size"
 	JclResources_RsIntelCacheDescr45,	"2nd-level cache: 2 MBytes, 4-way set associative, 32 byte line size"
-	JclResources_RsIntelCacheDescr01,	"Instruction TLB: 4 KByte pages, 4-way set associative, 32 entries"
-	JclResources_RsIntelCacheDescr02,	"Instruction TLB: 4 MByte pages, 4-way set associative, 2 entries"
+	JclResources_RsIntelCacheDescr46,	"3rd-level cache: 4 MBytes, 4-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescr47,	"3rd-level cache: 8 MBytes, 4-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr03,	"Data TLB: 4 KByte pages, 4-way set associative, 64 entries"
 	JclResources_RsIntelCacheDescr04,	"Data TLB: 4 MByte pages, 4-way set associative, 8 entries"
 	JclResources_RsIntelCacheDescr05,	"Data TLB1: 4 MByte pages, 4-way set associative, 32 entries"
@@ -832,8 +842,8 @@ BEGIN
 	JclResources_RsIntelCacheDescr21,	"2nd level cache: 256 KBytes, 8-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr22,	"3rd level cache: 512 KBytes, 4-way set associative, 64 byte line size, 2 lines per sector"
 	JclResources_RsIntelCacheDescr23,	"3rd level cache: 1 MBytes, 8-way set associative, 64 byte line size, 2 lines per sector"
-	GIFImage_sProgressSaving,	"Saving..."
-	GIFImage_sProgressConverting,	"Converting..."
+	JclResources_RsIntelCacheDescr25,	"3rd level cache: 2 MBytes, 8-way set associative, 64 byte line size, 2 lines per sector"
+	JclResources_RsIntelCacheDescr29,	"3rd level cache: 4 MBytes, 8-way set associative, 64 byte line size, 2 lines per sector"
 	GIFImage_sProgressRendering,	"Rendering..."
 	GIFImage_sProgressCopying,	"Copying..."
 	GIFImage_sProgressOptimizing,	"Optimizing..."
@@ -848,8 +858,8 @@ BEGIN
 	JclResources_RsInconsistentPath,	"\"%s\" does not match RootKey"
 	JclResources_RsSynchCreateMutex,	"Failed to create mutex"
 	JclResources_RsIntelCacheDescr00,	"Null descriptor"
-	GIFImage_sBadHeight,	"Image height too small for contained frames"
-	GIFImage_sBadWidth,	"Image width too small for contained frames"
+	JclResources_RsIntelCacheDescr01,	"Instruction TLB: 4 KByte pages, 4-way set associative, 32 entries"
+	JclResources_RsIntelCacheDescr02,	"Instruction TLB: 4 MByte pages, 4-way set associative, 2 entries"
 	GIFImage_sFailedPaste,	"Failed to store GIF on clipboard"
 	GIFImage_sScreenSizeExceeded,	"Image exceeds Logical Screen size"
 	GIFImage_sNoColorTable,	"No global or local color table defined"
@@ -864,8 +874,8 @@ BEGIN
 	GIFImage_sInvalidReduction,	"Invalid reduction method"
 	GIFImage_sGIFImageFile,	"GIF Image"
 	GIFImage_sProgressLoading,	"Loading..."
-	GIFImage_sBadColorIndex,	"Invalid color index"
-	GIFImage_sBadVersion,	"Unsupported GIF version"
+	GIFImage_sProgressSaving,	"Saving..."
+	GIFImage_sProgressConverting,	"Converting..."
 	GIFImage_sBadSignature,	"Invalid GIF signature"
 	GIFImage_sScreenBadColorSize,	"Invalid number of colors specified in Screen Descriptor"
 	GIFImage_sImageBadColorSize,	"Invalid number of colors specified in Image Descriptor"
@@ -880,6 +890,24 @@ BEGIN
 	GIFImage_sBadBlock,	"Unknown GIF block type"
 	GIFImage_sUnsupportedClass,	"Object type not supported for operation"
 	GIFImage_sInvalidData,	"Invalid GIF data"
+	GIFImage_sBadHeight,	"Image height too small for contained frames"
+	GIFImage_sBadWidth,	"Image width too small for contained frames"
+	XMLConst_SNoAttributes,	"Attributes are not supported on this node type"
+	XMLConst_SInvalidNodeType,	"Invalid node type"
+	XMLConst_SMismatchedRegItems,	"Mismatched paramaters to RegisterChildNodes"
+	XMLConst_SNotSingleTextNode,	"Element does not contain a single text node"
+	XMLConst_SNoDOMParseOptions,	"DOM Implementation does not support IDOMParseOptions"
+	XMLConst_SNodeReadOnly,	"Node is readonly"
+	XMLConst_SNoRefresh,	"Refresh is only supported if the FileName or XML properties are set"
+	XMLConst_SMissingFileName,	"FileName cannot be blank"
+	XMLConst_SLine,	"Line"
+	JConsts_sChangeJPGSize,	"Cannot change the size of a JPEG image"
+	JConsts_sJPEGError,	"JPEG error #%d"
+	JConsts_sJPEGImageFile,	"JPEG Image File"
+	GIFImage_sOutOfData,	"Premature end of data"
+	GIFImage_sTooManyColors,	"Color table overflow"
+	GIFImage_sBadColorIndex,	"Invalid color index"
+	GIFImage_sBadVersion,	"Unsupported GIF version"
 	IdResourceStringsSSPI_RSHTTPSSPIUnknwonCredentialUse,	"Unknown credentials use"
 	IdResourceStringsSSPI_RSHTTPSSPIDoAuquireCredentialHandle,	"Do AcquireCredentialsHandle first"
 	IdResourceStringsSSPI_RSHTTPSSPICompleteTokenNotSupported,	"CompleteAuthToken is not supported"
@@ -888,14 +916,14 @@ BEGIN
 	OleConst_SInvalidLicense,	"License information for %s is invalid"
 	OleConst_SNotLicensed,	"License information for %s not found. You cannot use this control in design mode"
 	XMLConst_SDuplicateRegistration,	"\"%s\" DOMImplementation already registered"
+	XMLConst_SNoMatchingDOMVendor,	"No matching DOM Vendor: \"%s\""
+	XMLConst_SNoDOMNodeEx,	"Selected DOM Vendor does not support this property or method"
 	XMLConst_SDOMNotSupported,	"Property or Method \"%s\" is not supported by DOM Vendor \"%s\""
 	XMLConst_SNodeExpected,	"Node cannot be null"
 	XMLConst_SMSDOMNotInstalled,	"Microsoft MSXML is not installed"
-	JConsts_sChangeJPGSize,	"Cannot change the size of a JPEG image"
-	JConsts_sJPEGError,	"JPEG error #%d"
-	JConsts_sJPEGImageFile,	"JPEG Image File"
-	GIFImage_sOutOfData,	"Premature end of data"
-	GIFImage_sTooManyColors,	"Color table overflow"
+	XMLConst_SNotActive,	"No active document"
+	XMLConst_SNodeNotFound,	"Node \"%s\" not found"
+	XMLConst_SMissingNode,	"IDOMNode required"
 	IdResourceStringsSSPI_RSHTTPSSPIKDCCertExpired,	"The domain controller certificate used for smartcard logon has expired. Please contact your system administrator with the contents of your system event log."
 	IdResourceStringsSSPI_RSHTTPSSPIKDCCertRevoked,	"The domain controller certificate used for smartcard logon has been revoked. Please contact your system administrator with the contents of your system event log."
 	IdResourceStringsSSPI_RSHTTPSSPISignatureNeeded,	"A signature operation must be performed before the user can authenticate."

@@ -228,7 +228,7 @@ end;
 function TJsonCollectionItem.GetNamePath: string;
 begin
   if FCollection <> nil then
-    Result := Tnt_WideFormat('%s[%d]',[FCollection.GetNamePath, Index])
+    Result := Format('%s[%d]',[FCollection.GetNamePath, Index])
   else
     Result := ClassName;
 end;
@@ -777,6 +777,7 @@ begin
   Result := ReadForChars([',', '}', ']']);
   FStream.Seek(-1, 1);
 
+  Result := Trim(Result);
   if Length(Result) > 0 then
   begin
     if (Result[1] = '"')and(Result[Length(Result)] = '"') then

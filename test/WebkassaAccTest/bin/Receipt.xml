@@ -149,7 +149,7 @@
 			<ItemType>2</ItemType>
 			<TextStyle>0</TextStyle>
 			<Alignment>0</Alignment>
-			<FormatText> %s</FormatText>
+			<FormatText>%s</FormatText>
 			<LineChars>0</LineChars>
 			<LineSpacing>0</LineSpacing>
 		</Item>

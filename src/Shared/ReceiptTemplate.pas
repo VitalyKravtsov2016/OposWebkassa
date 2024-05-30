@@ -3,9 +3,9 @@ unit ReceiptTemplate;
 interface
 
 uses
-  Classes, SysUtils,
+  Classes, SysUtils, Variants, XMLDoc, XMLIntf, ActiveX,
   // This
-  LogFile, XmlParser, PrinterTypes;
+  LogFile, PrinterTypes;
 
 type
   TTemplateItem = class;
@@ -19,10 +19,10 @@ type
     FHeader: TTemplateItems;
     FRecItem: TTemplateItems;
     FTrailer: TTemplateItems;
-    procedure LoadItem(Root: TXmlItem; Item: TTemplateItem);
-    procedure LoadItems(Root: TXmlItem; Items: TTemplateItems);
-    procedure SaveItems(Root: TXmlItem; Items: TTemplateItems);
-    procedure SaveItem(Root: TXmlItem; Item: TTemplateItem);
+    procedure LoadItem(Root: IXmlNode; Item: TTemplateItem);
+    procedure LoadItems(Root: IXmlNode; Items: TTemplateItems);
+    procedure SaveItems(Root: IXmlNode; Items: TTemplateItems);
+    procedure SaveItem(Root: IXmlNode; Item: TTemplateItem);
     function GetAsXML: WideString;
     procedure SetAsXML(const Value: WideString);
   public
@@ -93,6 +93,7 @@ implementation
 constructor TReceiptTemplate.Create(ALogger: ILogFile);
 begin
   inherited Create;
+  CoInitialize(nil);
   FLogger := ALogger;
   FHeader := TTemplateItems.Create(TTemplateItem);
   FTrailer := TTemplateItems.Create(TTemplateItem);
@@ -101,6 +102,7 @@ end;
 
 destructor TReceiptTemplate.Destroy;
 begin
+  CoUninitialize;
   FHeader.Free;
   FTrailer.Free;
   FRecItem.Free;
@@ -116,137 +118,162 @@ end;
 
 procedure TReceiptTemplate.LoadFromXml(const Xml: WideString);
 var
-  Parser: TXmlParser;
+  Root: IXmlNode;
+  Doc: IXmlDocument;
 begin
   Clear;
   if Xml = '' then Exit;
-
-  Parser := TXmlParser.Create;
   try
-    Parser.LoadFromString(Utf8Encode(Xml));
-
-    LoadItems(Parser.Root.FindItem('Header'), Header);
-    LoadItems(Parser.Root.FindItem('RecItem'), RecItem);
-    LoadItems(Parser.Root.FindItem('Trailer'), Trailer);
+    Doc := LoadXMLData(XML);
+    Root := Doc.DocumentElement;
+    LoadItems(Root.ChildNodes.FindNode('Header'), Header);
+    LoadItems(Root.ChildNodes.FindNode('RecItem'), RecItem);
+    LoadItems(Root.ChildNodes.FindNode('Trailer'), Trailer);
   except
     on E: Exception do
     begin
       Logger.Error('Failed to load, ' + E.Message);
     end;
   end;
-  Parser.Free;
 end;
 
 procedure TReceiptTemplate.LoadFromFile(const FileName: WideString);
 var
-  Parser: TXmlParser;
+  Root: IXmlNode;
+  Doc: IXmlDocument;
 begin
   Clear;
-  if not FileExists(FileName) then
-    raise Exception.Create('File not found');
 
-  Parser := TXmlParser.Create;
+  if not FileExists(FileName) then
+    raise Exception.Create('File not found, ' + FileName);
+
   try
-    Parser.LoadFromFile(FileName);
-    LoadItems(Parser.Root.FindItem('Header'), Header);
-    LoadItems(Parser.Root.FindItem('RecItem'), RecItem);
-    LoadItems(Parser.Root.FindItem('Trailer'), Trailer);
+    Doc := LoadXMLDocument(FileName);
+    Root := Doc.DocumentElement;
+    LoadItems(Root.ChildNodes.FindNode('Header'), Header);
+    LoadItems(Root.ChildNodes.FindNode('RecItem'), RecItem);
+    LoadItems(Root.ChildNodes.FindNode('Trailer'), Trailer);
   except
     on E: Exception do
     begin
       Logger.Error('Failed to load, ' + E.Message);
     end;
   end;
-  Parser.Free;
 end;
 
-procedure TReceiptTemplate.LoadItems(Root: TXmlItem; Items: TTemplateItems);
+procedure TReceiptTemplate.LoadItems(Root: IXmlNode; Items: TTemplateItems);
 var
   i: Integer;
-  Item: TXmlItem;
+  Item: IXmlNode;
 begin
   if Root = nil then Exit;
-  for i := 0 to Root.Count-1 do
+
+  for i := 0 to Root.ChildNodes.Count-1 do
   begin
-    Item := Root[i];
-    if Item.NameIsEqual('Item')  then
+    Item := Root.ChildNodes.Get(i);
+    if CompareText(Item.NodeName, 'Item')=0  then
     begin
       LoadItem(Item, Items.Add);
     end;
   end;
 end;
 
-procedure TReceiptTemplate.LoadItem(Root: TXmlItem; Item: TTemplateItem);
+procedure TReceiptTemplate.LoadItem(Root: IXmlNode; Item: TTemplateItem);
+
+  function GetChildValue(Root: IXmlNode; const NodeName: WideString): WideString;
+  var
+    Value: Variant;
+  begin
+    Result := '';
+    Value := Root.ChildValues[NodeName];
+    if not VarIsNull(Value) then
+      Result := Value;
+  end;
+
+  function GetIntChildValue(Root: IXmlNode; const NodeName: WideString): Integer;
+  begin
+    Result := StrToIntDef(GetChildValue(Root, NodeName), 0);
+  end;
+
 begin
-  Item.Text := Root.GetText('Text');
-  Item.Enabled := Root.GetIntDef('Enabled', 0);
-  Item.ItemType := Root.GetIntDef('ItemType', 0);
-  Item.TextStyle := Root.GetIntDef('TextStyle', 0);
-  Item.Alignment := Root.GetIntDef('Alignment', 0);
-  Item.FormatText := Root.GetText('FormatText');
-  Item.LineChars := Root.GetIntDef('LineChars', 0);
-  Item.LineSpacing := Root.GetIntDef('LineSpacing', 0);
+  Item.Text := GetChildValue(Root, 'Text');
+  Item.Enabled := GetIntChildValue(Root, 'Enabled');
+  Item.ItemType := GetIntChildValue(Root, 'ItemType');
+  Item.TextStyle := GetIntChildValue(Root, 'TextStyle');
+  Item.Alignment := GetIntChildValue(Root, 'Alignment');
+  Item.FormatText := GetChildValue(Root, 'FormatText');
+  Item.LineChars := GetIntChildValue(Root, 'LineChars');
+  Item.LineSpacing := GetIntChildValue(Root, 'LineSpacing');
 end;
 
 procedure TReceiptTemplate.SaveToXml(var Xml: WideString);
 var
-  Parser: TXmlParser;
+  Root: IXmlNode;
+  Doc: IXmlDocument;
 begin
-  Parser := TXmlParser.Create;
   try
-    SaveItems(Parser.Root.Add('Header'), Header);
-    SaveItems(Parser.Root.Add('RecItem'), RecItem);
-    SaveItems(Parser.Root.Add('Trailer'), Trailer);
-    Xml := Utf8Decode(Parser.GetXml);
+    Doc := NewXMLDocument('');
+    Root := Doc.CreateElement('root', '');
+    Doc.DocumentElement := Root;
+    SaveItems(Root.AddChild('Header'), Header);
+    SaveItems(Root.AddChild('RecItem'), RecItem);
+    SaveItems(Root.AddChild('Trailer'), Trailer);
+    Doc.SaveToXml(Xml);
   except
     on E: Exception do
     begin
       Logger.Error('Failed to load, ' + E.Message);
     end;
   end;
-  Parser.Free;
 end;
 
 procedure TReceiptTemplate.SaveToFile(const FileName: WideString);
 var
-  Parser: TXmlParser;
+  Root: IXmlNode;
+  Doc: IXmlDocument;
+  pi: IXMLDOMProcessingInstruction;
 begin
-  Parser := TXmlParser.Create;
   try
-    SaveItems(Parser.Root.Add('Header'), Header);
-    SaveItems(Parser.Root.Add('RecItem'), RecItem);
-    SaveItems(Parser.Root.Add('Trailer'), Trailer);
-    Parser.SaveToFile(FileName);
+    Doc := NewXMLDocument('');
+    pi := Doc.createProcessingInstruction('xml', 'version=''1.0'' encoding=''UTF-8''');
+    Doc.appendChild(pi);
+    Root := Doc.CreateElement('root', '');
+    Doc.DocumentElement := Root;
+    SaveItems(Root.AddChild('Header'), Header);
+    SaveItems(Root.AddChild('RecItem'), RecItem);
+    SaveItems(Root.AddChild('Trailer'), Trailer);
+    Doc.SaveToFile(FileName);
   except
     on E: Exception do
     begin
-      Logger.Error('Failed to load, ' + E.Message);
+      Logger.Error('Failed to save, ' + E.Message);
     end;
   end;
-  Parser.Free;
 end;
 
-procedure TReceiptTemplate.SaveItems(Root: TXmlItem; Items: TTemplateItems);
+procedure TReceiptTemplate.SaveItems(Root: IXmlNode; Items: TTemplateItems);
 var
   i: Integer;
 begin
-  if Root = nil then Exit;
+  if Root = nil then
+    raise Exception.Create('Root must not be null');
+
   for i := 0 to Items.Count-1 do
   begin
-    SaveItem(Root.Add('Item'), Items[i]);
+    SaveItem(Root.AddChild('Item'), Items[i]);
   end;
 end;
 
-procedure TReceiptTemplate.SaveItem(Root: TXmlItem; Item: TTemplateItem);
+procedure TReceiptTemplate.SaveItem(Root: IXmlNode; Item: TTemplateItem);
 begin
-  Root.AddText('Text', Item.Text);
-  Root.AddInt('Enabled', Item.Enabled);
-  Root.AddInt('ItemType', Item.ItemType);
-  Root.AddInt('TextStyle', Item.TextStyle);
-  Root.AddInt('Alignment', Item.Alignment);
-  Root.AddText('FormatText', Item.FormatText);
-  Root.AddInt('LineChars', Item.LineChars);
-  Root.AddInt('LineSpacing', Item.LineSpacing);
+  Root.SetChildValue('Text', Item.Text);
+  Root.SetChildValue('Enabled', IntToStr(Item.Enabled));
+  Root.SetChildValue('ItemType', IntToStr(Item.ItemType));
+  Root.SetChildValue('TextStyle', IntToStr(Item.TextStyle));
+  Root.SetChildValue('Alignment', IntToStr(Item.Alignment));
+  Root.SetChildValue('FormatText', Item.FormatText);
+  Root.SetChildValue('LineChars', IntToStr(Item.LineChars));
+  Root.SetChildValue('LineSpacing', IntToStr(Item.LineSpacing));
 end;
 
 procedure TReceiptTemplate.SetDefaults;
