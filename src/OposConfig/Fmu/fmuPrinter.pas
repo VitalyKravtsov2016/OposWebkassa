@@ -7,12 +7,12 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ComCtrls, Spin, ActiveX, ComObj, ExtCtrls,
   // Tnt
-  TntStdCtrls, TntSysUtils,
+  TntStdCtrls, TntSysUtils, TntComCtrls,
   // Opos
   Opos, OposPtr, Oposhi, OposUtils, OposDevice,
   // This
   untUtil, PrinterParameters, FptrTypes, FiscalPrinterDevice, FileUtils,
-  WebkassaImpl, RecPrinter, SerialPort, TntComCtrls;
+  WebkassaImpl, RecPrinter, SerialPort, PosEscPrinter;
 
 type
   { TfmPrinter }
@@ -65,6 +65,7 @@ type
     procedure cbPrinterTypeChange(Sender: TObject);
     procedure cbPrinterNameChange(Sender: TObject);
     procedure ModifiedClick(Sender: TObject);
+    procedure cbFontNameChange(Sender: TObject);
   private
     function GetPrinter: TRecPrinter;
   private
@@ -120,15 +121,14 @@ begin
   UpdateParity;
   UpdateFlowControl;
 
-  seRecLineChars.Value := Parameters.RecLineChars;
-  seRecLineHeight.Value := Parameters.RecLineHeight;
-
   edtRemoteHost.Text := Parameters.RemoteHost;
   seRemotePort.Value := Parameters.RemotePort;
   seByteTimeout.Value := Parameters.ByteTimeout;
   seSerialTimeout.Value := Parameters.SerialTimeout;
   seDevicePollTime.Value := Parameters.DevicePollTime;
   seLineSpacing.Value := Parameters.LineSpacing;
+  seRecLineChars.Value := Parameters.RecLineChars;
+  seRecLineHeight.Value := Parameters.RecLineHeight;
 end;
 
 procedure TfmPrinter.UpdatePortNames;
@@ -232,6 +232,8 @@ begin
   Parameters.PortName := cbPortName.Text;
   Parameters.DevicePollTime := seDevicePollTime.Value;
   Parameters.LineSpacing := seLineSpacing.Value;
+  Parameters.RecLineChars := seRecLineChars.Value;
+  Parameters.RecLineHeight := seRecLineHeight.Value;
   // Serial
   Parameters.BaudRate := Integer(cbBaudRate.Items.Objects[cbBaudRate.ItemIndex]);
   Parameters.DataBits := Integer(cbDataBits.Items.Objects[cbDataBits.ItemIndex]);
@@ -351,6 +353,24 @@ end;
 
 procedure TfmPrinter.ModifiedClick(Sender: TObject);
 begin
+  Modified;
+end;
+
+procedure TfmPrinter.cbFontNameChange(Sender: TObject);
+var
+  FontName: WideString;
+begin
+  FontName := cbFontName.Text;
+  if FontName = FontNameA then
+  begin
+    seRecLineChars.Value := 48;
+    seRecLineHeight.Value := 24;
+  end;
+  if FontName = FontNameB then
+  begin
+    seRecLineChars.Value := 64;
+    seRecLineHeight.Value := 17;
+  end;
   Modified;
 end;
 

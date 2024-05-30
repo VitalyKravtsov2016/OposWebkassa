@@ -99,9 +99,9 @@ const
   DefTranslationEnabled = false;
   DefTemplateEnabled = False;
   DefCurrencyName = 'עד';
-  DefLineSpacing = 30;
+  DefLineSpacing = 0;
   DefPrintEnabled = True;
-  DefRecLineChars = 42;
+  DefRecLineChars = 48;
   DefRecLineHeight = 24;
   DefHeaderPrinted = false;
 

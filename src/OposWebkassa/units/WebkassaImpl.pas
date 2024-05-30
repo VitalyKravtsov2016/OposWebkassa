@@ -4046,6 +4046,7 @@ const
   PrintHeader = True;
 begin
   PrintLine(''); 
+  PrintLine(''); 
   if Printer.CapRecPapercut then
   begin
     RecLinesToPaperCut := Printer.RecLinesToPaperCut;
@@ -4053,6 +4054,7 @@ begin
     begin
       if FParams.NumHeaderLines <= RecLinesToPaperCut then
       begin
+        PrintLine('');
         for i := 0 to Params.Header.Count-1 do
         begin
           Text := TrimRight(Params.Header[i]);

@@ -34,8 +34,8 @@ Source: "Setup\libpng15.dll"; DestDir: "{app}\Bin"; Flags: ignoreversion; compon
 Source: "Setup\Translation\OposWebkassa.RUS"; DestDir: "{app}\Bin\Translation\OposWebkassa.RUS"; Flags: ignoreversion; components: main;
 Source: "Setup\Translation\OposWebkassa.KAZ"; DestDir: "{app}\Bin\Translation\OposWebkassa.KAZ"; Flags: ignoreversion; components: main;
 ; Fonts
-Source: "Setup\Fonts\KazakhFontA.bmp"; DestDir: "{app}\Bin\Fonts\KazakhFontA.bmp"; Flags: ignoreversion; components: main;
-Source: "Setup\Fonts\KazakhFontB.bmp"; DestDir: "{app}\Bin\Fonts\KazakhFontB.bmp"; Flags: ignoreversion; components: main;
+Source: "Setup\Fonts\KazakhFontA.bmp"; DestDir: "{app}\Bin\Fonts"; Flags: ignoreversion; components: main;
+Source: "Setup\Fonts\KazakhFontB.bmp"; DestDir: "{app}\Bin\Fonts"; Flags: ignoreversion; components: main;
 ; Version history
 Source: "History.txt"; DestDir: "{app}"; Flags: ignoreversion; components: main;
 ; Drivers

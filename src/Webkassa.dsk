@@ -1,14 +1,14 @@
 [Closed Files]
-File_0=SourceModule,'C:\projects\WebKassa\src\OposTest\Units\untUtil.pas',0,1,1,52,9,0,0
-File_1=SourceModule,'C:\projects\WebKassa\src\OposTest\Fmu\fmuMain.pas',0,1,16,23,30,0,0
-File_2=SourceModule,'C:\projects\WebKassa\src\OposConfig\Fmu\fmuFptrReceipt.pas',0,1,1,28,6,1,0
-File_3=SourceModule,'C:\projects\WebKassa\src\OposConfig\Fmu\fmuFptrVatRate.pas',0,1,1,53,9,0,0
-File_4=SourceModule,'C:\projects\WebKassa\src\OposConfig\Fmu\fmuFptrBarcode.pas',0,1,1,9,10,0,0
-File_5=SourceModule,'c:\program files (x86)\borland\delphi7\Comp\TntUnicodeControls\Source\TntComCtrls.pas',0,1,1,17,12,0,0
-File_6=SourceModule,'C:\projects\WebKassa\src\OposConfig\Fmu\fmuMain.pas',0,1,16,1,1,1,1
-File_7=SourceModule,'C:\projects\WebKassa\src\OposConfig\Fmu\fmuPages.pas',0,1,1,1,1,1,1
-File_8=SourceModule,'C:\projects\WebKassa\src\OposConfig\Fmu\fmuPrinter.pas',0,1,56,33,37,1,1
-File_9=SourceModule,'C:\projects\WebKassa\src\OposConfig\Fmu\fmuTranslation.pas',0,1,13,68,23,1,1
+File_0=SourceModule,'C:\projects\WebKassa\src\OposWebkassa\Units\WebkassaClient.pas',0,1,1,1,1,0,0
+File_1=SourceModule,'C:\projects\WebKassa\src\OposWebkassa\Units\WebkassaImpl.pas',0,1,4026,17,4049,0,0
+File_2=SourceModule,'C:\projects\WebKassa\src\OposConfig\Fmu\fmuFptrReceipt.pas',0,1,1,20,11,0,0
+File_3=SourceModule,'C:\projects\WebKassa\src\OposConfig\Fmu\fmuPrinter.pas',0,1,226,3,235,1,1
+File_4=SourceModule,'C:\projects\WebKassa\src\Shared\PrinterParameters.pas',0,1,616,5,627,0,0
+File_5=SourceModule,'C:\projects\WebKassa\src\Shared\PrinterParametersReg.pas',0,1,369,1,383,0,0
+File_6=SourceModule,'C:\projects\WebKassa\src\OposTest\Units\untUtil.pas',0,1,1,52,9,0,0
+File_7=SourceModule,'C:\projects\WebKassa\src\OposTest\Fmu\fmuMain.pas',0,1,16,23,30,0,0
+File_8=SourceModule,'C:\projects\WebKassa\src\OposConfig\Fmu\fmuFptrVatRate.pas',0,1,1,53,9,0,0
+File_9=SourceModule,'C:\projects\WebKassa\src\OposConfig\Fmu\fmuFptrBarcode.pas',0,1,1,9,10,0,0
 
 [Modules]
 Count=0
@@ -116,11 +116,11 @@ Visible=1
 State=0
 Left=1
 Top=112
-Width=527
+Width=391
 Height=605
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=511
+ClientWidth=375
 ClientHeight=571
 TBDockHeight=681
 LRDockWidth=445
@@ -158,15 +158,15 @@ ClientHeight=60
 
 [PropertyInspector]
 Create=1
-Visible=1
+Visible=0
 State=0
 Left=1
 Top=116
-Width=362
+Width=363
 Height=668
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=346
+ClientWidth=347
 ClientHeight=634
 TBDockHeight=681
 LRDockWidth=291

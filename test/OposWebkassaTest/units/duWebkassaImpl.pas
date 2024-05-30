@@ -118,7 +118,10 @@ begin
   FDriver.LoadParamsEnabled := False;
   FDriver.Client.TestMode := True;
   FDriver.Printer := FPrinter;
-  FDriver.Params.FontName := '42';
+  FDriver.Params.FontName := 'Font A (12x24)';
+  FDriver.Params.RecLineChars := 42;
+  FDriver.Params.RecLineHeight := 24;
+  FDriver.Params.LineSpacing := 0;
   FDriver.Params.LogFileEnabled := False;
   FDriver.Params.LogMaxCount := 10;
   FDriver.Params.LogFilePath := 'Logs';

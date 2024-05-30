@@ -147,7 +147,10 @@ begin
   FDriver.LoadParamsEnabled := False;
   FDriver.Client.TestMode := True;
   FDriver.Printer := FPrinter;
-  FDriver.Params.FontName := '42';
+  FDriver.Params.FontName := 'Font A (12x24)';
+  FDriver.Params.RecLineChars := 42;
+  FDriver.Params.RecLineHeight := 24;
+  FDriver.Params.LineSpacing := 0;
   FDriver.Params.LogFileEnabled := False;
   FDriver.Params.LogMaxCount := 10;
   FDriver.Params.LogFilePath := 'Logs';
@@ -300,7 +303,7 @@ begin
   FPrinter.Expects('Set_MapCharacterSet').WithParams([True]);
 
   FPrinter.Expects('Set_RecLineChars').WithParams([42]);
-  FPrinter.Expects('Set_RecLineSpacing').WithParams([30]);
+  FPrinter.Expects('Set_RecLineSpacing').WithParams([0]);
   FPrinter.Expects('Set_RecLineHeight').WithParams([24]);
 
   Driver.SetPropertyNumber(PIDX_DeviceEnabled, 1);
@@ -689,204 +692,6 @@ begin
   end;
 end;
 
-(*
-
-TestPrintDatamatrixBarcode: EMockVerifyException
-at  $00595D22
-TestPrintDatamatrixBarcode
-Unexpected call to PrintNormal(2, 
-) <-- Don't match expectations
-
-Expected: 
-Get_RecLineChars(): 42
-Get_RecLineHeight(): 18
-Get_RecLineSpacing(): 5
-CheckHealth(1): 0
-Get_CapRecEmptySensor(): True
-Get_RecEmpty(): False
-Get_CapCoverSensor(): True
-Get_CoverOpen(): False
-Get_CapRecBold(): True
-Get_CapRecDwideDhigh(): True
-Get_RecLineChars(): 42
-Get_RecLineHeight(): 18
-Get_RecLineSpacing(): 5
-Get_CapTransaction(): True
-TransactionPrint(2, 11): 0
-PrintNormal(2,                                           
-): 0
-PrintNormal(2,    Âîñòî÷íî-Êàçàñòàíñêàÿ îáëàñòü, ãîðîä   
-): 0
-PrintNormal(2,   Óñòü-Êàìåíîãîðñê, óë. Ãðåéäåðíàÿ, 1/10  
-): 0
-PrintNormal(2,             ÒÎÎ PetroRetail               
-): 0
-PrintNormal(2, ÍÄÑ Ñåðèÿ 00000                    ¹ 00000
-): 0
-PrintNormal(2, ------------------------------------------
-): 0
-PrintNormal(2,                      
-): 0
-PrintNormal(2,                  ÑÌÅÍÀ ¹0
-): 0
-PrintNormal(2, ÏÐÎÄÀÆÀ
-): 0
-PrintNormal(2, ------------------------------------------
-): 0
-PrintNormal(2, Message 1
-): 0
-PrintNormal(2, Item 1
-): 0
-PrintNormal(2,    1.000 êã x 123.45 òã
-): 0
-PrintNormal(2,    Ñòîèìîñòü                        123.45
-): 0
-Get_CapRecBarCode(): True
-PrintBarCode(2, 3850504580002030, 203, 100, 0, -2, -11): 0
-PrintNormal(2, ------------------------------------------
-): 0
-PrintNormal(2, |4CÈÒÎÃ          =123.45
-): 0
-PrintNormal(2, Áàíêîâñêàÿ êàðòà:                  =123.45
-): 0
-PrintNormal(2, â ò.÷. ÍÄÑ 12%                      =13.23
-): 0
-PrintNormal(2, ------------------------------------------
-): 0
-PrintNormal(2, Ôèñêàëüíûé ïðèçíàê: 
-): 0
-PrintNormal(2, Âðåìÿ: 
-): 0
-PrintNormal(2, Îïåðàòîð ôèñêàëüíûõ äàííûõ:
-): 0
-PrintNormal(2, 
-): 0
-PrintNormal(2, Äëÿ ïðîâåðêè ÷åêà çàéäèòå íà ñàéò:
-): 0
-PrintNormal(2, 
-): 0
-PrintNormal(2, ------------------------------------------
-): 0
-PrintNormal(2,               ÔÈÑÊÀËÜÍÛÉ ×ÅK
-): 0
-Get_CapRecBarCode(): True
-PrintBarCode(2, , 204, 0, 4, -2, -11): 0
-PrintNormal(2, 
-): 0
-PrintNormal(2,                 ÈÍÊ ÎÔÄ: 
-): 0
-PrintNormal(2,            Êîä ÊÊÌ ÊÃÄ (ÐÍÌ): 
-): 0
-PrintNormal(2,                   ÇÍÌ: 
-): 0
-PrintNormal(2,            Callöåíòð 039458039850         
-): 0
-PrintNormal(2,           Ãîðÿ÷àÿ ëèíèÿ 20948802934       
-): 0
-PrintNormal(2,             ÑÏÀÑÈÁÎ ÇÀ ÏÎÊÓÏÊÓ
-): 0
-Get_CapRecPapercut(): True
-Get_RecLinesToPaperCut(): 0
-CutPaper(90): 0
-Get_CapTransaction(): True
-TransactionPrint(2, 12): 0
-CheckHealth(1): 0
-Set_RecLineChars(42)
-
-Called: 
-Get_RecLineChars(): 42
-Get_RecLineHeight(): 18
-Get_RecLineSpacing(): 5
-CheckHealth(1): 0
-Get_CapRecEmptySensor(): True
-Get_RecEmpty(): False
-Get_CapCoverSensor(): True
-Get_CoverOpen(): False
-Get_CapRecBold(): True
-Get_CapRecDwideDhigh(): True
-Get_RecLineChars(): 42
-Get_RecLineHeight(): 18
-Get_RecLineSpacing(): 5
-Get_CapTransaction(): True
-TransactionPrint(2, 11): 0
-PrintNormal(2,                                           
-): 0
-PrintNormal(2,    Âîñòî÷íî-Êàçàñòàíñêàÿ îáëàñòü, ãîðîä   
-): 0
-PrintNormal(2,   Óñòü-Êàìåíîãîðñê, óë. Ãðåéäåðíàÿ, 1/10  
-): 0
-PrintNormal(2,             ÒÎÎ PetroRetail               
-): 0
-PrintNormal(2, ÍÄÑ Ñåðèÿ 00000                    ¹ 00000
-): 0
-PrintNormal(2, ------------------------------------------
-): 0
-PrintNormal(2,                      
-): 0
-PrintNormal(2,                  ÑÌÅÍÀ ¹0
-): 0
-PrintNormal(2, ÏÐÎÄÀÆÀ
-): 0
-PrintNormal(2, ------------------------------------------
-): 0
-PrintNormal(2, Message 1
-): 0
-PrintNormal(2, Item 1
-): 0
-PrintNormal(2,    1.000 êã x 123.45 òã
-): 0
-PrintNormal(2,    Ñòîèìîñòü                        123.45
-): 0
-Get_CapRecBarCode(): True
-PrintBarCode(2, 3850504580002030, 203, 100, 0, -2, -11): 0
-PrintNormal(2, ------------------------------------------
-): 0
-PrintNormal(2, |4CÈÒÎÃ          =123.45
-): 0
-PrintNormal(2, Áàíêîâñêàÿ êàðòà:                  =123.45
-): 0
-PrintNormal(2, â ò.÷. ÍÄÑ 12%                      =13.23
-): 0
-PrintNormal(2, ------------------------------------------
-): 0
-PrintNormal(2, Ôèñêàëüíûé ïðèçíàê: 
-): 0
-PrintNormal(2, Âðåìÿ: 
-): 0
-PrintNormal(2, Îïåðàòîð ôèñêàëüíûõ äàííûõ:
-): 0
-PrintNormal(2, 
-): 0
-PrintNormal(2, Äëÿ ïðîâåðêè ÷åêà çàéäèòå íà ñàéò:
-): 0
-PrintNormal(2, 
-): 0
-PrintNormal(2, ------------------------------------------
-): 0
-PrintNormal(2,               ÔÈÑÊÀËÜÍÛÉ ×ÅK
-): 0
-Get_CapRecBarCode(): True
-PrintBarCode(2, , 204, 0, 4, -2, -11): 0
-PrintNormal(2, 
-): 0
-PrintNormal(2,                 ÈÍÊ ÎÔÄ: 
-): 0
-PrintNormal(2,            Êîä ÊÊÌ ÊÃÄ (ÐÍÌ): 
-): 0
-PrintNormal(2,                   ÇÍÌ: 
-): 0
-PrintNormal(2,            Callöåíòð 039458039850         
-): 0
-PrintNormal(2,           Ãîðÿ÷àÿ ëèíèÿ 20948802934
-): 0
-PrintNormal(2,             ÑÏÀÑÈÁÎ ÇÀ ÏÎÊÓÏÊÓ
-): 0
-PrintNormal(2,
-) <-- Don't match expectations
-Set_RecLineChars(42)
-
-
-*)
 
 initialization
   RegisterTest('', TWebkassaImplTest2.Suite);

@@ -60,7 +60,10 @@ begin
   FDriver.LoadParamsEnabled := False;
   FDriver.Client.TestMode := True;
   FDriver.Printer := FPrinter;
-  FDriver.Params.FontName := '42';
+  FDriver.Params.FontName := 'Font A (12x24)';
+  FDriver.Params.RecLineChars := 42;
+  FDriver.Params.RecLineHeight := 24;
+  FDriver.Params.LineSpacing := 0;
   FDriver.Params.LogFileEnabled := True;
   FDriver.Params.LogMaxCount := 10;
   FDriver.Params.LogFilePath := 'Logs';
@@ -212,7 +215,7 @@ begin
   FPrinter.Expects('Set_MapCharacterSet').WithParams([True]);
 
   FPrinter.Expects('Set_RecLineChars').WithParams([42]);
-  FPrinter.Expects('Set_RecLineSpacing').WithParams([30]);
+  FPrinter.Expects('Set_RecLineSpacing').WithParams([0]);
   FPrinter.Expects('Set_RecLineHeight').WithParams([24]);
   FPrinter.Expects('Get_CapRecBitmap').Returns(True);
   FPrinter.Expects('Set_BinaryConversion').WithParams([OPOS_BC_NIBBLE]);

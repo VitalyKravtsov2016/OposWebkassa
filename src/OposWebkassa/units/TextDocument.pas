@@ -105,9 +105,9 @@ constructor TTextDocument.Create;
 begin
   inherited Create;
   FItems := TDocItems.Create(TDocItem);
-  LineChars := 42;
-  LineHeight := 12;
-  LineSpacing := 10;
+  LineChars := 48;
+  LineHeight := 24;
+  LineSpacing := 0;
 end;
 
 destructor TTextDocument.Destroy;

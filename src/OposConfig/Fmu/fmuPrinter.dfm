@@ -152,7 +152,7 @@ object fmPrinter: TfmPrinter
         Style = csDropDownList
         ItemHeight = 13
         TabOrder = 2
-        OnChange = ModifiedClick
+        OnChange = cbFontNameChange
       end
       object seDevicePollTime: TSpinEdit
         Left = 184

@@ -134,6 +134,8 @@ OriginalFilename=OposConfig.exe
 ProductName=WebKassa OPOS driver
 ProductVersion=1.13
 Comments=http://www.shtrih-m.ru
+[Excluded Packages]
+C:\Program Files (x86)\Borland\Delphi7\Projects\Bpl\PngComponentsD7.bpl=Png components
 [HistoryLists\hlConditionals]
 Count=1
 Item0=DEBUG
@@ -141,12 +143,14 @@ Item0=DEBUG
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
-Count=1
-Item0=Barcode
+Count=2
+Item0=$(DELPHI)\Lib\Debug;C:\PROGRA~2\Borland\Delphi7\Comp\jcl\lib\d7\debug;C:\COMPON~1\JVCL\jcl\lib\d7\debug
+Item1=Barcode
 [HistoryLists\hlUnitOutputDirectory]
 Count=2
 Item0=DCU
 Item1=..\..\DCU
 [HistoryLists\hlOutputDirectorry]
-Count=1
-Item0=Bin
+Count=2
+Item0=..\Bin
+Item1=Bin
