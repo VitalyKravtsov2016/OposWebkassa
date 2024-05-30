@@ -23,6 +23,8 @@ OutputDir="."
 OutputBaseFilename=Setup
 [Components]
 Name: "main"; Description: "Driver files"; Types: full compact custom; Flags: fixed
+[Dirs]
+Name: "{app}\Bin\Logs"; components: main;
 [Files]
 ; OpenSSL
 Source: "Setup\libeay32.dll"; DestDir: "{app}\Bin"; Flags: ignoreversion; Components: main
@@ -31,8 +33,8 @@ Source: "Setup\ssleay32.dll"; DestDir: "{app}\Bin"; Flags: ignoreversion; Compon
 Source: "Setup\zint.dll"; DestDir: "{app}\Bin"; Flags: ignoreversion; components: main;
 Source: "Setup\zlib1.dll"; DestDir: "{app}\Bin"; Flags: ignoreversion; components: main;
 Source: "Setup\libpng15.dll"; DestDir: "{app}\Bin"; Flags: ignoreversion; components: main;
-Source: "Setup\Translation\OposWebkassa.RUS"; DestDir: "{app}\Bin\Translation\OposWebkassa.RUS"; Flags: ignoreversion; components: main;
-Source: "Setup\Translation\OposWebkassa.KAZ"; DestDir: "{app}\Bin\Translation\OposWebkassa.KAZ"; Flags: ignoreversion; components: main;
+Source: "Setup\Translation\OposWebkassa.RUS"; DestDir: "{app}\Bin\Translation"; Flags: ignoreversion; components: main;
+Source: "Setup\Translation\OposWebkassa.KAZ"; DestDir: "{app}\Bin\Translation"; Flags: ignoreversion; components: main;
 ; Fonts
 Source: "Setup\Fonts\KazakhFontA.bmp"; DestDir: "{app}\Bin\Fonts"; Flags: ignoreversion; components: main;
 Source: "Setup\Fonts\KazakhFontB.bmp"; DestDir: "{app}\Bin\Fonts"; Flags: ignoreversion; components: main;
