@@ -126,7 +126,8 @@ begin
     //Driver.Driver.Printer := Printer;
     Driver.Driver.LoadParamsEnabled := False;
 
-    Params.PrintBarcode := PrintBarcodeESCCommands;
+    //Params.PrintBarcode := PrintBarcodeESCCommands;
+    Params.PrintBarcode := PrintBarcodeGraphics;
     Params.LogFileEnabled := True;
     Params.LogMaxCount := 10;
     Params.LogFilePath := GetModulePath + 'Logs';

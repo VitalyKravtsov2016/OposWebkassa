@@ -768,7 +768,7 @@ begin
   Render := TZintBarcode.Create;
   Stream := TMemoryStream.Create;
   try
-    Render.BorderWidth := 0;
+    Render.BorderWidth := 10;
     Render.FGColor := clBlack;
     Render.BGColor := clWhite;
     Render.Scale := 1;
@@ -776,6 +776,8 @@ begin
     Render.BarcodeType := BTypeToZBType(Barcode.Symbology);
     Render.Data := Barcode.Data;
     Render.ShowHumanReadableText := False;
+    if Render.BarcodeType = tBARCODE_QRCODE then
+      Render.Option1 := 4;
     Render.EncodeNow;
     RenderBarcode(Bitmap, Render.Symbol, False);
 

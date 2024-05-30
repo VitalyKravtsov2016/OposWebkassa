@@ -219,6 +219,7 @@ begin
     SaveItems(Root.AddChild('RecItem'), RecItem);
     SaveItems(Root.AddChild('Trailer'), Trailer);
     Doc.SaveToXml(Xml);
+    Xml := FormatXMLData(Xml);
   except
     on E: Exception do
     begin
@@ -231,12 +232,9 @@ procedure TReceiptTemplate.SaveToFile(const FileName: WideString);
 var
   Root: IXmlNode;
   Doc: IXmlDocument;
-  pi: IXMLDOMProcessingInstruction;
 begin
   try
     Doc := NewXMLDocument('');
-    pi := Doc.createProcessingInstruction('xml', 'version=''1.0'' encoding=''UTF-8''');
-    Doc.appendChild(pi);
     Root := Doc.CreateElement('root', '');
     Doc.DocumentElement := Root;
     SaveItems(Root.AddChild('Header'), Header);
