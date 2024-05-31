@@ -4119,12 +4119,10 @@ function TWebkassaImpl.RenderQRCode(const BarcodeData: AnsiString): AnsiString;
 var
   Bitmap: TBitmap;
   Render: TZintBarcode;
-  Stream: TMemoryStream;
 begin
   Result := '';
   Bitmap := TBitmap.Create;
   Render := TZintBarcode.Create;
-  Stream := TMemoryStream.Create;
   try
     Render.BorderWidth := 10;
     Render.FGColor := clBlack;
@@ -4139,18 +4137,10 @@ begin
     Render.EncodeNow;
     RenderBarcode(Bitmap, Render.Symbol, False);
     ScaleGraphic(Bitmap, 2);
-    Bitmap.SaveToStream(Stream);
-
-    if Stream.Size > 0 then
-    begin
-      Stream.Position := 0;
-      SetLength(Result, Stream.Size);
-      Stream.ReadBuffer(Result[1], Stream.Size);
-    end;
+    Result := BitmapToStr(Bitmap);
   finally
     Render.Free;
     Bitmap.Free;
-    Stream.Free;
   end;
 end;
 
@@ -4195,7 +4185,6 @@ var
   SCale: Integer;
   Bitmap: TBitmap;
   Render: TZintBarcode;
-  Stream: TMemoryStream;
 begin
   Result := '';
 
@@ -4204,7 +4193,6 @@ begin
 
   Bitmap := TBitmap.Create;
   Render := TZintBarcode.Create;
-  Stream := TMemoryStream.Create;
   try
     Render.BorderWidth := 10;
     Render.FGColor := clBlack;
@@ -4231,18 +4219,10 @@ begin
       Barcode.Height := Bitmap.Height * Scale;
     end;
     ScaleGraphic(Bitmap, Scale);
-    Bitmap.SaveToStream(Stream);
-
-    if Stream.Size > 0 then
-    begin
-      Stream.Position := 0;
-      SetLength(Result, Stream.Size);
-      Stream.ReadBuffer(Result[1], Stream.Size);
-    end;
+    Result := BitmapToStr(Bitmap);
   finally
     Render.Free;
     Bitmap.Free;
-    Stream.Free;
   end;
 end;
 

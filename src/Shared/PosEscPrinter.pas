@@ -617,8 +617,10 @@ type
     property OnStatusUpdateEvent: TOPOSPOSPrinterStatusUpdateEvent read FOnStatusUpdateEvent write FOnStatusUpdateEvent;
   end;
 
+function BitmapToStr(Bitmap: TBitmap): AnsiString;
 function RenderBarcodeRec(var Barcode: TPosBarcode): AnsiString;
 procedure CharacterToCodePage(C: WideChar; var CodePage: Integer);
+procedure RenderBarcodeToBitmap(var Barcode: TPosBarcode; Bitmap: TBitmap);
 
 implementation
 
@@ -747,14 +749,11 @@ begin
   end;
 end;
 
-function RenderBarcodeRec(var Barcode: TPosBarcode): AnsiString;
+procedure RenderBarcodeToBitmap(var Barcode: TPosBarcode; Bitmap: TBitmap);
 var
   Scale: Integer;
-  Bitmap: TBitmap;
   Render: TZintBarcode;
-  Stream: TMemoryStream;
 begin
-  Result := '';
   if Barcode.Height = 0 then
   begin
     Barcode.Height := 150;
@@ -764,9 +763,7 @@ begin
     Barcode.Width := Barcode.Height;
   end;
 
-  Bitmap := TBitmap.Create;
   Render := TZintBarcode.Create;
-  Stream := TMemoryStream.Create;
   try
     Render.BorderWidth := 10;
     Render.FGColor := clBlack;
@@ -787,8 +784,19 @@ begin
     Barcode.Width  := Bitmap.Width * 2;
     Barcode.Height  := Bitmap.Height * 2;
 
-    Bitmap.SaveToStream(Stream);
+  finally
+    Render.Free;
+  end;
+end;
 
+function BitmapToStr(Bitmap: TBitmap): AnsiString;
+var
+  Stream: TMemoryStream;
+begin
+  Result := '';
+  Stream := TMemoryStream.Create;
+  try
+    Bitmap.SaveToStream(Stream);
     if Stream.Size > 0 then
     begin
       Stream.Position := 0;
@@ -796,9 +804,21 @@ begin
       Stream.ReadBuffer(Result[1], Stream.Size);
     end;
   finally
-    Render.Free;
-    Bitmap.Free;
     Stream.Free;
+  end;
+end;
+
+function RenderBarcodeRec(var Barcode: TPosBarcode): AnsiString;
+var
+  Bitmap: TBitmap;
+begin
+  Result := '';
+  Bitmap := TBitmap.Create;
+  try
+    RenderBarcodeToBitmap(Barcode, Bitmap);
+    Result := BitmapToStr(Bitmap);
+  finally
+    Bitmap.Free;
   end;
 end;
 
