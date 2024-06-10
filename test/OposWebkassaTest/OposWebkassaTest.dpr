@@ -1,7 +1,7 @@
 program OposWebkassaTest;
 
 uses
-  FastMM4, 
+  FastMM4,
   SysUtils,
   TestFramework,
   GUITestRunner,
@@ -92,7 +92,8 @@ uses
   duPosEscPrinter in 'units\duPosEscPrinter.pas',
   PrinterTypes in '..\..\src\Shared\PrinterTypes.pas',
   BarcodeUtils in '..\..\src\Shared\BarcodeUtils.pas',
-  duEscPrinter in 'units\duEscPrinter.pas';
+  duEscPrinter in 'units\duEscPrinter.pas',
+  duLogFile in 'units\duLogFile.pas';
 
 {$R *.RES}
 

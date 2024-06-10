@@ -1168,7 +1168,7 @@ begin
     pString := FClient.SendReceiptCommand.Data.TicketPrintUrl;
     Exit;
   end;
-  RaiseIllegalError(Format('Receipt field "%s" not supported', [pString]));
+  RaiseIllegalError(Tnt_WideFormat('Receipt field "%s" not supported', [pString]));
 end;
 
 function TWebkassaImpl.DirectIO(Command: Integer; var pData: Integer;
@@ -1637,7 +1637,7 @@ function TWebkassaImpl.GetTotalizer(VatID, OptArgs: Integer;
       FPTR_TT_RECEIPT: Result := Receipt.GetTotal;
       FPTR_TT_GRAND: Result := ReadGrandTotal;
     else
-      RaiseIllegalError(Format('OptArgs value not supported, %d', [OptArgs]));
+      RaiseIllegalError(Tnt_WideFormat('OptArgs value not supported, %d', [OptArgs]));
     end;
   end;
 
@@ -2157,8 +2157,8 @@ begin
       Document.AddLine(Document.AlignCenter('Z-Œ“◊≈“'))
     else
       Document.AddLine(Document.AlignCenter('X-Œ“◊≈“'));
-    Document.AddLine(Document.AlignCenter(Format('—Ã≈Õ¿ π%d', [Command.Data.ShiftNumber])));
-    Document.AddLine(Document.AlignCenter(Format('%s-%s', [Command.Data.StartOn, Command.Data.ReportOn])));
+    Document.AddLine(Document.AlignCenter(Tnt_WideFormat('—Ã≈Õ¿ π%d', [Command.Data.ShiftNumber])));
+    Document.AddLine(Document.AlignCenter(Tnt_WideFormat('%s-%s', [Command.Data.StartOn, Command.Data.ReportOn])));
     Node := Doc.GetField('Data');
     if Node <> nil then
     begin
@@ -2183,7 +2183,7 @@ begin
               begin
                 Count := SellNode.Get('Count').Value;
                 Amount := SellNode.Get('Amount').Value;
-                Document.AddLines(Format('%.4d œ–Œƒ¿∆', [Count]), AmountToStr(Amount));
+                Document.AddLines(Tnt_WideFormat('%.4d œ–Œƒ¿∆', [Count]), AmountToStr(Amount));
               end;
             end;
           end;
@@ -2252,7 +2252,7 @@ begin
         end;
       end;
     end;
-    Document.AddLines(Format('%.4d', [Count]), AmountToStr(Amount));
+    Document.AddLines(Tnt_WideFormat('%.4d', [Count]), AmountToStr(Amount));
 
     Count := 0;
     Amount := 0;
@@ -2276,7 +2276,7 @@ begin
         end;
       end;
     end;
-    Document.AddLines(Format('%.4d', [Count]), AmountToStr(Amount));
+    Document.AddLines(Tnt_WideFormat('%.4d', [Count]), AmountToStr(Amount));
 
     Document.AddLines('Õ¿À»◊Õ€’ ¬  ¿——≈', AmountToStr(Command.Data.SumInCashbox));
     Document.AddLines('¬€–”◊ ¿', AmountToStr(Total));
@@ -2613,7 +2613,7 @@ end;
 
 procedure TWebkassaImpl.PrinterStatusUpdateEvent(ASender: TObject; Data: Integer);
 begin
-  Logger.Debug(Format('StatusUpdateEvent: %d, %s', [
+  Logger.Debug(Tnt_WideFormat('StatusUpdateEvent: %d, %s', [
     Data, PtrStatusUpdateEventText(Data)]));
 
   if IsValidOposStatusUpdateEvent(Data) or IsValidFptrStatusUpdateEvent(Data) then
@@ -2625,20 +2625,20 @@ end;
 procedure TWebkassaImpl.PrinterErrorEvent(ASender: TObject; ResultCode: Integer;
   ResultCodeExtended: Integer; ErrorLocus: Integer; var pErrorResponse: Integer);
 begin
-  Logger.Debug(Format('PtrErrorEvent: %d, %d, %d', [
+  Logger.Debug(Tnt_WideFormat('PtrErrorEvent: %d, %d, %d', [
     ResultCode, ResultCodeExtended, ErrorLocus]));
 end;
 
 procedure TWebkassaImpl.PrinterDirectIOEvent(ASender: TObject; EventNumber: Integer;
   var pData: Integer; var pString: WideString);
 begin
-  Logger.Debug(Format('PtrDirectIOEvent: %d, %d, %s', [
+  Logger.Debug(Tnt_WideFormat('PtrDirectIOEvent: %d, %d, %s', [
     EventNumber, pData, pString]));
 end;
 
 procedure TWebkassaImpl.PrinterOutputCompleteEvent(ASender: TObject; OutputID: Integer);
 begin
-  Logger.Debug(Format('PtrOutputCompleteEvent: %d', [OutputID]));
+  Logger.Debug(Tnt_WideFormat('PtrOutputCompleteEvent: %d', [OutputID]));
 end;
 
 function TWebkassaImpl.DoOpen(const DeviceClass, DeviceName: WideString;
@@ -2937,7 +2937,7 @@ begin
     FClient.Execute(Command);
     // Create Document
     Document.AddLine('¡»Õ ' + Command.Data.Cashbox.RegistrationNumber);
-    Document.AddLine(Format('«ÕÃ %s »Õ  Œ‘ƒ %s', [Command.Data.Cashbox.UniqueNumber,
+    Document.AddLine(Tnt_WideFormat('«ÕÃ %s »Õ  Œ‘ƒ %s', [Command.Data.Cashbox.UniqueNumber,
       Command.Data.Cashbox.IdentityNumber]));
     Document.AddLine('ƒ‡Ú‡: ' + Command.Data.DateTime);
     Document.AddText(Receipt.Lines.Text);
@@ -2965,7 +2965,7 @@ begin
     FClient.Execute(Command);
     //
     Document.AddLine('¡»Õ ' + Command.Data.Cashbox.RegistrationNumber);
-    Document.AddLine(Format('«ÕÃ %s »Õ  Œ‘ƒ %s', [Command.Data.Cashbox.UniqueNumber,
+    Document.AddLine(Tnt_WideFormat('«ÕÃ %s »Õ  Œ‘ƒ %s', [Command.Data.Cashbox.UniqueNumber,
       Command.Data.Cashbox.IdentityNumber]));
     Document.AddLine('ƒ‡Ú‡: ' + Command.Data.DateTime);
     Document.AddText(Receipt.Lines.Text);
@@ -3300,11 +3300,11 @@ var
   Adjustment: TAdjustmentRec;
   BarcodeItem: TBarcodeItem;
 begin
-  Document.Addlines(Format('Õƒ— —ÂËˇ %s', [Params.VATSeries]),
+  Document.Addlines(Tnt_WideFormat('Õƒ— —ÂËˇ %s', [Params.VATSeries]),
     Tnt_WideFormat('π %s', [Params.VATNumber]));
   Document.AddSeparator;
   Document.AddLine(Document.AlignCenter(Params.CashboxNumber));
-  Document.AddLine(Document.AlignCenter(Format('—Ã≈Õ¿ π%d', [Command.Data.ShiftNumber])));
+  Document.AddLine(Document.AlignCenter(Tnt_WideFormat('—Ã≈Õ¿ π%d', [Command.Data.ShiftNumber])));
   Document.AddLine(OperationTypeToText(Command.Request.OperationType));
 
   //Document.AddLine(AlignCenter(Format('œÓˇ‰ÍÓ‚˚È ÌÓÏÂ ˜ÂÍ‡ π%d', [Command.Data.DocumentNumber])));
@@ -3330,7 +3330,7 @@ begin
         ItemQuantity := RecItem.Quantity;
         UnitPrice := RecItem.UnitPrice;
       end;
-      Document.AddLine(Format('   %.3f %s x %s %s', [ItemQuantity,
+      Document.AddLine(Tnt_WideFormat('   %.3f %s x %s %s', [ItemQuantity,
         RecItem.UnitName, AmountToStr(UnitPrice), Params.CurrencyName]));
       // —ÍË‰Í‡
       Adjustment := RecItem.GetDiscount;
@@ -3401,7 +3401,7 @@ begin
     Amount := Receipt.GetVatAmount(VatRate);
     if Amount <> 0 then
     begin
-      Document.AddLines(Format('‚ Ú.˜. %s', [VatRate.Name]),
+      Document.AddLines(Tnt_WideFormat('‚ Ú.˜. %s', [VatRate.Name]),
         AmountToStrEq(Amount));
     end;
   end;
@@ -3915,7 +3915,7 @@ begin
     CheckPtr(Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_NORMAL));
   end;
   CheckPtr(Printer.CheckHealth(OPOS_CH_INTERNAL));
-  Logger.Debug(Format('PrintDocument, time=%d ms', [GetTickCount-TickCount]));
+  Logger.Debug(Tnt_WideFormat('PrintDocument, time=%d ms', [GetTickCount-TickCount]));
 end;
 
 procedure TWebkassaImpl.PrinTDocItem(Item: TDocItem);
@@ -4341,11 +4341,11 @@ begin
     Command.Request.ShiftNumber := ShiftNumber;
     FClient.ReadReceipt(Command);
 
-    Document.Addlines(Format('Õƒ— —ÂËˇ %s', [Params.VATSeries]),
+    Document.Addlines(Tnt_WideFormat('Õƒ— —ÂËˇ %s', [Params.VATSeries]),
       Tnt_WideFormat('π %s', [Params.VATNumber]));
     Document.AddSeparator;
     Document.AddLine(Document.AlignCenter(Params.CashboxNumber));
-    Document.AddLine(Document.AlignCenter(Format('—Ã≈Õ¿ π%d', [ShiftNumber])));
+    Document.AddLine(Document.AlignCenter(Tnt_WideFormat('—Ã≈Õ¿ π%d', [ShiftNumber])));
     Document.AddLine(Command.Data.OperationTypeText);
     Document.AddSeparator;
     for i := 0 to Command.Data.Positions.Count-1 do
@@ -4411,7 +4411,7 @@ begin
     // VAT amounts
     if Command.Data.Tax <> 0 then
     begin
-      Document.AddLines(Format('‚ Ú.˜. %s', [Command.Data.TaxPercent]),
+      Document.AddLines(Tnt_WideFormat('‚ Ú.˜. %s', [Command.Data.TaxPercent]),
           AmountToStrEq(Command.Data.Tax));
     end;
     Document.AddSeparator;

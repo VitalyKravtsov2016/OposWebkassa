@@ -179,7 +179,7 @@ begin
         vtPointer: Result[i] := Integer(VPointer);
         vtPChar: Result[i] := StrPas(VPChar);
         vtObject: Result[i]:= Integer(VObject);
-        vtAnsiString: Result[i] := AnsiString(VWideString);
+        vtAnsiString: Result[i] := WideString(VWideString);
         vtCurrency: Result[i] := VCurrency^;
         vtVariant: Result[i] := VVariant^;
         vtInterface: Result[i]:= Integer(VPointer);
@@ -348,7 +348,7 @@ begin
       CheckFilesMaxCount;
       if not DirectoryExists(FilePath) then
       begin
-        ODS(Format('Log directory is not exists, ''%s''', [FilePath]));
+        ODS(Tnt_WideFormat('Log directory is not exists, ''%s''', [FilePath]));
         if not CreateDir(FilePath) then
         begin
           ODS('Failed to create log directory');
@@ -372,7 +372,7 @@ begin
         end;
       end else
       begin
-        ODS(Format('Failed to create log file ''%s''', [FileName]));
+        ODS(Tnt_WideFormat('Failed to create log file ''%s''', [FileName]));
         ODS(GetLastErrorText);
       end;
     end;
@@ -648,9 +648,9 @@ begin
       varOleStr,
       varStrArg,
       varString:
-        Result := StrToText(VarToStr(V));
+        Result := StrToText(VarToWideStr(V));
     else
-      Result := VarToStr(V);
+      Result := VarToWideStr(V);
     end;
   end;
 end;
@@ -716,7 +716,7 @@ end;
 
 procedure TLogFile.LogParam(const ParamName: WideString; const ParamValue: Variant);
 begin
-  Debug(ParamName + ': ' + VarToStr(ParamValue));
+  Debug(ParamName + ': ' + VarToWideStr(ParamValue));
 end;
 
 
