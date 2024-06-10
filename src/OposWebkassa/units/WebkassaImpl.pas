@@ -2229,55 +2229,8 @@ begin
     Text := Line1 + StringOfChar(' ', (Document.LineChars div 2)-Length(Line1)-Length(Line2)) + Line2;
     Document.AddLine(Text, STYLE_DWIDTH_HEIGHT);
     AddPayments(Document, Command.Data.ReturnBuy.PaymentsByTypesApiModel);
-
-    Count := 0;
-    Amount := 0;
-    Document.AddLine('бмеяемхи');
-    Node := Doc.GetField('Data');
-    if Node <> nil then
-    begin
-      Node := Node.GetField('MoneyPlacementOperations');
-      if Node <> nil then
-      begin
-        Node := Node.GetField('Deposit');
-        if Node <> nil then
-        begin
-          Field := Node.GetField('Count');
-          if Field <> nil then
-            Count := Field.Value;
-
-          Field := Node.GetField('Amount');
-          if Field <> nil then
-            Amount := Field.Value;
-        end;
-      end;
-    end;
-    Document.AddLines(Tnt_WideFormat('%.4d', [Count]), AmountToStr(Amount));
-
-    Count := 0;
-    Amount := 0;
-    Document.AddLine('хгзърхи');
-    Node := Doc.GetField('Data');
-    if Node <> nil then
-    begin
-      Node := Node.GetField('MoneyPlacementOperations');
-      if Node <> nil then
-      begin
-        Node := Node.GetField('WithDrawal');
-        if Node <> nil then
-        begin
-          Field := Node.GetField('Count');
-          if Field <> nil then
-            Count := Field.Value;
-
-          Field := Node.GetField('Amount');
-          if Field <> nil then
-            Amount := Field.Value;
-        end;
-      end;
-    end;
-    Document.AddLines(Tnt_WideFormat('%.4d', [Count]), AmountToStr(Amount));
-
+    Document.AddLines('ясллю бмеяемхи', AmountToStr(Command.Data.PutMoneySum));
+    Document.AddLines('ясллю хгзърхи', AmountToStr(Command.Data.TakeMoneySum));
     Document.AddLines('мюкхвмшу б йюяяе', AmountToStr(Command.Data.SumInCashbox));
     Document.AddLines('бшпсвйю', AmountToStr(Total));
     Document.AddLine('менамск. ясллш мю йнмеж ялемш');

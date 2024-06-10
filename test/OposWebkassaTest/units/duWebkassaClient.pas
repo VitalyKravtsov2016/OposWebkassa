@@ -167,8 +167,8 @@ begin
     CheckEquals(1, Command.Data.CashierCode, 'Command.Data.CashierCode');
     CheckEquals(21, Command.Data.ShiftNumber, 'Command.Data.ShiftNumber');
     CheckEquals(2, Command.Data.DocumentCount, 'Command.Data.DocumentCount');
-    CheckEquals(0, Command.Data.PutMoneySum, 'Command.Data.PutMoneySum');
-    CheckEquals(0, Command.Data.TakeMoneySum, 'Command.Data.TakeMoneySum');
+    CheckEquals(123.45, Command.Data.PutMoneySum, 0.001, 'Command.Data.PutMoneySum');
+    CheckEquals(234.56, Command.Data.TakeMoneySum, 0.001, 'Command.Data.TakeMoneySum');
     CheckEquals(757292213, Command.Data.ControlSum, 'Command.Data.ControlSum');
     CheckEquals(False, Command.Data.OfflineMode, 'Command.Data.OfflineMode');
     CheckEquals(False, Command.Data.CashboxOfflineMode, 'Command.Data.CashboxOfflineMode');
@@ -247,8 +247,8 @@ begin
     CheckEquals(1, Command.Data.CashierCode, 'Command.Data.CashierCode');
     CheckEquals(21, Command.Data.ShiftNumber, 'Command.Data.ShiftNumber');
     CheckEquals(2, Command.Data.DocumentCount, 'Command.Data.DocumentCount');
-    CheckEquals(0, Command.Data.PutMoneySum, 'Command.Data.PutMoneySum');
-    CheckEquals(0, Command.Data.TakeMoneySum, 'Command.Data.TakeMoneySum');
+    CheckEquals(123.45, Command.Data.PutMoneySum, 0.001, 'Command.Data.PutMoneySum');
+    CheckEquals(234.56, Command.Data.TakeMoneySum, 0.001, 'Command.Data.TakeMoneySum');
     CheckEquals(757292213, Command.Data.ControlSum, 'Command.Data.ControlSum');
     CheckEquals(False, Command.Data.OfflineMode, 'Command.Data.OfflineMode');
     CheckEquals(False, Command.Data.CashboxOfflineMode, 'Command.Data.CashboxOfflineMode');
