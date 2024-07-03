@@ -99,6 +99,7 @@ const
   DefTranslationEnabled = false;
   DefTemplateEnabled = False;
   DefCurrencyName = 'Ú„';
+  DefOfflineText = '¿¬“ŒÕŒÃÕ€… –≈∆»Ã';
   DefLineSpacing = 0;
   DefPrintEnabled = True;
   DefRecLineChars = 48;
@@ -171,6 +172,7 @@ type
     FTemplateEnabled: Boolean;
     FTemplate: TReceiptTemplate;
     FCurrencyName: WideString;
+    FOfflineText: WideString;
     FLineSpacing: Integer;
     FPrintEnabled: Boolean;
 
@@ -254,6 +256,7 @@ type
     property TemplateEnabled: Boolean read FTemplateEnabled write FTemplateEnabled;
     property Template: TReceiptTemplate read FTemplate;
     property CurrencyName: WideString read FCurrencyName write FCurrencyName;
+    property OfflineText: WideString read FOfflineText write FOfflineText;
     property LineSpacing: Integer read FLineSpacing write FLineSpacing;
     property PrintEnabled: Boolean read FPrintEnabled write FPrintEnabled;
   end;
@@ -365,6 +368,7 @@ begin
   PrintEnabled := DefPrintEnabled;
   RecLineChars := DefRecLineChars;
   RecLineHeight := DefRecLineHeight;
+  OfflineText := DefOfflineText;
 end;
 
 procedure TPrinterParameters.LogText(const Caption, Text: WideString);
@@ -427,6 +431,7 @@ begin
   Logger.Debug('PrintBarcode: ' + IntToStr(PrintBarcode));
   Logger.Debug('TemplateEnabled: ' + BoolToStr(TemplateEnabled));
   Logger.Debug('CurrencyName: ' + CurrencyName);
+  Logger.Debug('OfflineText: ' + OfflineText);
   Logger.Debug('LineSpacing: ' + IntToStr(LineSpacing));
   Logger.Debug('PrintEnabled: ' + BoolToStr(PrintEnabled));
   Logger.Debug('RecLineChars: ' + IntToStr(RecLineChars));
@@ -625,6 +630,7 @@ begin
     DevicePollTime := Src.DevicePollTime;
     TemplateEnabled := Src.TemplateEnabled;
     CurrencyName := Src.CurrencyName;
+    OfflineText := Src.OfflineText;
     PrintEnabled := Src.PrintEnabled;
     RecLineChars := Src.RecLineChars;
     RecLineHeight := Src.RecLineHeight;

@@ -25,6 +25,8 @@ type
     edtCurrencyName: TTntEdit;
     lblCurrencyName: TTntLabel;
     chbPrintEnabled: TTntCheckBox;
+    lblOfflineText: TTntLabel;
+    edtOfflineText: TTntEdit;
     procedure ModifiedClick(Sender: TObject);
   public
     procedure UpdatePage; override;
@@ -45,6 +47,7 @@ begin
   cbAmountDecimalPlaces.ItemIndex := cbAmountDecimalPlaces.Items.IndexOf(
     IntToStr(Parameters.AmountDecimalPlaces));
   edtCurrencyName.Text := Parameters.CurrencyName;
+  edtOfflineText.Text := Parameters.OfflineText;
   chbPrintEnabled.Checked := Parameters.PrintEnabled;
 end;
 
@@ -55,6 +58,7 @@ begin
   Parameters.VATNumber := edtVATNumber.Text;
   Parameters.AmountDecimalPlaces := StrToInt(cbAmountDecimalPlaces.Text);
   Parameters.CurrencyName := edtCurrencyName.Text;
+  Parameters.OfflineText := edtOfflineText.Text;
   Parameters.PrintEnabled := chbPrintEnabled.Checked;
 end;
 

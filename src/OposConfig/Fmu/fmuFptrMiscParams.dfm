@@ -54,6 +54,13 @@ object fmFptrMiscParams: TfmFptrMiscParams
     Height = 13
     Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1074#1072#1083#1102#1090#1099':'
   end
+  object lblOfflineText: TTntLabel
+    Left = 8
+    Top = 176
+    Width = 104
+    Height = 13
+    Caption = #1040#1074#1090#1086#1085#1086#1084#1085#1099#1081' '#1088#1077#1078#1080#1084':'
+  end
   object cbRoundType: TTntComboBox
     Left = 96
     Top = 16
@@ -115,10 +122,20 @@ object fmFptrMiscParams: TfmFptrMiscParams
   end
   object chbPrintEnabled: TTntCheckBox
     Left = 8
-    Top = 176
+    Top = 224
     Width = 233
     Height = 17
     Caption = #1055#1077#1095#1072#1090#1100' '#1085#1072' '#1095#1077#1082#1086#1074#1086#1081' '#1083#1077#1085#1090#1077
+    TabOrder = 6
+  end
+  object edtOfflineText: TTntEdit
+    Left = 126
+    Top = 176
+    Width = 402
+    Height = 21
+    Anchors = [akLeft, akTop, akRight]
     TabOrder = 5
+    Text = 'edtOfflineText'
+    OnChange = ModifiedClick
   end
 end

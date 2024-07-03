@@ -272,6 +272,9 @@ begin
       if Reg.ValueExists('CurrencyName') then
         Parameters.CurrencyName := Reg.ReadString('CurrencyName');
 
+      if Reg.ValueExists('OfflineText') then
+        Parameters.OfflineText := Reg.ReadString('OfflineText');
+
       if Reg.ValueExists('LineSpacing') then
         Parameters.LineSpacing := Reg.ReadInteger('LineSpacing');
 
@@ -377,6 +380,7 @@ begin
     Reg.WriteBool('TranslationEnabled', FParameters.TranslationEnabled);
     Reg.WriteBool('TemplateEnabled', FParameters.TemplateEnabled);
     Reg.WriteString('CurrencyName', FParameters.CurrencyName);
+    Reg.WriteString('OfflineText', FParameters.OfflineText);
     Reg.WriteInteger('LineSpacing', FParameters.LineSpacing);
     Reg.WriteBool('PrintEnabled', FParameters.PrintEnabled);
     Reg.WriteInteger('RecLineChars', FParameters.RecLineChars);

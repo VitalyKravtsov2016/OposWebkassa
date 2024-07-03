@@ -80,8 +80,8 @@ begin
   FLogger.DeviceName := 'DeviceName';
 
   //FPrinterPort := CreateSocketPort;
-  FPrinterPort := CreateSerialPort;
-  //FPrinterPort := CreateRawPort;
+  //FPrinterPort := CreateSerialPort;
+  FPrinterPort := CreateRawPort;
   FPrinterPort.Open;
   FPrinter := TEscPrinter.Create(FPrinterPort, FLogger);
 end;

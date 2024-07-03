@@ -79,6 +79,7 @@ begin
   FParams.RoundType := 1;
   FParams.VATNumber := '1234';
   FParams.TranslationEnabled := True;
+  FParams.OfflineText := 'OfflineText';
 end;
 
 procedure TPrinterParametersTest.CheckNonDefaultParams;
@@ -113,6 +114,7 @@ begin
   CheckEquals(1, FParams.RoundType, 'RoundType');
   CheckEquals('1234', FParams.VATNumber, 'VATNumber');
   CheckEquals(True, FParams.TranslationEnabled, 'TranslationEnabled');
+  CheckEquals('OfflineText', FParams.OfflineText, 'OfflineText');
 end;
 
 
@@ -142,6 +144,7 @@ begin
   CheckEquals(DefRoundType, FParams.RoundType, 'RoundType');
   CheckEquals(DefVATNumber, FParams.VATNumber, 'VATNumber');
   CheckEquals(False, FParams.TranslationEnabled, 'TranslationEnabled');
+  CheckEquals(DefOfflineText, FParams.OfflineText, 'OfflineText');
 end;
 
 procedure TPrinterParametersTest.CheckSetDefaults;

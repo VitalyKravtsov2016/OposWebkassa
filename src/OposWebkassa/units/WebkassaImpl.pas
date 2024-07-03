@@ -2120,7 +2120,6 @@ var
   Doc: TlkJSONbase;
   Node: TlkJSONbase;
   SectionNode: TlkJSONbase;
-  Field: TlkJSONbase;
   Count: Integer;
   Amount: Currency;
   SellNode: TlkJSONbase;
@@ -2149,6 +2148,10 @@ begin
       (Command.Data.EndNonNullable.ReturnBuy - Command.Data.StartNonNullable.ReturnBuy);
 
     BeginDocument;
+    if Command.Data.OfflineMode then
+    begin
+      Document.AddLine(Document.AlignCenter(Params.OfflineText));
+    end;
     Separator := StringOfChar('-', Document.LineChars);
     Document.AddLines('»ÕÕ/¡»Õ', Command.Data.CashboxRN);
     Document.AddLines('«ÕÃ', Command.Data.CashboxSN);
@@ -2889,6 +2892,10 @@ begin
     Command.Request.ExternalCheckNumber := FExternalCheckNumber;
     FClient.Execute(Command);
     // Create Document
+    if Command.Data.OfflineMode then
+    begin
+      Document.AddLine(Document.AlignCenter(Params.OfflineText));
+    end;
     Document.AddLine('¡»Õ ' + Command.Data.Cashbox.RegistrationNumber);
     Document.AddLine(Tnt_WideFormat('«ÕÃ %s »Õ  Œ‘ƒ %s', [Command.Data.Cashbox.UniqueNumber,
       Command.Data.Cashbox.IdentityNumber]));
@@ -2917,6 +2924,10 @@ begin
     Command.Request.ExternalCheckNumber := FExternalCheckNumber;
     FClient.Execute(Command);
     //
+    if Command.Data.OfflineMode then
+    begin
+      Document.AddLine(Document.AlignCenter(Params.OfflineText));
+    end;
     Document.AddLine('¡»Õ ' + Command.Data.Cashbox.RegistrationNumber);
     Document.AddLine(Tnt_WideFormat('«ÕÃ %s »Õ  Œ‘ƒ %s', [Command.Data.Cashbox.UniqueNumber,
       Command.Data.Cashbox.IdentityNumber]));
@@ -3149,6 +3160,11 @@ begin
     end;
     FClient.SendReceipt(Command);
     FCheckNumber := Command.Data.CheckNumber;
+
+    if Command.Data.OfflineMode then
+    begin
+      Document.AddLine(Document.AlignCenter(Params.OfflineText));
+    end;
 
     if Params.TemplateEnabled then
     begin
