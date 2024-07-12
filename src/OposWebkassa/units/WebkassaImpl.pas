@@ -176,8 +176,6 @@ type
   private
     FPostLine: WideString;
     FPreLine: WideString;
-
-    FDeviceEnabled: Boolean;
     FCheckTotal: Boolean;
     // boolean
     FDayOpened: Boolean;
@@ -576,12 +574,10 @@ end;
 
 destructor TWebkassaImpl.Destroy;
 begin
-  if FOposDevice.Opened then
-    Close;
+  Close;
 
   FPrinter := nil;
   FPrinterObj.Free;
-
   FLines.Free;
   FClient.Free;
   FParams.Free;
@@ -922,15 +918,21 @@ end;
 function TWebkassaImpl.Claim(Timeout: Integer): Integer;
 begin
   try
-    FOposDevice.ClaimDevice(Timeout);
     CheckPtr(Printer.ClaimDevice(Timeout));
     FParams.CheckPrameters;
     ReadCashboxStatus;
+    FOposDevice.ClaimDevice(Timeout);
 
     Result := ClearResult;
   except
     on E: Exception do
+    begin
+      Client.Disconnect;
+      Printer.ReleaseDevice;
+      FOposDevice.ReleaseDevice;
+
       Result := HandleException(E);
+    end;
   end;
 end;
 
@@ -1482,7 +1484,7 @@ begin
       // standard
       PIDX_Claimed                    : Result := BoolToInt[FOposDevice.Claimed];
       PIDX_DataEventEnabled           : Result := BoolToInt[FOposDevice.DataEventEnabled];
-      PIDX_DeviceEnabled              : Result := BoolToInt[FDeviceEnabled];
+      PIDX_DeviceEnabled              : Result := BoolToInt[FOposDevice.DeviceEnabled];
       PIDX_FreezeEvents               : Result := BoolToInt[FOposDevice.FreezeEvents];
       PIDX_OutputID                   : Result := FOposDevice.OutputID;
       PIDX_ResultCode                 : Result := FOposDevice.ResultCode;
@@ -2820,49 +2822,68 @@ procedure TWebkassaImpl.SetDeviceEnabled(Value: Boolean);
     Result := Pos(IntToStr(CharacterSet), CharacterSetList) <> 0;
   end;
 
-var
-  CharacterSetList: WideString;
+  procedure EnableDevice;
+  var
+    CharacterSetList: WideString;
+  begin
+    FClient.Connect;
+    Printer.DeviceEnabled := True;
+    CheckPtr(Printer.ResultCode);
+
+    CharacterSetList := Printer.CharacterSetList;
+    if IsCharacterSetSupported(CharacterSetList, PTR_CS_UNICODE) then
+    begin
+      Printer.CharacterSet := PTR_CS_UNICODE;
+    end else
+    begin
+      if IsCharacterSetSupported(CharacterSetList, PTR_CS_WINDOWS) then
+        Printer.CharacterSet := PTR_CS_WINDOWS;
+    end;
+
+    FPtrMapCharacterSet := Printer.CapMapCharacterSet;
+    if FPtrMapCharacterSet then
+      Printer.MapCharacterSet := True;
+
+    if Params.RecLineChars <> 0 then
+    begin
+      Printer.RecLineChars := Params.RecLineChars;
+    end;
+    if Params.LineSpacing >= 0 then
+    begin
+      Printer.RecLineSpacing := Params.LineSpacing;
+    end;
+    if Params.RecLineHeight <> 0 then
+    begin
+      Printer.RecLineHeight := Params.RecLineHeight;
+    end;
+    FOposDevice.DeviceEnabled := True;
+  end;
+
+  procedure DisableDevice;
+  begin
+    FClient.Disconnect;
+    Printer.DeviceEnabled := False;
+    FOposDevice.DeviceEnabled := False;
+  end;
+
 begin
-  if Value <> FDeviceEnabled then
+  if Value <> FOposDevice.DeviceEnabled then
   begin
     if Value then
     begin
-      Printer.DeviceEnabled := True;
-      CheckPtr(Printer.ResultCode);
-
-      CharacterSetList := Printer.CharacterSetList;
-      if IsCharacterSetSupported(CharacterSetList, PTR_CS_UNICODE) then
-      begin
-        Printer.CharacterSet := PTR_CS_UNICODE;
-      end else
-      begin
-        if IsCharacterSetSupported(CharacterSetList, PTR_CS_WINDOWS) then
-          Printer.CharacterSet := PTR_CS_WINDOWS;
-      end;
-
-      FPtrMapCharacterSet := Printer.CapMapCharacterSet;
-      if FPtrMapCharacterSet then
-        Printer.MapCharacterSet := True;
-
-      if Params.RecLineChars <> 0 then
-      begin
-        Printer.RecLineChars := Params.RecLineChars;
-      end;
-      if Params.LineSpacing >= 0 then
-      begin
-        Printer.RecLineSpacing := Params.LineSpacing;
-      end;
-      if Params.RecLineHeight <> 0 then
-      begin
-        Printer.RecLineHeight := Params.RecLineHeight;
+      try
+        EnableDevice;
+      except
+        on E: Exception do
+        begin
+          DisableDevice;
+          raise;
+        end;
       end;
     end else
     begin
-      FClient.Disconnect;
-      Printer.DeviceEnabled := False;
+      DisableDevice;
     end;
-    FDeviceEnabled := Value;
-    FOposDevice.DeviceEnabled := Value;
   end;
 end;
 

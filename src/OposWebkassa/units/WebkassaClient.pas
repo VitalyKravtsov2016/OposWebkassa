@@ -1714,6 +1714,7 @@ begin
       Command.Request.Password := Password;
       if not Authenticate(Command) then
         RaiseLastError;
+
       FToken := Command.Data.Token;
       SaveParams;
     finally
