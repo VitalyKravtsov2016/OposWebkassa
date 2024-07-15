@@ -918,16 +918,13 @@ end;
 function TWebkassaImpl.Claim(Timeout: Integer): Integer;
 begin
   try
-    CheckPtr(Printer.ClaimDevice(Timeout));
     FParams.CheckPrameters;
-    ReadCashboxStatus;
     FOposDevice.ClaimDevice(Timeout);
-
+    CheckPtr(Printer.ClaimDevice(Timeout));
     Result := ClearResult;
   except
     on E: Exception do
     begin
-      Client.Disconnect;
       Printer.ReleaseDevice;
       FOposDevice.ReleaseDevice;
 
@@ -2827,6 +2824,7 @@ procedure TWebkassaImpl.SetDeviceEnabled(Value: Boolean);
     CharacterSetList: WideString;
   begin
     FClient.Connect;
+    ReadCashboxStatus;
     Printer.DeviceEnabled := True;
     CheckPtr(Printer.ResultCode);
 

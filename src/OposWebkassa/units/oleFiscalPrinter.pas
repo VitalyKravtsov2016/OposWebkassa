@@ -353,12 +353,11 @@ implementation
 
 destructor ToleFiscalPrinter.Destroy;
 begin
-  Logger.Debug('ToleFiscalPrinter.Destroy.0');
+  Logger.Debug('ToleFiscalPrinter.Destroy');
   Close;
   FLock.Free;
   FDriver.Free;
   inherited Destroy;
-  Logger.Debug('ToleFiscalPrinter.Destroy.1');
 end;
 
 function ToleFiscalPrinter.DirectIO2(Command: Integer; const pData: Integer; const pString: WideString): Integer;
