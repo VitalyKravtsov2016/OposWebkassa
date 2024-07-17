@@ -130,7 +130,7 @@ begin
   seLineSpacing.Value := Parameters.LineSpacing;
   seRecLineChars.Value := Parameters.RecLineChars;
   seRecLineHeight.Value := Parameters.RecLineHeight;
-  chbUtf8Enabled.Enabled := Parameters.Utf8Enabled;
+  chbUtf8Enabled.Checked := Parameters.Utf8Enabled;
 end;
 
 procedure TfmPrinter.UpdatePortNames;
@@ -236,7 +236,7 @@ begin
   Parameters.LineSpacing := seLineSpacing.Value;
   Parameters.RecLineChars := seRecLineChars.Value;
   Parameters.RecLineHeight := seRecLineHeight.Value;
-  Parameters.Utf8Enabled := chbUtf8Enabled.Enabled;
+  Parameters.Utf8Enabled := chbUtf8Enabled.Checked;
   // Serial
   Parameters.BaudRate := Integer(cbBaudRate.Items.Objects[cbBaudRate.ItemIndex]);
   Parameters.DataBits := Integer(cbDataBits.Items.Objects[cbDataBits.ItemIndex]);
