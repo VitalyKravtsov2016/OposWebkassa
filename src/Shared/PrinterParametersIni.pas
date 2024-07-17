@@ -194,6 +194,7 @@ begin
       FParameters.RecLineChars := IniFile.ReadInteger(Section, 'RecLineChars', DefRecLineChars);
       FParameters.RecLineHeight := IniFile.ReadInteger(Section, 'RecLineHeight', DefRecLineHeight);
       FParameters.HeaderPrinted := IniFile.ReadBool(Section, 'HeaderPrinted', DefHeaderPrinted);
+      FParameters.Utf8Enabled := IniFile.ReadBool(Section, 'Utf8Enabled', DefUtf8Enabled);
     end;
   finally
     IniFile.Free;
@@ -245,6 +246,7 @@ begin
     IniFile.WriteInteger(Section, 'RecLineChars', FParameters.RecLineChars);
     IniFile.WriteInteger(Section, 'RecLineHeight', FParameters.RecLineHeight);
     IniFile.WriteBool(Section, 'HeaderPrinted', FParameters.HeaderPrinted);
+    IniFile.WriteBool(Section, 'Utf8Enabled', FParameters.Utf8Enabled);
   finally
     IniFile.Free;
   end;

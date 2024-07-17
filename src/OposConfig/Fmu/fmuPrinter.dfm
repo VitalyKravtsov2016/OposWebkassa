@@ -2,7 +2,7 @@ object fmPrinter: TfmPrinter
   Left = 577
   Top = 205
   Width = 471
-  Height = 438
+  Height = 462
   Caption = #1055#1088#1080#1085#1090#1077#1088
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -13,19 +13,19 @@ object fmPrinter: TfmPrinter
   OldCreateOrder = False
   DesignSize = (
     455
-    400)
+    424)
   PixelsPerInch = 96
   TextHeight = 13
   object lblResultCode: TTntLabel
     Left = 8
-    Top = 296
+    Top = 320
     Width = 55
     Height = 13
     Caption = #1056#1077#1079#1091#1083#1100#1090#1072#1090':'
   end
   object memResult: TMemo
     Left = 8
-    Top = 312
+    Top = 336
     Width = 441
     Height = 49
     Anchors = [akLeft, akTop, akRight, akBottom]
@@ -41,7 +41,7 @@ object fmPrinter: TfmPrinter
   end
   object btnTestConnection: TTntButton
     Left = 240
-    Top = 368
+    Top = 392
     Width = 105
     Height = 25
     Anchors = [akRight, akBottom]
@@ -51,7 +51,7 @@ object fmPrinter: TfmPrinter
   end
   object btnPrintReceipt: TTntButton
     Left = 352
-    Top = 368
+    Top = 392
     Width = 97
     Height = 25
     Anchors = [akRight, akBottom]
@@ -63,7 +63,7 @@ object fmPrinter: TfmPrinter
     Left = 8
     Top = 8
     Width = 441
-    Height = 281
+    Height = 305
     ActivePage = tsCommonParams
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 0
@@ -197,6 +197,15 @@ object fmPrinter: TfmPrinter
         TabOrder = 4
         Value = 0
         OnClick = ModifiedClick
+      end
+      object chbUtf8Enabled: TCheckBox
+        Left = 8
+        Top = 248
+        Width = 188
+        Height = 17
+        Alignment = taLeftJustify
+        Caption = #1055#1077#1095#1072#1090#1100' '#1074' '#1082#1086#1076#1080#1088#1086#1074#1082#1077' UTF8'
+        TabOrder = 7
       end
     end
     object tsSocketParams: TTntTabSheet

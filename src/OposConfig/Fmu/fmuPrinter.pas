@@ -60,6 +60,7 @@ type
     lblRecLineHeight: TTntLabel;
     seRecLineChars: TSpinEdit;
     seRecLineHeight: TSpinEdit;
+    chbUtf8Enabled: TCheckBox;
     procedure btnTestConnectionClick(Sender: TObject);
     procedure btnPrintReceiptClick(Sender: TObject);
     procedure cbPrinterTypeChange(Sender: TObject);
@@ -129,6 +130,7 @@ begin
   seLineSpacing.Value := Parameters.LineSpacing;
   seRecLineChars.Value := Parameters.RecLineChars;
   seRecLineHeight.Value := Parameters.RecLineHeight;
+  chbUtf8Enabled.Enabled := Parameters.Utf8Enabled;
 end;
 
 procedure TfmPrinter.UpdatePortNames;
@@ -234,6 +236,7 @@ begin
   Parameters.LineSpacing := seLineSpacing.Value;
   Parameters.RecLineChars := seRecLineChars.Value;
   Parameters.RecLineHeight := seRecLineHeight.Value;
+  Parameters.Utf8Enabled := chbUtf8Enabled.Enabled;
   // Serial
   Parameters.BaudRate := Integer(cbBaudRate.Items.Objects[cbBaudRate.ItemIndex]);
   Parameters.DataBits := Integer(cbDataBits.Items.Objects[cbDataBits.ItemIndex]);

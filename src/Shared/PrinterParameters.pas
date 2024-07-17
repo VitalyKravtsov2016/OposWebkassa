@@ -105,6 +105,7 @@ const
   DefRecLineChars = 48;
   DefRecLineHeight = 24;
   DefHeaderPrinted = false;
+  DefUtf8Enabled = False;
 
   /////////////////////////////////////////////////////////////////////////////
   // Header and trailer parameters
@@ -199,6 +200,7 @@ type
     RecLineChars: Integer;
     RecLineHeight: Integer;
     HeaderPrinted: Boolean;
+    Utf8Enabled: Boolean;
 
     constructor Create(ALogger: ILogFile);
     destructor Destroy; override;
@@ -369,6 +371,7 @@ begin
   RecLineChars := DefRecLineChars;
   RecLineHeight := DefRecLineHeight;
   OfflineText := DefOfflineText;
+  Utf8Enabled := DefUtf8Enabled;
 end;
 
 procedure TPrinterParameters.LogText(const Caption, Text: WideString);
@@ -436,6 +439,7 @@ begin
   Logger.Debug('PrintEnabled: ' + BoolToStr(PrintEnabled));
   Logger.Debug('RecLineChars: ' + IntToStr(RecLineChars));
   Logger.Debug('RecLineHeight: ' + IntToStr(RecLineHeight));
+  Logger.Debug('Utf8Enabled: ' + BoolToStr(Utf8Enabled));
 
   // VatRates
   for i := 0 to VatRates.Count-1 do
@@ -634,6 +638,7 @@ begin
     PrintEnabled := Src.PrintEnabled;
     RecLineChars := Src.RecLineChars;
     RecLineHeight := Src.RecLineHeight;
+    Utf8Enabled := Src.Utf8Enabled;
   end else
     inherited Assign(Source);
 end;

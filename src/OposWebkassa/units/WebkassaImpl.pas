@@ -22,7 +22,7 @@ uses
   SalesReceipt, TextDocument, ReceiptItem, StringUtils, DebugUtils, VatRate,
   uZintBarcode, uZintInterface, FileUtils, PosWinPrinter, PosEscPrinter,
   SerialPort, PrinterPort, SocketPort, ReceiptTemplate, RawPrinterPort,
-  PrinterTypes, DirectIOAPI, BarcodeUtils, PrinterParametersReg;
+  PrinterTypes, DirectIOAPI, BarcodeUtils, PrinterParametersReg, JsonUtils;
 
 const
   FPTR_DEVICE_DESCRIPTION = 'WebKassa OPOS driver';
@@ -2652,6 +2652,19 @@ begin
 end;
 
 function TWebkassaImpl.CreatePrinter: IOPOSPOSPrinter;
+
+  function CreatePosEscPrinter(PrinterPort: IPrinterPort): TPosEscPrinter;
+  begin
+    Result := TPosEscPrinter.Create2(nil, PrinterPort, Logger);
+    Result.OnStatusUpdateEvent := PrinterStatusUpdateEvent;
+    Result.OnErrorEvent := PrinterErrorEvent;
+    Result.OnDirectIOEvent := PrinterDirectIOEvent;
+    Result.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
+    Result.FontName := Params.FontName;
+    Result.DevicePollTime := Params.DevicePollTime;
+    Result.Utf8Enabled := Params.Utf8Enabled;
+  end;
+
 var
   POSPrinter: TOPOSPOSPrinter;
   PosWinPrinter: TPosWinPrinter;
@@ -2682,13 +2695,7 @@ begin
     PrinterTypeEscPrinterSerial:
     begin
       PrinterPort := CreateSerialPort;
-      PosEscPrinter := TPosEscPrinter.Create2(nil, PrinterPort, Logger);
-      PosEscPrinter.OnStatusUpdateEvent := PrinterStatusUpdateEvent;
-      PosEscPrinter.OnErrorEvent := PrinterErrorEvent;
-      PosEscPrinter.OnDirectIOEvent := PrinterDirectIOEvent;
-      PosEscPrinter.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
-      PosEscPrinter.FontName := Params.FontName;
-      PosEscPrinter.DevicePollTime := Params.DevicePollTime;
+      PosEscPrinter := CreatePosEscPrinter(PrinterPort);
       FPrinterObj := PosEscPrinter;
       Result := PosEscPrinter;
     end;
@@ -2699,26 +2706,14 @@ begin
       SocketParams.ByteTimeout := Params.ByteTimeout;
       SocketParams.MaxRetryCount := 1;
       PrinterPort := TSocketPort.Create(SocketParams, Logger);
-      PosEscPrinter := TPosEscPrinter.Create2(nil, PrinterPort, Logger);
-      PosEscPrinter.OnStatusUpdateEvent := PrinterStatusUpdateEvent;
-      PosEscPrinter.OnErrorEvent := PrinterErrorEvent;
-      PosEscPrinter.OnDirectIOEvent := PrinterDirectIOEvent;
-      PosEscPrinter.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
-      PosEscPrinter.FontName := Params.FontName;
-      PosEscPrinter.DevicePollTime := Params.DevicePollTime;
+      PosEscPrinter := CreatePosEscPrinter(PrinterPort);
       FPrinterObj := PosEscPrinter;
       Result := PosEscPrinter;
     end;
     PrinterTypeEscPrinterWindows:
     begin
       PrinterPort := TRawPrinterPort.Create(Logger, Params.PrinterName);
-      PosEscPrinter := TPosEscPrinter.Create2(nil, PrinterPort, Logger);
-      PosEscPrinter.OnStatusUpdateEvent := PrinterStatusUpdateEvent;
-      PosEscPrinter.OnErrorEvent := PrinterErrorEvent;
-      PosEscPrinter.OnDirectIOEvent := PrinterDirectIOEvent;
-      PosEscPrinter.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
-      PosEscPrinter.FontName := Params.FontName;
-      PosEscPrinter.DevicePollTime := Params.DevicePollTime;
+      PosEscPrinter := CreatePosEscPrinter(PrinterPort);
       FPrinterObj := PosEscPrinter;
       Result := PosEscPrinter;
     end;
@@ -2824,7 +2819,6 @@ procedure TWebkassaImpl.SetDeviceEnabled(Value: Boolean);
     CharacterSetList: WideString;
   begin
     FClient.Connect;
-    ReadCashboxStatus;
     Printer.DeviceEnabled := True;
     CheckPtr(Printer.ResultCode);
 
@@ -2996,6 +2990,7 @@ var
   Command: TReadUnitsCommand;
 begin
   if FUnitsUpdated then Exit;
+
   Command := TReadUnitsCommand.Create;
   try
     Command.Request.Token := FClient.Token;
