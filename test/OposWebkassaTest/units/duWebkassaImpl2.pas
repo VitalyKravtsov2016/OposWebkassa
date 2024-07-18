@@ -414,7 +414,6 @@ begin
   FDriver.ReceiptJson := ReadFileData(GetModulePath + 'ReadReceiptAnswer.txt');
   FDriver.Params.VATSeries := 'VATSeries';
   FDriver.Params.VATNumber := 'VATNumber';
-  FDriver.CashBox.Name := 'SWK00032685';
 
   CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
   CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));

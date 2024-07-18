@@ -58,8 +58,6 @@ type
     FCashierID: WideString;
     FLogger: ILogFile;
     FUnits: TUnitItems;
-    FCashBox: TCashBox;
-    FCashBoxes: TCashBoxes;
     FClient: TWebkassaClient;
     FDocument: TTextDocument;
     FDuplicate: TTextDocument;
@@ -143,7 +141,6 @@ type
     function GetPrinterState: Integer;
     function DoRelease: Integer;
     procedure UpdateUnits;
-    procedure UpdateCashBoxes;
     procedure CheckCapSetVatTable;
     procedure CheckPtr(AResultCode: Integer);
     function CreateReceipt(FiscalReceiptType: Integer): TCustomReceipt;
@@ -250,7 +247,6 @@ type
     FChangeDue: WideString;
     FRemainingFiscalMemory: Integer;
     FUnitsUpdated: Boolean;
-    FCashBoxesUpdated: Boolean;
     FReceiptJson: WideString;
 
     FPtrMapCharacterSet: Boolean;
@@ -378,7 +374,6 @@ type
     procedure PrintBarcode2(Barcode: TBarcodeRec);
 
     property Logger: ILogFile read FLogger;
-    property CashBox: TCashBox read FCashBox;
     property Client: TWebkassaClient read FClient;
     property Params: TPrinterParameters read FParams;
     property TestMode: Boolean read FTestMode write FTestMode;
@@ -559,8 +554,6 @@ begin
   FOposDevice.ErrorEventEnabled := False;
   FPrinterState := TFiscalPrinterState.Create;
   FUnits := TUnitItems.Create(TUnitItem);
-  FCashBoxes := TCashBoxes.Create(TCashBox);
-  FCashBox := TCashBox.Create(nil);
   FClient.RaiseErrors := True;
   FLines := TTntStringList.Create;
   FLoadParamsEnabled := True;
@@ -582,8 +575,6 @@ begin
   FPrinterState.Free;
   FReceipt.Free;
   FPrinterLog.Free;
-  FCashBoxes.Free;
-  FCashBox.Free;
   FCashboxStatus.Free;
   inherited Destroy;
 end;
@@ -773,7 +764,6 @@ begin
   FChangeDue := '';
 
   FUnitsUpdated := False;
-  FCashboxesUpdated := False;
 end;
 
 function TWebkassaImpl.IllegalError: Integer;
@@ -2988,28 +2978,6 @@ begin
     FClient.ReadUnits(Command);
     FUnits.Assign(Command.Data);
     FUnitsUpdated := True;
-  finally
-    Command.FRee;
-  end;
-end;
-
-procedure TWebkassaImpl.UpdateCashBoxes;
-var
-  ACashBox: TCashBox;
-  Command: TCashboxesCommand;
-begin
-  if FCashBoxesUpdated then Exit;
-  Command := TCashboxesCommand.Create;
-  try
-    Command.Request.Token := FClient.Token;
-    FClient.ReadCashBoxes(Command);
-    FCashBoxes.Assign(Command.Data.List);
-    ACashBox := FCashBoxes.ItemByUniqueNumber(Params.CashboxNumber);
-    if ACashBox <> nil then
-    begin
-      FCashBox.Assign(ACashBox);
-    end;
-    FCashBoxesUpdated := True;
   finally
     Command.FRee;
   end;
