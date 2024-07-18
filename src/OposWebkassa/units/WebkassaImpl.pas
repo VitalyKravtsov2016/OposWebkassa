@@ -50,7 +50,6 @@ type
   TWebkassaImpl = class(TComponent, IFiscalPrinterService_1_12)
   private
     FLines: TTntStrings;
-    FCheckNumber: WideString;
     FCashboxStatus: TlkJSONbase;
     FTestMode: Boolean;
     FLoadParamsEnabled: Boolean;
@@ -248,7 +247,6 @@ type
     FRemainingFiscalMemory: Integer;
     FUnitsUpdated: Boolean;
     FReceiptJson: WideString;
-
     FPtrMapCharacterSet: Boolean;
 
     function DoCloseDevice: Integer;
@@ -1380,8 +1378,6 @@ end;
 
 function TWebkassaImpl.GetData(DataItem: Integer; out OptArgs: Integer;
   out Data: WideString): Integer;
-var
-  ZReportNumber: Integer;
 begin
   try
     case DataItem of
@@ -1392,17 +1388,10 @@ begin
       FPTR_GD_GRAND_TOTAL: Data := IntToStr(Round(ReadGrandTotal * 100));
       FPTR_GD_MID_VOID: Data := AmountToStr(0);
       FPTR_GD_NOT_PAID: Data := AmountToStr(0);
-      FPTR_GD_RECEIPT_NUMBER: Data := FCheckNumber;
+      FPTR_GD_RECEIPT_NUMBER: Data := Params.CheckNumber;
       FPTR_GD_REFUND: Data := AmountToStr(ReadRefundTotal);
       FPTR_GD_REFUND_VOID: Data := AmountToStr(0);
-      FPTR_GD_Z_REPORT:
-      begin
-        ZReportNumber := ReadCashboxStatus.Get('Data').Get(
-          'CurrentState').Get('ShiftNumber').Value;
-        if ZReportNumber > 0 then
-          ZReportNumber := ZReportNumber - 1;
-        Data := IntToStr(ZReportNumber);
-      end;
+      FPTR_GD_Z_REPORT: Data := IntToStr(Params.ShiftNumber);
       FPTR_GD_FISCAL_REC: Data := AmountToStr(ReadSellTotal);
       FPTR_GD_FISCAL_DOC,
       FPTR_GD_FISCAL_DOC_VOID,
@@ -2115,6 +2104,9 @@ begin
       FClient.ZReport(Command)
     else
       FClient.XReport(Command);
+
+    Params.ShiftNumber := Command.Data.ShiftNumber;
+    SaveUsrParameters(Params, FOposDevice.DeviceName, Logger);
 
     ClearCashboxStatus;
     Doc := TlkJSON.ParseText(FClient.AnswerJson);
@@ -3110,7 +3102,9 @@ begin
       end;
     end;
     FClient.SendReceipt(Command);
-    FCheckNumber := Command.Data.CheckNumber;
+    Params.CheckNumber := Command.Data.CheckNumber;
+    Params.ShiftNumber := Command.Data.ShiftNumber;
+    SaveUsrParameters(Params, FOposDevice.DeviceName, Logger);
 
     if Command.Data.OfflineMode then
     begin

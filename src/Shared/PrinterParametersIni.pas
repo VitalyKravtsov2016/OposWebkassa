@@ -263,6 +263,8 @@ begin
 
     IniFile.WriteText(Section, 'Header', Parameters.HeaderText);
     IniFile.WriteText(Section, 'Trailer', Parameters.TrailerText);
+    IniFile.WriteInteger(Section, 'ShiftNumber', Parameters.ShiftNumber);
+    IniFile.WriteString(Section, 'CheckNumber', Parameters.CheckNumber);
   finally
     IniFile.Free;
   end;

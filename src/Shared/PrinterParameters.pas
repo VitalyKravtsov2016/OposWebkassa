@@ -201,6 +201,8 @@ type
     RecLineHeight: Integer;
     HeaderPrinted: Boolean;
     Utf8Enabled: Boolean;
+    ShiftNumber: Integer;
+    CheckNumber: WideString;
 
     constructor Create(ALogger: ILogFile);
     destructor Destroy; override;

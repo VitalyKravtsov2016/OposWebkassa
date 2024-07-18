@@ -434,6 +434,12 @@ begin
 
       if Reg.ValueExists('IBTTrailer') then
         Parameters.TrailerText := Reg.ReadString('IBTTrailer');
+
+      if Reg.ValueExists('ShiftNumber') then
+        Parameters.ShiftNumber := Reg.ReadInteger('ShiftNumber');
+
+      if Reg.ValueExists('CheckNumber') then
+        Parameters.CheckNumber := Reg.ReadString('CheckNumber');
     end;
   finally
     Reg.Free;
@@ -453,6 +459,8 @@ begin
     begin
       Reg.WriteString('IBTHeader', Parameters.HeaderText);
       Reg.WriteString('IBTTrailer', Parameters.TrailerText);
+      Reg.WriteInteger('ShiftNumber', Parameters.ShiftNumber);
+      Reg.WriteString('CheckNumber', Parameters.CheckNumber);
     end else
     begin
       raiseException(_('Registry key open error'));
