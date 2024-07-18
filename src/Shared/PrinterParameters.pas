@@ -11,7 +11,7 @@ uses
   Opos, Oposhi, OposException,
   // This
   WException, LogFile, FileUtils, VatRate, SerialPort, SerialPorts, ReceiptItem,
-  Translation, ReceiptTemplate;
+  Translation, ReceiptTemplate, WebkassaClient;
 
 const
   /////////////////////////////////////////////////////////////////////////////
@@ -176,6 +176,7 @@ type
     FOfflineText: WideString;
     FLineSpacing: Integer;
     FPrintEnabled: Boolean;
+    FUnits: TUnitItems;
 
     procedure LogText(const Caption, Text: WideString);
     procedure SetHeaderText(const Text: WideString);
@@ -220,6 +221,7 @@ type
     function GetTemplateXml: WideString;
     procedure SetTemplateXml(const Value: WideString);
 
+    property Units: TUnitItems read FUnits;
     property Logger: ILogFile read FLogger;
     property Header: TTntStringList read FHeader;
     property Trailer: TTntStringList read FTrailer;
@@ -292,6 +294,7 @@ begin
   FTrailer := TTntStringList.Create;
   FTranslations := TTranslations.Create;
   FTemplate := TReceiptTemplate.Create(ALogger);
+  FUnits := TUnitItems.Create(TUnitItem);
 
   SetDefaults;
   Translations.Load;
@@ -299,6 +302,7 @@ end;
 
 destructor TPrinterParameters.Destroy;
 begin
+  FUnits.Free;
   FHeader.Free;
   FTrailer.Free;
   FVatRates.Free;

@@ -9,7 +9,7 @@ uses
   TntClasses, TntStdCtrls, TntRegistry, TntSysUtils,
   // This
   PrinterParameters, LogFile, Oposhi, WException, gnugettext,
-  DriverError, VatRate;
+  DriverError, VatRate, WebkassaClient;
 
 type
   { TPrinterParametersReg }
@@ -49,8 +49,9 @@ procedure SaveUsrParametersReg(Item: TPrinterParameters;
 implementation
 
 const
-  REG_KEY_VatRateS  = 'VatRates';
+  REG_KEY_VATRATES  = 'VatRates';
   REG_KEY_PAYTYPES  = 'PaymentTypes';
+  REGSTR_KEY_UNITITEMS = 'UnitItems';
   REGSTR_KEY_IBT = 'SOFTWARE\POSITIVE\POSITIVE32\Terminal';
 
 procedure DeleteParametersReg(const DeviceName: WideString; Logger: ILogFile);
@@ -296,7 +297,7 @@ begin
       Reg.CloseKey;
     end;
     // VatRates
-    if Reg.OpenKey(KeyName + '\' + REG_KEY_VatRateS, False) then
+    if Reg.OpenKey(KeyName + '\' + REG_KEY_VATRATES, False) then
     begin
       Parameters.VatRates.Clear;
       Names := TTntStringList.Create;
@@ -306,7 +307,7 @@ begin
 
         for i := 0 to Names.Count-1 do
         begin
-          if Reg.OpenKey(KeyName + '\' + REG_KEY_VatRateS, False) then
+          if Reg.OpenKey(KeyName + '\' + REG_KEY_VATRATES, False) then
           begin
             if Reg.OpenKey(Names[i], False) then
             begin
@@ -392,10 +393,10 @@ begin
 
     Reg.CloseKey;
     // VatRates
-    Reg.DeleteKey(KeyName + '\' + REG_KEY_VatRateS);
+    Reg.DeleteKey(KeyName + '\' + REG_KEY_VATRATES);
     for i := 0 to Parameters.VatRates.Count-1 do
     begin
-      if Reg.OpenKey(KeyName + '\' + REG_KEY_VatRateS, True) then
+      if Reg.OpenKey(KeyName + '\' + REG_KEY_VATRATES, True) then
       begin
         Item := Parameters.VatRates[i];
         if Reg.OpenKey(IntToStr(i), True) then
@@ -420,10 +421,16 @@ end;
 
 procedure TPrinterParametersReg.LoadUsrParameters(const DeviceName: WideString);
 var
+  i: Integer;
+  Item: TUnitItem;
   Reg: TTntRegistry;
+  KeyName: WideString;
+  KeyNames: TTntStrings;
 begin
   Logger.Debug('TPrinterParametersReg.LoadUsrParameters', [DeviceName]);
+
   Reg := TTntRegistry.Create;
+  KeyNames := TTntStringList.Create;
   try
     Reg.Access := KEY_READ;
     Reg.RootKey := HKEY_LOCAL_MACHINE;
@@ -440,9 +447,30 @@ begin
 
       if Reg.ValueExists('CheckNumber') then
         Parameters.CheckNumber := Reg.ReadString('CheckNumber');
+
+      Parameters.Units.Clear;
+      if Reg.OpenKey(REGSTR_KEY_UNITITEMS, False) then
+      begin
+        Reg.GetKeyNames(KeyNames);
+        Reg.CloseKey;
+
+        for i := 0 to KeyNames.Count-1 do
+        begin
+          KeyName := REGSTR_KEY_IBT + '\' + REGSTR_KEY_UNITITEMS + '\' + KeyNames[i];
+          if Reg.OpenKey(KeyName, False) then
+          begin
+            Item := Parameters.Units.Add as TUnitItem;
+            Item.Code := Reg.ReadInteger('Code');
+            Item.NameRu := Reg.ReadString('NameRu');
+            Item.NameKz := Reg.ReadString('NameKz');
+            Item.NameEn := Reg.ReadString('NameEn');
+          end;
+        end;
+      end;
     end;
   finally
     Reg.Free;
+    KeyNames.Free;
   end;
 end;
 
@@ -461,6 +489,20 @@ begin
       Reg.WriteString('IBTTrailer', Parameters.TrailerText);
       Reg.WriteInteger('ShiftNumber', Parameters.ShiftNumber);
       Reg.WriteString('CheckNumber', Parameters.CheckNumber);
+
+      Reg.DeleteKey(REGSTR_KEY_IBT + '\' + REGSTR_KEY_UNITITEMS);
+      for i := 0 to Parameters.UnitItems.Count-1 do
+      begin
+        KeyName := REGSTR_KEY_IBT + '\' + REGSTR_KEY_UNITITEMS + '\' + IntToStr(Item.Code);
+        if Reg.OpenKey(KeyName, True) then
+        begin
+          Item := Parameters.UnitItems[i];
+          Reg.WriteInteger('Code', Item.Code);
+          Reg.WriteString('NameRu', Item.NameRu);
+          Reg.WriteString('NameKz', Item.NameKz);
+          Reg.WriteString('NameEn', Item.NameEn);
+        end;
+      end;
     end else
     begin
       raiseException(_('Registry key open error'));

@@ -56,7 +56,6 @@ type
     FPOSID: WideString;
     FCashierID: WideString;
     FLogger: ILogFile;
-    FUnits: TUnitItems;
     FClient: TWebkassaClient;
     FDocument: TTextDocument;
     FDuplicate: TTextDocument;
@@ -551,7 +550,6 @@ begin
   FOposDevice := TOposServiceDevice19.Create(FLogger);
   FOposDevice.ErrorEventEnabled := False;
   FPrinterState := TFiscalPrinterState.Create;
-  FUnits := TUnitItems.Create(TUnitItem);
   FClient.RaiseErrors := True;
   FLines := TTntStringList.Create;
   FLoadParamsEnabled := True;
@@ -566,7 +564,6 @@ begin
   FLines.Free;
   FClient.Free;
   FParams.Free;
-  FUnits.Free;
   FDocument.Free;
   FDuplicate.Free;
   FOposDevice.Free;
@@ -2937,9 +2934,9 @@ begin
   UpdateUnits;
 
   Result := 0;
-  for i := 0 to FUnits.Count-1 do
+  for i := 0 to Params.Units.Count-1 do
   begin
-    Item := FUnits.Items[i] as TUnitItem;
+    Item := Params.Units.Items[i] as TUnitItem;
     if AnsiCompareText(UnitName, Item.NameRu) = 0 then
     begin
       Result := Item.Code;
@@ -2968,11 +2965,15 @@ begin
   try
     Command.Request.Token := FClient.Token;
     FClient.ReadUnits(Command);
-    FUnits.Assign(Command.Data);
+    Params.Units.Assign(Command.Data);
     FUnitsUpdated := True;
-  finally
-    Command.FRee;
+  except
+    on E: Exception do
+    begin
+      Logger.Error('Failed to get units, ' + E.Message);
+    end;
   end;
+  Command.Free;
 end;
 
 function TWebkassaImpl.GetVatRate(ID: Integer): TVatRate;
@@ -4274,7 +4275,7 @@ begin
       end;
       UnitName := '';
       UpdateUnits;
-      UnitItem := FUnits.ItemByCode(Item.UnitCode);
+      UnitItem := Params.Units.ItemByCode(Item.UnitCode);
       if UnitItem <> nil then
         UnitName := UnitItem.NameKz;
 
