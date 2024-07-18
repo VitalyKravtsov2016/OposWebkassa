@@ -59,8 +59,6 @@ type
     FLogger: ILogFile;
     FUnits: TUnitItems;
     FCashBox: TCashBox;
-    FCashier: TCashier;
-    FCashiers: TCashiers;
     FCashBoxes: TCashBoxes;
     FClient: TWebkassaClient;
     FDocument: TTextDocument;
@@ -145,7 +143,6 @@ type
     function GetPrinterState: Integer;
     function DoRelease: Integer;
     procedure UpdateUnits;
-    procedure UpdateCashiers;
     procedure UpdateCashBoxes;
     procedure CheckCapSetVatTable;
     procedure CheckPtr(AResultCode: Integer);
@@ -253,7 +250,6 @@ type
     FChangeDue: WideString;
     FRemainingFiscalMemory: Integer;
     FUnitsUpdated: Boolean;
-    FCashiersUpdated: Boolean;
     FCashBoxesUpdated: Boolean;
     FReceiptJson: WideString;
 
@@ -564,9 +560,7 @@ begin
   FPrinterState := TFiscalPrinterState.Create;
   FUnits := TUnitItems.Create(TUnitItem);
   FCashBoxes := TCashBoxes.Create(TCashBox);
-  FCashiers := TCashiers.Create;
   FCashBox := TCashBox.Create(nil);
-  FCashier := TCashier.Create(nil);
   FClient.RaiseErrors := True;
   FLines := TTntStringList.Create;
   FLoadParamsEnabled := True;
@@ -590,8 +584,6 @@ begin
   FPrinterLog.Free;
   FCashBoxes.Free;
   FCashBox.Free;
-  FCashier.Free;
-  FCashiers.Free;
   FCashboxStatus.Free;
   inherited Destroy;
 end;
@@ -782,7 +774,6 @@ begin
 
   FUnitsUpdated := False;
   FCashboxesUpdated := False;
-  FCashiersUpdated := False;
 end;
 
 function TWebkassaImpl.IllegalError: Integer;
@@ -3019,28 +3010,6 @@ begin
       FCashBox.Assign(ACashBox);
     end;
     FCashBoxesUpdated := True;
-  finally
-    Command.FRee;
-  end;
-end;
-
-procedure TWebkassaImpl.UpdateCashiers;
-var
-  ACashier: TCashier;
-  Command: TCashierCommand;
-begin
-  if FCashiersUpdated then Exit;
-  Command := TCashierCommand.Create;
-  try
-    Command.Request.Token := FClient.Token;
-    FClient.ReadCashiers(Command);
-    FCashiers.Assign(Command.Data);
-    ACashier := FCashiers.ItemByEMail(Params.Login);
-    if ACashier <> nil then
-    begin
-      FCashier.Assign(ACashier);
-    end;
-    FCashiersUpdated := True;
   finally
     Command.FRee;
   end;
