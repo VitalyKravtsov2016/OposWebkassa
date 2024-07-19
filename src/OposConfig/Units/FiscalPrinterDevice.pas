@@ -6,8 +6,7 @@ uses
   // Opos
   OposDevice,
   // This
-  untPages, FptrTypes, PrinterParameters, PrinterParametersX,
-  fmuPages, LogFile;
+  untPages, FptrTypes, PrinterParameters, PrinterParametersReg, fmuPages, LogFile;
 
 type
   TFptrPage = class;
@@ -81,7 +80,7 @@ end;
 
 procedure TFiscalPrinterDevice.SaveParams;
 begin
-  SaveParameters(Parameters, DeviceName, Logger);
+  SaveParametersReg(Parameters, DeviceName, Logger);
 end;
 
 procedure TFiscalPrinterDevice.AddPage(Pages: TfmPages; PageClass: TFptrPageClass);
@@ -102,7 +101,7 @@ begin
   try
     fm.Device := Self;
     fm.Caption := 'Fiscal printer';
-    LoadParameters(Parameters, DeviceName, Logger);
+    LoadParametersReg(Parameters, DeviceName, Logger);
     UpdateObject;
     Logger.Debug('LOG START');
     Parameters.WriteLogParameters;

@@ -433,7 +433,7 @@ begin
   KeyNames := TTntStringList.Create;
   try
     Reg.Access := KEY_READ;
-    Reg.RootKey := HKEY_LOCAL_MACHINE;
+    Reg.RootKey := HKEY_CURRENT_USER;
     if Reg.OpenKey(REGSTR_KEY_IBT, False) then
     begin
       if Reg.ValueExists('IBTHeader') then
@@ -447,6 +447,9 @@ begin
 
       if Reg.ValueExists('CheckNumber') then
         Parameters.CheckNumber := Reg.ReadString('CheckNumber');
+
+      if Reg.ValueExists('SumInCashbox') then
+        Parameters.SumInCashbox := Reg.ReadCurrency('SumInCashbox');
 
       Parameters.Units.Clear;
       if Reg.OpenKey(REGSTR_KEY_UNITITEMS, False) then
@@ -465,6 +468,7 @@ begin
             Item.NameKz := Reg.ReadString('NameKz');
             Item.NameEn := Reg.ReadString('NameEn');
           end;
+          Reg.CloseKey;
         end;
       end;
     end;
@@ -476,32 +480,38 @@ end;
 
 procedure TPrinterParametersReg.SaveUsrParameters(const DeviceName: WideString);
 var
+  i: Integer;
+  Item: TUnitItem;
   Reg: TTntRegistry;
+  KeyName: WideString;
 begin
   Logger.Debug('TPrinterParametersReg.SaveUsrParameters', [DeviceName]);
   Reg := TTntRegistry.Create;
   try
     Reg.Access := KEY_ALL_ACCESS;
-    Reg.RootKey := HKEY_LOCAL_MACHINE;
+    Reg.RootKey := HKEY_CURRENT_USER;
     if Reg.OpenKey(REGSTR_KEY_IBT, True) then
     begin
       Reg.WriteString('IBTHeader', Parameters.HeaderText);
       Reg.WriteString('IBTTrailer', Parameters.TrailerText);
       Reg.WriteInteger('ShiftNumber', Parameters.ShiftNumber);
       Reg.WriteString('CheckNumber', Parameters.CheckNumber);
+      Reg.WriteCurrency('SumInCashbox', Parameters.SumInCashbox);
+      Reg.CloseKey;
 
       Reg.DeleteKey(REGSTR_KEY_IBT + '\' + REGSTR_KEY_UNITITEMS);
-      for i := 0 to Parameters.UnitItems.Count-1 do
+      for i := 0 to Parameters.Units.Count-1 do
       begin
+        Item := Parameters.Units[i];
         KeyName := REGSTR_KEY_IBT + '\' + REGSTR_KEY_UNITITEMS + '\' + IntToStr(Item.Code);
         if Reg.OpenKey(KeyName, True) then
         begin
-          Item := Parameters.UnitItems[i];
           Reg.WriteInteger('Code', Item.Code);
           Reg.WriteString('NameRu', Item.NameRu);
           Reg.WriteString('NameKz', Item.NameKz);
           Reg.WriteString('NameEn', Item.NameEn);
         end;
+        Reg.CloseKey;
       end;
     end else
     begin

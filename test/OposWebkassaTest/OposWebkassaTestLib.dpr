@@ -36,8 +36,6 @@ uses
   duWebkassaClient in 'units\duWebkassaClient.pas',
   OposPOSPrinter_CCO_TLB in '..\..\src\Opos\OposPOSPrinter_CCO_TLB.pas',
   PrinterParameters in '..\..\src\Shared\PrinterParameters.pas',
-  PrinterParametersX in '..\..\src\Shared\PrinterParametersX.pas',
-  PrinterParametersIni in '..\..\src\Shared\PrinterParametersIni.pas',
   TntIniFiles in '..\..\src\Shared\TntIniFiles.pas',
   SmIniFile in '..\..\src\Shared\SmIniFile.pas',
   StringUtils in '..\..\src\Shared\StringUtils.pas',

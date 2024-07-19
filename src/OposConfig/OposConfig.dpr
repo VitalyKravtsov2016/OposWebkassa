@@ -33,8 +33,6 @@ uses
   PrinterParameters in '..\Shared\PrinterParameters.pas',
   DriverContext in '..\Shared\DriverContext.pas',
   fmuPrinter in 'Fmu\fmuPrinter.pas' {fmPrinter},
-  PrinterParametersX in '..\Shared\PrinterParametersX.pas',
-  PrinterParametersIni in '..\Shared\PrinterParametersIni.pas',
   TntIniFiles in '..\Shared\TntIniFiles.pas',
   SmIniFile in '..\Shared\SmIniFile.pas',
   StringUtils in '..\Shared\StringUtils.pas',

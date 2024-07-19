@@ -10,8 +10,7 @@ uses
   // Tnt
   TntClasses,
   // This
-  PrinterParameters, PrinterParametersX, PrinterParametersReg, LogFile,
-  StringUtils, FileUtils;
+  PrinterParameters, PrinterParametersReg, LogFile, StringUtils, FileUtils;
 
 type
   { TPrinterParametersTest }
@@ -80,6 +79,9 @@ begin
   FParams.VATNumber := '1234';
   FParams.TranslationEnabled := True;
   FParams.OfflineText := 'OfflineText';
+  FParams.Units.Clear;
+  FParams.Units.AddItem(1, '123', '234', '345');
+  FParams.Units.AddItem(2, '876', '547', '875');
 end;
 
 procedure TPrinterParametersTest.CheckNonDefaultParams;
@@ -115,6 +117,15 @@ begin
   CheckEquals('1234', FParams.VATNumber, 'VATNumber');
   CheckEquals(True, FParams.TranslationEnabled, 'TranslationEnabled');
   CheckEquals('OfflineText', FParams.OfflineText, 'OfflineText');
+  CheckEquals(2, FParams.Units.Count, 'Units.Count');
+  CheckEquals(1, FParams.Units[0].Code, 'Units[0].Code');
+  CheckEquals('123', FParams.Units[0].NameRu, 'Units[0].NameRu');
+  CheckEquals('234', FParams.Units[0].NameKz, 'Units[0].NameKz');
+  CheckEquals('345', FParams.Units[0].NameEn, 'Units[0].NameEn');
+  CheckEquals(2, FParams.Units[1].Code, 'Units[1].Code');
+  CheckEquals('876', FParams.Units[1].NameRu, 'Units[1].NameRu');
+  CheckEquals('547', FParams.Units[1].NameKz, 'Units[1].NameKz');
+  CheckEquals('875', FParams.Units[1].NameEn, 'Units[1].NameEn');
 end;
 
 
@@ -145,6 +156,7 @@ begin
   CheckEquals(DefVATNumber, FParams.VATNumber, 'VATNumber');
   CheckEquals(False, FParams.TranslationEnabled, 'TranslationEnabled');
   CheckEquals(DefOfflineText, FParams.OfflineText, 'OfflineText');
+  CheckEquals(0, FParams.Units.Count, 'Units.Count');
 end;
 
 procedure TPrinterParametersTest.CheckSetDefaults;
@@ -167,9 +179,9 @@ end;
 procedure TPrinterParametersTest.CheckLoadParams;
 begin
   SetNonDefaultParams;
-  SaveParameters(FParams, 'DeviceName', FLogger);
+  SaveParametersReg(FParams, 'DeviceName', FLogger);
   FParams.SetDefaults;
-  LoadParameters(FParams, 'DeviceName', FLogger);
+  LoadParametersReg(FParams, 'DeviceName', FLogger);
   CheckNonDefaultParams;
 end;
 

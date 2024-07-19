@@ -4,7 +4,7 @@ interface
 
 uses
   // This
-  StringUtils, PrinterParameters;
+  StringUtils;
 
 function DecodeText(Encoding: Integer; const Text: WideString): WideString;
 function EncodeText(Encoding: Integer; const Text: WideString): WideString;

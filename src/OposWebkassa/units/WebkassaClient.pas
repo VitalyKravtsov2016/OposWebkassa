@@ -1289,6 +1289,7 @@ type
     function GetItem(Index: Integer): TUnitItem;
   public
     function ItemByCode(Code: Integer): TUnitItem;
+    function AddItem(Code: Integer; const NameRu, NameKz, NameEn: WideString): TUnitItem;
     property Items[Index: Integer]: TUnitItem read GetItem; default;
   end;
 
@@ -3281,6 +3282,18 @@ begin
 end;
 
 { TUnitItems }
+
+function TUnitItems.AddItem(Code: Integer; const NameRu, NameKz,
+  NameEn: WideString): TUnitItem;
+begin
+  if ItemByCode(Code) <> nil then
+    raise Exception.CreateFmt('Code %d is not unique.', [Code]);
+  Result := TUnitItem.Create(Self);
+  Result.FCode := Code;
+  Result.FNameRu := NameRu;
+  Result.FNameKz := NameKz;
+  Result.FNameEn := NameEn;
+end;
 
 function TUnitItems.GetItem(Index: Integer): TUnitItem;
 begin

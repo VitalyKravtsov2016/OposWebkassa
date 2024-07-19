@@ -204,6 +204,7 @@ type
     Utf8Enabled: Boolean;
     ShiftNumber: Integer;
     CheckNumber: WideString;
+    SumInCashbox: Currency;
 
     constructor Create(ALogger: ILogFile);
     destructor Destroy; override;
@@ -378,6 +379,8 @@ begin
   RecLineHeight := DefRecLineHeight;
   OfflineText := DefOfflineText;
   Utf8Enabled := DefUtf8Enabled;
+  SumInCashbox := 0;
+  Units.Clear;
 end;
 
 procedure TPrinterParameters.LogText(const Caption, Text: WideString);

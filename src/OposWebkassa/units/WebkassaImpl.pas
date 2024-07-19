@@ -18,7 +18,7 @@ uses
   // This
   OPOSWebkassaLib_TLB, LogFile, WException, VersionInfo, DriverError,
   WebkassaClient, FiscalPrinterState, CustomReceipt, NonFiscalDoc, ServiceVersion,
-  PrinterParameters, PrinterParametersX, CashInReceipt, CashOutReceipt,
+  PrinterParameters, CashInReceipt, CashOutReceipt,
   SalesReceipt, TextDocument, ReceiptItem, StringUtils, DebugUtils, VatRate,
   uZintBarcode, uZintInterface, FileUtils, PosWinPrinter, PosEscPrinter,
   SerialPort, PrinterPort, SocketPort, ReceiptTemplate, RawPrinterPort,
@@ -99,6 +99,7 @@ type
       var pString: WideString);
     procedure DioGetReceiptResponse(var pData: Integer;
       var pString: WideString);
+    procedure SaveUsrParams;
   public
     procedure PrintDocumentSafe(Document: TTextDocument);
     procedure CheckCanPrint;
@@ -572,6 +573,16 @@ begin
   FPrinterLog.Free;
   FCashboxStatus.Free;
   inherited Destroy;
+end;
+
+procedure TWebkassaImpl.SaveUsrParams;
+begin
+  try
+    SaveUsrParametersReg(Params, FOposDevice.DeviceName, Logger);
+  except
+    on E: Exception do
+      Logger.Error('SaveUsrParameters', E);
+  end;
 end;
 
 procedure TWebkassaImpl.BeginDocument;
@@ -1301,8 +1312,17 @@ end;
 
 function TWebkassaImpl.ReadGrandTotal: Currency;
 begin
-  Result := ReadCashboxStatus.Get('Data').Get('CurrentState').Get(
-    'XReport').Get('SumInCashbox').Value;
+  Result := Params.SumInCashbox;
+  try
+    Result := ReadCashboxStatus.Get('Data').Get('CurrentState').Get(
+      'XReport').Get('SumInCashbox').Value;
+    Params.SumInCashbox := Result;
+  except
+    on E: Exception do
+    begin
+      Logger.Error('Failed to get cashbox status, ' + E.Message);
+    end;
+  end;
 end;
 
 function TWebkassaImpl.ReadGrossTotal: Currency;
@@ -2103,7 +2123,8 @@ begin
       FClient.XReport(Command);
 
     Params.ShiftNumber := Command.Data.ShiftNumber;
-    SaveUsrParameters(Params, FOposDevice.DeviceName, Logger);
+    Params.SumInCashbox := Command.Data.SumInCashbox;
+    SaveUsrParams;
 
     ClearCashboxStatus;
     Doc := TlkJSON.ParseText(FClient.AnswerJson);
@@ -2321,7 +2342,7 @@ begin
       LineText := ESC_DoubleWide + LineText;
 
     FParams.Header[LineNumber-1] := LineText;
-    SaveUsrParameters(FParams, FOposDevice.DeviceName, FLogger);
+    SaveUsrParams;
 
     Result := ClearResult;
   except
@@ -2448,7 +2469,7 @@ begin
       LineText := ESC_DoubleWide + LineText;
 
     Params.Trailer[LineNumber-1] := LineText;
-    SaveUsrParameters(FParams, FOposDevice.DeviceName, FLogger);
+    SaveUsrParams;
 
     Result := ClearResult;
   except
@@ -2574,7 +2595,12 @@ begin
     FOposDevice.Open(DeviceClass, DeviceName, GetEventInterface(pDispatch));
     if FLoadParamsEnabled then
     begin
-      LoadParameters(FParams, DeviceName, FLogger);
+      try
+        LoadParametersReg(FParams, DeviceName, Logger);
+      except
+        on E: Exception do
+          Logger.Error('LoadParameters', E);
+      end;
     end;
 
     Logger.MaxCount := FParams.LogMaxCount;
@@ -2967,6 +2993,7 @@ begin
     FClient.ReadUnits(Command);
     Params.Units.Assign(Command.Data);
     FUnitsUpdated := True;
+    SaveUsrParams;
   except
     on E: Exception do
     begin
@@ -3105,7 +3132,7 @@ begin
     FClient.SendReceipt(Command);
     Params.CheckNumber := Command.Data.CheckNumber;
     Params.ShiftNumber := Command.Data.ShiftNumber;
-    SaveUsrParameters(Params, FOposDevice.DeviceName, Logger);
+    SaveUsrParams;
 
     if Command.Data.OfflineMode then
     begin

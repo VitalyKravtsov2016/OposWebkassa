@@ -8,35 +8,35 @@
   resources were bound to the produced executable.
 */
 
-#define SynEditStrConst_SYNS_FriendlyAttrNamespaceAttrValue 65200
-#define SynEditStrConst_SYNS_FriendlyAttrProcessingInstr 65201
-#define SynEditStrConst_SYNS_FriendlyAttrSymbol 65202
-#define SynEditStrConst_SYNS_FriendlyAttrText 65203
-#define SynEditStrConst_SYNS_FriendlyAttrWhitespace 65204
-#define SynEditStrConst_SYNS_ScrollInfoFmt 65205
-#define SynEditStrConst_SYNS_ScrollInfoFmtTop 65206
-#define SynEditStrConst_SYNS_EDuplicateShortcut 65207
-#define SynEditStrConst_SYNS_FilterXML 65208
-#define SynEditStrConst_SYNS_FriendlyLangXML 65209
-#define SynEditStrConst_SYNS_FriendlyLangUnknown 65210
-#define SynEditTextBuffer_SListIndexOutOfBounds 65211
-#define SynEditTextBuffer_SInvalidCapacity 65212
+#define SynEditStrConst_SYNS_FriendlyAttrWhitespace 65200
+#define SynEditStrConst_SYNS_ScrollInfoFmt 65201
+#define SynEditStrConst_SYNS_ScrollInfoFmtTop 65202
+#define SynEditStrConst_SYNS_EDuplicateShortcut 65203
+#define SynEditStrConst_SYNS_FilterXML 65204
+#define SynEditStrConst_SYNS_FriendlyLangXML 65205
+#define SynEditStrConst_SYNS_FriendlyLangUnknown 65206
+#define SynEditTextBuffer_SListIndexOutOfBounds 65207
+#define SynEditTextBuffer_SInvalidCapacity 65208
+#define XMLConst_SDuplicateRegistration 65209
+#define XMLConst_SDOMNotSupported 65210
+#define XMLConst_SNodeExpected 65211
+#define XMLConst_SMSDOMNotInstalled 65212
 #define OleConst_SNoWindowHandle 65216
 #define OleConst_SInvalidLicense 65217
 #define OleConst_SNotLicensed 65218
 #define OleConst_sNoRunningObject 65219
-#define XMLConst_SDuplicateRegistration 65220
-#define XMLConst_SDOMNotSupported 65221
-#define XMLConst_SNodeExpected 65222
-#define XMLConst_SMSDOMNotInstalled 65223
-#define SynEditStrConst_SYNS_FriendlyAttrAttributeName 65224
-#define SynEditStrConst_SYNS_FriendlyAttrAttributeValue 65225
-#define SynEditStrConst_SYNS_FriendlyAttrCDATASection 65226
-#define SynEditStrConst_SYNS_FriendlyAttrComment 65227
-#define SynEditStrConst_SYNS_FriendlyAttrDOCTYPESection 65228
-#define SynEditStrConst_SYNS_FriendlyAttrElementName 65229
-#define SynEditStrConst_SYNS_FriendlyAttrEntityReference 65230
-#define SynEditStrConst_SYNS_FriendlyAttrNamespaceAttrName 65231
+#define SynEditStrConst_SYNS_FriendlyAttrAttributeName 65220
+#define SynEditStrConst_SYNS_FriendlyAttrAttributeValue 65221
+#define SynEditStrConst_SYNS_FriendlyAttrCDATASection 65222
+#define SynEditStrConst_SYNS_FriendlyAttrComment 65223
+#define SynEditStrConst_SYNS_FriendlyAttrDOCTYPESection 65224
+#define SynEditStrConst_SYNS_FriendlyAttrElementName 65225
+#define SynEditStrConst_SYNS_FriendlyAttrEntityReference 65226
+#define SynEditStrConst_SYNS_FriendlyAttrNamespaceAttrName 65227
+#define SynEditStrConst_SYNS_FriendlyAttrNamespaceAttrValue 65228
+#define SynEditStrConst_SYNS_FriendlyAttrProcessingInstr 65229
+#define SynEditStrConst_SYNS_FriendlyAttrSymbol 65230
+#define SynEditStrConst_SYNS_FriendlyAttrText 65231
 #define ComStrs_sDateTimeMin 65232
 #define ComStrs_sNeedAllowNone 65233
 #define ComStrs_sFailSetCalDateTime 65234
@@ -343,10 +343,6 @@
 #define SysConst_SRangeError 65535
 STRINGTABLE
 BEGIN
-	SynEditStrConst_SYNS_FriendlyAttrNamespaceAttrValue,	"Namespace Attribute Value"
-	SynEditStrConst_SYNS_FriendlyAttrProcessingInstr,	"Processing Instruction"
-	SynEditStrConst_SYNS_FriendlyAttrSymbol,	"Symbol"
-	SynEditStrConst_SYNS_FriendlyAttrText,	"Text"
 	SynEditStrConst_SYNS_FriendlyAttrWhitespace,	"Whitespace"
 	SynEditStrConst_SYNS_ScrollInfoFmt,	"%d - %d"
 	SynEditStrConst_SYNS_ScrollInfoFmtTop,	"Top Line: %d"
@@ -356,14 +352,14 @@ BEGIN
 	SynEditStrConst_SYNS_FriendlyLangUnknown,	"<Unknown>"
 	SynEditTextBuffer_SListIndexOutOfBounds,	"Invalid stringlist index %d"
 	SynEditTextBuffer_SInvalidCapacity,	"Stringlist capacity cannot be smaller than count"
-	OleConst_SNoWindowHandle,	"Could not obtain OLE control window handle"
-	OleConst_SInvalidLicense,	"License information for %s is invalid"
-	OleConst_SNotLicensed,	"License information for %s not found. You cannot use this control in design mode"
-	OleConst_sNoRunningObject,	"Unable to retrieve a pointer to a running object registered with OLE for %s/%s"
 	XMLConst_SDuplicateRegistration,	"\"%s\" DOMImplementation already registered"
 	XMLConst_SDOMNotSupported,	"Property or Method \"%s\" is not supported by DOM Vendor \"%s\""
 	XMLConst_SNodeExpected,	"Node cannot be null"
 	XMLConst_SMSDOMNotInstalled,	"Microsoft MSXML is not installed"
+	OleConst_SNoWindowHandle,	"Could not obtain OLE control window handle"
+	OleConst_SInvalidLicense,	"License information for %s is invalid"
+	OleConst_SNotLicensed,	"License information for %s not found. You cannot use this control in design mode"
+	OleConst_sNoRunningObject,	"Unable to retrieve a pointer to a running object registered with OLE for %s/%s"
 	SynEditStrConst_SYNS_FriendlyAttrAttributeName,	"Attribute Name"
 	SynEditStrConst_SYNS_FriendlyAttrAttributeValue,	"Attribute Value"
 	SynEditStrConst_SYNS_FriendlyAttrCDATASection,	"CDATA Section"
@@ -372,6 +368,10 @@ BEGIN
 	SynEditStrConst_SYNS_FriendlyAttrElementName,	"Element Name"
 	SynEditStrConst_SYNS_FriendlyAttrEntityReference,	"Entity Reference"
 	SynEditStrConst_SYNS_FriendlyAttrNamespaceAttrName,	"Namespace Attribute Name"
+	SynEditStrConst_SYNS_FriendlyAttrNamespaceAttrValue,	"Namespace Attribute Value"
+	SynEditStrConst_SYNS_FriendlyAttrProcessingInstr,	"Processing Instruction"
+	SynEditStrConst_SYNS_FriendlyAttrSymbol,	"Symbol"
+	SynEditStrConst_SYNS_FriendlyAttrText,	"Text"
 	ComStrs_sDateTimeMin,	"Date is less than minimum of %s"
 	ComStrs_sNeedAllowNone,	"You must be in ShowCheckbox mode to set to this date"
 	ComStrs_sFailSetCalDateTime,	"Failed to set calendar date or time"

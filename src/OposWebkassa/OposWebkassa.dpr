@@ -35,8 +35,6 @@ uses
   OposPOSPrinter_CCO_TLB in '..\Opos\OposPOSPrinter_CCO_TLB.pas',
   PrinterParameters in '..\Shared\PrinterParameters.pas',
   FileUtils in '..\Shared\FileUtils.pas',
-  PrinterParametersX in '..\Shared\PrinterParametersX.pas',
-  PrinterParametersIni in '..\Shared\PrinterParametersIni.pas',
   TntIniFiles in '..\Shared\TntIniFiles.pas',
   SmIniFile in '..\Shared\SmIniFile.pas',
   StringUtils in '..\Shared\StringUtils.pas',
