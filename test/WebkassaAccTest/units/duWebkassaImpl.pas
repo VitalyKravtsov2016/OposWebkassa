@@ -42,6 +42,7 @@ type
     procedure TearDown; override;
 
     procedure TestEvents;
+    procedure TestGetData;
   published
     procedure OpenClaimEnable;
     procedure TestCashIn;
@@ -53,6 +54,7 @@ type
     procedure TestNonFiscal2;
     procedure TestFiscalReceipt;
     procedure TestPrintReceiptDuplicate;
+    procedure TestPrintReceiptDuplicate2;
     procedure TestFiscalReceipt2;
     procedure TestFiscalReceipt3;
     procedure TestFiscalReceipt4;
@@ -66,7 +68,6 @@ type
     procedure TestFiscalReceiptWithAdjustments3;
     procedure TestPrintBarcode;
     procedure TestPrint2DBarcode;
-    procedure TestGetData;
     procedure TestFontB;
   end;
 
@@ -80,7 +81,7 @@ var
 
 function TWebkassaImplTest.GetParams: TPrinterParameters;
 begin
-  Result := Driver.Driver.Params;
+  Result := Driver.Params;
 end;
 
 procedure TWebkassaImplTest.FptrCheck(Code: Integer);
@@ -145,8 +146,8 @@ begin
     Params.CashboxNumber := 'SWK00033444';
 
     Params.ConnectTimeout := 10;
-    Params.WebkassaAddress := 'https://devkkm.webkassa.kz';
-    //Params.WebkassaAddress := 'http://localhost:1332';
+    //Params.WebkassaAddress := 'https://devkkm.webkassa.kz';
+    Params.WebkassaAddress := 'http://localhost:1332';
 
     Params.NumHeaderLines := 4;
     Params.NumTrailerLines := 3;
@@ -890,6 +891,7 @@ begin
     'CurrentState'].Field['XReport'].Field['SumInCashbox'].Value;
   DataExpected := WideFormat('%d', [Round(StrToCurr(DataExpected)*100)]);
   CheckEquals(DataExpected, Data, 'FPTR_GD_GRAND_TOTAL');
+
   FptrCheck(Driver.GetData(FPTR_GD_DAILY_TOTAL, OptArgs, Data));
 
   TestCashIn;
@@ -917,6 +919,11 @@ begin
   OpenClaimEnable;
 end;
 
+procedure TWebkassaImplTest.TestPrintReceiptDuplicate2;
+begin
+  OpenClaimEnable;
+  FptrCheck(Driver.PrintDuplicateReceipt);
+end;
 
 initialization
   RegisterTest('', TWebkassaImplTest.Suite);

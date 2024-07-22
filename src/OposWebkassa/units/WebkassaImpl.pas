@@ -1316,6 +1316,7 @@ begin
   try
     Result := ReadCashboxStatus.Get('Data').Get('CurrentState').Get(
       'XReport').Get('SumInCashbox').Value;
+
     Params.SumInCashbox := Result;
     SaveUsrParams;
   except
