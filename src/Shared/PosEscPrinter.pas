@@ -1992,10 +1992,10 @@ begin
       // Alignment
       case Alignment of
         PTR_BC_LEFT: Justification := JUSTIFICATION_LEFT;
-        PTR_BC_CENTER: Justification := JUSTIFICATION_CENTERING;
+        PTR_BC_CENTER: Justification := JUSTIFICATION_CENTER;
         PTR_BC_RIGHT: Justification := JUSTIFICATION_RIGHT;
       else
-        Justification := JUSTIFICATION_CENTERING;
+        Justification := JUSTIFICATION_CENTER;
       end;
 
       // textPosition
@@ -2205,7 +2205,7 @@ begin
 
   case Alignment of
     PTR_BM_LEFT: Justification := JUSTIFICATION_LEFT;
-    PTR_BM_CENTER: Justification := JUSTIFICATION_CENTERING;
+    PTR_BM_CENTER: Justification := JUSTIFICATION_CENTER;
     PTR_BM_RIGHT: Justification := JUSTIFICATION_RIGHT;
   else
     Justification := JUSTIFICATION_LEFT;

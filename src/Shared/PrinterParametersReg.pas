@@ -451,6 +451,18 @@ begin
       if Reg.ValueExists('SumInCashbox') then
         Parameters.SumInCashbox := Reg.ReadCurrency('SumInCashbox');
 
+      if Reg.ValueExists('GrossTotal') then
+        Parameters.GrossTotal := Reg.ReadCurrency('GrossTotal');
+
+      if Reg.ValueExists('DailyTotal') then
+        Parameters.DailyTotal := Reg.ReadCurrency('DailyTotal');
+
+      if Reg.ValueExists('SellTotal') then
+        Parameters.SellTotal := Reg.ReadCurrency('SellTotal');
+
+      if Reg.ValueExists('RefundTotal') then
+        Parameters.RefundTotal := Reg.ReadCurrency('RefundTotal');
+
       Parameters.Units.Clear;
       if Reg.OpenKey(REGSTR_KEY_UNITITEMS, False) then
       begin
@@ -497,6 +509,10 @@ begin
       Reg.WriteInteger('ShiftNumber', Parameters.ShiftNumber);
       Reg.WriteString('CheckNumber', Parameters.CheckNumber);
       Reg.WriteCurrency('SumInCashbox', Parameters.SumInCashbox);
+      Reg.WriteCurrency('GrossTotal', Parameters.GrossTotal);
+      Reg.WriteCurrency('DailyTotal', Parameters.DailyTotal);
+      Reg.WriteCurrency('SellTotal', Parameters.SellTotal);
+      Reg.WriteCurrency('RefundTotal', Parameters.RefundTotal);
       Reg.CloseKey;
 
       Reg.DeleteKey(REGSTR_KEY_IBT + '\' + REGSTR_KEY_UNITITEMS);

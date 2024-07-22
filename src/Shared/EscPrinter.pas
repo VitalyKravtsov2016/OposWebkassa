@@ -59,7 +59,7 @@ const
   // Justification constants
 
   JUSTIFICATION_LEFT      = 0;
-  JUSTIFICATION_CENTERING = 1;
+  JUSTIFICATION_CENTER    = 1;
   JUSTIFICATION_RIGHT     = 2;
 
   /////////////////////////////////////////////////////////////////////////////
@@ -354,6 +354,7 @@ type
     procedure GeneratePulse(n, m, t: Byte);
     procedure SetRightSideCharacterSpacing(n: Byte);
     procedure SelectPrintMode(Mode: TPrintMode);
+    procedure SetPrintMode(Mode: Byte);
     procedure SetAbsolutePrintPosition(n: Word);
     procedure SelectUserCharacter(n: Byte);
     procedure DefineUserCharacter(C: TUserChar);
@@ -745,6 +746,12 @@ begin
   if Mode.DoubleWidth then SetBit(B, 5);
   if Mode.Underlined then SetBit(B, 7);
   Send(#$1B#$21 + Chr(B));
+end;
+
+procedure TEscPrinter.SetPrintMode(Mode: Byte);
+begin
+  Logger.Debug('TEscPrinter.SetPrintMode');
+  Send(#$1B#$21 + Chr(Mode));
 end;
 
 procedure TEscPrinter.SetAbsolutePrintPosition(n: Word);

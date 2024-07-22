@@ -1,6 +1,7 @@
 program WebkassaAccTest;
 
 uses
+  FastMM4,
   SysUtils,
   TestFramework,
   GUITestRunner,

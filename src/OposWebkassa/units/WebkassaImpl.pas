@@ -1317,6 +1317,7 @@ begin
     Result := ReadCashboxStatus.Get('Data').Get('CurrentState').Get(
       'XReport').Get('SumInCashbox').Value;
     Params.SumInCashbox := Result;
+    SaveUsrParams;
   except
     on E: Exception do
     begin
@@ -1329,68 +1330,109 @@ function TWebkassaImpl.ReadGrossTotal: Currency;
 var
   Node: TlkJSONbase;
 begin
-  Node := ReadCashboxStatus.Get('Data').Get('CurrentState').Get('XReport').Get('StartNonNullable');
-  Result :=
-    Currency(Node.Get('Sell').Value) -
-    Currency(Node.Get('Buy').Value) -
-    Currency(Node.Get('ReturnSell').Value) +
-    Currency(Node.Get('ReturnBuy').Value);
+  Result := Params.GrossTotal;
+  try
+    Node := ReadCashboxStatus.Get('Data').Get('CurrentState').Get('XReport').Get('StartNonNullable');
+    Result :=
+      Currency(Node.Get('Sell').Value) -
+      Currency(Node.Get('Buy').Value) -
+      Currency(Node.Get('ReturnSell').Value) +
+      Currency(Node.Get('ReturnBuy').Value);
+
+    Params.GrossTotal := Result;
+    SaveUsrParams;
+  except
+    on E: Exception do
+    begin
+      Logger.Error('Failed to get cashbox status, ' + E.Message);
+    end;
+  end;
 end;
 
 function TWebkassaImpl.ReadDailyTotal: Currency;
 var
   Doc: TlkJSONbase;
 begin
-  Result := 0;
-  Doc := ReadCashboxStatus.Get('Data').Get('CurrentState').Get('XReport');
-  // Sell
-  Result :=  Result +
-    (Doc.Get('Sell').Get('Taken').Value -
-    Doc.Get('Sell').Get('Change').Value);
-  // Buy
-  Result :=  Result -
-    (Doc.Get('Buy').Get('Taken').Value -
-    Doc.Get('Buy').Get('Change').Value);
-  // ReturnSell
-  Result :=  Result -
-    (Doc.Get('ReturnSell').Get('Taken').Value -
-    Doc.Get('ReturnSell').Get('Change').Value);
-  // ReturnBuy
-  Result :=  Result +
-    (Doc.Get('ReturnBuy').Get('Taken').Value -
-    Doc.Get('ReturnBuy').Get('Change').Value);
+  Result := Params.DailyTotal;
+  try
+    Doc := ReadCashboxStatus.Get('Data').Get('CurrentState').Get('XReport');
+    // Sell
+    Result :=  Result +
+      (Doc.Get('Sell').Get('Taken').Value -
+      Doc.Get('Sell').Get('Change').Value);
+    // Buy
+    Result :=  Result -
+      (Doc.Get('Buy').Get('Taken').Value -
+      Doc.Get('Buy').Get('Change').Value);
+    // ReturnSell
+    Result :=  Result -
+      (Doc.Get('ReturnSell').Get('Taken').Value -
+      Doc.Get('ReturnSell').Get('Change').Value);
+    // ReturnBuy
+    Result :=  Result +
+      (Doc.Get('ReturnBuy').Get('Taken').Value -
+      Doc.Get('ReturnBuy').Get('Change').Value);
+
+    Params.DailyTotal := Result;
+    SaveUsrParams;
+  except
+    on E: Exception do
+    begin
+      Logger.Error('Failed to get cashbox status, ' + E.Message);
+    end;
+  end;
 end;
 
 function TWebkassaImpl.ReadSellTotal: Currency;
 var
   Doc: TlkJSONbase;
 begin
-  Result := 0;
-  Doc := ReadCashboxStatus.Get('Data').Get('CurrentState').Get('XReport');
-  // Sell
-  Result :=  Result +
-    (Doc.Get('Sell').Get('Taken').Value -
-    Doc.Get('Sell').Get('Change').Value);
-  // ReturnBuy
-  Result :=  Result +
-    (Doc.Get('ReturnBuy').Get('Taken').Value -
-    Doc.Get('ReturnBuy').Get('Change').Value);
+  Result := Params.SellTotal;
+  try
+    Doc := ReadCashboxStatus.Get('Data').Get('CurrentState').Get('XReport');
+    // Sell
+    Result :=  Result +
+      (Doc.Get('Sell').Get('Taken').Value -
+      Doc.Get('Sell').Get('Change').Value);
+    // ReturnBuy
+    Result :=  Result +
+      (Doc.Get('ReturnBuy').Get('Taken').Value -
+      Doc.Get('ReturnBuy').Get('Change').Value);
+
+    Params.SellTotal := Result;
+    SaveUsrParams;
+  except
+    on E: Exception do
+    begin
+      Logger.Error('Failed to get cashbox status, ' + E.Message);
+    end;
+  end;
 end;
 
 function TWebkassaImpl.ReadRefundTotal: Currency;
 var
   Doc: TlkJSONbase;
 begin
-  Result := 0;
-  Doc := ReadCashboxStatus.Get('Data').Get('CurrentState').Get('XReport');
-  // Buy
-  Result :=  Result +
-    (Doc.Get('Buy').Get('Taken').Value -
-    Doc.Get('Buy').Get('Change').Value);
-  // ReturnSell
-  Result :=  Result +
-    (Doc.Get('ReturnSell').Get('Taken').Value -
-    Doc.Get('ReturnSell').Get('Change').Value);
+  Result := Params.RefundTotal;
+  try
+    Doc := ReadCashboxStatus.Get('Data').Get('CurrentState').Get('XReport');
+    // Buy
+    Result :=  Result +
+      (Doc.Get('Buy').Get('Taken').Value -
+      Doc.Get('Buy').Get('Change').Value);
+    // ReturnSell
+    Result :=  Result +
+      (Doc.Get('ReturnSell').Get('Taken').Value -
+      Doc.Get('ReturnSell').Get('Change').Value);
+
+    Params.RefundTotal := Result;
+    SaveUsrParams;
+  except
+    on E: Exception do
+    begin
+      Logger.Error('Failed to get cashbox status, ' + E.Message);
+    end;
+  end;
 end;
 
 function TWebkassaImpl.GetData(DataItem: Integer; out OptArgs: Integer;
@@ -2124,6 +2166,27 @@ begin
 
     Params.ShiftNumber := Command.Data.ShiftNumber;
     Params.SumInCashbox := Command.Data.SumInCashbox;
+    if Command.Data.StartNonNullable <> nil then
+    begin
+      Params.GrossTotal := Command.Data.StartNonNullable.Sell -
+        Command.Data.StartNonNullable.Buy -
+        Command.Data.StartNonNullable.ReturnSell +
+        Command.Data.StartNonNullable.ReturnBuy;
+    end;
+    Params.DailyTotal :=
+      (Command.Data.Sell.Taken - Command.Data.Sell.Change) -
+      (Command.Data.Buy.Taken - Command.Data.Buy.Change) -
+      (Command.Data.ReturnSell.Taken - Command.Data.ReturnSell.Change) +
+      (Command.Data.ReturnBuy.Taken - Command.Data.ReturnBuy.Change);
+
+    Params.SellTotal :=
+      (Command.Data.Sell.Taken - Command.Data.Sell.Change) +
+      (Command.Data.ReturnBuy.Taken - Command.Data.ReturnBuy.Change);
+
+    Params.RefundTotal :=
+      (Command.Data.Buy.Taken - Command.Data.Buy.Change) +
+      (Command.Data.ReturnSell.Taken - Command.Data.ReturnSell.Change);
+
     SaveUsrParams;
 
     ClearCashboxStatus;

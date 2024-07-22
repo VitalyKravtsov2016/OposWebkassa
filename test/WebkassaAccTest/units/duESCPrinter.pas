@@ -64,6 +64,8 @@ type
     procedure TestCutDistanceFontB;
     procedure TestBitmap2;
     procedure TestQRCode4;
+    procedure TestPageModeA;
+    procedure TestPageModeB;
   end;
 
 implementation
@@ -430,7 +432,7 @@ begin
     FPrinter.DownloadBMP(Bitmap);
     FPrinter.SetJustification(JUSTIFICATION_LEFT);
     FPrinter.PrintBmp(BMP_MODE_NORMAL);
-    FPrinter.SetJustification(JUSTIFICATION_CENTERING);
+    FPrinter.SetJustification(JUSTIFICATION_CENTER);
     FPrinter.PrintBmp(BMP_MODE_NORMAL);
     FPrinter.SetJustification(JUSTIFICATION_RIGHT);
     FPrinter.PrintBmp(BMP_MODE_NORMAL);
@@ -486,7 +488,7 @@ var
 begin
   FPrinter.Initialize;
   FPrinter.SetHRIPosition(HRI_BELOW_BARCODE);
-  FPrinter.SetJustification(JUSTIFICATION_CENTERING);
+  FPrinter.SetJustification(JUSTIFICATION_CENTER);
   FPrinter.PrintText('QRCode test' + CRLF);
   FPrinter.Select2DBarcode(BARCODE_QR_CODE);
   QRCode.SymbolVersion := 0;
@@ -503,7 +505,7 @@ begin
   FPrinter.PrintText('Default justification' + CRLF);
   FPrinter.SetJustification(JUSTIFICATION_LEFT);
   FPrinter.PrintText('Left justification' + CRLF);
-  FPrinter.SetJustification(JUSTIFICATION_CENTERING);
+  FPrinter.SetJustification(JUSTIFICATION_CENTER);
   FPrinter.PrintText('Centering justification' + CRLF);
   FPrinter.SetJustification(JUSTIFICATION_RIGHT);
   FPrinter.PrintText('Right justification' + CRLF);
@@ -666,7 +668,7 @@ begin
 
     FPrinter.Initialize;
     FPrinter.DefineNVBitImage(1, Bitmap);
-    FPrinter.SetJustification(JUSTIFICATION_CENTERING);
+    FPrinter.SetJustification(JUSTIFICATION_CENTER);
     FPrinter.PrintNVBitImage(1, BMP_MODE_NORMAL);
   finally
     Bitmap.Free;
@@ -956,6 +958,224 @@ begin
   FPrinter.printQRCode(QRCode);
 end;
 
+  (*
+  000 "Компания ПАЙ"
+  Кассовый чек
+  1 Гречка отварная 80.00*1шт. =80.00
+  НДС не облагается
+  1 Свинина тушеная 260.00*1шт. =260.00
+  НLС не облагается
+  1 Суп мексиканский 120.00*1шт. =120.00
+  НДС не облагается
+  ИТОГ =460.00
+  СУММА БЕЗ НДС =460.00
+  БЕЗНАЛИЧНЫМИ =460.00
+  Кассир Менеджер Елена 2022
+  000 "Компания ПАЙ"
+  115114. Москва. Дербеневская наб.. д.7 стр. 22
+  Место расчетов                  Столовая
+  ЗН ККТ 00106304241645
+  РН ККТ 0000373856050035
+  ИНН 7725699008
+  ФН 7380440700076549
+  ФД 41110
+  ФП 2026476352
+  ПРИХОД 19.07.24 13:14
+  *)
+
+procedure TESCPrinterTest.TestPageModeA;
+const
+  Separator = '------------------------------------------------';
+  Barcode = 't=20240719T1314&s=460.00&fn=7380440700076549&i=41110&fp=2026476352&n=1';
+var
+  QRCode: TQRCode;
+  PageSize: TRect;
+begin
+  FPrinter.Initialize;
+  FPrinter.SetLineSpacing(0);
+  FPrinter.BeginDocument;
+  //
+  FPrinter.SetPrintMode($38);
+  FPrinter.PrintText('000 "Компания ПАЙ"');
+  FPrinter.SetPrintMode(0);
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText(CRLF);
+  // Normal
+  FPrinter.SetJustification(JUSTIFICATION_CENTER);
+  FPrinter.PrintText('Кассовый чек');
+  FPrinter.PrintText(CRLF);
+  FPrinter.SetJustification(JUSTIFICATION_LEFT);
+
+  FPrinter.PrintText('1 Гречка отварная 80.00*1шт.              =80.00');
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText('НДС не облагается');
+  FPrinter.PrintText(CRLF);
+
+  FPrinter.PrintText('1 Свинина тушеная 260.00*1шт.            =260.00');
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText('НДС не облагается');
+  FPrinter.PrintText(CRLF);
+
+  FPrinter.PrintText('1 Суп мексиканский 120.00*1шт.           =120.00');
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText('НДС не облагается');
+  FPrinter.PrintText(CRLF);
+
+  FPrinter.PrintText(Separator);
+  FPrinter.PrintText(CRLF);
+
+  FPrinter.SetPrintMode($38);
+  FPrinter.PrintText('ИТОГ             =460.00');
+  FPrinter.SetPrintMode(0);
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText(Separator);
+  FPrinter.PrintText(CRLF);
+
+  FPrinter.PrintText('СУММА БЕЗ НДС                            =460.00');
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText('БЕЗНАЛИЧНЫМИ                             =460.00');
+  FPrinter.PrintText(CRLF);
+
+  FPrinter.PrintText('Кассир                       Менеджер Елена 2022');
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText('000 "Компания ПАЙ"');
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText('115114. Москва. Дербеневская наб.. д.7 стр. 22');
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText('Место расчетов                          Столовая');
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText(Separator);
+  FPrinter.PrintText(CRLF);
+
+  FPrinter.SetPageMode;
+  PageSize.Left := 0;
+  PageSize.Top := 0;
+  PageSize.Right := 652;
+  PageSize.Bottom := 550;
+  FPrinter.SetPageModeArea(PageSize);
+
+  // QR code on the right
+  FPrinter.PrintText('                              ');
+  FPrinter.SetPMRelativeVerticalPosition(70);
+  FPrinter.Select2DBarcode(BARCODE_QR_CODE);
+  QRCode.SymbolVersion := 0;
+  QRCode.ECLevel := 0;
+  QRCode.ModuleSize := 6;
+  QRCode.data := Barcode;
+  FPrinter.printQRCode(QRCode);
+  FPrinter.PrintText(CRLF);
+  // Text on the left
+  FPrinter.SetPMAbsoluteVerticalPosition(0);
+  FPrinter.PrintText('ЗН ККТ 00106304241645' + CRLF);
+  FPrinter.PrintText('РН ККТ 0000373856050035' + CRLF);
+  FPrinter.PrintText('ИНН 7725699008' + CRLF);
+  FPrinter.PrintText('ФН 7380440700076549' + CRLF);
+  FPrinter.PrintText('ФД 41110' + CRLF);
+  FPrinter.PrintText('ФП 2026476352' + CRLF);
+  FPrinter.PrintText('ПРИХОД 19.07.24 13:14' + CRLF);
+  FPrinter.PrintAndReturnStandardMode;
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText(CRLF);
+  FPrinter.PartialCut;
+  FPrinter.EndDocument;
+end;
+
+procedure TESCPrinterTest.TestPageModeB;
+const
+  Separator = '----------------------------------------------------------------';
+  Barcode = 't=20240719T1314&s=460.00&fn=7380440700076549&i=41110&fp=2026476352&n=1';
+var
+  QRCode: TQRCode;
+  PageSize: TRect;
+begin
+  FPrinter.Initialize;
+  FPrinter.SetLineSpacing(0);
+  FPrinter.BeginDocument;
+  //
+  FPrinter.SetPrintMode($39);
+  FPrinter.PrintText('000 "Компания ПАЙ"');
+  FPrinter.SetPrintMode(1);
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText(CRLF);
+  // Normal
+  FPrinter.SetJustification(JUSTIFICATION_CENTER);
+  FPrinter.PrintText('Кассовый чек');
+  FPrinter.PrintText(CRLF);
+  FPrinter.SetJustification(JUSTIFICATION_LEFT);
+
+  FPrinter.PrintText('1 Гречка отварная 80.00*1шт.                              =80.00');
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText('НДС не облагается');
+  FPrinter.PrintText(CRLF);
+
+  FPrinter.PrintText('1 Свинина тушеная 260.00*1шт.                            =260.00');
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText('НДС не облагается');
+  FPrinter.PrintText(CRLF);
+
+  FPrinter.PrintText('1 Суп мексиканский 120.00*1шт.                           =120.00');
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText('НДС не облагается');
+  FPrinter.PrintText(CRLF);
+
+  FPrinter.PrintText(Separator);
+  FPrinter.PrintText(CRLF);
+
+  FPrinter.SetPrintMode($39);
+  FPrinter.PrintText('ИТОГ                     =460.00');
+  FPrinter.SetPrintMode(1);
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText(Separator);
+  FPrinter.PrintText(CRLF);
+
+  FPrinter.PrintText('СУММА БЕЗ НДС                                            =460.00');
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText('БЕЗНАЛИЧНЫМИ                                             =460.00');
+  FPrinter.PrintText(CRLF);
+
+  FPrinter.PrintText('Кассир                                       Менеджер Елена 2022');
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText('000 "Компания ПАЙ"');
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText('115114. Москва. Дербеневская наб.. д.7 стр. 22');
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText('Место расчетов                                          Столовая');
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText(Separator);
+  FPrinter.PrintText(CRLF);
+
+  FPrinter.SetPageMode;
+  PageSize.Left := 0;
+  PageSize.Top := 0;
+  PageSize.Right := 652;
+  PageSize.Bottom := 550;
+  FPrinter.SetPageModeArea(PageSize);
+
+  // QR code on the right
+  FPrinter.PrintText('                                         ');
+  FPrinter.SetPMRelativeVerticalPosition(70);
+  FPrinter.Select2DBarcode(BARCODE_QR_CODE);
+  QRCode.SymbolVersion := 0;
+  QRCode.ECLevel := 0;
+  QRCode.ModuleSize := 6;
+  QRCode.data := Barcode;
+  FPrinter.printQRCode(QRCode);
+  FPrinter.PrintText(CRLF);
+  // Text on the left
+  FPrinter.SetPMAbsoluteVerticalPosition(0);
+  FPrinter.PrintText('ЗН ККТ 00106304241645' + CRLF);
+  FPrinter.PrintText('РН ККТ 0000373856050035' + CRLF);
+  FPrinter.PrintText('ИНН 7725699008' + CRLF);
+  FPrinter.PrintText('ФН 7380440700076549' + CRLF);
+  FPrinter.PrintText('ФД 41110' + CRLF);
+  FPrinter.PrintText('ФП 2026476352' + CRLF);
+  FPrinter.PrintText('ПРИХОД 19.07.24 13:14' + CRLF);
+  FPrinter.PrintAndReturnStandardMode;
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText(CRLF);
+  FPrinter.PartialCut;
+  FPrinter.EndDocument;
+end;
 
 initialization
   RegisterTest('', TESCPrinterTest.Suite);

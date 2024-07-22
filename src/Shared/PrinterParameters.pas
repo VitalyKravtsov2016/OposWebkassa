@@ -205,6 +205,10 @@ type
     ShiftNumber: Integer;
     CheckNumber: WideString;
     SumInCashbox: Currency;
+    GrossTotal: Currency;
+    DailyTotal: Currency;
+    SellTotal: Currency;
+    RefundTotal: Currency;
 
     constructor Create(ALogger: ILogFile);
     destructor Destroy; override;
@@ -380,6 +384,10 @@ begin
   OfflineText := DefOfflineText;
   Utf8Enabled := DefUtf8Enabled;
   SumInCashbox := 0;
+  GrossTotal := 0;
+  DailyTotal := 0;
+  SellTotal := 0;
+  RefundTotal := 0;
   Units.Clear;
 end;
 
