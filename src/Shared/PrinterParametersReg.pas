@@ -433,7 +433,7 @@ begin
   KeyNames := TTntStringList.Create;
   try
     Reg.Access := KEY_READ;
-    Reg.RootKey := HKEY_CURRENT_USER;
+    Reg.RootKey := HKEY_LOCAL_MACHINE;
     if Reg.OpenKey(REGSTR_KEY_IBT, False) then
     begin
       if Reg.ValueExists('IBTHeader') then
@@ -501,7 +501,7 @@ begin
   Reg := TTntRegistry.Create;
   try
     Reg.Access := KEY_ALL_ACCESS;
-    Reg.RootKey := HKEY_CURRENT_USER;
+    Reg.RootKey := HKEY_LOCAL_MACHINE;
     if Reg.OpenKey(REGSTR_KEY_IBT, True) then
     begin
       Reg.WriteString('IBTHeader', Parameters.HeaderText);
