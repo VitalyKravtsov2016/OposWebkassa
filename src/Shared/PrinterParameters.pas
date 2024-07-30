@@ -47,6 +47,10 @@ const
   PrinterTypeEscPrinterNetwork  = 3;
   PrinterTypeEscPrinterWindows  = 4;
 
+  // ESC printer command set
+  EscPrinterTypeRongta  = 0;
+  EscPrinterTypeOA48    = 1;
+
 
   DefLogMaxCount = 10;
   DefLogFileEnabled = True;
@@ -75,6 +79,7 @@ const
   DefCashboxNumber = 'SWK00032685';
   DefPrinterName = '';
   DefPrinterType = 0;
+  DefEscPrinterType  = 0;
   DefFontName = '';
   DefRoundType = RoundTypeNone; // Округление позиций
   DefVATNumber = '00000';
@@ -154,6 +159,7 @@ type
     FCashboxNumber: WideString;
     FPrinterName: WideString;
     FPrinterType: Integer;
+    FEscPrinterType: Integer;
     FFontName: WideString;
     FVatRates: TVatRates;
     FVatRateEnabled: Boolean;
@@ -241,6 +247,7 @@ type
     property NumTrailerLines: Integer read FNumTrailerLines write SetNumTrailerLines;
     property PrinterName: WideString read FPrinterName write FPrinterName;
     property PrinterType: Integer read FPrinterType write FPrinterType;
+    property EscPrinterType: Integer read FEscPrinterType write FEscPrinterType;
     property FontName: WideString read FFontName write FFontName;
     property CashboxNumber: WideString read FCashboxNumber write FCashboxNumber;
     property VatRates: TVatRates read FVatRates;
@@ -350,6 +357,7 @@ begin
   PaymentType4 := 3;
   PrinterName := DefPrinterName;
   PrinterType := DefPrinterType;
+  EscPrinterType := DefEscPrinterType;
   FontName := DefFontName;
   RoundType := DefRoundType;
   VATNumber := DefVATNumber;
@@ -430,6 +438,7 @@ begin
   Logger.Debug('LogFileEnabled: ' + BoolToStr(LogFileEnabled));
   Logger.Debug('PrinterName: ' + PrinterName);
   Logger.Debug('PrinterType: ' + IntToStr(PrinterType));
+  Logger.Debug('EscPrinterType: ' + IntToStr(EscPrinterType));
   Logger.Debug('CashboxNumber: ' + CashboxNumber);
   Logger.Debug('NumHeaderLines: ' + IntToStr(NumHeaderLines));
   Logger.Debug('NumTrailerLines: ' + IntToStr(NumTrailerLines));
@@ -627,6 +636,7 @@ begin
     CashboxNumber := Src.CashboxNumber;
     PrinterName := Src.PrinterName;
     PrinterType := Src.PrinterType;
+    EscPrinterType := Src.EscPrinterType;
     FontName := Src.FontName;
     VatRateEnabled := Src.VatRateEnabled;
     PaymentType2 := Src.PaymentType2;

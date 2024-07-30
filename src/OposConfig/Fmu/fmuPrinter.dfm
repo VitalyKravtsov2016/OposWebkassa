@@ -2,7 +2,7 @@ object fmPrinter: TfmPrinter
   Left = 577
   Top = 205
   Width = 471
-  Height = 462
+  Height = 502
   Caption = #1055#1088#1080#1085#1090#1077#1088
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -13,19 +13,19 @@ object fmPrinter: TfmPrinter
   OldCreateOrder = False
   DesignSize = (
     455
-    424)
+    464)
   PixelsPerInch = 96
   TextHeight = 13
   object lblResultCode: TTntLabel
     Left = 8
-    Top = 320
+    Top = 360
     Width = 55
     Height = 13
     Caption = #1056#1077#1079#1091#1083#1100#1090#1072#1090':'
   end
   object memResult: TMemo
     Left = 8
-    Top = 336
+    Top = 376
     Width = 441
     Height = 49
     Anchors = [akLeft, akTop, akRight, akBottom]
@@ -41,7 +41,7 @@ object fmPrinter: TfmPrinter
   end
   object btnTestConnection: TTntButton
     Left = 240
-    Top = 392
+    Top = 432
     Width = 105
     Height = 25
     Anchors = [akRight, akBottom]
@@ -51,7 +51,7 @@ object fmPrinter: TfmPrinter
   end
   object btnPrintReceipt: TTntButton
     Left = 352
-    Top = 392
+    Top = 432
     Width = 97
     Height = 25
     Anchors = [akRight, akBottom]
@@ -63,7 +63,7 @@ object fmPrinter: TfmPrinter
     Left = 8
     Top = 8
     Width = 441
-    Height = 305
+    Height = 345
     ActivePage = tsCommonParams
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 0
@@ -71,7 +71,7 @@ object fmPrinter: TfmPrinter
       Caption = #1054#1073#1097#1080#1077
       object lblPrinterName: TTntLabel
         Left = 8
-        Top = 56
+        Top = 88
         Width = 103
         Height = 13
         Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1087#1088#1080#1085#1090#1077#1088#1072':'
@@ -85,47 +85,54 @@ object fmPrinter: TfmPrinter
       end
       object lblFontName: TTntLabel
         Left = 8
-        Top = 88
+        Top = 120
         Width = 87
         Height = 13
         Caption = #1064#1088#1080#1092#1090' '#1087#1088#1080#1085#1090#1077#1088#1072':'
       end
       object lblDevicePollTime: TTntLabel
         Left = 8
-        Top = 216
+        Top = 248
         Width = 103
         Height = 13
         Caption = #1055#1077#1088#1080#1086#1076' '#1086#1087#1088#1086#1089#1072', '#1084#1089'.:'
       end
       object lblLineSpacing: TTntLabel
         Left = 8
-        Top = 184
+        Top = 216
         Width = 124
         Height = 13
         Caption = #1052#1077#1078#1089#1090#1088#1086#1095#1085#1099#1081' '#1080#1085#1090#1077#1088#1074#1072#1083':'
       end
       object lblRecLineChars: TTntLabel
         Left = 8
-        Top = 120
+        Top = 152
         Width = 162
         Height = 13
         Caption = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1089#1080#1084#1074#1086#1083#1086#1074' '#1074' '#1089#1090#1088#1086#1082#1077':'
       end
       object lblRecLineHeight: TTntLabel
         Left = 8
-        Top = 152
+        Top = 184
         Width = 94
         Height = 13
         Caption = #1042#1099#1089#1086#1090#1072' '#1089#1080#1084#1074#1086#1083#1086#1074':'
       end
+      object lblEscPrinterType: TTntLabel
+        Left = 8
+        Top = 56
+        Width = 96
+        Height = 13
+        Caption = #1058#1080#1087' ESC '#1087#1088#1080#1085#1090#1077#1088#1072':'
+      end
       object cbPrinterName: TTntComboBox
         Left = 120
-        Top = 56
+        Top = 88
         Width = 305
         Height = 21
         Style = csDropDownList
         ItemHeight = 13
-        TabOrder = 1
+        TabOrder = 2
         OnChange = cbPrinterNameChange
       end
       object cbPrinterType: TTntComboBox
@@ -146,15 +153,26 @@ object fmPrinter: TfmPrinter
       end
       object cbFontName: TTntComboBox
         Left = 184
-        Top = 88
+        Top = 120
         Width = 241
         Height = 21
         Style = csDropDownList
         ItemHeight = 13
-        TabOrder = 2
+        TabOrder = 3
         OnChange = cbFontNameChange
       end
       object seDevicePollTime: TSpinEdit
+        Left = 184
+        Top = 248
+        Width = 241
+        Height = 22
+        MaxValue = 0
+        MinValue = 0
+        TabOrder = 7
+        Value = 0
+        OnClick = ModifiedClick
+      end
+      object seLineSpacing: TSpinEdit
         Left = 184
         Top = 216
         Width = 241
@@ -165,29 +183,7 @@ object fmPrinter: TfmPrinter
         Value = 0
         OnClick = ModifiedClick
       end
-      object seLineSpacing: TSpinEdit
-        Left = 184
-        Top = 184
-        Width = 241
-        Height = 22
-        MaxValue = 0
-        MinValue = 0
-        TabOrder = 5
-        Value = 0
-        OnClick = ModifiedClick
-      end
       object seRecLineChars: TSpinEdit
-        Left = 184
-        Top = 120
-        Width = 241
-        Height = 22
-        MaxValue = 0
-        MinValue = 0
-        TabOrder = 3
-        Value = 0
-        OnClick = ModifiedClick
-      end
-      object seRecLineHeight: TSpinEdit
         Left = 184
         Top = 152
         Width = 241
@@ -198,14 +194,38 @@ object fmPrinter: TfmPrinter
         Value = 0
         OnClick = ModifiedClick
       end
+      object seRecLineHeight: TSpinEdit
+        Left = 184
+        Top = 184
+        Width = 241
+        Height = 22
+        MaxValue = 0
+        MinValue = 0
+        TabOrder = 5
+        Value = 0
+        OnClick = ModifiedClick
+      end
       object chbUtf8Enabled: TCheckBox
         Left = 8
-        Top = 248
+        Top = 280
         Width = 188
         Height = 17
         Alignment = taLeftJustify
         Caption = #1055#1077#1095#1072#1090#1100' '#1074' '#1082#1086#1076#1080#1088#1086#1074#1082#1077' UTF8'
-        TabOrder = 7
+        TabOrder = 8
+      end
+      object cbEscPrinterType: TTntComboBox
+        Left = 120
+        Top = 56
+        Width = 305
+        Height = 21
+        Style = csDropDownList
+        ItemHeight = 13
+        TabOrder = 1
+        OnChange = cbPrinterTypeChange
+        Items.Strings = (
+          'Rongta'
+          'OA-48')
       end
     end
     object tsSocketParams: TTntTabSheet

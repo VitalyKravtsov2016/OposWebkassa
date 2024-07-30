@@ -54,6 +54,7 @@ type
     procedure TestCharacterFont;
     procedure TestCodePage;
     procedure TestCodePage2;
+    procedure TestCodePages;
     procedure TestNVBitImage;
     procedure TestCoverOpen;
     procedure TestRecoverError;
@@ -66,6 +67,7 @@ type
     procedure TestQRCode4;
     procedure TestPageModeA;
     procedure TestPageModeB;
+    procedure TestPrintUTF;
   end;
 
 implementation
@@ -97,7 +99,9 @@ end;
 
 function TESCPrinterTest.CreateRawPort: TRawPrinterPort;
 begin
-  Result := TRawPrinterPort.Create(FLogger, 'RONGTA 80mm Series Printer');
+  Result := TRawPrinterPort.Create(FLogger, 'POS-80C');
+  //Result := TRawPrinterPort.Create(FLogger, 'printer-80');
+  //Result := TRawPrinterPort.Create(FLogger, 'RONGTA 80mm Series Printer');
 end;
 
 function TESCPrinterTest.CreateSerialPort: TSerialPort;
@@ -656,6 +660,25 @@ begin
   end;
 end;
 
+procedure TESCPrinterTest.TestCodePages;
+var
+  i: Integer;
+  Text: AnsiString;
+begin
+  Text := '';
+  for i := $80 to $FF do
+    Text := Text + AnsiChar(i);
+
+  //for i := 0 to 70 do
+  for i := 71 to 75 do
+  begin
+    FPrinter.Initialize;
+    FPrinter.SetCodePage(i);
+    FPrinter.PrintText(Format('Codepage %d', [i]) + CRLF);
+    FPrinter.PrintText(Text + CRLF);
+  end;
+end;
+
 procedure TESCPrinterTest.TestNVBitImage;
 var
   Bitmap: TBitmap;
@@ -1175,6 +1198,11 @@ begin
   FPrinter.PrintText(CRLF);
   FPrinter.PartialCut;
   FPrinter.EndDocument;
+end;
+
+procedure TESCPrinterTest.TestPrintUTF;
+begin
+  FPrinter.PrintText(UTF8Encode('С новым годом!'));
 end;
 
 initialization

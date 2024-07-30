@@ -195,6 +195,9 @@ begin
       if Reg.ValueExists('PrinterType') then
         Parameters.PrinterType := Reg.ReadInteger('PrinterType');
 
+      if Reg.ValueExists('EscPrinterType') then
+        Parameters.EscPrinterType := Reg.ReadInteger('EscPrinterType');
+
       if Reg.ValueExists('VatRateEnabled') then
         Parameters.VatRateEnabled := Reg.ReadBool('VatRateEnabled');
 
@@ -356,6 +359,7 @@ begin
     Reg.WriteString('CashboxNumber', FParameters.CashboxNumber);
     Reg.WriteString('PrinterName', FParameters.PrinterName);
     Reg.WriteInteger('PrinterType', FParameters.PrinterType);
+    Reg.WriteInteger('EscPrinterType', FParameters.EscPrinterType);
     Reg.WriteString('FontName', FParameters.FontName);
     Reg.WriteInteger('PaymentType2', FParameters.PaymentType2);
     Reg.WriteInteger('PaymentType3', FParameters.PaymentType3);

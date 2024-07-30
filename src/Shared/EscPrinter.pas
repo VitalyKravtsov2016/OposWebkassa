@@ -1152,7 +1152,7 @@ end;
 
 procedure TEscPrinter.SetCodePage(CodePage: Integer);
 begin
-  if FCodePage = CodePage then Exit;
+  //if FCodePage = CodePage then Exit;
 
   Logger.Debug(Format('TEscPrinter.SetCodePage(%d)', [CodePage]));
   Send(#$1B#$74 + Chr(CodePage));
@@ -1793,5 +1793,42 @@ begin
     PrintText(Chr(Item.Code));
   end;
 end;
+
+
+// Set QR code amplification (dot size)
+// 1D 28 6B 30 67 07 - 7
+// 1D 28 6B 30 67 01 - 1
+
+// Set QR code error correction level
+// 1D 28 6B 30 69 48 - 7%
+// 1D 28 6B 30 69 49 - 15%
+// 1D 28 6B 30 69 50 - 25%
+// 1D 28 6B 30 69 51 - 30%
+
+
+// Send QR code data ?
+// 1D 28 6B 30 80 52 00 57 65 6C 63 6F 6D 65 20 74 6F 20 50 72 69
+// 6E 74 65 72 0D 0A 54 65 63 68 6E 6F 6C 6F 67 79 20 74 6F 20 63
+// 72 65 61 74 65 20 61 64 76 61 6E 74 61 67 65 73 0D 0A 51 75 61
+// 6C 69 74 79 20 74 6F 20 77 69 6E 20 69 6E 20 74 68 65 20 66 75
+// 74 75 72 65 00
+
+// Print QR Code
+// 1D 28 6B 30 81 1B 4A C8
+
+// Self test
+// 1F 1B 1F 67
+
+// Set UTF codepage
+// 1F 1B 10 01 02 01
+
+// Codepage 1 (Katakana)
+// 1F 1B 10 01 02 00
+// 1F 1B 1F FF 01 0A 00
+
+// Codepage 2 (Katakana)
+// 1F 1B 10 01 02 00
+// 1F 1B 1F FF 02 0A 00
+
 
 end.

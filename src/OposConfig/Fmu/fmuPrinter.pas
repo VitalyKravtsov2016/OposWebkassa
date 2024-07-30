@@ -61,6 +61,8 @@ type
     seRecLineChars: TSpinEdit;
     seRecLineHeight: TSpinEdit;
     chbUtf8Enabled: TCheckBox;
+    lblEscPrinterType: TTntLabel;
+    cbEscPrinterType: TTntComboBox;
     procedure btnTestConnectionClick(Sender: TObject);
     procedure btnPrintReceiptClick(Sender: TObject);
     procedure cbPrinterTypeChange(Sender: TObject);
@@ -110,6 +112,7 @@ end;
 procedure TfmPrinter.UpdatePage;
 begin
   cbPrinterType.ItemIndex := Parameters.PrinterType;
+  cbEscPrinterType.ItemIndex := Parameters.EscPrinterType;
   UpdateDeviceNames;
   cbPrinterName.Text := Parameters.PrinterName;
   UpdateFontNames;
@@ -229,6 +232,7 @@ end;
 procedure TfmPrinter.UpdateObject;
 begin
   Parameters.PrinterType := cbPrinterType.ItemIndex;
+  Parameters.EscPrinterType := cbEscPrinterType.ItemIndex;
   Parameters.PrinterName := cbPrinterName.Text;
   Parameters.FontName := cbFontName.Text;
   Parameters.PortName := cbPortName.Text;
