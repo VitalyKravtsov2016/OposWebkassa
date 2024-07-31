@@ -28,12 +28,12 @@ type
     function GetParams: TPrinterParameters;
 
     property Logger: ILogFile read GetLogger;
-    property Client: TWebkassaClient read GetClient;
   public
     function DirectIO2(Command: Integer; const pData: Integer;
       const pString: WideString): Integer;
 
     property Driver: TWebkassaImpl read GetDriver;
+    property Client: TWebkassaClient read GetClient;
     property Params: TPrinterParameters read GetParams;
   public
     destructor Destroy; override;

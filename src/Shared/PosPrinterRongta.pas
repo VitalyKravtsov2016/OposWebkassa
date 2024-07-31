@@ -1,4 +1,4 @@
-unit PosEscPrinter;
+unit PosPrinterRongta;
 
 interface
 
@@ -11,7 +11,7 @@ uses
   Opos, OposEsc, OposPtr, OposException, OposServiceDevice19, OposEvents,
   OposPOSPrinter_CCO_TLB, WException, OposPtrUtils,
   // This
-  LogFile, DriverError, EscPrinter, PrinterPort, NotifyThread,
+  LogFile, DriverError, EscPrinterRongta, PrinterPort, NotifyThread,
   RegExpr, SerialPort, Jpeg, GifImage, uZintBarcode, BarcodeUtils,
   StringUtils, DebugUtils;
 
@@ -41,14 +41,14 @@ type
     TextPosition: Integer;
   end;
 
-  { TPosEscPrinter }
+  { TPosPrinterRongta }
 
-  TPosEscPrinter = class(TComponent, IOPOSPOSPrinter, IOposEvents)
+  TPosPrinterRongta = class(TComponent, IOPOSPOSPrinter, IOposEvents)
   private
     FLogger: ILogFile;
     FPort: IPrinterPort;
-    FPrinter: TEscPrinter;
     FThread: TNotifyThread;
+    FPrinter: TEscPrinterRongta;
     FDevice: TOposServiceDevice19;
     FLastPrintMode: TPrintModes;
 
@@ -210,7 +210,7 @@ type
     procedure SetCoverState(CoverOpened: Boolean);
 
     property Logger: ILogFile read FLogger;
-    property Printer: TEscPrinter read FPrinter;
+    property Printer: TEscPrinterRongta read FPrinter;
 
     procedure SetRecEmpty(ARecEmpty: Boolean);
     procedure SetRecNearEnd(ARecNearEnd: Boolean);
@@ -824,21 +824,21 @@ begin
   end;
 end;
 
-{ TPosEscPrinter }
+{ TPosPrinterRongta }
 
-constructor TPosEscPrinter.Create2(AOwner: TComponent; APort: IPrinterPort;
+constructor TPosPrinterRongta.Create2(AOwner: TComponent; APort: IPrinterPort;
   ALogger: ILogFile);
 begin
   inherited Create(AOwner);
   FPort := APort;
-  FPrinter := TEscPrinter.Create(APort, ALogger);
+  FPrinter := TEscPrinterRongta.Create(APort, ALogger);
   FLogger := ALogger;
   FDevice := TOposServiceDevice19.Create(FLogger);
   FDevice.ErrorEventEnabled := False;
   Initialize;
 end;
 
-destructor TPosEscPrinter.Destroy;
+destructor TPosPrinterRongta.Destroy;
 begin
   if FDevice.Opened then
     Close;
@@ -851,7 +851,7 @@ begin
   inherited Destroy;
 end;
 
-procedure TPosEscPrinter.Initialize;
+procedure TPosPrinterRongta.Initialize;
 begin
   FAsyncMode := False;
   FCapCharacterSet := PTR_CCS_UNICODE;
@@ -995,22 +995,22 @@ begin
   PrintRasterGraphics := True;
 end;
 
-function TPosEscPrinter.ClearResult: Integer;
+function TPosPrinterRongta.ClearResult: Integer;
 begin
   Result := FDevice.ClearResult;
 end;
 
-procedure TPosEscPrinter.CheckEnabled;
+procedure TPosPrinterRongta.CheckEnabled;
 begin
   FDevice.CheckEnabled;
 end;
 
-function TPosEscPrinter.IllegalError: Integer;
+function TPosPrinterRongta.IllegalError: Integer;
 begin
   Result := FDevice.SetResultCode(OPOS_E_ILLEGAL);
 end;
 
-function TPosEscPrinter.HandleException(E: Exception): Integer;
+function TPosPrinterRongta.HandleException(E: Exception): Integer;
 var
   OPOSError: TOPOSError;
   OPOSException: EOPOSException;
@@ -1047,7 +1047,7 @@ begin
   end;
 end;
 
-procedure TPosEscPrinter.PrintMemoryGraphic(const Data: WideString;
+procedure TPosPrinterRongta.PrintMemoryGraphic(const Data: WideString;
   BMPType, Width, Alignment: Integer);
 var
   Graphic: TGraphic;
@@ -1072,22 +1072,22 @@ end;
 
 // IOPOSPOSPrinter
 
-function TPosEscPrinter.BeginInsertion(Timeout: Integer): Integer;
+function TPosPrinterRongta.BeginInsertion(Timeout: Integer): Integer;
 begin
   Result := ClearResult;
 end;
 
-function TPosEscPrinter.BeginRemoval(Timeout: Integer): Integer;
+function TPosPrinterRongta.BeginRemoval(Timeout: Integer): Integer;
 begin
   Result := ClearResult;
 end;
 
-function TPosEscPrinter.ChangePrintSide(Side: Integer): Integer;
+function TPosPrinterRongta.ChangePrintSide(Side: Integer): Integer;
 begin
   Result := ClearResult;
 end;
 
-function TPosEscPrinter.CheckHealth(Level: Integer): Integer;
+function TPosPrinterRongta.CheckHealth(Level: Integer): Integer;
 begin
   try
     case Level of
@@ -1111,7 +1111,7 @@ begin
   end;
 end;
 
-function TPosEscPrinter.ClaimDevice(Timeout: Integer): Integer;
+function TPosPrinterRongta.ClaimDevice(Timeout: Integer): Integer;
 begin
   try
     FDevice.ClaimDevice(Timeout);
@@ -1122,7 +1122,7 @@ begin
   end;
 end;
 
-function TPosEscPrinter.ClearOutput: Integer;
+function TPosPrinterRongta.ClearOutput: Integer;
 begin
   try
     FDevice.CheckClaimed;
@@ -1133,12 +1133,12 @@ begin
   end;
 end;
 
-function TPosEscPrinter.ClearPrintArea: Integer;
+function TPosPrinterRongta.ClearPrintArea: Integer;
 begin
   Result := ClearResult;
 end;
 
-function TPosEscPrinter.Close: Integer;
+function TPosPrinterRongta.Close: Integer;
 begin
   try
     Set_DeviceEnabled(False);
@@ -1151,7 +1151,7 @@ begin
   end;
 end;
 
-function TPosEscPrinter.CompareFirmwareVersion(
+function TPosPrinterRongta.CompareFirmwareVersion(
   const FirmwareFileName: WideString; out pResult: Integer): Integer;
 begin
   try
@@ -1163,7 +1163,7 @@ begin
   end;
 end;
 
-function TPosEscPrinter.CutPaper(Percentage: Integer): Integer;
+function TPosPrinterRongta.CutPaper(Percentage: Integer): Integer;
 begin
   try
     FPrinter.PartialCut;
@@ -1174,777 +1174,777 @@ begin
   end;
 end;
 
-function TPosEscPrinter.DirectIO(Command: Integer; var pData: Integer;
+function TPosPrinterRongta.DirectIO(Command: Integer; var pData: Integer;
   var pString: WideString): Integer;
 begin
   Result := ClearResult;
 end;
 
-function TPosEscPrinter.DrawRuledLine(Station: Integer;
+function TPosPrinterRongta.DrawRuledLine(Station: Integer;
   const PositionList: WideString; LineDirection, LineWidth, LineStyle,
   LineColor: Integer): Integer;
 begin
   Result := ClearResult;
 end;
 
-function TPosEscPrinter.EndInsertion: Integer;
+function TPosPrinterRongta.EndInsertion: Integer;
 begin
   Result := ClearResult;
 end;
 
-function TPosEscPrinter.EndRemoval: Integer;
+function TPosPrinterRongta.EndRemoval: Integer;
 begin
   Result := ClearResult;
 end;
 
-function TPosEscPrinter.Get_AsyncMode: WordBool;
+function TPosPrinterRongta.Get_AsyncMode: WordBool;
 begin
   Result := FAsyncMode;
 end;
 
-function TPosEscPrinter.Get_BinaryConversion: Integer;
+function TPosPrinterRongta.Get_BinaryConversion: Integer;
 begin
   Result := FDevice.BinaryConversion;
 end;
 
-function TPosEscPrinter.Get_CapCharacterSet: Integer;
+function TPosPrinterRongta.Get_CapCharacterSet: Integer;
 begin
   Result := FCapCharacterSet;
 end;
 
-function TPosEscPrinter.Get_CapCompareFirmwareVersion: WordBool;
+function TPosPrinterRongta.Get_CapCompareFirmwareVersion: WordBool;
 begin
   Result := Device.CapCompareFirmwareVersion;
 end;
 
-function TPosEscPrinter.Get_CapConcurrentJrnRec: WordBool;
+function TPosPrinterRongta.Get_CapConcurrentJrnRec: WordBool;
 begin
   Result := FCapConcurrentJrnRec;
 end;
 
-function TPosEscPrinter.Get_CapConcurrentJrnSlp: WordBool;
+function TPosPrinterRongta.Get_CapConcurrentJrnSlp: WordBool;
 begin
   Result := FCapConcurrentJrnSlp;
 end;
 
-function TPosEscPrinter.Get_CapConcurrentPageMode: WordBool;
+function TPosPrinterRongta.Get_CapConcurrentPageMode: WordBool;
 begin
   Result := FCapConcurrentPageMode;
 end;
 
-function TPosEscPrinter.Get_CapConcurrentRecSlp: WordBool;
+function TPosPrinterRongta.Get_CapConcurrentRecSlp: WordBool;
 begin
   Result := FCapConcurrentRecSlp;
 end;
 
-function TPosEscPrinter.Get_CapCoverSensor: WordBool;
+function TPosPrinterRongta.Get_CapCoverSensor: WordBool;
 begin
   Result := FCapCoverSensor;
 end;
 
-function TPosEscPrinter.Get_CapJrn2Color: WordBool;
+function TPosPrinterRongta.Get_CapJrn2Color: WordBool;
 begin
   Result := FCapJrn2Color;
 end;
 
-function TPosEscPrinter.Get_CapJrnBold: WordBool;
+function TPosPrinterRongta.Get_CapJrnBold: WordBool;
 begin
   Result := FCapJrnBold;
 end;
 
-function TPosEscPrinter.Get_CapJrnCartridgeSensor: Integer;
+function TPosPrinterRongta.Get_CapJrnCartridgeSensor: Integer;
 begin
   Result := FCapJrnCartridgeSensor;
 end;
 
-function TPosEscPrinter.Get_CapJrnColor: Integer;
+function TPosPrinterRongta.Get_CapJrnColor: Integer;
 begin
   Result := FCapJrnColor;
 end;
 
-function TPosEscPrinter.Get_CapJrnDhigh: WordBool;
+function TPosPrinterRongta.Get_CapJrnDhigh: WordBool;
 begin
   Result := FCapJrnDhigh;
 end;
 
-function TPosEscPrinter.Get_CapJrnDwide: WordBool;
+function TPosPrinterRongta.Get_CapJrnDwide: WordBool;
 begin
   Result := FCapJrnDwide;
 end;
 
-function TPosEscPrinter.Get_CapJrnDwideDhigh: WordBool;
+function TPosPrinterRongta.Get_CapJrnDwideDhigh: WordBool;
 begin
   Result := FCapJrnDwideDhigh;
 end;
 
-function TPosEscPrinter.Get_CapJrnEmptySensor: WordBool;
+function TPosPrinterRongta.Get_CapJrnEmptySensor: WordBool;
 begin
   Result := FCapJrnEmptySensor;
 end;
 
-function TPosEscPrinter.Get_CapJrnItalic: WordBool;
+function TPosPrinterRongta.Get_CapJrnItalic: WordBool;
 begin
   Result := FCapJrnItalic;
 end;
 
-function TPosEscPrinter.Get_CapJrnNearEndSensor: WordBool;
+function TPosPrinterRongta.Get_CapJrnNearEndSensor: WordBool;
 begin
   Result := FCapJrnNearEndSensor;
 end;
 
-function TPosEscPrinter.Get_CapJrnPresent: WordBool;
+function TPosPrinterRongta.Get_CapJrnPresent: WordBool;
 begin
   Result := FCapJrnPresent;
 end;
 
-function TPosEscPrinter.Get_CapJrnUnderline: WordBool;
+function TPosPrinterRongta.Get_CapJrnUnderline: WordBool;
 begin
   Result := FCapJrnUnderline;
 end;
 
-function TPosEscPrinter.Get_CapMapCharacterSet: WordBool;
+function TPosPrinterRongta.Get_CapMapCharacterSet: WordBool;
 begin
   Result := FCapMapCharacterSet;
 end;
 
-function TPosEscPrinter.Get_CapPowerReporting: Integer;
+function TPosPrinterRongta.Get_CapPowerReporting: Integer;
 begin
   Result := Device.CapPowerReporting;
 end;
 
-function TPosEscPrinter.Get_CapRec2Color: WordBool;
+function TPosPrinterRongta.Get_CapRec2Color: WordBool;
 begin
   Result := FCapRec2Color;
 end;
 
-function TPosEscPrinter.Get_CapRecBarCode: WordBool;
+function TPosPrinterRongta.Get_CapRecBarCode: WordBool;
 begin
   Result := FCapRecBarCode;
 end;
 
-function TPosEscPrinter.Get_CapRecBitmap: WordBool;
+function TPosPrinterRongta.Get_CapRecBitmap: WordBool;
 begin
   Result := FCapRecBitmap;
 end;
 
-function TPosEscPrinter.Get_CapRecBold: WordBool;
+function TPosPrinterRongta.Get_CapRecBold: WordBool;
 begin
   Result := FCapRecBold;
 end;
 
-function TPosEscPrinter.Get_CapRecCartridgeSensor: Integer;
+function TPosPrinterRongta.Get_CapRecCartridgeSensor: Integer;
 begin
   Result := FCapRecCartridgeSensor;
 end;
 
-function TPosEscPrinter.Get_CapRecColor: Integer;
+function TPosPrinterRongta.Get_CapRecColor: Integer;
 begin
   Result := FCapRecColor;
 end;
 
-function TPosEscPrinter.Get_CapRecDhigh: WordBool;
+function TPosPrinterRongta.Get_CapRecDhigh: WordBool;
 begin
   Result := FCapRecDhigh;
 end;
 
-function TPosEscPrinter.Get_CapRecDwide: WordBool;
+function TPosPrinterRongta.Get_CapRecDwide: WordBool;
 begin
   Result := FCapRecDwide;
 end;
 
-function TPosEscPrinter.Get_CapRecDwideDhigh: WordBool;
+function TPosPrinterRongta.Get_CapRecDwideDhigh: WordBool;
 begin
   Result := FCapRecDwideDhigh;
 end;
 
-function TPosEscPrinter.Get_CapRecEmptySensor: WordBool;
+function TPosPrinterRongta.Get_CapRecEmptySensor: WordBool;
 begin
   Result := FCapRecEmptySensor;
 end;
 
-function TPosEscPrinter.Get_CapRecItalic: WordBool;
+function TPosPrinterRongta.Get_CapRecItalic: WordBool;
 begin
   Result := FCapRecItalic;
 end;
 
-function TPosEscPrinter.Get_CapRecLeft90: WordBool;
+function TPosPrinterRongta.Get_CapRecLeft90: WordBool;
 begin
   Result := FCapRecLeft90;
 end;
 
-function TPosEscPrinter.Get_CapRecMarkFeed: Integer;
+function TPosPrinterRongta.Get_CapRecMarkFeed: Integer;
 begin
   Result := FCapRecMarkFeed;
 end;
 
-function TPosEscPrinter.Get_CapRecNearEndSensor: WordBool;
+function TPosPrinterRongta.Get_CapRecNearEndSensor: WordBool;
 begin
   Result := FCapRecNearEndSensor;
 end;
 
-function TPosEscPrinter.Get_CapRecPageMode: WordBool;
+function TPosPrinterRongta.Get_CapRecPageMode: WordBool;
 begin
   Result := FCapRecPageMode;
 end;
 
-function TPosEscPrinter.Get_CapRecPapercut: WordBool;
+function TPosPrinterRongta.Get_CapRecPapercut: WordBool;
 begin
   Result := FCapRecPapercut;
 end;
 
-function TPosEscPrinter.Get_CapRecPresent: WordBool;
+function TPosPrinterRongta.Get_CapRecPresent: WordBool;
 begin
   Result := FCapRecPresent;
 end;
 
-function TPosEscPrinter.Get_CapRecRight90: WordBool;
+function TPosPrinterRongta.Get_CapRecRight90: WordBool;
 begin
   Result := FCapRecRight90;
 end;
 
-function TPosEscPrinter.Get_CapRecRotate180: WordBool;
+function TPosPrinterRongta.Get_CapRecRotate180: WordBool;
 begin
   Result := FCapRecRotate180;
 end;
 
-function TPosEscPrinter.Get_CapRecRuledLine: Integer;
+function TPosPrinterRongta.Get_CapRecRuledLine: Integer;
 begin
   Result := FCapRecRuledLine;
 end;
 
-function TPosEscPrinter.Get_CapRecStamp: WordBool;
+function TPosPrinterRongta.Get_CapRecStamp: WordBool;
 begin
   Result := FCapRecStamp;
 end;
 
-function TPosEscPrinter.Get_CapRecUnderline: WordBool;
+function TPosPrinterRongta.Get_CapRecUnderline: WordBool;
 begin
   Result := FCapRecUnderline;
 end;
 
-function TPosEscPrinter.Get_CapSlp2Color: WordBool;
+function TPosPrinterRongta.Get_CapSlp2Color: WordBool;
 begin
   Result := FCapSlp2Color;
 end;
 
-function TPosEscPrinter.Get_CapSlpBarCode: WordBool;
+function TPosPrinterRongta.Get_CapSlpBarCode: WordBool;
 begin
   Result := FCapSlpBarCode;
 end;
 
-function TPosEscPrinter.Get_CapSlpBitmap: WordBool;
+function TPosPrinterRongta.Get_CapSlpBitmap: WordBool;
 begin
   Result := FCapSlpBitmap;
 end;
 
-function TPosEscPrinter.Get_CapSlpBold: WordBool;
+function TPosPrinterRongta.Get_CapSlpBold: WordBool;
 begin
   Result := FCapSlpBold;
 end;
 
-function TPosEscPrinter.Get_CapSlpBothSidesPrint: WordBool;
+function TPosPrinterRongta.Get_CapSlpBothSidesPrint: WordBool;
 begin
   Result := FCapSlpBothSidesPrint;
 end;
 
-function TPosEscPrinter.Get_CapSlpCartridgeSensor: Integer;
+function TPosPrinterRongta.Get_CapSlpCartridgeSensor: Integer;
 begin
   Result := FCapSlpCartridgeSensor;
 end;
 
-function TPosEscPrinter.Get_CapSlpColor: Integer;
+function TPosPrinterRongta.Get_CapSlpColor: Integer;
 begin
   Result := FCapSlpColor;
 end;
 
-function TPosEscPrinter.Get_CapSlpDhigh: WordBool;
+function TPosPrinterRongta.Get_CapSlpDhigh: WordBool;
 begin
   Result := FCapSlpDhigh;
 end;
 
-function TPosEscPrinter.Get_CapSlpDwide: WordBool;
+function TPosPrinterRongta.Get_CapSlpDwide: WordBool;
 begin
   Result := FCapSlpDwide;
 end;
 
-function TPosEscPrinter.Get_CapSlpDwideDhigh: WordBool;
+function TPosPrinterRongta.Get_CapSlpDwideDhigh: WordBool;
 begin
   Result := FCapSlpDwideDhigh;
 end;
 
-function TPosEscPrinter.Get_CapSlpEmptySensor: WordBool;
+function TPosPrinterRongta.Get_CapSlpEmptySensor: WordBool;
 begin
   Result := FCapSlpEmptySensor;
 end;
 
-function TPosEscPrinter.Get_CapSlpFullslip: WordBool;
+function TPosPrinterRongta.Get_CapSlpFullslip: WordBool;
 begin
   Result := FCapSlpFullslip;
 end;
 
-function TPosEscPrinter.Get_CapSlpItalic: WordBool;
+function TPosPrinterRongta.Get_CapSlpItalic: WordBool;
 begin
   Result := FCapSlpItalic;
 end;
 
-function TPosEscPrinter.Get_CapSlpLeft90: WordBool;
+function TPosPrinterRongta.Get_CapSlpLeft90: WordBool;
 begin
   Result := FCapSlpLeft90;
 end;
 
-function TPosEscPrinter.Get_CapSlpNearEndSensor: WordBool;
+function TPosPrinterRongta.Get_CapSlpNearEndSensor: WordBool;
 begin
   Result := FCapSlpNearEndSensor;
 end;
 
-function TPosEscPrinter.Get_CapSlpPageMode: WordBool;
+function TPosPrinterRongta.Get_CapSlpPageMode: WordBool;
 begin
   Result := FCapSlpPageMode;
 end;
 
-function TPosEscPrinter.Get_CapSlpPresent: WordBool;
+function TPosPrinterRongta.Get_CapSlpPresent: WordBool;
 begin
   Result := FCapSlpPresent;
 end;
 
-function TPosEscPrinter.Get_CapSlpRight90: WordBool;
+function TPosPrinterRongta.Get_CapSlpRight90: WordBool;
 begin
   Result := FCapSlpRight90;
 end;
 
-function TPosEscPrinter.Get_CapSlpRotate180: WordBool;
+function TPosPrinterRongta.Get_CapSlpRotate180: WordBool;
 begin
   Result := FCapSlpRotate180;
 end;
 
-function TPosEscPrinter.Get_CapSlpRuledLine: Integer;
+function TPosPrinterRongta.Get_CapSlpRuledLine: Integer;
 begin
   Result := FCapSlpRuledLine;
 end;
 
-function TPosEscPrinter.Get_CapSlpUnderline: WordBool;
+function TPosPrinterRongta.Get_CapSlpUnderline: WordBool;
 begin
   Result := FCapSlpUnderline;
 end;
 
-function TPosEscPrinter.Get_CapStatisticsReporting: WordBool;
+function TPosPrinterRongta.Get_CapStatisticsReporting: WordBool;
 begin
   Result := Device.CapStatisticsReporting;
 end;
 
-function TPosEscPrinter.Get_CapTransaction: WordBool;
+function TPosPrinterRongta.Get_CapTransaction: WordBool;
 begin
   Result := FCapTransaction;
 end;
 
-function TPosEscPrinter.Get_CapUpdateFirmware: WordBool;
+function TPosPrinterRongta.Get_CapUpdateFirmware: WordBool;
 begin
   Result := Device.CapUpdateFirmware;
 end;
 
-function TPosEscPrinter.Get_CapUpdateStatistics: WordBool;
+function TPosPrinterRongta.Get_CapUpdateStatistics: WordBool;
 begin
   Result := Device.CapUpdateStatistics;
 end;
 
-function TPosEscPrinter.Get_CartridgeNotify: Integer;
+function TPosPrinterRongta.Get_CartridgeNotify: Integer;
 begin
   Result := FCartridgeNotify;
 end;
 
-function TPosEscPrinter.Get_CharacterSet: Integer;
+function TPosPrinterRongta.Get_CharacterSet: Integer;
 begin
   Result := FCharacterSet;
 end;
 
-function TPosEscPrinter.Get_CharacterSetList: WideString;
+function TPosPrinterRongta.Get_CharacterSetList: WideString;
 begin
   Result := FCharacterSetList;
 end;
 
-function TPosEscPrinter.Get_CheckHealthText: WideString;
+function TPosPrinterRongta.Get_CheckHealthText: WideString;
 begin
   Result := Device.CheckHealthText;
 end;
 
-function TPosEscPrinter.Get_Claimed: WordBool;
+function TPosPrinterRongta.Get_Claimed: WordBool;
 begin
   Result := FDevice.Claimed;
 end;
 
-function TPosEscPrinter.Get_ControlObjectDescription: WideString;
+function TPosPrinterRongta.Get_ControlObjectDescription: WideString;
 begin
   Result := FControlObjectDescription;
 end;
 
-function TPosEscPrinter.Get_ControlObjectVersion: Integer;
+function TPosPrinterRongta.Get_ControlObjectVersion: Integer;
 begin
   Result := FControlObjectVersion;
 end;
 
-function TPosEscPrinter.Get_CoverOpen: WordBool;
+function TPosPrinterRongta.Get_CoverOpen: WordBool;
 begin
   Result := FCoverOpened;
 end;
 
-function TPosEscPrinter.Get_DeviceDescription: WideString;
+function TPosPrinterRongta.Get_DeviceDescription: WideString;
 begin
   Result := FDeviceDescription;
 end;
 
-function TPosEscPrinter.Get_DeviceEnabled: WordBool;
+function TPosPrinterRongta.Get_DeviceEnabled: WordBool;
 begin
   Result := FDevice.DeviceEnabled;
 end;
 
-function TPosEscPrinter.Get_DeviceName: WideString;
+function TPosPrinterRongta.Get_DeviceName: WideString;
 begin
   Result := FDevice.DeviceName;
 end;
 
-function TPosEscPrinter.Get_ErrorLevel: Integer;
+function TPosPrinterRongta.Get_ErrorLevel: Integer;
 begin
   Result := FErrorLevel;
 end;
 
-function TPosEscPrinter.Get_ErrorStation: Integer;
+function TPosPrinterRongta.Get_ErrorStation: Integer;
 begin
   Result := FErrorStation;
 end;
 
-function TPosEscPrinter.Get_ErrorString: WideString;
+function TPosPrinterRongta.Get_ErrorString: WideString;
 begin
   Result := FDevice.ErrorString;
 end;
 
-function TPosEscPrinter.Get_FlagWhenIdle: WordBool;
+function TPosPrinterRongta.Get_FlagWhenIdle: WordBool;
 begin
   Result := FFlagWhenIdle;
 end;
 
-function TPosEscPrinter.Get_FontTypefaceList: WideString;
+function TPosPrinterRongta.Get_FontTypefaceList: WideString;
 begin
   Result := FFontTypefaceList;
 end;
 
-function TPosEscPrinter.Get_FreezeEvents: WordBool;
+function TPosPrinterRongta.Get_FreezeEvents: WordBool;
 begin
   Result := FDevice.FreezeEvents;
 end;
 
-function TPosEscPrinter.Get_JrnCartridgeState: Integer;
+function TPosPrinterRongta.Get_JrnCartridgeState: Integer;
 begin
   Result := FJrnCartridgeState;
 end;
 
-function TPosEscPrinter.Get_JrnCurrentCartridge: Integer;
+function TPosPrinterRongta.Get_JrnCurrentCartridge: Integer;
 begin
   Result := FJrnCurrentCartridge;
 end;
 
-function TPosEscPrinter.Get_JrnEmpty: WordBool;
+function TPosPrinterRongta.Get_JrnEmpty: WordBool;
 begin
   Result := FJrnEmpty;
 end;
 
-function TPosEscPrinter.Get_JrnLetterQuality: WordBool;
+function TPosPrinterRongta.Get_JrnLetterQuality: WordBool;
 begin
   Result := FJrnLetterQuality;
 end;
 
-function TPosEscPrinter.Get_JrnLineChars: Integer;
+function TPosPrinterRongta.Get_JrnLineChars: Integer;
 begin
   Result := FJrnLineChars;
 end;
 
-function TPosEscPrinter.Get_JrnLineCharsList: WideString;
+function TPosPrinterRongta.Get_JrnLineCharsList: WideString;
 begin
   Result := FJrnLineCharsList;
 end;
 
-function TPosEscPrinter.Get_JrnLineHeight: Integer;
+function TPosPrinterRongta.Get_JrnLineHeight: Integer;
 begin
   Result := FJrnLineHeight;
 end;
 
-function TPosEscPrinter.Get_JrnLineSpacing: Integer;
+function TPosPrinterRongta.Get_JrnLineSpacing: Integer;
 begin
   Result := FJrnLineSpacing;
 end;
 
-function TPosEscPrinter.Get_JrnLineWidth: Integer;
+function TPosPrinterRongta.Get_JrnLineWidth: Integer;
 begin
   Result := FJrnLineWidth;
 end;
 
-function TPosEscPrinter.Get_JrnNearEnd: WordBool;
+function TPosPrinterRongta.Get_JrnNearEnd: WordBool;
 begin
   Result := FJrnNearEnd;
 end;
 
-function TPosEscPrinter.Get_MapCharacterSet: WordBool;
+function TPosPrinterRongta.Get_MapCharacterSet: WordBool;
 begin
   Result := FMapCharacterSet;
 end;
 
-function TPosEscPrinter.Get_MapMode: Integer;
+function TPosPrinterRongta.Get_MapMode: Integer;
 begin
   Result := FMapMode;
 end;
 
-function TPosEscPrinter.Get_OpenResult: Integer;
+function TPosPrinterRongta.Get_OpenResult: Integer;
 begin
   Result := FDevice.OpenResult;
 end;
 
-function TPosEscPrinter.Get_OutputID: Integer;
+function TPosPrinterRongta.Get_OutputID: Integer;
 begin
   Result := FDevice.OutputID;
 end;
 
-function TPosEscPrinter.Get_PageModeArea: WideString;
+function TPosPrinterRongta.Get_PageModeArea: WideString;
 begin
   Result := FPageModeArea;
 end;
 
-function TPosEscPrinter.Get_PageModeDescriptor: Integer;
+function TPosPrinterRongta.Get_PageModeDescriptor: Integer;
 begin
   Result := FPageModeDescriptor;
 end;
 
-function TPosEscPrinter.Get_PageModeHorizontalPosition: Integer;
+function TPosPrinterRongta.Get_PageModeHorizontalPosition: Integer;
 begin
   Result := FPageModeHorizontalPosition;
 end;
 
-function TPosEscPrinter.Get_PageModePrintArea: WideString;
+function TPosPrinterRongta.Get_PageModePrintArea: WideString;
 begin
   Result := FPageModePrintArea;
 end;
 
-function TPosEscPrinter.Get_PageModePrintDirection: Integer;
+function TPosPrinterRongta.Get_PageModePrintDirection: Integer;
 begin
   Result := FPageModePrintDirection;
 end;
 
-function TPosEscPrinter.Get_PageModeStation: Integer;
+function TPosPrinterRongta.Get_PageModeStation: Integer;
 begin
   Result := FPageModeStation;
 end;
 
-function TPosEscPrinter.Get_PageModeVerticalPosition: Integer;
+function TPosPrinterRongta.Get_PageModeVerticalPosition: Integer;
 begin
   Result := FPageModeVerticalPosition;
 end;
 
-function TPosEscPrinter.Get_PowerNotify: Integer;
+function TPosPrinterRongta.Get_PowerNotify: Integer;
 begin
   Result := FDevice.PowerNotify;
 end;
 
-function TPosEscPrinter.Get_PowerState: Integer;
+function TPosPrinterRongta.Get_PowerState: Integer;
 begin
   Result := FDevice.PowerState;
 end;
 
-function TPosEscPrinter.Get_RecBarCodeRotationList: WideString;
+function TPosPrinterRongta.Get_RecBarCodeRotationList: WideString;
 begin
   Result := FRecBarCodeRotationList;
 end;
 
-function TPosEscPrinter.Get_RecBitmapRotationList: WideString;
+function TPosPrinterRongta.Get_RecBitmapRotationList: WideString;
 begin
   Result := FRecBitmapRotationList;
 end;
 
-function TPosEscPrinter.Get_RecCartridgeState: Integer;
+function TPosPrinterRongta.Get_RecCartridgeState: Integer;
 begin
   Result := FRecCartridgeState;
 end;
 
-function TPosEscPrinter.Get_RecCurrentCartridge: Integer;
+function TPosPrinterRongta.Get_RecCurrentCartridge: Integer;
 begin
   Result := FRecCurrentCartridge;
 end;
 
-function TPosEscPrinter.Get_RecEmpty: WordBool;
+function TPosPrinterRongta.Get_RecEmpty: WordBool;
 begin
   Result := FRecEmpty;
 end;
 
-function TPosEscPrinter.Get_RecLetterQuality: WordBool;
+function TPosPrinterRongta.Get_RecLetterQuality: WordBool;
 begin
   Result := FRecLetterQuality;
 end;
 
-function TPosEscPrinter.Get_RecLineChars: Integer;
+function TPosPrinterRongta.Get_RecLineChars: Integer;
 begin
   Result := FRecLineChars;
 end;
 
-function TPosEscPrinter.Get_RecLineCharsList: WideString;
+function TPosPrinterRongta.Get_RecLineCharsList: WideString;
 begin
   Result := FRecLineCharsList;
 end;
 
-function TPosEscPrinter.Get_RecLineHeight: Integer;
+function TPosPrinterRongta.Get_RecLineHeight: Integer;
 begin
   Result := FRecLineHeight;
 end;
 
-function TPosEscPrinter.Get_RecLineSpacing: Integer;
+function TPosPrinterRongta.Get_RecLineSpacing: Integer;
 begin
   Result := FRecLineSpacing;
 end;
 
-function TPosEscPrinter.Get_RecLinesToPaperCut: Integer;
+function TPosPrinterRongta.Get_RecLinesToPaperCut: Integer;
 const
   DistanceToCutterInDots = 128;
 begin
   Result := DistanceToCutterInDots div (RecLineSpacing + RecLineHeight + 10);
 end;
 
-function TPosEscPrinter.Get_RecLineWidth: Integer;
+function TPosPrinterRongta.Get_RecLineWidth: Integer;
 begin
   Result := FRecLineWidth;
 end;
 
-function TPosEscPrinter.Get_RecNearEnd: WordBool;
+function TPosPrinterRongta.Get_RecNearEnd: WordBool;
 begin
   Result := FRecNearEnd;
 end;
 
-function TPosEscPrinter.Get_RecSidewaysMaxChars: Integer;
+function TPosPrinterRongta.Get_RecSidewaysMaxChars: Integer;
 begin
   Result := FRecSidewaysMaxChars;
 end;
 
-function TPosEscPrinter.Get_RecSidewaysMaxLines: Integer;
+function TPosPrinterRongta.Get_RecSidewaysMaxLines: Integer;
 begin
   Result := FRecSidewaysMaxLines;
 end;
 
-function TPosEscPrinter.Get_ResultCode: Integer;
+function TPosPrinterRongta.Get_ResultCode: Integer;
 begin
   Result := FDevice.ResultCode;
 end;
 
-function TPosEscPrinter.Get_ResultCodeExtended: Integer;
+function TPosPrinterRongta.Get_ResultCodeExtended: Integer;
 begin
   Result := FDevice.ResultCodeExtended;
 end;
 
-function TPosEscPrinter.Get_RotateSpecial: Integer;
+function TPosPrinterRongta.Get_RotateSpecial: Integer;
 begin
   Result := FRotateSpecial;
 end;
 
-function TPosEscPrinter.Get_ServiceObjectDescription: WideString;
+function TPosPrinterRongta.Get_ServiceObjectDescription: WideString;
 begin
   Result := FDevice.ServiceObjectDescription;
 end;
 
-function TPosEscPrinter.Get_ServiceObjectVersion: Integer;
+function TPosPrinterRongta.Get_ServiceObjectVersion: Integer;
 begin
   Result := FDevice.ServiceObjectVersion;
 end;
 
-function TPosEscPrinter.Get_SlpBarCodeRotationList: WideString;
+function TPosPrinterRongta.Get_SlpBarCodeRotationList: WideString;
 begin
   Result := FSlpBarCodeRotationList;
 end;
 
-function TPosEscPrinter.Get_SlpBitmapRotationList: WideString;
+function TPosPrinterRongta.Get_SlpBitmapRotationList: WideString;
 begin
   Result := FSlpBitmapRotationList;
 end;
 
-function TPosEscPrinter.Get_SlpCartridgeState: Integer;
+function TPosPrinterRongta.Get_SlpCartridgeState: Integer;
 begin
   Result := FSlpCartridgeState;
 end;
 
-function TPosEscPrinter.Get_SlpCurrentCartridge: Integer;
+function TPosPrinterRongta.Get_SlpCurrentCartridge: Integer;
 begin
   Result := FSlpCurrentCartridge;
 end;
 
-function TPosEscPrinter.Get_SlpEmpty: WordBool;
+function TPosPrinterRongta.Get_SlpEmpty: WordBool;
 begin
   Result := FSlpEmpty;
 end;
 
-function TPosEscPrinter.Get_SlpLetterQuality: WordBool;
+function TPosPrinterRongta.Get_SlpLetterQuality: WordBool;
 begin
   Result := FSlpLetterQuality;
 end;
 
-function TPosEscPrinter.Get_SlpLineChars: Integer;
+function TPosPrinterRongta.Get_SlpLineChars: Integer;
 begin
   Result := FSlpLineChars;
 end;
 
-function TPosEscPrinter.Get_SlpLineCharsList: WideString;
+function TPosPrinterRongta.Get_SlpLineCharsList: WideString;
 begin
   Result := FSlpLineCharsList;
 end;
 
-function TPosEscPrinter.Get_SlpLineHeight: Integer;
+function TPosPrinterRongta.Get_SlpLineHeight: Integer;
 begin
   Result := FSlpLineHeight;
 end;
 
-function TPosEscPrinter.Get_SlpLinesNearEndToEnd: Integer;
+function TPosPrinterRongta.Get_SlpLinesNearEndToEnd: Integer;
 begin
   Result := FSlpLinesNearEndToEnd;
 end;
 
-function TPosEscPrinter.Get_SlpLineSpacing: Integer;
+function TPosPrinterRongta.Get_SlpLineSpacing: Integer;
 begin
   Result := FSlpLineSpacing;
 end;
 
-function TPosEscPrinter.Get_SlpLineWidth: Integer;
+function TPosPrinterRongta.Get_SlpLineWidth: Integer;
 begin
   Result := FSlpLineWidth;
 end;
 
-function TPosEscPrinter.Get_SlpMaxLines: Integer;
+function TPosPrinterRongta.Get_SlpMaxLines: Integer;
 begin
   Result := FSlpMaxLines;
 end;
 
-function TPosEscPrinter.Get_SlpNearEnd: WordBool;
+function TPosPrinterRongta.Get_SlpNearEnd: WordBool;
 begin
   Result := FSlpNearEnd;
 end;
 
-function TPosEscPrinter.Get_SlpPrintSide: Integer;
+function TPosPrinterRongta.Get_SlpPrintSide: Integer;
 begin
   Result := FSlpPrintSide;
 end;
 
-function TPosEscPrinter.Get_SlpSidewaysMaxChars: Integer;
+function TPosPrinterRongta.Get_SlpSidewaysMaxChars: Integer;
 begin
   Result := FSlpSidewaysMaxChars;
 end;
 
-function TPosEscPrinter.Get_SlpSidewaysMaxLines: Integer;
+function TPosPrinterRongta.Get_SlpSidewaysMaxLines: Integer;
 begin
   Result := FSlpSidewaysMaxLines;
 end;
 
-function TPosEscPrinter.Get_State: Integer;
+function TPosPrinterRongta.Get_State: Integer;
 begin
   Result := FDevice.State;
 end;
 
-function TPosEscPrinter.MarkFeed(Type_: Integer): Integer;
+function TPosPrinterRongta.MarkFeed(Type_: Integer): Integer;
 begin
   Result := ClearResult;
 end;
 
-function TPosEscPrinter.Open(const DeviceName: WideString): Integer;
+function TPosPrinterRongta.Open(const DeviceName: WideString): Integer;
 begin
   try
     FDevice.Open('POSPrinter', DeviceName, Self);
@@ -1958,12 +1958,12 @@ begin
   end;
 end;
 
-function TPosEscPrinter.PageModePrint(Control: Integer): Integer;
+function TPosPrinterRongta.PageModePrint(Control: Integer): Integer;
 begin
   Result := ClearResult;
 end;
 
-function TPosEscPrinter.PrintBarCode(Station: Integer;
+function TPosPrinterRongta.PrintBarCode(Station: Integer;
   const Data: WideString; Symbology, Height, Width, Alignment,
   TextPosition: Integer): Integer;
 var
@@ -2120,7 +2120,7 @@ begin
   end;
 end;
 
-procedure TPosEscPrinter.PrintBarcodeAsGraphics(var Barcode: TPosBarcode);
+procedure TPosPrinterRongta.PrintBarcodeAsGraphics(var Barcode: TPosBarcode);
 var
   Data: AnsiString;
 begin
@@ -2131,7 +2131,7 @@ begin
   PrintMemoryGraphic(Data, PTR_BMT_BMP, Barcode.Width, Barcode.Alignment);
 end;
 
-function TPosEscPrinter.PrintBitmap(Station: Integer;
+function TPosPrinterRongta.PrintBitmap(Station: Integer;
   const FileName: WideString; Width, Alignment: Integer): Integer;
 var
   Bitmap: TBitmap;
@@ -2149,7 +2149,7 @@ begin
   Bitmap.Free;
 end;
 
-function TPosEscPrinter.PrintImmediate(Station: Integer;
+function TPosPrinterRongta.PrintImmediate(Station: Integer;
   const Data: WideString): Integer;
 begin
   try
@@ -2182,7 +2182,7 @@ begin
   end;
 end;
 
-procedure TPosEscPrinter.PrintGraphics(Graphic: TGraphic; Width, Alignment: Integer);
+procedure TPosPrinterRongta.PrintGraphics(Graphic: TGraphic; Width, Alignment: Integer);
 var
   Scale: Integer;
   BMPMode: Integer;
@@ -2224,7 +2224,7 @@ begin
   FPrinter.PrintAndFeed(10);
 end;
 
-procedure TPosEscPrinter.LoadMemoryGraphic(Graphic: TGraphic;
+procedure TPosPrinterRongta.LoadMemoryGraphic(Graphic: TGraphic;
   const Data: AnsiString);
 var
   Stream: TMemoryStream;
@@ -2239,7 +2239,7 @@ begin
   end;
 end;
 
-function TPosEscPrinter.PrintMemoryBitmap(Station: Integer;
+function TPosPrinterRongta.PrintMemoryBitmap(Station: Integer;
   const Data: WideString; Type_, Width, Alignment: Integer): Integer;
 begin
   CheckRecStation(Station);
@@ -2252,13 +2252,13 @@ begin
   end;
 end;
 
-procedure TPosEscPrinter.CheckRecStation(Station: Integer);
+procedure TPosPrinterRongta.CheckRecStation(Station: Integer);
 begin
   if Station <> PTR_S_RECEIPT then
     raiseIllegalError('Station not supported');
 end;
 
-function TPosEscPrinter.PrintNormal(Station: Integer;
+function TPosPrinterRongta.PrintNormal(Station: Integer;
   const Data: WideString): Integer;
 begin
   try
@@ -2273,13 +2273,13 @@ begin
   end;
 end;
 
-function TPosEscPrinter.PrintTwoNormal(Stations: Integer; const Data1,
+function TPosPrinterRongta.PrintTwoNormal(Stations: Integer; const Data1,
   Data2: WideString): Integer;
 begin
   Result := ClearResult;
 end;
 
-function TPosEscPrinter.ReleaseDevice: Integer;
+function TPosPrinterRongta.ReleaseDevice: Integer;
 begin
   try
     FDevice.ReleaseDevice;
@@ -2292,39 +2292,39 @@ begin
   end;
 end;
 
-function TPosEscPrinter.ResetStatistics(
+function TPosPrinterRongta.ResetStatistics(
   const StatisticsBuffer: WideString): Integer;
 begin
   Result := ClearResult;
 end;
 
-function TPosEscPrinter.RetrieveStatistics(
+function TPosPrinterRongta.RetrieveStatistics(
   var pStatisticsBuffer: WideString): Integer;
 begin
   Result := ClearResult;
 end;
 
-function TPosEscPrinter.RotatePrint(Station, Rotation: Integer): Integer;
+function TPosPrinterRongta.RotatePrint(Station, Rotation: Integer): Integer;
 begin
   Result := ClearResult;
 end;
 
-procedure TPosEscPrinter.Set_AsyncMode(pAsyncMode: WordBool);
+procedure TPosPrinterRongta.Set_AsyncMode(pAsyncMode: WordBool);
 begin
   FAsyncMode := pAsyncMode;
 end;
 
-procedure TPosEscPrinter.Set_BinaryConversion(pBinaryConversion: Integer);
+procedure TPosPrinterRongta.Set_BinaryConversion(pBinaryConversion: Integer);
 begin
   FDevice.BinaryConversion := pBinaryConversion;
 end;
 
-procedure TPosEscPrinter.Set_CartridgeNotify(pCartridgeNotify: Integer);
+procedure TPosPrinterRongta.Set_CartridgeNotify(pCartridgeNotify: Integer);
 begin
   FCartridgeNotify := pCartridgeNotify;
 end;
 
-procedure TPosEscPrinter.Set_CharacterSet(pCharacterSet: Integer);
+procedure TPosPrinterRongta.Set_CharacterSet(pCharacterSet: Integer);
 var
   CodePage: Integer;
 begin
@@ -2337,7 +2337,7 @@ begin
   end;
 end;
 
-procedure TPosEscPrinter.StartDeviceThread;
+procedure TPosPrinterRongta.StartDeviceThread;
 begin
   if FThread = nil then
   begin
@@ -2347,7 +2347,7 @@ begin
   end;
 end;
 
-procedure TPosEscPrinter.StopDeviceThread;
+procedure TPosPrinterRongta.StopDeviceThread;
 begin
   if FThread <> nil then
   begin
@@ -2357,7 +2357,7 @@ begin
   end;
 end;
 
-procedure TPosEscPrinter.Set_DeviceEnabled(pDeviceEnabled: WordBool);
+procedure TPosPrinterRongta.Set_DeviceEnabled(pDeviceEnabled: WordBool);
 begin
   try
     if pDeviceEnabled <> FDevice.DeviceEnabled then
@@ -2388,7 +2388,7 @@ begin
   end;
 end;
 
-procedure TPosEscPrinter.SetCoverState(CoverOpened: Boolean);
+procedure TPosPrinterRongta.SetCoverState(CoverOpened: Boolean);
 begin
   if FCapCoverSensor then
   begin
@@ -2406,7 +2406,7 @@ begin
   end;
 end;
 
-procedure TPosEscPrinter.SetRecEmpty(ARecEmpty: Boolean);
+procedure TPosPrinterRongta.SetRecEmpty(ARecEmpty: Boolean);
 begin
   if not FCapRecPresent then Exit;
   if not FCapRecEmptySensor then Exit;
@@ -2427,7 +2427,7 @@ begin
   end;
 end;
 
-procedure TPosEscPrinter.SetRecNearEnd(ARecNearEnd: Boolean);
+procedure TPosPrinterRongta.SetRecNearEnd(ARecNearEnd: Boolean);
 begin
   if not FCapRecPresent then Exit;
   if not FCapRecNearEndSensor then Exit;
@@ -2443,7 +2443,7 @@ begin
   end;
 end;
 
-procedure TPosEscPrinter.CheckPaperPresent;
+procedure TPosPrinterRongta.CheckPaperPresent;
 begin
   if not FCapRecPresent then Exit;
   if not FCapRecEmptySensor then Exit;
@@ -2456,7 +2456,7 @@ begin
     RaiseExtendedError(OPOS_EPTR_REC_EMPTY, 'Receipt station is empty');
 end;
 
-procedure TPosEscPrinter.CheckCoverClosed;
+procedure TPosPrinterRongta.CheckCoverClosed;
 begin
   if not FCapCoverSensor then Exit;
   if not FPrinter.CapRead then Exit;
@@ -2467,7 +2467,7 @@ begin
     RaiseExtendedError(OPOS_EPTR_COVER_OPEN, 'Cover is opened');
 end;
 
-procedure TPosEscPrinter.UpdatePrinterStatus;
+procedure TPosPrinterRongta.UpdatePrinterStatus;
 var
   ErrorStatus: TErrorStatus;
   OfflineStatus: TOfflineStatus;
@@ -2490,7 +2490,7 @@ begin
   end;
 end;
 
-procedure TPosEscPrinter.SetPowerState(PowerState: Integer);
+procedure TPosPrinterRongta.SetPowerState(PowerState: Integer);
 begin
   if PowerState <> FDevice.PowerState then
   begin
@@ -2502,7 +2502,7 @@ begin
   end;
 end;
 
-procedure TPosEscPrinter.InitializeDevice;
+procedure TPosPrinterRongta.InitializeDevice;
 begin
   FPrinter.Initialize;
   if not Utf8Enabled then
@@ -2519,7 +2519,7 @@ begin
   end;
 end;
 
-procedure TPosEscPrinter.DeviceProc(Sender: TObject);
+procedure TPosPrinterRongta.DeviceProc(Sender: TObject);
 var
   TickCount: DWORD;
 begin
@@ -2549,103 +2549,103 @@ begin
   end;
 end;
 
-procedure TPosEscPrinter.Set_FlagWhenIdle(pFlagWhenIdle: WordBool);
+procedure TPosPrinterRongta.Set_FlagWhenIdle(pFlagWhenIdle: WordBool);
 begin
   FFlagWhenIdle := pFlagWhenIdle;
 end;
 
-procedure TPosEscPrinter.Set_FreezeEvents(pFreezeEvents: WordBool);
+procedure TPosPrinterRongta.Set_FreezeEvents(pFreezeEvents: WordBool);
 begin
   FDevice.FreezeEvents := pFreezeEvents;
 end;
 
-procedure TPosEscPrinter.Set_JrnCurrentCartridge(
+procedure TPosPrinterRongta.Set_JrnCurrentCartridge(
   pJrnCurrentCartridge: Integer);
 begin
   FJrnCurrentCartridge := pJrnCurrentCartridge;
 end;
 
-procedure TPosEscPrinter.Set_JrnLetterQuality(pJrnLetterQuality: WordBool);
+procedure TPosPrinterRongta.Set_JrnLetterQuality(pJrnLetterQuality: WordBool);
 begin
   FJrnLetterQuality := pJrnLetterQuality;
 end;
 
-procedure TPosEscPrinter.Set_JrnLineChars(pJrnLineChars: Integer);
+procedure TPosPrinterRongta.Set_JrnLineChars(pJrnLineChars: Integer);
 begin
   FJrnLineChars := pJrnLineChars;
 end;
 
-procedure TPosEscPrinter.Set_JrnLineHeight(pJrnLineHeight: Integer);
+procedure TPosPrinterRongta.Set_JrnLineHeight(pJrnLineHeight: Integer);
 begin
   FJrnLineHeight := pJrnLineHeight;
 end;
 
-procedure TPosEscPrinter.Set_JrnLineSpacing(pJrnLineSpacing: Integer);
+procedure TPosPrinterRongta.Set_JrnLineSpacing(pJrnLineSpacing: Integer);
 begin
   FJrnLineSpacing := pJrnLineSpacing;
 end;
 
-procedure TPosEscPrinter.Set_MapCharacterSet(pMapCharacterSet: WordBool);
+procedure TPosPrinterRongta.Set_MapCharacterSet(pMapCharacterSet: WordBool);
 begin
   FMapCharacterSet := pMapCharacterSet;
 end;
 
-procedure TPosEscPrinter.Set_MapMode(pMapMode: Integer);
+procedure TPosPrinterRongta.Set_MapMode(pMapMode: Integer);
 begin
   FMapMode := pMapMode;
 end;
 
-procedure TPosEscPrinter.Set_PageModeHorizontalPosition(
+procedure TPosPrinterRongta.Set_PageModeHorizontalPosition(
   pPageModeHorizontalPosition: Integer);
 begin
   FPageModeHorizontalPosition := pPageModeHorizontalPosition;
 end;
 
-procedure TPosEscPrinter.Set_PageModePrintArea(
+procedure TPosPrinterRongta.Set_PageModePrintArea(
   const pPageModePrintArea: WideString);
 begin
   FPageModePrintArea := pPageModePrintArea;
 end;
 
-procedure TPosEscPrinter.Set_PageModePrintDirection(
+procedure TPosPrinterRongta.Set_PageModePrintDirection(
   pPageModePrintDirection: Integer);
 begin
   FPageModePrintDirection := pPageModePrintDirection;
 end;
 
-procedure TPosEscPrinter.Set_PageModeStation(pPageModeStation: Integer);
+procedure TPosPrinterRongta.Set_PageModeStation(pPageModeStation: Integer);
 begin
   FPageModeStation := pPageModeStation;
 end;
 
-procedure TPosEscPrinter.Set_PageModeVerticalPosition(
+procedure TPosPrinterRongta.Set_PageModeVerticalPosition(
   pPageModeVerticalPosition: Integer);
 begin
   FPageModeVerticalPosition := pPageModeVerticalPosition;
 end;
 
-procedure TPosEscPrinter.Set_PowerNotify(pPowerNotify: Integer);
+procedure TPosPrinterRongta.Set_PowerNotify(pPowerNotify: Integer);
 begin
   FDevice.PowerNotify := pPowerNotify;
 end;
 
-procedure TPosEscPrinter.Set_RecCurrentCartridge(
+procedure TPosPrinterRongta.Set_RecCurrentCartridge(
   pRecCurrentCartridge: Integer);
 begin
   FRecCurrentCartridge := pRecCurrentCartridge;
 end;
 
-procedure TPosEscPrinter.Set_RecLetterQuality(pRecLetterQuality: WordBool);
+procedure TPosPrinterRongta.Set_RecLetterQuality(pRecLetterQuality: WordBool);
 begin
   FRecLetterQuality := pRecLetterQuality;
 end;
 
-procedure TPosEscPrinter.Set_RecLineChars(pRecLineChars: Integer);
+procedure TPosPrinterRongta.Set_RecLineChars(pRecLineChars: Integer);
 begin
   FRecLineChars := pRecLineChars;
 end;
 
-procedure TPosEscPrinter.Set_RecLineHeight(pRecLineHeight: Integer);
+procedure TPosPrinterRongta.Set_RecLineHeight(pRecLineHeight: Integer);
 begin
   if (pRecLineHeight >= 24) then
   begin
@@ -2656,7 +2656,7 @@ begin
   end;
 end;
 
-procedure TPosEscPrinter.Set_RecLineSpacing(pRecLineSpacing: Integer);
+procedure TPosPrinterRongta.Set_RecLineSpacing(pRecLineSpacing: Integer);
 begin
   if pRecLineSpacing <> FRecLineSpacing then
   begin
@@ -2668,51 +2668,51 @@ begin
   end;
 end;
 
-procedure TPosEscPrinter.Set_RotateSpecial(pRotateSpecial: Integer);
+procedure TPosPrinterRongta.Set_RotateSpecial(pRotateSpecial: Integer);
 begin
   FRotateSpecial := pRotateSpecial;
 end;
 
-procedure TPosEscPrinter.Set_SlpCurrentCartridge(
+procedure TPosPrinterRongta.Set_SlpCurrentCartridge(
   pSlpCurrentCartridge: Integer);
 begin
   FSlpCurrentCartridge := pSlpCurrentCartridge;
 end;
 
-procedure TPosEscPrinter.Set_SlpLetterQuality(pSlpLetterQuality: WordBool);
+procedure TPosPrinterRongta.Set_SlpLetterQuality(pSlpLetterQuality: WordBool);
 begin
   FSlpLetterQuality := pSlpLetterQuality;
 end;
 
-procedure TPosEscPrinter.Set_SlpLineChars(pSlpLineChars: Integer);
+procedure TPosPrinterRongta.Set_SlpLineChars(pSlpLineChars: Integer);
 begin
   FSlpLineChars := pSlpLineChars;
 end;
 
-procedure TPosEscPrinter.Set_SlpLineHeight(pSlpLineHeight: Integer);
+procedure TPosPrinterRongta.Set_SlpLineHeight(pSlpLineHeight: Integer);
 begin
   FSlpLineHeight := pSlpLineHeight;
 end;
 
-procedure TPosEscPrinter.Set_SlpLineSpacing(pSlpLineSpacing: Integer);
+procedure TPosPrinterRongta.Set_SlpLineSpacing(pSlpLineSpacing: Integer);
 begin
   FSlpLineSpacing := pSlpLineSpacing;
 end;
 
-function TPosEscPrinter.SetBitmap(BitmapNumber, Station: Integer;
+function TPosPrinterRongta.SetBitmap(BitmapNumber, Station: Integer;
   const FileName: WideString; Width, Alignment: Integer): Integer;
 begin
 
   Result := ClearResult;
 end;
 
-function TPosEscPrinter.SetLogo(Location: Integer;
+function TPosPrinterRongta.SetLogo(Location: Integer;
   const Data: WideString): Integer;
 begin
   Result := ClearResult;
 end;
 
-function TPosEscPrinter.TransactionPrint(Station,
+function TPosPrinterRongta.TransactionPrint(Station,
   Control: Integer): Integer;
 begin
   try
@@ -2734,88 +2734,88 @@ begin
   end;
 end;
 
-function TPosEscPrinter.UpdateFirmware(
+function TPosPrinterRongta.UpdateFirmware(
   const FirmwareFileName: WideString): Integer;
 begin
   Result := ClearResult;
 end;
 
-function TPosEscPrinter.UpdateStatistics(
+function TPosPrinterRongta.UpdateStatistics(
   const StatisticsBuffer: WideString): Integer;
 begin
   Result := ClearResult;
 end;
 
-function TPosEscPrinter.ValidateData(Station: Integer;
+function TPosPrinterRongta.ValidateData(Station: Integer;
   const Data: WideString): Integer;
 begin
   Result := ClearResult;
 end;
 
-procedure TPosEscPrinter.DataEvent(Status: Integer);
+procedure TPosPrinterRongta.DataEvent(Status: Integer);
 begin
 
 end;
 
-procedure TPosEscPrinter.DirectIOEvent(EventNumber: Integer;
+procedure TPosPrinterRongta.DirectIOEvent(EventNumber: Integer;
   var pData: Integer; var pString: WideString);
 begin
   if Assigned(FOnDirectIOEvent) then
     FOnDirectIOEvent(Self, EventNumber, pData, pString);
 end;
 
-procedure TPosEscPrinter.ErrorEvent(ResultCode, ResultCodeExtended,
+procedure TPosPrinterRongta.ErrorEvent(ResultCode, ResultCodeExtended,
   ErrorLocus: Integer; var pErrorResponse: Integer);
 begin
   if Assigned(FOnErrorEvent) then
     FOnErrorEvent(Self, ResultCode, ResultCodeExtended, ErrorLocus, pErrorResponse);
 end;
 
-procedure TPosEscPrinter.OutputCompleteEvent(OutputID: Integer);
+procedure TPosPrinterRongta.OutputCompleteEvent(OutputID: Integer);
 begin
   if Assigned(FOnOutputCompleteEvent) then
     FOnOutputCompleteEvent(Self, OutputID);
 end;
 
-procedure TPosEscPrinter.StatusUpdateEvent(Data: Integer);
+procedure TPosPrinterRongta.StatusUpdateEvent(Data: Integer);
 begin
   if Assigned(FOnStatusUpdateEvent) then
     FOnStatusUpdateEvent(Self, Data);
 end;
 
-procedure TPosEscPrinter.SODataDummy(Status: Integer);
+procedure TPosPrinterRongta.SODataDummy(Status: Integer);
 begin
 
 end;
 
-procedure TPosEscPrinter.SODirectIO(EventNumber: Integer;
+procedure TPosPrinterRongta.SODirectIO(EventNumber: Integer;
   var pData: Integer; var pString: WideString);
 begin
 
 end;
 
-procedure TPosEscPrinter.SOError(ResultCode, ResultCodeExtended,
+procedure TPosPrinterRongta.SOError(ResultCode, ResultCodeExtended,
   ErrorLocus: Integer; var pErrorResponse: Integer);
 begin
 
 end;
 
-procedure TPosEscPrinter.SOOutputComplete(OutputID: Integer);
+procedure TPosPrinterRongta.SOOutputComplete(OutputID: Integer);
 begin
 
 end;
 
-function TPosEscPrinter.SOProcessID: Integer;
+function TPosPrinterRongta.SOProcessID: Integer;
 begin
 
 end;
 
-procedure TPosEscPrinter.SOStatusUpdate(Data: Integer);
+procedure TPosPrinterRongta.SOStatusUpdate(Data: Integer);
 begin
 
 end;
 
-function TPosEscPrinter.GetToken(var Text: WideString; var Token: TEscToken): Boolean;
+function TPosPrinterRongta.GetToken(var Text: WideString; var Token: TEscToken): Boolean;
 var
   P: Integer;
 begin
@@ -2843,11 +2843,11 @@ begin
   end;
 end;
 
-procedure TPosEscPrinter.PrintText(Text: WideString);
+procedure TPosPrinterRongta.PrintText(Text: WideString);
 var
   Token: TEscToken;
   PrintMode: TPrintModes;
-  Mode: EscPrinter.TPrintMode;
+  Mode: EscPrinterRongta.TPrintMode;
 begin
   PrintMode := [];
   if FontName = FontNameB then
@@ -2911,7 +2911,7 @@ begin
   end;
 end;
 
-procedure TPosEscPrinter.PrintWideString(const AText: WideString);
+procedure TPosPrinterRongta.PrintWideString(const AText: WideString);
 var
   CodePage: Integer;
 begin
@@ -2956,15 +2956,15 @@ var
   i: Integer;
 begin
   if TestCodePage(C, CodePage) then Exit;
-  for i := Low(EscPrinter.SupportedCodePages) to High(EscPrinter.SupportedCodePages) do
+  for i := Low(EscPrinterRongta.SupportedCodePages) to High(EscPrinterRongta.SupportedCodePages) do
   begin
-    CodePage := EscPrinter.SupportedCodePages[i];
+    CodePage := EscPrinterRongta.SupportedCodePages[i];
     if TestCodePage(C, CodePage) then Exit;
   end;
   CodePage := 1251;
 end;
 
-procedure TPosEscPrinter.PrintUnicode(const AText: WideString);
+procedure TPosPrinterRongta.PrintUnicode(const AText: WideString);
 var
   i: Integer;
   C: WideChar;
@@ -2973,7 +2973,7 @@ begin
   CodePage := 1251;
   if TestCodePage(AText, CodePage) then
   begin
-    Logger.Debug(WideFormat('TPosEscPrinter.PrintText(''%s'')', [AText]));
+    Logger.Debug(WideFormat('TPosPrinterRongta.PrintText(''%s'')', [AText]));
     Printer.SetCodePage(CharacterSetToPrinterCodePage(CodePage));
     Printer.PrintText(WideStringToAnsiString(CodePage, AText));
   end else
@@ -2981,7 +2981,7 @@ begin
     for i := 1 to Length(AText) do
     begin
       C := AText[i];
-      Logger.Debug(WideFormat('TPosEscPrinter.PrintChar(''%s'')', [C]));
+      Logger.Debug(WideFormat('TPosPrinterRongta.PrintChar(''%s'')', [C]));
       if Printer.IsUserChar(C) then
       begin
         Printer.PrintUserChar(C);

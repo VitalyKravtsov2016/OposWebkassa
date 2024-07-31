@@ -12,7 +12,7 @@ uses
   OposPOSPrinter_CCO_TLB, OposEvents,
   // Tnt
   TntClasses, TntSysUtils, DebugUtils, StringUtils, SocketPort, LogFile,
-  PrinterPort, PosEscPrinter, SerialPort, RawPrinterPort, EscPrinter;
+  PrinterPort, PosPrinterRongta, SerialPort, RawPrinterPort, EscPrinterRongta;
 
 type
   { TPosEscPrinterTest }
@@ -21,7 +21,7 @@ type
   private
     FLogger: ILogFile;
     FEvents: TStrings;
-    FPrinter: TPosEscPrinter;
+    FPrinter: TPosPrinterRongta;
     FPrinterPort: IPrinterPort;
 
     procedure ClaimDevice;
@@ -32,7 +32,7 @@ type
     procedure StatusUpdateEvent(ASender: TObject; Data: Integer);
 
     property Events: TStrings read FEvents;
-    property Printer: TPosEscPrinter read FPrinter;
+    property Printer: TPosPrinterRongta read FPrinter;
   protected
     procedure SetUp; override;
     procedure TearDown; override;
@@ -86,7 +86,7 @@ begin
   FEvents := TStringList.Create;
   //FPrinterPort := CreateSerialPort;
   FPrinterPort := CreateRawPort;
-  FPrinter := TPosEscPrinter.Create2(nil, FPrinterPort, FLogger);
+  FPrinter := TPosPrinterRongta.Create2(nil, FPrinterPort, FLogger);
   FPrinter.OnStatusUpdateEvent := StatusUpdateEvent;
   FPrinter.BarcodeInGraphics := False;
 end;

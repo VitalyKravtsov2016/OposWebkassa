@@ -14,7 +14,7 @@ uses
   // This
   LogFile, WebkassaImpl, WebkassaClient, MockPosPrinter, PrinterParameters,
   SerialPort, DirectIOAPI, FileUtils, oleFiscalPrinter, StringUtils,
-  PosEscPrinter;
+  PosPrinterRongta;
 
 const
   CRLF = #13#10;

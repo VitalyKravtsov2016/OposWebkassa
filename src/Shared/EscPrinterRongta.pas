@@ -1,4 +1,4 @@
-unit EscPrinter;
+unit EscPrinterRongta;
 
 interface
 
@@ -305,9 +305,9 @@ type
     property Items[Index: Integer]: TUserCharacter read GetItem; default;
   end;
 
-  { TEscPrinter }
+  { TEscPrinterRongta }
 
-  TEscPrinter = class
+  TEscPrinterRongta = class
   private
     FLogger: ILogFile;
     FPort: IPrinterPort;
@@ -570,9 +570,9 @@ begin
   Result := inherited Items[Index] as TUserCharacter;
 end;
 
-{ TEscPrinter }
+{ TEscPrinterRongta }
 
-constructor TEscPrinter.Create(APort: IPrinterPort; ALogger: ILogFile);
+constructor TEscPrinterRongta.Create(APort: IPrinterPort; ALogger: ILogFile);
 begin
   inherited Create;
   FPort := APort;
@@ -581,19 +581,19 @@ begin
   FUserChars := TUserCharacters.Create(TUserCharacter);
 end;
 
-destructor TEscPrinter.Destroy;
+destructor TEscPrinterRongta.Destroy;
 begin
   FUserChars.Free;
   inherited Destroy;
 end;
 
-procedure TEscPrinter.ClearUserChars;
+procedure TEscPrinterRongta.ClearUserChars;
 begin
   FUserChars.Clear;
   FUserCharCode := USER_CHAR_CODE_MIN;
 end;
 
-procedure TEscPrinter.Send(const Data: AnsiString);
+procedure TEscPrinterRongta.Send(const Data: AnsiString);
 begin
   FPort.Lock;
   try
@@ -609,13 +609,13 @@ begin
   end;
 end;
 
-function TEscPrinter.ReadByte: Byte;
+function TEscPrinterRongta.ReadByte: Byte;
 begin
   Result := Ord(FPort.Read(1)[1]);
   FLogger.Debug('<- ' + StrToHex(Chr(Result)));
 end;
 
-function TEscPrinter.ReadAnsiString: AnsiString;
+function TEscPrinterRongta.ReadAnsiString: AnsiString;
 var
   C: Char;
 begin
@@ -628,25 +628,25 @@ begin
   FLogger.Debug('<- ' + StrToHex(Result));
 end;
 
-procedure TEscPrinter.CarriageReturn;
+procedure TEscPrinterRongta.CarriageReturn;
 begin
   Send(CR);
 end;
 
-procedure TEscPrinter.HorizontalTab;
+procedure TEscPrinterRongta.HorizontalTab;
 begin
   Send(HT);
 end;
 
-procedure TEscPrinter.LineFeed;
+procedure TEscPrinterRongta.LineFeed;
 begin
-  Logger.Debug('TEscPrinter.LineFeed');
+  Logger.Debug('TEscPrinterRongta.LineFeed');
   Send(LF);
 end;
 
-function TEscPrinter.ReadPrinterStatus: TPrinterStatus;
+function TEscPrinterRongta.ReadPrinterStatus: TPrinterStatus;
 begin
-  Logger.Debug('TEscPrinter.ReadPrinterStatus');
+  Logger.Debug('TEscPrinterRongta.ReadPrinterStatus');
   CheckCapRead;
 
   FPort.Lock;
@@ -658,11 +658,11 @@ begin
   end;
 end;
 
-function TEscPrinter.ReadOfflineStatus: TOfflineStatus;
+function TEscPrinterRongta.ReadOfflineStatus: TOfflineStatus;
 var
   B: Byte;
 begin
-  Logger.Debug('TEscPrinter.ReadOfflineStatus');
+  Logger.Debug('TEscPrinterRongta.ReadOfflineStatus');
   
   CheckCapRead;
   FPort.Lock;
@@ -677,11 +677,11 @@ begin
   end;
 end;
 
-function TEscPrinter.ReadErrorStatus: TErrorStatus;
+function TEscPrinterRongta.ReadErrorStatus: TErrorStatus;
 var
   B: Byte;
 begin
-  Logger.Debug('TEscPrinter.ReadErrorStatus');
+  Logger.Debug('TEscPrinterRongta.ReadErrorStatus');
   
   CheckCapRead;
   FPort.Lock;
@@ -696,11 +696,11 @@ begin
   end;
 end;
 
-function TEscPrinter.ReadPaperStatus: TPaperStatus;
+function TEscPrinterRongta.ReadPaperStatus: TPaperStatus;
 var
   B: Byte;
 begin
-  Logger.Debug('TEscPrinter.ReadPaperStatus');
+  Logger.Debug('TEscPrinterRongta.ReadPaperStatus');
   
   CheckCapRead;
   FPort.Lock;
@@ -713,32 +713,32 @@ begin
   end;
 end;
 
-procedure TEscPrinter.RecoverError(ClearBuffer: Boolean);
+procedure TEscPrinterRongta.RecoverError(ClearBuffer: Boolean);
 begin
-  Logger.Debug('TEscPrinter.RecoverError');
+  Logger.Debug('TEscPrinterRongta.RecoverError');
   if ClearBuffer then
     Send(#$10#$05#$02)
   else
     Send(#$10#$05#$01);
 end;
 
-procedure TEscPrinter.GeneratePulse(n, m, t: Byte);
+procedure TEscPrinterRongta.GeneratePulse(n, m, t: Byte);
 begin
-  Logger.Debug('TEscPrinter.GeneratePulse');
+  Logger.Debug('TEscPrinterRongta.GeneratePulse');
   Send(#$10#$14 + Chr(n) + Chr(m) + Chr(t));
 end;
 
-procedure TEscPrinter.SetRightSideCharacterSpacing(n: Byte);
+procedure TEscPrinterRongta.SetRightSideCharacterSpacing(n: Byte);
 begin
-  Logger.Debug('TEscPrinter.SetRightSideCharacterSpacing');
+  Logger.Debug('TEscPrinterRongta.SetRightSideCharacterSpacing');
   Send(#$1B#$20 + Chr(n));
 end;
 
-procedure TEscPrinter.SelectPrintMode(Mode: TPrintMode);
+procedure TEscPrinterRongta.SelectPrintMode(Mode: TPrintMode);
 var
   B: Byte;
 begin
-  Logger.Debug('TEscPrinter.SelectPrintMode');
+  Logger.Debug('TEscPrinterRongta.SelectPrintMode');
   B := 0;
   if Mode.CharacterFontB then SetBit(B, 0);
   if Mode.Emphasized then SetBit(B, 3);
@@ -748,38 +748,38 @@ begin
   Send(#$1B#$21 + Chr(B));
 end;
 
-procedure TEscPrinter.SetPrintMode(Mode: Byte);
+procedure TEscPrinterRongta.SetPrintMode(Mode: Byte);
 begin
-  Logger.Debug('TEscPrinter.SetPrintMode');
+  Logger.Debug('TEscPrinterRongta.SetPrintMode');
   Send(#$1B#$21 + Chr(Mode));
 end;
 
-procedure TEscPrinter.SetAbsolutePrintPosition(n: Word);
+procedure TEscPrinterRongta.SetAbsolutePrintPosition(n: Word);
 begin
-  Logger.Debug('TEscPrinter.SetAbsolutePrintPosition');
+  Logger.Debug('TEscPrinterRongta.SetAbsolutePrintPosition');
   Send(#$1B#$24 + Chr(Lo(n)) + Chr(Hi(n)));
 end;
 
-procedure TEscPrinter.SelectUserCharacter(n: Byte);
+procedure TEscPrinterRongta.SelectUserCharacter(n: Byte);
 begin
   if n = FUserCharacterMode then Exit;
   
-  Logger.Debug(Format('TEscPrinter.SelectUserCharacter(%d)', [n]));
+  Logger.Debug(Format('TEscPrinterRongta.SelectUserCharacter(%d)', [n]));
   Send(#$1B#$25 + Chr(n));
   FUserCharacterMode := n;
 end;
 
-procedure TEscPrinter.EnableUserCharacters;
+procedure TEscPrinterRongta.EnableUserCharacters;
 begin
   SelectUserCharacter(1);
 end;
 
-procedure TEscPrinter.DisableUserCharacters;
+procedure TEscPrinterRongta.DisableUserCharacters;
 begin
   SelectUserCharacter(0);
 end;
 
-procedure TEscPrinter.CheckUserCharCode(Code: Byte);
+procedure TEscPrinterRongta.CheckUserCharCode(Code: Byte);
 begin
   if (not Code in [USER_CHAR_CODE_MIN..USER_CHAR_CODE_MAX]) then
     raise Exception.CreateFmt('Invalid character code, 0x%.2X', [Code]);
@@ -791,7 +791,7 @@ end;
 // The allowable character code range is from ASCII code <20>H to
 // <7E>H (95 characters).
 
-procedure TEscPrinter.WriteUserChar(AChar: WideChar; ACode, AFont: Byte);
+procedure TEscPrinterRongta.WriteUserChar(AChar: WideChar; ACode, AFont: Byte);
 var
   Bitmap: TBitmap;
   UserChar: TUserChar;
@@ -827,7 +827,7 @@ begin
   FUserChars.Add(ACode, AChar, AFont);
 end;
 
-procedure TEscPrinter.DrawWideChar(AChar: WideChar; AFont: Byte;
+procedure TEscPrinterRongta.DrawWideChar(AChar: WideChar; AFont: Byte;
   Bitmap: TBitmap; X, Y: Integer);
 begin
   Bitmap.Canvas.Font.Name := 'Courier New';
@@ -842,7 +842,7 @@ begin
   TntGraphics.WideCanvasTextOut(Bitmap.Canvas, X, Y, AChar);
 end;
 
-procedure TEscPrinter.WriteUserChar2(AChar: WideChar; ACode, AFont: Byte);
+procedure TEscPrinterRongta.WriteUserChar2(AChar: WideChar; ACode, AFont: Byte);
 var
   Bitmap: TBitmap;
   FileName: string;
@@ -875,13 +875,13 @@ selected)
 
 *)
 
-procedure TEscPrinter.DefineUserCharacter(C: TUserChar);
+procedure TEscPrinterRongta.DefineUserCharacter(C: TUserChar);
 begin
-  Logger.Debug('TEscPrinter.DefineUserCharacter');
+  Logger.Debug('TEscPrinterRongta.DefineUserCharacter');
   Send(#$1B#$26#$03 + Chr(C.c1) + Chr(C.c2) + Chr(C.Width) + C.Data);
 end;
 
-function TEscPrinter.GetBitmapData(Bitmap: TBitmap): AnsiString;
+function TEscPrinterRongta.GetBitmapData(Bitmap: TBitmap): AnsiString;
 var
   B: Byte;
   Bit: Byte;
@@ -913,7 +913,7 @@ begin
   end;
 end;
 
-function TEscPrinter.GetFontData(Bitmap: TBitmap): AnsiString;
+function TEscPrinterRongta.GetFontData(Bitmap: TBitmap): AnsiString;
 var
   B: Byte;
   Bit: Byte;
@@ -944,7 +944,7 @@ begin
 end;
 
 (*
-function TEscPrinter.GetRasterBitmapData(Bitmap: TBitmap): AnsiString;
+function TEscPrinterRongta.GetRasterBitmapData(Bitmap: TBitmap): AnsiString;
 var
   B: Byte;
   x, y: Integer;
@@ -961,7 +961,7 @@ begin
 end;
 *)
 
-function TEscPrinter.GetRasterBitmapData(Bitmap: TBitmap): AnsiString;
+function TEscPrinterRongta.GetRasterBitmapData(Bitmap: TBitmap): AnsiString;
 var
   B: Byte;
   x, y: Integer;
@@ -987,12 +987,12 @@ begin
   Result := SwapBytes(Result);
 end;
 
-function TEscPrinter.GetImageData(Image: TGraphic): AnsiString;
+function TEscPrinterRongta.GetImageData(Image: TGraphic): AnsiString;
 begin
   Result := GetImageData2(Image);
 end;
 
-function TEscPrinter.GetImageData2(Image: TGraphic): AnsiString;
+function TEscPrinterRongta.GetImageData2(Image: TGraphic): AnsiString;
 var
   Bitmap: TBitmap;
 begin
@@ -1005,7 +1005,7 @@ begin
   end;
 end;
 
-procedure TEscPrinter.DrawImage(Image: TGraphic; Bitmap: TBitmap);
+procedure TEscPrinterRongta.DrawImage(Image: TGraphic; Bitmap: TBitmap);
 begin
   Bitmap.Monochrome := True;
   Bitmap.PixelFormat := pf1Bit;
@@ -1014,7 +1014,7 @@ begin
   Bitmap.Canvas.Draw(0, 0, Image);
 end;
 
-function TEscPrinter.GetRasterImageData(Image: TGraphic): AnsiString;
+function TEscPrinterRongta.GetRasterImageData(Image: TGraphic): AnsiString;
 var
   Bitmap: TBitmap;
 begin
@@ -1031,46 +1031,46 @@ begin
   end;
 end;
 
-procedure TEscPrinter.SelectBitImageMode(mode: Integer; Image: TGraphic);
+procedure TEscPrinterRongta.SelectBitImageMode(mode: Integer; Image: TGraphic);
 var
   n: Word;
   data: AnsiString;
 begin
-  Logger.Debug('TEscPrinter.SelectBitImageMode');
+  Logger.Debug('TEscPrinterRongta.SelectBitImageMode');
 
   n := Image.Width;
   data := GetImageData(Image);
   Send(#$1B#$2A + Chr(Mode) + Chr(Lo(n)) + Chr(Hi(n)) + data);
 end;
 
-procedure TEscPrinter.SetUnderlineMode(n: Byte);
+procedure TEscPrinterRongta.SetUnderlineMode(n: Byte);
 begin
-  Logger.Debug('TEscPrinter.SetUnderlineMode');
+  Logger.Debug('TEscPrinterRongta.SetUnderlineMode');
   Send(#$1B#$2D + Chr(n));
 end;
 
-procedure TEscPrinter.SetDefaultLineSpacing;
+procedure TEscPrinterRongta.SetDefaultLineSpacing;
 begin
-  Logger.Debug('TEscPrinter.SetDefaultLineSpacing');
+  Logger.Debug('TEscPrinterRongta.SetDefaultLineSpacing');
   Send(#$1B#$32);
 end;
 
 
-procedure TEscPrinter.SetLineSpacing(n: Byte);
+procedure TEscPrinterRongta.SetLineSpacing(n: Byte);
 begin
-  Logger.Debug('TEscPrinter.SetLineSpacing');
+  Logger.Debug('TEscPrinterRongta.SetLineSpacing');
   Send(#$1B#$33 + Chr(n));
 end;
 
-procedure TEscPrinter.CancelUserCharacter(n: Byte);
+procedure TEscPrinterRongta.CancelUserCharacter(n: Byte);
 begin
-  Logger.Debug('TEscPrinter.CancelUserCharacter');
+  Logger.Debug('TEscPrinterRongta.CancelUserCharacter');
   Send(#$1B#$3F + Chr(n));
 end;
 
-procedure TEscPrinter.Initialize;
+procedure TEscPrinterRongta.Initialize;
 begin
-  Logger.Debug('TEscPrinter.Initialize');
+  Logger.Debug('TEscPrinterRongta.Initialize');
   Send(#$1B#$40);
   ClearUserChars;
   FCodePage := 0;
@@ -1078,123 +1078,123 @@ begin
   FInTransaction := False;
 end;
 
-procedure TEscPrinter.SetBeepParams(N, T: Byte);
+procedure TEscPrinterRongta.SetBeepParams(N, T: Byte);
 begin
-  Logger.Debug('TEscPrinter.SetBeepParams');
+  Logger.Debug('TEscPrinterRongta.SetBeepParams');
   Send(#$1B#$42 + Chr(N) + Chr(T));
 end;
 
-procedure TEscPrinter.SetHorizontalTabPositions(Tabs: AnsiString);
+procedure TEscPrinterRongta.SetHorizontalTabPositions(Tabs: AnsiString);
 begin
-  Logger.Debug('TEscPrinter.SetHorizontalTabPositions');
+  Logger.Debug('TEscPrinterRongta.SetHorizontalTabPositions');
   Send(#$1B#$44 + Tabs + #0);
 end;
 
-procedure TEscPrinter.SetEmphasizedMode(Value: Boolean);
+procedure TEscPrinterRongta.SetEmphasizedMode(Value: Boolean);
 begin
-  Logger.Debug('TEscPrinter.SetEmphasizedMode');
+  Logger.Debug('TEscPrinterRongta.SetEmphasizedMode');
   Send(#$1B#$45 + Chr(BoolToInt[Value]));
 end;
 
-procedure TEscPrinter.SetDoubleStrikeMode(Value: Boolean);
+procedure TEscPrinterRongta.SetDoubleStrikeMode(Value: Boolean);
 begin
-  Logger.Debug('TEscPrinter.SetDoubleStrikeMode');
+  Logger.Debug('TEscPrinterRongta.SetDoubleStrikeMode');
   Send(#$1B#$47 + Chr(BoolToInt[Value]));
 end;
 
-procedure TEscPrinter.PrintAndFeed(n: Byte);
+procedure TEscPrinterRongta.PrintAndFeed(n: Byte);
 begin
-  Logger.Debug('TEscPrinter.PrintAndFeed');
+  Logger.Debug('TEscPrinterRongta.PrintAndFeed');
   Send(#$1B#$4A + Chr(n));
 end;
 
-procedure TEscPrinter.SetCharacterFont(n: Byte);
+procedure TEscPrinterRongta.SetCharacterFont(n: Byte);
 begin
-  Logger.Debug('TEscPrinter.SetCharacterFont');
+  Logger.Debug('TEscPrinterRongta.SetCharacterFont');
   Send(#$1B#$4D + Chr(n));
 end;
 
-procedure TEscPrinter.SetCharacterSet(N: Byte);
+procedure TEscPrinterRongta.SetCharacterSet(N: Byte);
 begin
-  Logger.Debug('TEscPrinter.SetCharacterSet');
+  Logger.Debug('TEscPrinterRongta.SetCharacterSet');
   Send(#$1B#$52 + Chr(N));
 end;
 
-procedure TEscPrinter.Set90ClockwiseRotation(Value: Boolean);
+procedure TEscPrinterRongta.Set90ClockwiseRotation(Value: Boolean);
 begin
-  Logger.Debug('TEscPrinter.Set90ClockwiseRotation');
+  Logger.Debug('TEscPrinterRongta.Set90ClockwiseRotation');
   Send(#$1B#$56 + Chr(BoolToInt[Value]));
 end;
 
-procedure TEscPrinter.SetRelativePrintPosition(n: Word);
+procedure TEscPrinterRongta.SetRelativePrintPosition(n: Word);
 begin
-  Logger.Debug('TEscPrinter.SetRelativePrintPosition');
+  Logger.Debug('TEscPrinterRongta.SetRelativePrintPosition');
   Send(#$1B#$5C + Chr(Lo(n)) + Chr(Hi(n)));
 end;
 
-procedure TEscPrinter.SetJustification(N: Byte);
+procedure TEscPrinterRongta.SetJustification(N: Byte);
 begin
-  Logger.Debug('TEscPrinter.SetJustification');
+  Logger.Debug('TEscPrinterRongta.SetJustification');
   Send(#$1B#$61 + Chr(N));
 end;
 
-procedure TEscPrinter.EnableButtons(Value: Boolean);
+procedure TEscPrinterRongta.EnableButtons(Value: Boolean);
 begin
-  Logger.Debug('TEscPrinter.EnableButtons');
+  Logger.Debug('TEscPrinterRongta.EnableButtons');
   Send(#$1B#$63#$35 + Chr(BoolToInt[Value]));
 end;
 
-procedure TEscPrinter.PrintAndFeedLines(N: Byte);
+procedure TEscPrinterRongta.PrintAndFeedLines(N: Byte);
 begin
-  Logger.Debug('TEscPrinter.PrintAndFeedLines');
+  Logger.Debug('TEscPrinterRongta.PrintAndFeedLines');
   Send(#$1B#$64 + Chr(N));
 end;
 
-procedure TEscPrinter.SetCodePage(CodePage: Integer);
+procedure TEscPrinterRongta.SetCodePage(CodePage: Integer);
 begin
   //if FCodePage = CodePage then Exit;
 
-  Logger.Debug(Format('TEscPrinter.SetCodePage(%d)', [CodePage]));
+  Logger.Debug(Format('TEscPrinterRongta.SetCodePage(%d)', [CodePage]));
   Send(#$1B#$74 + Chr(CodePage));
   FCodePage := CodePage;
 end;
 
-procedure TEscPrinter.SetUpsideDownPrinting(Value: Boolean);
+procedure TEscPrinterRongta.SetUpsideDownPrinting(Value: Boolean);
 begin
-  Logger.Debug('TEscPrinter.SetUpsideDownPrinting');
+  Logger.Debug('TEscPrinterRongta.SetUpsideDownPrinting');
   Send(#$1B#$7B + Chr(BoolToInt[Value]));
 end;
 
-procedure TEscPrinter.PartialCut;
+procedure TEscPrinterRongta.PartialCut;
 begin
-  Logger.Debug('TEscPrinter.PartialCut');
+  Logger.Debug('TEscPrinterRongta.PartialCut');
   Send(#$1B#$69);
 end;
 
-procedure TEscPrinter.PartialCut2;
+procedure TEscPrinterRongta.PartialCut2;
 begin
-  Logger.Debug('TEscPrinter.PartialCut2');
+  Logger.Debug('TEscPrinterRongta.PartialCut2');
   Send(#$1B#$6D);
 end;
 
-procedure TEscPrinter.SelectChineseCode(N: Byte);
+procedure TEscPrinterRongta.SelectChineseCode(N: Byte);
 begin
-  Logger.Debug('TEscPrinter.SelectChineseCode');
+  Logger.Debug('TEscPrinterRongta.SelectChineseCode');
   Send(#$1B#$39 + Chr(N));
 end;
 
-procedure TEscPrinter.PrintNVBitImage(Number, Mode: Byte);
+procedure TEscPrinterRongta.PrintNVBitImage(Number, Mode: Byte);
 begin
-  Logger.Debug('TEscPrinter.PrintNVBitImage');
+  Logger.Debug('TEscPrinterRongta.PrintNVBitImage');
   Send(#$1C#$70 + Chr(Number) + Chr(Mode));
 end;
 
-procedure TEscPrinter.DefineNVBitImage(Number: Byte; Image: TGraphic);
+procedure TEscPrinterRongta.DefineNVBitImage(Number: Byte; Image: TGraphic);
 var
   x, y: Integer;
   Bitmap: TBitmap;
 begin
-  Logger.Debug('TEscPrinter.DefineNVBitImage');
+  Logger.Debug('TEscPrinterRongta.DefineNVBitImage');
 
   Bitmap := TBitmap.Create;
   try
@@ -1209,18 +1209,18 @@ begin
   end;
 end;
 
-procedure TEscPrinter.SetCharacterSize(N: Byte);
+procedure TEscPrinterRongta.SetCharacterSize(N: Byte);
 begin
-  Logger.Debug('TEscPrinter.SetCharacterSize');
+  Logger.Debug('TEscPrinterRongta.SetCharacterSize');
   Send(#$1D#$21 + Chr(N));
 end;
 
-procedure TEscPrinter.DownloadBMP(Image: TGraphic);
+procedure TEscPrinterRongta.DownloadBMP(Image: TGraphic);
 var
   x, y: Byte;
   Bitmap: TBitmap;
 begin
-  Logger.Debug('TEscPrinter.DownloadBMP');
+  Logger.Debug('TEscPrinterRongta.DownloadBMP');
   Bitmap := TBitmap.Create;
   try
     DrawImage(Image, Bitmap);
@@ -1233,23 +1233,23 @@ begin
   end;
 end;
 
-procedure TEscPrinter.PrintBmp(Mode: Byte);
+procedure TEscPrinterRongta.PrintBmp(Mode: Byte);
 begin
-  Logger.Debug('TEscPrinter.PrintBmp');
+  Logger.Debug('TEscPrinterRongta.PrintBmp');
   Send(#$1D#$2F + Chr(Mode));
 end;
 
-procedure TEscPrinter.SetWhiteBlackReverse(Value: Boolean);
+procedure TEscPrinterRongta.SetWhiteBlackReverse(Value: Boolean);
 begin
-  Logger.Debug('TEscPrinter.SetWhiteBlackReverse');
+  Logger.Debug('TEscPrinterRongta.SetWhiteBlackReverse');
   Send(#$1D#$42 + Chr(BoolToInt[Value]));
 end;
 
-function TEscPrinter.ReadPrinterID(N: Byte): AnsiString;
+function TEscPrinterRongta.ReadPrinterID(N: Byte): AnsiString;
 var
   S: AnsiString;
 begin
-  Logger.Debug('TEscPrinter.ReadPrinterID');
+  Logger.Debug('TEscPrinterRongta.ReadPrinterID');
   
   CheckCapRead;
   FPort.Lock;
@@ -1262,109 +1262,109 @@ begin
   end;
 end;
 
-function TEscPrinter.ReadFirmwareVersion: AnsiString;
+function TEscPrinterRongta.ReadFirmwareVersion: AnsiString;
 begin
-  Logger.Debug('TEscPrinter.ReadFirmwareVersion');
+  Logger.Debug('TEscPrinterRongta.ReadFirmwareVersion');
   CheckCapRead;
   Result := ReadPrinterID(65);
 end;
 
-function TEscPrinter.ReadManufacturer: AnsiString;
+function TEscPrinterRongta.ReadManufacturer: AnsiString;
 begin
-  Logger.Debug('TEscPrinter.ReadManufacturer');
+  Logger.Debug('TEscPrinterRongta.ReadManufacturer');
   CheckCapRead;
   Result := ReadPrinterID(66);
 end;
 
-function TEscPrinter.ReadPrinterName: AnsiString;
+function TEscPrinterRongta.ReadPrinterName: AnsiString;
 begin
-  Logger.Debug('TEscPrinter.ReadPrinterName');
+  Logger.Debug('TEscPrinterRongta.ReadPrinterName');
   CheckCapRead;
   Result := ReadPrinterID(67);
 end;
 
-function TEscPrinter.ReadSerialNumber: AnsiString;
+function TEscPrinterRongta.ReadSerialNumber: AnsiString;
 begin
-  Logger.Debug('TEscPrinter.ReadSerialNumber');
+  Logger.Debug('TEscPrinterRongta.ReadSerialNumber');
   CheckCapRead;
   Result := ReadPrinterID(68);
 end;
 
-procedure TEscPrinter.SetHRIPosition(N: Byte);
+procedure TEscPrinterRongta.SetHRIPosition(N: Byte);
 begin
-  Logger.Debug('TEscPrinter.SetHRIPosition');
+  Logger.Debug('TEscPrinterRongta.SetHRIPosition');
   Send(#$1D#$48 + Chr(N));
 end;
 
-procedure TEscPrinter.SetLeftMargin(N: Word);
+procedure TEscPrinterRongta.SetLeftMargin(N: Word);
 begin
-  Logger.Debug('TEscPrinter.SetLeftMargin');
+  Logger.Debug('TEscPrinterRongta.SetLeftMargin');
   Send(#$1D#$4C + Chr(Lo(N)) + Chr(Hi(N)));
 end;
 
-procedure TEscPrinter.SetCutModeAndCutPaper(M: Byte);
+procedure TEscPrinterRongta.SetCutModeAndCutPaper(M: Byte);
 begin
-  Logger.Debug('TEscPrinter.SetCutModeAndCutPaper');
+  Logger.Debug('TEscPrinterRongta.SetCutModeAndCutPaper');
   Send(#$1D#$56 + Chr(M));
 end;
 
-procedure TEscPrinter.SetCutModeAndCutPaper2(n: Byte);
+procedure TEscPrinterRongta.SetCutModeAndCutPaper2(n: Byte);
 begin
-  Logger.Debug('TEscPrinter.SetCutModeAndCutPaper2');
+  Logger.Debug('TEscPrinterRongta.SetCutModeAndCutPaper2');
   Send(#$1D#$56#$66 + Chr(n));
 end;
 
-procedure TEscPrinter.SetPrintAreaWidth(n: Byte);
+procedure TEscPrinterRongta.SetPrintAreaWidth(n: Byte);
 begin
-  Logger.Debug('TEscPrinter.SetPrintAreaWidth');
+  Logger.Debug('TEscPrinterRongta.SetPrintAreaWidth');
   Send(#$1D#$57 + Chr(Lo(n)) + Chr(Hi(n)));
 end;
 
-procedure TEscPrinter.StartEndMacroDefinition;
+procedure TEscPrinterRongta.StartEndMacroDefinition;
 begin
-  Logger.Debug('TEscPrinter.StartEndMacroDefinition');
+  Logger.Debug('TEscPrinterRongta.StartEndMacroDefinition');
   Send(#$1D#$3A);
 end;
 
-procedure TEscPrinter.ExecuteMacro(r, t, m: Byte);
+procedure TEscPrinterRongta.ExecuteMacro(r, t, m: Byte);
 begin
-  Logger.Debug('TEscPrinter.ExecuteMacro');
+  Logger.Debug('TEscPrinterRongta.ExecuteMacro');
   Send(#$1D#$5E + Chr(r) + Chr(t) + Chr(m));
 end;
 
-procedure TEscPrinter.EnableAutomaticStatusBack(N: Byte);
+procedure TEscPrinterRongta.EnableAutomaticStatusBack(N: Byte);
 begin
-  Logger.Debug('TEscPrinter.EnableAutomaticStatusBack');
+  Logger.Debug('TEscPrinterRongta.EnableAutomaticStatusBack');
   Send(#$1D#$61 + Chr(N));
 end;
 
-procedure TEscPrinter.SetHRIFont(N: Byte);
+procedure TEscPrinterRongta.SetHRIFont(N: Byte);
 begin
-  Logger.Debug('TEscPrinter.SetHRIFont');
+  Logger.Debug('TEscPrinterRongta.SetHRIFont');
   Send(#$1D#$66 + Chr(N));
 end;
 
-procedure TEscPrinter.SetBarcodeHeight(N: Byte);
+procedure TEscPrinterRongta.SetBarcodeHeight(N: Byte);
 begin
-  Logger.Debug('TEscPrinter.SetBarcodeHeight');
+  Logger.Debug('TEscPrinterRongta.SetBarcodeHeight');
   Send(#$1D#$68 + Chr(N));
 end;
 
-procedure TEscPrinter.PrintBarcode(BCType: Byte; const Data: AnsiString);
+procedure TEscPrinterRongta.PrintBarcode(BCType: Byte; const Data: AnsiString);
 begin
-  Logger.Debug('TEscPrinter.PrintBarcode');
+  Logger.Debug('TEscPrinterRongta.PrintBarcode');
   Send(#$1D#$6B + Chr(BCType) + Data + #0);
 end;
 
-procedure TEscPrinter.PrintBarcode2(BCType: Byte; const Data: AnsiString);
+procedure TEscPrinterRongta.PrintBarcode2(BCType: Byte; const Data: AnsiString);
 begin
-  Logger.Debug('TEscPrinter.PrintBarcode2');
+  Logger.Debug('TEscPrinterRongta.PrintBarcode2');
   Send(#$1D#$6B + Chr(BCType) + Chr(Length(Data)) + Data);
 end;
 
-function TEscPrinter.ReadPaperRollStatus: TPaperRollStatus;
+function TEscPrinterRongta.ReadPaperRollStatus: TPaperRollStatus;
 begin
-  Logger.Debug('TEscPrinter.ReadPaperRollStatus');
+  Logger.Debug('TEscPrinterRongta.ReadPaperRollStatus');
 
   CheckCapRead;
   FPort.Lock;
@@ -1377,11 +1377,11 @@ begin
 end;
 
 // Print raster bit image
-procedure TEscPrinter.PrintRasterBMP(Mode: Byte; Image: TGraphic);
+procedure TEscPrinterRongta.PrintRasterBMP(Mode: Byte; Image: TGraphic);
 var
   x, y: Byte;
 begin
-  Logger.Debug('TEscPrinter.PrintRasterBMP');
+  Logger.Debug('TEscPrinterRongta.PrintRasterBMP');
 
   x := (Image.Width + 7) div 8;
   y := Image.Height;
@@ -1389,106 +1389,106 @@ begin
     Chr(Lo(y)) + Chr(Hi(y)) + GetRasterImageData(Image));
 end;
 
-procedure TEscPrinter.SetBarcodeWidth(N: Integer);
+procedure TEscPrinterRongta.SetBarcodeWidth(N: Integer);
 begin
-  Logger.Debug('TEscPrinter.SetBarcodeWidth');
+  Logger.Debug('TEscPrinterRongta.SetBarcodeWidth');
   Send(#$1D#$77 + Chr(N));
 end;
 
-procedure TEscPrinter.SetBarcodeLeft(N: Integer);
+procedure TEscPrinterRongta.SetBarcodeLeft(N: Integer);
 begin
-  Logger.Debug('TEscPrinter.SetBarcodeLeft');
+  Logger.Debug('TEscPrinterRongta.SetBarcodeLeft');
   Send(#$1D#$78 + Chr(N));
 end;
 
-procedure TEscPrinter.SetMotionUnits(x, y: Integer);
+procedure TEscPrinterRongta.SetMotionUnits(x, y: Integer);
 begin
-  Logger.Debug('TEscPrinter.SetMotionUnits');
+  Logger.Debug('TEscPrinterRongta.SetMotionUnits');
   Send(#$1D#$50 + Chr(x) + Chr(y));
 end;
 
-procedure TEscPrinter.PrintTestPage;
+procedure TEscPrinterRongta.PrintTestPage;
 begin
-  Logger.Debug('TEscPrinter.PrintTestPage');
+  Logger.Debug('TEscPrinterRongta.PrintTestPage');
   Send(#$12#$54);
 end;
 
-procedure TEscPrinter.SetKanjiMode(m: Byte);
+procedure TEscPrinterRongta.SetKanjiMode(m: Byte);
 begin
-  Logger.Debug('TEscPrinter.SetKanjiMode');
+  Logger.Debug('TEscPrinterRongta.SetKanjiMode');
   Send(#$1C#$21 + Chr(m));
 end;
 
-procedure TEscPrinter.SelectKanjiCharacter;
+procedure TEscPrinterRongta.SelectKanjiCharacter;
 begin
-  Logger.Debug('TEscPrinter.SelectKanjiCharacter');
+  Logger.Debug('TEscPrinterRongta.SelectKanjiCharacter');
   Send(#$1C#$26);
 end;
 
-procedure TEscPrinter.SetKanjiUnderline(Value: Boolean);
+procedure TEscPrinterRongta.SetKanjiUnderline(Value: Boolean);
 begin
-  Logger.Debug('TEscPrinter.SetKanjiUnderline');
+  Logger.Debug('TEscPrinterRongta.SetKanjiUnderline');
   Send(#$1C#$2D + Chr(BoolToInt[Value]));
 end;
 
-procedure TEscPrinter.CancelKanjiCharacter;
+procedure TEscPrinterRongta.CancelKanjiCharacter;
 begin
-  Logger.Debug('TEscPrinter.CancelKanjiCharacter');
+  Logger.Debug('TEscPrinterRongta.CancelKanjiCharacter');
   Send(#$1C#$2E);
 end;
 
-procedure TEscPrinter.DefineKanjiCharacters(c1, c2: Byte;
+procedure TEscPrinterRongta.DefineKanjiCharacters(c1, c2: Byte;
   const data: AnsiString);
 begin
-  Logger.Debug('TEscPrinter.DefineKanjiCharacters');
+  Logger.Debug('TEscPrinterRongta.DefineKanjiCharacters');
   Send(#$1C#$32 + Chr(c1) + Chr(c2) + data);
 end;
 
-procedure TEscPrinter.SetPeripheralDevice(m: Byte);
+procedure TEscPrinterRongta.SetPeripheralDevice(m: Byte);
 begin
-  Logger.Debug('TEscPrinter.SetPeripheralDevice');
+  Logger.Debug('TEscPrinterRongta.SetPeripheralDevice');
   Send(#$1B#$3D + Chr(m));
 end;
 
-procedure TEscPrinter.SetKanjiSpacing(n1, n2: Byte);
+procedure TEscPrinterRongta.SetKanjiSpacing(n1, n2: Byte);
 begin
-  Logger.Debug('TEscPrinter.SetKanjiSpacing');
+  Logger.Debug('TEscPrinterRongta.SetKanjiSpacing');
   Send(#$1C#$53 + Chr(n1) + Chr(n2));
 end;
 
-procedure TEscPrinter.PrintAndReturnStandardMode;
+procedure TEscPrinterRongta.PrintAndReturnStandardMode;
 begin
-  Logger.Debug('TEscPrinter.PrintAndReturnStandardMode');
+  Logger.Debug('TEscPrinterRongta.PrintAndReturnStandardMode');
   Send(#$0C);
 end;
 
-procedure TEscPrinter.PrintDataInMode;
+procedure TEscPrinterRongta.PrintDataInMode;
 begin
-  Logger.Debug('TEscPrinter.PrintDataInMode');
+  Logger.Debug('TEscPrinterRongta.PrintDataInMode');
   Send(#$1B#$0C);
 end;
 
-procedure TEscPrinter.SetPageMode;
+procedure TEscPrinterRongta.SetPageMode;
 begin
-  Logger.Debug('TEscPrinter.SetPageMode');
+  Logger.Debug('TEscPrinterRongta.SetPageMode');
   Send(#$1B#$4C);
 end;
 
-procedure TEscPrinter.SetStandardMode;
+procedure TEscPrinterRongta.SetStandardMode;
 begin
-  Logger.Debug('TEscPrinter.SetStandardMode');
+  Logger.Debug('TEscPrinterRongta.SetStandardMode');
   Send(#$1B#$53);
 end;
 
-procedure TEscPrinter.SetPageModeDirection(n: Byte);
+procedure TEscPrinterRongta.SetPageModeDirection(n: Byte);
 begin
-  Logger.Debug('TEscPrinter.SetPageModeDirection');
+  Logger.Debug('TEscPrinterRongta.SetPageModeDirection');
   Send(#$1B#$54 + Chr(n));
 end;
 
-procedure TEscPrinter.SetPageModeArea(R: TRect);
+procedure TEscPrinterRongta.SetPageModeArea(R: TRect);
 begin
-  Logger.Debug('TEscPrinter.SetPageModeArea');
+  Logger.Debug('TEscPrinterRongta.SetPageModeArea');
   Send(#$1B#$57 +
     Chr(Lo(R.Left)) + Chr(Hi(R.Left)) +
     Chr(Lo(R.Top)) + Chr(Hi(R.Top)) +
@@ -1496,9 +1496,9 @@ begin
     Chr(Lo(R.Bottom)) + Chr(Hi(R.Bottom)));
 end;
 
-procedure TEscPrinter.printBarcode2D(m, n, k: Byte; const data: AnsiString);
+procedure TEscPrinterRongta.printBarcode2D(m, n, k: Byte; const data: AnsiString);
 begin
-  Logger.Debug('TEscPrinter.printBarcode2D');
+  Logger.Debug('TEscPrinterRongta.printBarcode2D');
   Send(#$1B#$5A + Chr(m) + Chr(n) + Chr(k) +
     Chr(Lo(Length(data))) + Chr(Hi(Length(data))) + data);
 end;
@@ -1512,84 +1512,84 @@ k is used for define horizontal and vertical ratio.( 2.k.5)
 d is the length of data
 *)
 
-procedure TEscPrinter.printPDF417(const Barcode: TPDF417);
+procedure TEscPrinterRongta.printPDF417(const Barcode: TPDF417);
 begin
-  Logger.Debug('TEscPrinter.printPDF417');
+  Logger.Debug('TEscPrinterRongta.printPDF417');
   printBarcode2D(Barcode.ColumnNumber, Barcode.SecurityLevel, Barcode.HVRatio, Barcode.data);
 end;
 
-procedure TEscPrinter.printQRCode(const Barcode: TQRCode);
+procedure TEscPrinterRongta.printQRCode(const Barcode: TQRCode);
 begin
-  Logger.Debug('TEscPrinter.printQRCode');
+  Logger.Debug('TEscPrinterRongta.printQRCode');
   printBarcode2D(Barcode.SymbolVersion, Barcode.ECLevel, Barcode.ModuleSize, Barcode.data);
 end;
 
-procedure TEscPrinter.SetKanjiQuadSizeMode(Value: Boolean);
+procedure TEscPrinterRongta.SetKanjiQuadSizeMode(Value: Boolean);
 begin
-  Logger.Debug('TEscPrinter.SetKanjiQuadSizeMode');
+  Logger.Debug('TEscPrinterRongta.SetKanjiQuadSizeMode');
   Send(#$1C#$57 + Chr(BoolToInt[Value]));
 end;
 
-procedure TEscPrinter.FeedMarkedPaper;
+procedure TEscPrinterRongta.FeedMarkedPaper;
 begin
-  Logger.Debug('TEscPrinter.FeedMarkedPaper');
+  Logger.Debug('TEscPrinterRongta.FeedMarkedPaper');
   Send(#$1D#$0C);
 end;
 
-procedure TEscPrinter.SetPMAbsoluteVerticalPosition(n: Integer);
+procedure TEscPrinterRongta.SetPMAbsoluteVerticalPosition(n: Integer);
 begin
-  Logger.Debug('TEscPrinter.SetPMAbsoluteVerticalPosition');
+  Logger.Debug('TEscPrinterRongta.SetPMAbsoluteVerticalPosition');
   Send(#$1D#$24 + Chr(Lo(n)) + Chr(Hi(n)));
 end;
 
-procedure TEscPrinter.ExecuteTestPrint(p: Integer; n, m: Byte);
+procedure TEscPrinterRongta.ExecuteTestPrint(p: Integer; n, m: Byte);
 begin
-  Logger.Debug('TEscPrinter.ExecuteTestPrint');
+  Logger.Debug('TEscPrinterRongta.ExecuteTestPrint');
   Send(#$1D#$28#$41 + Chr(Lo(p)) + Chr(Hi(p)) + Chr(n) + Chr(m));
 end;
 
-procedure TEscPrinter.SelectCounterPrintMode(n, m: Byte);
+procedure TEscPrinterRongta.SelectCounterPrintMode(n, m: Byte);
 begin
-  Logger.Debug('TEscPrinter.SelectCounterPrintMode');
+  Logger.Debug('TEscPrinterRongta.SelectCounterPrintMode');
   Send(#$1D#$43#$30 + Chr(n) + Chr(m));
 end;
 
-procedure TEscPrinter.SelectCountMode(a, b: Word; n, r: Byte);
+procedure TEscPrinterRongta.SelectCountMode(a, b: Word; n, r: Byte);
 begin
-  Logger.Debug('TEscPrinter.SelectCountMode');
+  Logger.Debug('TEscPrinterRongta.SelectCountMode');
   Send(#$1D#$43#$31 + Chr(Lo(a)) + Chr(Hi(a)) +
     Chr(Lo(b)) + Chr(Hi(b)) + Chr(n) + Chr(r));
 end;
 
-procedure TEscPrinter.SetCounter(n: Word);
+procedure TEscPrinterRongta.SetCounter(n: Word);
 begin
-  Logger.Debug('TEscPrinter.SetCounter');
+  Logger.Debug('TEscPrinterRongta.SetCounter');
   Send(#$1D#$43#$32 + Chr(Lo(n)) + Chr(Hi(n)));
 end;
 
-procedure TEscPrinter.Select2DBarcode(n: Byte);
+procedure TEscPrinterRongta.Select2DBarcode(n: Byte);
 begin
-  Logger.Debug('TEscPrinter.Select2DBarcode');
+  Logger.Debug('TEscPrinterRongta.Select2DBarcode');
   Send(#$1D#$5A + Chr(n));
 end;
 
-procedure TEscPrinter.SetPMRelativeVerticalPosition(n: Word);
+procedure TEscPrinterRongta.SetPMRelativeVerticalPosition(n: Word);
 begin
-  Logger.Debug('TEscPrinter.SetPMRelativeVerticalPosition');
+  Logger.Debug('TEscPrinterRongta.SetPMRelativeVerticalPosition');
   Send(#$1D#$5C + Chr(Lo(n)) + Chr(Hi(n)));
 end;
 
-procedure TEscPrinter.PrintCounter;
+procedure TEscPrinterRongta.PrintCounter;
 begin
-  Logger.Debug('TEscPrinter.PrintCounter');
+  Logger.Debug('TEscPrinterRongta.PrintCounter');
   Send(#$1D#$63);
 end;
 
-procedure TEscPrinter.SetNormalPrintMode;
+procedure TEscPrinterRongta.SetNormalPrintMode;
 var
   PrintMode: TPrintMode;
 begin
-  Logger.Debug('TEscPrinter.SetNormalPrintMode');
+  Logger.Debug('TEscPrinterRongta.SetNormalPrintMode');
   PrintMode.CharacterFontB := False;
   PrintMode.Emphasized := False;
   PrintMode.DoubleHeight := False;
@@ -1598,18 +1598,18 @@ begin
   SelectPrintMode(PrintMode);
 end;
 
-procedure TEscPrinter.PrintText(Text: AnsiString);
+procedure TEscPrinterRongta.PrintText(Text: AnsiString);
 begin
-  //Logger.Debug(Format('TEscPrinter.PrintText(''%s'')', [TrimRight(Text)]));
+  //Logger.Debug(Format('TEscPrinterRongta.PrintText(''%s'')', [TrimRight(Text)]));
   Send(Text);
 end;
 
-function TEscPrinter.CapRead: Boolean;
+function TEscPrinterRongta.CapRead: Boolean;
 begin
   Result := Port.CapRead;
 end;
 
-procedure TEscPrinter.CheckCapRead;
+procedure TEscPrinterRongta.CheckCapRead;
 begin
   if not Port.CapRead then
   begin
@@ -1617,23 +1617,23 @@ begin
   end;
 end;
 
-procedure TEscPrinter.BeginDocument;
+procedure TEscPrinterRongta.BeginDocument;
 begin
   FInTransaction := True;
 end;
 
-procedure TEscPrinter.EndDocument;
+procedure TEscPrinterRongta.EndDocument;
 begin
   FInTransaction := False;
   Port.Flush;
 end;
 
-procedure TEscPrinter.PortFlush;
+procedure TEscPrinterRongta.PortFlush;
 begin
   Port.Flush;
 end;
 
-procedure TEscPrinter.WriteKazakhCharactersToBitmap;
+procedure TEscPrinterRongta.WriteKazakhCharactersToBitmap;
 var
   i: Integer;
   C: WideChar;
@@ -1668,7 +1668,7 @@ begin
   end;
 end;
 
-procedure TEscPrinter.WriteKazakhCharacters;
+procedure TEscPrinterRongta.WriteKazakhCharacters;
 var
   i: Integer;
   Code: Byte;
@@ -1732,7 +1732,7 @@ begin
   end;
 end;
 
-procedure TEscPrinter.WriteKazakhCharacters2;
+procedure TEscPrinterRongta.WriteKazakhCharacters2;
 var
   i: Integer;
   Count: Integer;
@@ -1777,12 +1777,12 @@ begin
   end;
 end;
 
-function TEscPrinter.IsUserChar(Char: WideChar): Boolean;
+function TEscPrinterRongta.IsUserChar(Char: WideChar): Boolean;
 begin
   Result := IsKazakhUnicodeChar(Char);
 end;
 
-procedure TEscPrinter.PrintUserChar(Char: WideChar);
+procedure TEscPrinterRongta.PrintUserChar(Char: WideChar);
 var
   Item: TUserCharacter;
 begin

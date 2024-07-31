@@ -9,7 +9,7 @@ uses
   // DUnit
   TestFramework,
   // Opos
-  OposUtils, EscPrinter, StringUtils;
+  OposUtils, EscPrinterRongta, StringUtils;
 
 type
   { TOposUtilsTest }

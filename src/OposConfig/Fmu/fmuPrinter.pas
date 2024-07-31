@@ -12,7 +12,7 @@ uses
   Opos, OposPtr, Oposhi, OposUtils, OposDevice,
   // This
   untUtil, PrinterParameters, FptrTypes, FiscalPrinterDevice, FileUtils,
-  WebkassaImpl, RecPrinter, SerialPort, PosEscPrinter;
+  WebkassaImpl, RecPrinter, SerialPort, PosPrinterRongta;
 
 type
   { TfmPrinter }

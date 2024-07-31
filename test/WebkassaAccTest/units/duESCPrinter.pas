@@ -10,7 +10,7 @@ uses
   // Tnt
   TntClasses, TntSysUtils,
   // This
-  DebugUtils, StringUtils, ESCPrinter, PrinterPort, SerialPort, LogFile,
+  DebugUtils, StringUtils, EscPrinterRongta, PrinterPort, SerialPort, LogFile,
   FileUtils, SocketPort, RawPrinterPort;
 
 type
@@ -19,7 +19,7 @@ type
   TESCPrinterTest = class(TTestCase)
   private
     FLogger: ILogFile;
-    FPrinter: TESCPrinter;
+    FPrinter: TEscPrinterRongta;
     FPrinterPort: IPrinterPort;
   protected
     procedure SetUp; override;
@@ -28,7 +28,7 @@ type
     function CreateRawPort: TRawPrinterPort;
     function CreateSerialPort: TSerialPort;
     function CreateSocketPort: TSocketPort;
-    property Printer: TESCPrinter read FPrinter;
+    property Printer: TEscPrinterRongta read FPrinter;
   published
     procedure TestBitmap;
     procedure TestPrintRasterBMP;
@@ -87,7 +87,7 @@ begin
   //FPrinterPort := CreateSerialPort;
   FPrinterPort := CreateRawPort;
   FPrinterPort.Open;
-  FPrinter := TEscPrinter.Create(FPrinterPort, FLogger);
+  FPrinter := TEscPrinterRongta.Create(FPrinterPort, FLogger);
 end;
 
 procedure TESCPrinterTest.TearDown;

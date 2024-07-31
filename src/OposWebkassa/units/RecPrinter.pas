@@ -11,7 +11,7 @@ uses
   Opos, OposPtr, Oposhi, OposException, OposEsc, OposUtils, OposDevice,
   OposPOSPrinter_CCO_TLB,
   // This
-  PosWinPrinter, PosEscPrinter, LogFile, PrinterParameters,
+  PosWinPrinter, PosPrinterRongta, LogFile, PrinterParameters,
   SerialPort, SocketPort, RawPrinterPort, FiscalPrinterDevice;
 
 
@@ -443,12 +443,12 @@ end;
 
 constructor TSerialEscPrinter.Create(ADevice: TFiscalPrinterDevice);
 var
-  PosEscPrinter: TPosEscPrinter;
+  PosPrinter: TPosPrinterRongta;
 begin
   inherited Create(ADevice);
-  PosEscPrinter := TPosEscPrinter.Create2(nil, CreateSerialPort, Logger);
-  FPrinterObj := PosEscPrinter;
-  FPrinter := PosEscPrinter;
+  PosPrinter := TPosPrinterRongta.Create2(nil, CreateSerialPort, Logger);
+  FPrinterObj := PosPrinter;
+  FPrinter := PosPrinter;
 end;
 
 function TSerialEscPrinter.CreateSerialPort: TSerialPort;
@@ -475,12 +475,12 @@ end;
 
 constructor TNetworkEscPrinter.Create(ADevice: TFiscalPrinterDevice);
 var
-  PosEscPrinter: TPosEscPrinter;
+  PosPrinter: TPosPrinterRongta;
 begin
   inherited Create(ADevice);
-  PosEscPrinter := TPosEscPrinter.Create2(nil, CreateSocketPort, Logger);
-  FPrinterObj := PosEscPrinter;
-  FPrinter := PosEscPrinter;
+  PosPrinter := TPosPrinterRongta.Create2(nil, CreateSocketPort, Logger);
+  FPrinterObj := PosPrinter;
+  FPrinter := PosPrinter;
 end;
 
 function TNetworkEscPrinter.CreateSocketPort: TSocketPort;
@@ -503,12 +503,12 @@ end;
 
 constructor TWindowsEscPrinter.Create(ADevice: TFiscalPrinterDevice);
 var
-  PosEscPrinter: TPosEscPrinter;
+  PosPrinter: TPosPrinterRongta;
 begin
   inherited Create(ADevice);
-  PosEscPrinter := TPosEscPrinter.Create2(nil, CreatePort, Logger);
-  FPrinterObj := PosEscPrinter;
-  FPrinter := PosEscPrinter;
+  PosPrinter := TPosPrinterRongta.Create2(nil, CreatePort, Logger);
+  FPrinterObj := PosPrinter;
+  FPrinter := PosPrinter;
 end;
 
 function TWindowsEscPrinter.CreatePort: TRawPrinterPort;

@@ -20,7 +20,7 @@ uses
   WebkassaClient, FiscalPrinterState, CustomReceipt, NonFiscalDoc, ServiceVersion,
   PrinterParameters, CashInReceipt, CashOutReceipt,
   SalesReceipt, TextDocument, ReceiptItem, StringUtils, DebugUtils, VatRate,
-  uZintBarcode, uZintInterface, FileUtils, PosWinPrinter, PosEscPrinter,
+  uZintBarcode, uZintInterface, FileUtils, PosWinPrinter, PosPrinterRongta,
   SerialPort, PrinterPort, SocketPort, ReceiptTemplate, RawPrinterPort,
   PrinterTypes, DirectIOAPI, BarcodeUtils, PrinterParametersReg, JsonUtils;
 
@@ -2713,9 +2713,9 @@ end;
 
 function TWebkassaImpl.CreatePrinter: IOPOSPOSPrinter;
 
-  function CreatePosEscPrinter(PrinterPort: IPrinterPort): TPosEscPrinter;
+  function CreatePosEscPrinter(PrinterPort: IPrinterPort): TPosPrinterRongta;
   begin
-    Result := TPosEscPrinter.Create2(nil, PrinterPort, Logger);
+    Result := TPosPrinterRongta.Create2(nil, PrinterPort, Logger);
     Result.OnStatusUpdateEvent := PrinterStatusUpdateEvent;
     Result.OnErrorEvent := PrinterErrorEvent;
     Result.OnDirectIOEvent := PrinterDirectIOEvent;
@@ -2728,7 +2728,7 @@ function TWebkassaImpl.CreatePrinter: IOPOSPOSPrinter;
 var
   POSPrinter: TOPOSPOSPrinter;
   PosWinPrinter: TPosWinPrinter;
-  PosEscPrinter: TPosEscPrinter;
+  PosEscPrinter: TPosPrinterRongta;
   PrinterPort: IPrinterPort;
   SocketParams: TSocketParams;
 begin

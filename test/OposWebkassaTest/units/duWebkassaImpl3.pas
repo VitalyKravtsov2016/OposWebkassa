@@ -17,7 +17,7 @@ uses
   // This
   LogFile, WebkassaImpl, WebkassaClient, MockPosPrinter2, FileUtils,
   CustomReceipt, uLkJSON, ReceiptTemplate, SalesReceipt, DirectIOAPI,
-  DebugUtils, StringUtils, OposServiceDevice19, PosEscPrinter, PrinterPort,
+  DebugUtils, StringUtils, OposServiceDevice19, PosPrinterRongta, PrinterPort,
   MockPrinterPort, PrinterTypes, PrinterParameters;
 
 const

@@ -10,7 +10,7 @@ uses
   // 3'd
   TntClasses, Opos, OposPtr, OposPtrUtils,
   // This
-  LogFile, PosEscPrinter, MockPrinterPort, PrinterPort, StringUtils;
+  LogFile, PosPrinterRongta, MockPrinterPort, PrinterPort, StringUtils;
 
 type
   { TPosEscPrinterTest }
@@ -19,14 +19,14 @@ type
   private
     FLogger: ILogFile;
     FPort: TMockPrinterPort;
-    FPrinter: TPosEscPrinter;
+    FPrinter: TPosPrinterRongta;
     procedure ClaimDevice;
     procedure EnableDevice;
     procedure OpenClaimEnable;
     procedure OpenService;
     procedure PtrCheck(Code: Integer);
 
-    property Printer: TPosEscPrinter read FPrinter;
+    property Printer: TPosPrinterRongta read FPrinter;
   protected
     procedure SetUp; override;
     procedure TearDown; override;
@@ -42,7 +42,7 @@ procedure TPosEscPrinterTest.SetUp;
 begin
   FLogger := TLogFile.Create;
   FPort := TMockPrinterPort.Create('');
-  FPrinter := TPosEscPrinter.Create2(nil, FPort, FLogger);
+  FPrinter := TPosPrinterRongta.Create2(nil, FPort, FLogger);
 end;
 
 procedure TPosEscPrinterTest.TearDown;
