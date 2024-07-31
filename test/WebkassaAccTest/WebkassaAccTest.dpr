@@ -42,7 +42,7 @@ uses
   StringUtils in '..\..\src\Shared\StringUtils.pas',
   RegExpr in '..\..\src\Shared\RegExpr.pas',
   MathUtils in '..\..\src\OposWebkassa\units\MathUtils.pas',
-  duESCPrinter in 'units\duESCPrinter.pas',
+  duEscPrinterOA48 in 'units\duEscPrinterOA48.pas',
   WebkassaImpl in '..\..\src\OposWebkassa\units\WebkassaImpl.pas',
   SalesReceipt in '..\..\src\OposWebkassa\units\SalesReceipt.pas',
   ReceiptItem in '..\..\src\OposWebkassa\units\ReceiptItem.pas',
@@ -63,7 +63,6 @@ uses
   uZintInterface in '..\..\src\Shared\uZintInterface.pas',
   POSPrinterLog in '..\..\src\Opos\POSPrinterLog.pas',
   PosWinPrinter in '..\..\src\Shared\PosWinPrinter.pas',
-  EscPrinterRongta in '..\..\src\Shared\EscPrinterRongta.pas',
   ByteUtils in '..\..\src\Shared\ByteUtils.pas',
   duPosEscPrinter in 'units\duPosEscPrinter.pas',
   PrinterPort in '..\..\src\Shared\PrinterPort.pas',
@@ -84,7 +83,9 @@ uses
   PrinterTypes in '..\..\src\Shared\PrinterTypes.pas',
   BarcodeUtils in '..\..\src\Shared\BarcodeUtils.pas',
   MockPosPrinter in '..\OposWebkassaTest\units\MockPosPrinter.pas',
-  oleFiscalPrinter in '..\..\src\OposWebkassa\Units\oleFiscalPrinter.pas';
+  oleFiscalPrinter in '..\..\src\OposWebkassa\Units\oleFiscalPrinter.pas',
+  EscPrinterOA48 in '..\..\src\Shared\EscPrinterOA48.pas',
+  EscPrinterRongta in '..\..\src\Shared\EscPrinterRongta.pas';
 
 {$R *.RES}
 {$R ..\..\src\OposWebkassa\OposWebkassa.tlb}

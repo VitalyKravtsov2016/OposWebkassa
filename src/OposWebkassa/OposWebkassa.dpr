@@ -55,7 +55,7 @@ uses
   uZintInterface in '..\Shared\uZintInterface.pas',
   OposDevice in '..\Opos\OposDevice.pas',
   POSPrinterLog in '..\Opos\POSPrinterLog.pas',
-  EscPrinterRongta in '..\Shared\EscPrinterRongta.pas',
+  EscPrinterOA48 in '..\Shared\EscPrinterOA48.pas',
   ByteUtils in '..\Shared\ByteUtils.pas',
   PosWinPrinter in '..\Shared\PosWinPrinter.pas',
   PrinterPort in '..\Shared\PrinterPort.pas',

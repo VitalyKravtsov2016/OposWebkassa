@@ -65,7 +65,7 @@ uses
   OposServiceDevice19 in '..\Opos\OposServiceDevice19.pas',
   NotifyThread in '..\Shared\NotifyThread.pas',
   PosPrinterRongta in '..\Shared\PosPrinterRongta.pas',
-  EscPrinterRongta in '..\Shared\EscPrinterRongta.pas',
+  EscPrinterOA48 in '..\Shared\EscPrinterOA48.pas',
   ByteUtils in '..\Shared\ByteUtils.pas',
   Semaphore in '..\Opos\Semaphore.pas',
   WebkassaImpl in '..\OposWebkassa\units\WebkassaImpl.pas',

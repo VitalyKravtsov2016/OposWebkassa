@@ -63,7 +63,7 @@ uses
   uZintInterface in '..\..\src\Shared\uZintInterface.pas',
   POSPrinterLog in '..\..\src\Opos\POSPrinterLog.pas',
   duReceiptTemplate in 'units\duReceiptTemplate.pas',
-  EscPrinterRongta in '..\..\src\Shared\EscPrinterRongta.pas',
+  EscPrinterOA48 in '..\..\src\Shared\EscPrinterOA48.pas',
   ByteUtils in '..\..\src\Shared\ByteUtils.pas',
   PosWinPrinter in '..\..\src\Shared\PosWinPrinter.pas',
   PrinterPort in '..\..\src\Shared\PrinterPort.pas',

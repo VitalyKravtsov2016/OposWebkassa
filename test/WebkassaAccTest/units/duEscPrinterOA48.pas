@@ -1,4 +1,4 @@
-unit duESCPrinter;
+unit duEscPrinterOA48;
 
 interface
 
@@ -10,16 +10,16 @@ uses
   // Tnt
   TntClasses, TntSysUtils,
   // This
-  DebugUtils, StringUtils, EscPrinterRongta, PrinterPort, SerialPort, LogFile,
+  DebugUtils, StringUtils, EscPrinterOA48, PrinterPort, SerialPort, LogFile,
   FileUtils, SocketPort, RawPrinterPort;
 
 type
-  { TESCPrinterTest }
+  { TPrinterOA48Test }
 
-  TESCPrinterTest = class(TTestCase)
+  TPrinterOA48Test = class(TTestCase)
   private
     FLogger: ILogFile;
-    FPrinter: TEscPrinterRongta;
+    FPrinter: TEscPrinterOA48;
     FPrinterPort: IPrinterPort;
   protected
     procedure SetUp; override;
@@ -28,7 +28,7 @@ type
     function CreateRawPort: TRawPrinterPort;
     function CreateSerialPort: TSerialPort;
     function CreateSocketPort: TSocketPort;
-    property Printer: TEscPrinterRongta read FPrinter;
+    property Printer: TEscPrinterOA48 read FPrinter;
   published
     procedure TestBitmap;
     procedure TestPrintRasterBMP;
@@ -42,8 +42,6 @@ type
     procedure TestBarcode2;
     procedure TestPDF417;
     procedure TestQRCode;
-    procedure TestQRCode2;
-    procedure TestQRCode3;
     procedure PrintTestPage;
     procedure TestJustification;
     procedure TestJustification2;
@@ -64,7 +62,6 @@ type
     procedure TestCutDistanceFontA;
     procedure TestCutDistanceFontB;
     procedure TestBitmap2;
-    procedure TestQRCode4;
     procedure TestPageModeA;
     procedure TestPageModeB;
     procedure TestPrintUTF;
@@ -72,9 +69,9 @@ type
 
 implementation
 
-{ TESCPrinterTest }
+{ TPrinterOA48Test }
 
-procedure TESCPrinterTest.SetUp;
+procedure TPrinterOA48Test.SetUp;
 begin
   inherited SetUp;
   FLogger := TLogFile.Create;
@@ -87,24 +84,22 @@ begin
   //FPrinterPort := CreateSerialPort;
   FPrinterPort := CreateRawPort;
   FPrinterPort.Open;
-  FPrinter := TEscPrinterRongta.Create(FPrinterPort, FLogger);
+  FPrinter := TEscPrinterOA48.Create(FPrinterPort, FLogger);
 end;
 
-procedure TESCPrinterTest.TearDown;
+procedure TPrinterOA48Test.TearDown;
 begin
   FPrinter.Free;
   FPrinterPort := nil;
   inherited TearDown;
 end;
 
-function TESCPrinterTest.CreateRawPort: TRawPrinterPort;
+function TPrinterOA48Test.CreateRawPort: TRawPrinterPort;
 begin
   Result := TRawPrinterPort.Create(FLogger, 'POS-80C');
-  //Result := TRawPrinterPort.Create(FLogger, 'printer-80');
-  //Result := TRawPrinterPort.Create(FLogger, 'RONGTA 80mm Series Printer');
 end;
 
-function TESCPrinterTest.CreateSerialPort: TSerialPort;
+function TPrinterOA48Test.CreateSerialPort: TSerialPort;
 var
   SerialParams: TSerialParams;
 begin
@@ -119,7 +114,7 @@ begin
   Result := TSerialPort.Create(SerialParams, FLogger);
 end;
 
-function TESCPrinterTest.CreateSocketPort: TSocketPort;
+function TPrinterOA48Test.CreateSocketPort: TSocketPort;
 var
   SocketParams: TSocketParams;
 begin
@@ -130,20 +125,20 @@ begin
   Result := TSocketPort.Create(SocketParams, FLogger);
 end;
 
-procedure TESCPrinterTest.TestPrintText;
+procedure TPrinterOA48Test.TestPrintText;
 begin
   FPrinter.PrintText('Печать строки 1' + CRLF);
   FPrinter.PrintText('Печать строки 2' + CRLF);
   FPrinter.PrintText('Печать строки 3' + CRLF);
 end;
 
-procedure TESCPrinterTest.TestInitialize;
+procedure TPrinterOA48Test.TestInitialize;
 begin
   FPrinter.Initialize;
   FPrinter.SetCodePage(CODEPAGE_WCP1251);
 end;
 
-procedure TESCPrinterTest.TestReadStatus;
+procedure TPrinterOA48Test.TestReadStatus;
 var
   ErrorStatus: TErrorStatus;
   OfflineStatus: TOfflineStatus;
@@ -172,7 +167,7 @@ begin
   CheckEquals(False, RollStatus.PaperNearEnd, 'PaperNearEnd');
 end;
 
-procedure TESCPrinterTest.TestPrintMode;
+procedure TPrinterOA48Test.TestPrintMode;
 var
   PrintMode: TPrintMode;
 begin
@@ -269,7 +264,7 @@ begin
   FPrinter.PartialCut;
 end;
 
-procedure TESCPrinterTest.TestPrintModeInLine;
+procedure TPrinterOA48Test.TestPrintModeInLine;
 var
   PrintMode: TPrintMode;
 begin
@@ -318,7 +313,7 @@ begin
   FPrinter.PrintText(' Double height & width' + CRLF);
 end;
 
-procedure TESCPrinterTest.TestBarcode;
+procedure TPrinterOA48Test.TestBarcode;
 begin
   FPrinter.SetNormalPrintMode;
   FPrinter.SetBarcodeLeft(50);
@@ -342,7 +337,7 @@ begin
   FPrinter.PrintBarcode(BARCODE_CODABAR, '837465873');
 end;
 
-procedure TESCPrinterTest.TestBarcode2;
+procedure TPrinterOA48Test.TestBarcode2;
 begin
   FPrinter.SetNormalPrintMode;
   FPrinter.SetBarcodeLeft(50);
@@ -371,7 +366,7 @@ begin
   FPrinter.PrintText(CRLF);
 end;
 
-procedure TESCPrinterTest.TestPDF417;
+procedure TPrinterOA48Test.TestPDF417;
 var
   Barcode: TPDF417;
 const
@@ -379,7 +374,6 @@ const
 begin
   FPrinter.Initialize;
   FPrinter.PrintText('PDF417 test' + CRLF);
-  FPrinter.Select2DBarcode(BARCODE_PDF417);
   Barcode.ColumnNumber := 4; // 1..30
   Barcode.SecurityLevel := 0; // 0..8
   Barcode.HVRatio := 2; // 2..5
@@ -388,41 +382,25 @@ begin
   FPrinter.printPDF417(Barcode);
 end;
 
-procedure TESCPrinterTest.TestQRCode;
+procedure TPrinterOA48Test.TestQRCode;
 var
   QRCode: TQRCode;
 begin
-  FPrinter.Initialize;
-  FPrinter.PrintText('QRCode test' + CRLF);
-  FPrinter.PrintText('SetLeftMargin(100)' + CRLF);
-  FPrinter.SetLeftMargin(100);
-  FPrinter.PrintText('SetLeftMargin(100): OK' + CRLF);
-  FPrinter.PrintText('SetLeftMargin(100): OK' + CRLF);
-  FPrinter.Select2DBarcode(BARCODE_QR_CODE);
-  QRCode.SymbolVersion := 0;
   QRCode.ECLevel := 1;
   QRCode.ModuleSize := 4;
-  QRCode.data := 'QRCodetestQRCodetestQRCodetest';
+  QRCode.data := 'http://dev.kofd.kz/consumer?i=1320526842876&f=555697470167&s=2000.00&t=20240327T093611';
+
+  FPrinter.Initialize;
+  FPrinter.PrintText('Print QRCode as command test' + CRLF);
+  FPrinter.SetJustification(JUSTIFICATION_LEFT);
+  FPrinter.printQRCode(QRCode);
+  FPrinter.SetJustification(JUSTIFICATION_CENTER);
+  FPrinter.printQRCode(QRCode);
+  FPrinter.SetJustification(JUSTIFICATION_RIGHT);
   FPrinter.printQRCode(QRCode);
 end;
 
-procedure TESCPrinterTest.TestQRCode2;
-var
-  Data: string;
-begin
-  Data := HexToStr('1B5A0001045400687474703A2F2F6465762E6B6F66642E6B7A2F636F6E73756D65723F693D39333832393836333035343726663D32313130333032303032303726733D3133392E303026743D323032333031313754313730303237');
-  FPrinter.Send(Data);
-end;
-
-procedure TESCPrinterTest.TestQRCode3;
-var
-  Data: string;
-begin
-  Data := HexToStr('1B5A0001045600687474703A2F2F6465762E6B6F66642E6B7A2F636F6E73756D65723F693D3133303834353639393334343726663D35353536393734373031363726733D313030302E303026743D323032333131303854313735323033');
-  FPrinter.Send(Data);
-end;
-
-procedure TESCPrinterTest.TestBitmap;
+procedure TPrinterOA48Test.TestBitmap;
 var
   Bitmap: TBitmap;
   FileName: string;
@@ -445,7 +423,7 @@ begin
   end;
 end;
 
-procedure TESCPrinterTest.TestPrintRasterBMP;
+procedure TPrinterOA48Test.TestPrintRasterBMP;
 var
   Bitmap: TBitmap;
 begin
@@ -467,7 +445,7 @@ _2013-01-05
 _RONGTA
 *)
 
-procedure TESCPrinterTest.TestReadPrinterID;
+procedure TPrinterOA48Test.TestReadPrinterID;
 begin
   CheckEquals('7.03 ESC/POS', FPrinter.ReadPrinterID(65), 'Firmware version');
 
@@ -480,13 +458,13 @@ begin
   CheckEquals('D6KG074561', FPrinter.ReadSerialNumber, 'Serial number');
 end;
 
-procedure TESCPrinterTest.PrintTestPage;
+procedure TPrinterOA48Test.PrintTestPage;
 begin
   FPrinter.Initialize;
   FPrinter.PrintTestPage;
 end;
 
-procedure TESCPrinterTest.TestJustification;
+procedure TPrinterOA48Test.TestJustification;
 var
   QRCode: TQRCode;
 begin
@@ -494,8 +472,6 @@ begin
   FPrinter.SetHRIPosition(HRI_BELOW_BARCODE);
   FPrinter.SetJustification(JUSTIFICATION_CENTER);
   FPrinter.PrintText('QRCode test' + CRLF);
-  FPrinter.Select2DBarcode(BARCODE_QR_CODE);
-  QRCode.SymbolVersion := 0;
   QRCode.ECLevel := 1;
   QRCode.ModuleSize := 4;
   QRCode.data := 'QRCodetestQRCodetestQRCodetest';
@@ -503,7 +479,7 @@ begin
   FPrinter.SetJustification(JUSTIFICATION_LEFT);
 end;
 
-procedure TESCPrinterTest.TestJustification2;
+procedure TPrinterOA48Test.TestJustification2;
 begin
   FPrinter.Initialize;
   FPrinter.PrintText('Default justification' + CRLF);
@@ -515,7 +491,7 @@ begin
   FPrinter.PrintText('Right justification' + CRLF);
 end;
 
-procedure TESCPrinterTest.TestUnderlined;
+procedure TPrinterOA48Test.TestUnderlined;
 var
   PrintMode: TPrintMode;
 begin
@@ -541,13 +517,13 @@ begin
   FPrinter.PrintText('Underlined mode, font A' + CRLF);
 end;
 
-procedure TESCPrinterTest.TestBeepParams;
+procedure TPrinterOA48Test.TestBeepParams;
 begin
   FPrinter.Initialize;
   FPrinter.SetBeepParams(3, 1);
 end;
 
-procedure TESCPrinterTest.TestEmphasized;
+procedure TPrinterOA48Test.TestEmphasized;
 begin
   FPrinter.Initialize;
   FPrinter.PrintText('Emphasized mode OFF ');
@@ -557,7 +533,7 @@ begin
   FPrinter.SetEmphasizedMode(False);
 end;
 
-procedure TESCPrinterTest.TestDoubleStrikeMode;
+procedure TPrinterOA48Test.TestDoubleStrikeMode;
 begin
   FPrinter.Initialize;
   FPrinter.PrintText('Double-strike mode OFF ');
@@ -567,7 +543,7 @@ begin
   FPrinter.SetDoubleStrikeMode(False);
 end;
 
-procedure TESCPrinterTest.TestCharacterFont;
+procedure TPrinterOA48Test.TestCharacterFont;
 begin
   FPrinter.Initialize;
   FPrinter.PrintText('Character font A' + CRLF);
@@ -578,7 +554,7 @@ begin
   FPrinter.SetCharacterFont(0);
 end;
 
-procedure TESCPrinterTest.TestCodePage;
+procedure TPrinterOA48Test.TestCodePage;
 const
   TextCodePage1251: WideString = 'Кодовая страница 1251';
   TextCodePage866: WideString = 'Кодовая страница 866';
@@ -619,7 +595,7 @@ begin
   end;
 end;
 
-procedure TESCPrinterTest.TestCodePage2;
+procedure TPrinterOA48Test.TestCodePage2;
 const
   TextCodePage1251: WideString = 'Кодовая страница 1251';
   TextCodePage866: WideString = 'Кодовая страница 866';
@@ -660,7 +636,7 @@ begin
   end;
 end;
 
-procedure TESCPrinterTest.TestCodePages;
+procedure TPrinterOA48Test.TestCodePages;
 var
   i: Integer;
   Text: AnsiString;
@@ -679,7 +655,7 @@ begin
   end;
 end;
 
-procedure TESCPrinterTest.TestNVBitImage;
+procedure TPrinterOA48Test.TestNVBitImage;
 var
   Bitmap: TBitmap;
   FileName: string;
@@ -698,7 +674,7 @@ begin
   end;
 end;
 
-procedure TESCPrinterTest.TestCoverOpen;
+procedure TPrinterOA48Test.TestCoverOpen;
 var
   i: Integer;
 begin
@@ -726,7 +702,7 @@ begin
 *)
 end;
 
-procedure TESCPrinterTest.TestRecoverError;
+procedure TPrinterOA48Test.TestRecoverError;
 var
   ErrorStatus: TErrorStatus;
 begin
@@ -737,7 +713,7 @@ begin
   end;
 end;
 
-procedure TESCPrinterTest.TestLineSpacing;
+procedure TPrinterOA48Test.TestLineSpacing;
 begin
   FPrinter.Initialize;
   FPrinter.SetCharacterFont(1);
@@ -756,7 +732,7 @@ begin
 *)
 end;
 
-procedure TESCPrinterTest.TestCutDistanceFontA;
+procedure TPrinterOA48Test.TestCutDistanceFontA;
 begin
   FPrinter.Initialize;
   FPrinter.SetLineSpacing(0);
@@ -774,7 +750,7 @@ begin
   FPrinter.PartialCut;
 end;
 
-procedure TESCPrinterTest.TestCutDistanceFontB;
+procedure TPrinterOA48Test.TestCutDistanceFontB;
 begin
   FPrinter.Initialize;
   FPrinter.SetLineSpacing(0);
@@ -836,7 +812,7 @@ arabic letter uighur kazakh kirghiz alef maksura medial form
 kazakhstan flag
 *)
 
-procedure TESCPrinterTest.TestUserCharacter;
+procedure TPrinterOA48Test.TestUserCharacter;
 var
   i: Integer;
   Code: Byte;
@@ -899,7 +875,7 @@ begin
 *)
 end;
 
-procedure TESCPrinterTest.TestUserCharacter2;
+procedure TPrinterOA48Test.TestUserCharacter2;
 var
   Bitmap: TBitmap;
   UserChar: TUserChar;
@@ -923,7 +899,7 @@ begin
   end;
 end;
 
-procedure TESCPrinterTest.TestBitmap2;
+procedure TPrinterOA48Test.TestBitmap2;
 const
   DownloadBMPCommand =
   '1D 2A 0A 0A FF F9 E6 61 E6 7E 06 1F FF 80 80 19 9F 9F F9 E6 18 18 01 80 80 19 9F 9F F9 E6' + CRLF +
@@ -967,20 +943,6 @@ begin
   end;
 end;
 
-procedure TESCPrinterTest.TestQRCode4;
-var
-  QRCode: TQRCode;
-begin
-  FPrinter.Initialize;
-  FPrinter.PrintText('Print QRCode as command test' + CRLF);
-  FPrinter.Select2DBarcode(BARCODE_QR_CODE);
-  QRCode.SymbolVersion := 0;
-  QRCode.ECLevel := 1;
-  QRCode.ModuleSize := 4;
-  QRCode.data := 'http://dev.kofd.kz/consumer?i=1320526842876&f=555697470167&s=2000.00&t=20240327T093611';
-  FPrinter.printQRCode(QRCode);
-end;
-
   (*
   000 "Компания ПАЙ"
   Кассовый чек
@@ -1006,7 +968,7 @@ end;
   ПРИХОД 19.07.24 13:14
   *)
 
-procedure TESCPrinterTest.TestPageModeA;
+procedure TPrinterOA48Test.TestPageModeA;
 const
   Separator = '------------------------------------------------';
   Barcode = 't=20240719T1314&s=460.00&fn=7380440700076549&i=41110&fp=2026476352&n=1';
@@ -1080,8 +1042,6 @@ begin
   // QR code on the right
   FPrinter.PrintText('                              ');
   FPrinter.SetPMRelativeVerticalPosition(70);
-  FPrinter.Select2DBarcode(BARCODE_QR_CODE);
-  QRCode.SymbolVersion := 0;
   QRCode.ECLevel := 0;
   QRCode.ModuleSize := 6;
   QRCode.data := Barcode;
@@ -1103,7 +1063,7 @@ begin
   FPrinter.EndDocument;
 end;
 
-procedure TESCPrinterTest.TestPageModeB;
+procedure TPrinterOA48Test.TestPageModeB;
 const
   Separator = '----------------------------------------------------------------';
   Barcode = 't=20240719T1314&s=460.00&fn=7380440700076549&i=41110&fp=2026476352&n=1';
@@ -1177,8 +1137,6 @@ begin
   // QR code on the right
   FPrinter.PrintText('                                         ');
   FPrinter.SetPMRelativeVerticalPosition(70);
-  FPrinter.Select2DBarcode(BARCODE_QR_CODE);
-  QRCode.SymbolVersion := 0;
   QRCode.ECLevel := 0;
   QRCode.ModuleSize := 6;
   QRCode.data := Barcode;
@@ -1200,7 +1158,7 @@ begin
   FPrinter.EndDocument;
 end;
 
-procedure TESCPrinterTest.TestPrintUTF;
+procedure TPrinterOA48Test.TestPrintUTF;
 var
   i: Integer;
   Code: Word;
@@ -1231,6 +1189,6 @@ begin
 end;
 
 initialization
-  RegisterTest('', TESCPrinterTest.Suite);
+  RegisterTest('', TPrinterOA48Test.Suite);
 
 end.
