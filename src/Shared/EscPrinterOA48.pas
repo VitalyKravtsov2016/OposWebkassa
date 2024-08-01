@@ -11,6 +11,15 @@ uses
   ByteUtils, PrinterPort, RegExpr, StringUtils, LogFile, FileUtils;
 
 const
+  /////////////////////////////////////////////////////////////////////////////
+  // QRCode error correction level
+
+  OA48_QRCODE_ECL_7   = $48;
+  OA48_QRCODE_ECL_15  = $49;
+  OA48_QRCODE_ECL_25  = $50;
+  OA48_QRCODE_ECL_30  = $51;
+
+
   SupportedCodePages: array [0..36] of Integer = (
     437,720,737,755,775,850,852,855,856,857,858,860,862,863,864,865,866,874,
     1250,1251,1252,1253,1254,1255,1256,1257,1258,
@@ -259,9 +268,12 @@ type
   { TPDF417 }
 
   TPDF417 = record
+    RowNumber: Byte; // 1..30
     ColumnNumber: Byte; // 1..30
-    SecurityLevel: Byte; // 0..8
-    HVRatio: Byte; // 2..5
+    ErrorCorrectionLevel: Byte; // 0..8
+    ModuleWidth: Byte;
+    ModuleHeight: Byte;
+    Options: Byte;
     data: AnsiString;
   end;
 
@@ -312,12 +324,22 @@ type
     FDeviceMetrics: TDeviceMetrics;
     procedure CheckUserCharCode(Code: Byte);
     procedure ClearUserChars;
-    procedure PrintsTheQRCodeSymbolDataInTheSymbolStorageArea;
-    procedure SetsTheErrorCorrectionLevelForQRCodeSymbol(n: Byte);
-    procedure SetsTheSizeOfTheQRCodeSymbolModule(n: Byte);
-    procedure StoresSymbolDataInTheQRCodeSymbolStorageArea(
-      Data: AnsiString);
   public
+    procedure PDF417Print;
+    procedure PDF417ReadDataSize;
+    procedure PDF417SetColumnNumber(n: Byte);
+    procedure PDF417SetErrorCorrectionLevel(m, n: Byte);
+    procedure PDF417SetModuleHeight(n: Byte);
+    procedure PDF417SetModuleWidth(n: Byte);
+    procedure PDF417SetOptions(m: Byte);
+    procedure PDF417SetRowNumber(n: Byte);
+    procedure PDF417Write(const data: AnsiString);
+
+    procedure QRCodePrint;
+    procedure QRCodeSetErrorCorrectionLevel(n: Byte);
+    procedure QRCodeSetModuleSize(n: Byte);
+    procedure QRCodeWriteData(Data: AnsiString);
+
     procedure EnableUserCharacters;
     procedure DisableUserCharacters;
     procedure WriteKazakhCharacters2;
@@ -417,8 +439,6 @@ type
     procedure SetStandardMode;
     procedure SetPageModeDirection(n: Byte);
     procedure SetPageModeArea(R: TRect);
-    procedure printBarcode2D(m, n, k: Byte; const data: AnsiString);
-    procedure printPDF417(const Barcode: TPDF417);
     procedure printQRCode(const Barcode: TQRCode);
     procedure SetKanjiQuadSizeMode(Value: Boolean);
     procedure FeedMarkedPaper;
@@ -444,6 +464,12 @@ type
     procedure WriteKazakhCharacters;
     procedure PrintUserChar(Char: WideChar);
     function IsUserChar(Char: WideChar): Boolean;
+    procedure PrintPDF417(const Barcode: TPDF417);
+    procedure MaxiCodePrint;
+    procedure MaxiCodeSetMode(n: Byte);
+    procedure MaxiCodeWriteData(const Data: AnsiString);
+    procedure SelectCodePage(B: Byte);
+    procedure UTF8Enable(B: Boolean);
 
     property Port: IPrinterPort read FPort;
     property Logger: ILogFile read FLogger;
@@ -1493,28 +1519,6 @@ begin
     Chr(Lo(R.Bottom)) + Chr(Hi(R.Bottom)));
 end;
 
-procedure TEscPrinterOA48.printBarcode2D(m, n, k: Byte; const data: AnsiString);
-begin
-  Logger.Debug('TEscPrinterOA48.printBarcode2D');
-  Send(#$1B#$5A + Chr(m) + Chr(n) + Chr(k) +
-    Chr(Lo(Length(data))) + Chr(Hi(Length(data))) + data);
-end;
-
-(*
-PDF417:barcode type0
-m specifies column number of 2D barcode.(1.m.30)
-n specifies security level to restore when barcode image
-is damaged.(0.n.8)
-k is used for define horizontal and vertical ratio.( 2.k.5)
-d is the length of data
-*)
-
-procedure TEscPrinterOA48.printPDF417(const Barcode: TPDF417);
-begin
-  Logger.Debug('TEscPrinterOA48.printPDF417');
-  printBarcode2D(Barcode.ColumnNumber, Barcode.SecurityLevel, Barcode.HVRatio, Barcode.data);
-end;
-
 procedure TEscPrinterOA48.SetKanjiQuadSizeMode(Value: Boolean);
 begin
   Logger.Debug('TEscPrinterOA48.SetKanjiQuadSizeMode');
@@ -1779,17 +1783,17 @@ begin
   end;
 end;
 
-procedure TEscPrinterOA48.SetsTheSizeOfTheQRCodeSymbolModule(n: Byte);
+procedure TEscPrinterOA48.QRCodeSetModuleSize(n: Byte);
 begin
   Send(#$1D#$28#$6B#$30#$67 + Chr(n));
 end;
 
-procedure TEscPrinterOA48.SetsTheErrorCorrectionLevelForQRCodeSymbol(n: Byte);
+procedure TEscPrinterOA48.QRCodeSetErrorCorrectionLevel(n: Byte);
 begin
   Send(#$1D#$28#$6B#$30#$69 + Chr(n));
 end;
 
-procedure TEscPrinterOA48.StoresSymbolDataInTheQRCodeSymbolStorageArea(Data: AnsiString);
+procedure TEscPrinterOA48.QRCodeWriteData(Data: AnsiString);
 var
   L: Word;
   Command: AnsiString;
@@ -1799,7 +1803,7 @@ begin
   Send(Command);
 end;
 
-procedure TEscPrinterOA48.PrintsTheQRCodeSymbolDataInTheSymbolStorageArea;
+procedure TEscPrinterOA48.QRCodePrint;
 begin
   Send(#$1D#$28#$6B#$30#$81);
 end;
@@ -1807,13 +1811,105 @@ end;
 procedure TEscPrinterOA48.printQRCode(const Barcode: TQRCode);
 begin
   Logger.Debug('TEscPrinterOA48.printQRCode');
-  SetsTheSizeOfTheQRCodeSymbolModule(Barcode.ModuleSize);
-  SetsTheErrorCorrectionLevelForQRCodeSymbol(Barcode.ECLevel);
-  StoresSymbolDataInTheQRCodeSymbolStorageArea(Barcode.data);
-  PrintsTheQRCodeSymbolDataInTheSymbolStorageArea;
+  QRCodeSetModuleSize(Barcode.ModuleSize);
+  QRCodeSetErrorCorrectionLevel(Barcode.ECLevel);
+  QRCodeWriteData(Barcode.Data);
+  QRCodePrint;
 end;
 
+procedure TEscPrinterOA48.PDF417SetColumnNumber(n: Byte);
+begin
+  Send(#$1D#$28#$6B#$03#$00#$30#$41 + Chr(n));
+end;
 
+procedure TEscPrinterOA48.PDF417SetRowNumber(n: Byte);
+begin
+  Send(#$1D#$28#$6B#$03#$00#$30#$42 + Chr(n));
+end;
 
+procedure TEscPrinterOA48.PDF417SetModuleWidth(n: Byte);
+begin
+  Send(#$1D#$28#$6B#$03#$00#$30#$43 + Chr(n));
+end;
+
+procedure TEscPrinterOA48.PDF417SetModuleHeight(n: Byte);
+begin
+  Send(#$1D#$28#$6B#$03#$00#$30#$44 + Chr(n));
+end;
+
+procedure TEscPrinterOA48.PDF417SetErrorCorrectionLevel(m, n: Byte);
+begin
+  Send(#$1D#$28#$6B#$03#$00#$30#$45 + Chr(m) + Chr(n));
+end;
+
+procedure TEscPrinterOA48.PDF417SetOptions(m: Byte);
+begin
+  Send(#$1D#$28#$6B#$03#$00#$30#$46 + Chr(m));
+end;
+
+procedure TEscPrinterOA48.PDF417Write(const data: AnsiString);
+var
+  L: Word;
+begin
+  L := Length(Data) + 3;
+  Send(#$1D#$28#$6B + Chr(Lo(L)) + Chr(Hi(L)) + #$30#$50#$30 + Data);
+end;
+
+procedure TEscPrinterOA48.PDF417Print;
+begin
+  Send(#$1D#$28#$6B#$03#$00#$30#$51#$30);
+end;
+
+procedure TEscPrinterOA48.PDF417ReadDataSize;
+begin
+  Send(#$1D#$28#$6B#$03#$00#$30#$52#$30);
+  // Read size
+end;
+
+procedure TEscPrinterOA48.PrintPDF417(const Barcode: TPDF417);
+begin
+  PDF417SetRowNumber(Barcode.RowNumber);
+  PDF417SetColumnNumber(Barcode.ColumnNumber);
+  PDF417SetModuleWidth(Barcode.ModuleWidth);
+  PDF417SetModuleHeight(Barcode.ModuleHeight);
+  //PDF417SetErrorCorrectionLevel(Barcode.ErrorCorrectionLevel);
+  //PDF417SetOptions(Barcode.Options);
+  PDF417Write(Barcode.Data);
+  PDF417Print;
+end;
+
+procedure TEscPrinterOA48.MaxiCodeSetMode(n: Byte);
+begin
+  Send(#$1D#$28#$6B#$03#$00#$32#$41 + Chr(n));
+end;
+
+procedure TEscPrinterOA48.MaxiCodeWriteData(const Data: AnsiString);
+var
+  L: Word;
+begin
+  L := Length(Data) + 3;
+  Send(#$1D#$28#$6B + Chr(Lo(L)) + Chr(Hi(L)) + #$32#$50#$30 + Data);
+end;
+
+procedure TEscPrinterOA48.MaxiCodePrint;
+begin
+  Send(#$1D#$28#$6B#$03#$00#$32#$51#$30);
+end;
+
+procedure TEscPrinterOA48.UTF8Enable(B: Boolean);
+begin
+  Send(#$1F#$1B#$10#$01#$02 + Chr(BoolToInt[B]));
+end;
+
+procedure TEscPrinterOA48.SelectCodePage(B: Byte);
+begin
+  Send(#$1F#$1B#$1F#$FF + Chr(B) + #$0A#$00);
+end;
+
+// test start
+// 1F 1B 10 01 02 00 - no utf
+// 1F 1B 10 01 02 01 - utf
+// 1F 1B 1F FF 00 0A 00 ???
+// 1F 1B 1F FF 33 0A 00
 
 end.

@@ -59,7 +59,7 @@ uses
   ByteUtils in '..\Shared\ByteUtils.pas',
   PosWinPrinter in '..\Shared\PosWinPrinter.pas',
   PrinterPort in '..\Shared\PrinterPort.pas',
-  PosPrinterRongta in '..\Shared\PosPrinterRongta.pas',
+  PosPrinterOA48 in '..\Shared\PosPrinterOA48.pas',
   SerialPort in '..\Shared\SerialPort.pas',
   DeviceNotification in '..\Shared\DeviceNotification.pas',
   PortUtil in '..\Shared\PortUtil.pas',
@@ -73,7 +73,9 @@ uses
   DirectIOAPI in 'units\DirectIOAPI.pas',
   xmlParser in '..\Shared\XMLParser.pas',
   PrinterTypes in '..\Shared\PrinterTypes.pas',
-  BarcodeUtils in '..\Shared\BarcodeUtils.pas';
+  BarcodeUtils in '..\Shared\BarcodeUtils.pas',
+  PosPrinterRongta in '..\Shared\PosPrinterRongta.pas',
+  EscPrinterRongta in '..\Shared\EscPrinterRongta.pas';
 
 exports
   DllGetClassObject,

@@ -42,6 +42,9 @@ type
     procedure TestBarcode2;
     procedure TestPDF417;
     procedure TestQRCode;
+    procedure TestQRCodeECL;
+    procedure TestQRCodeModuleSize;
+    procedure TestQRCodeJustification;
     procedure PrintTestPage;
     procedure TestJustification;
     procedure TestJustification2;
@@ -65,6 +68,7 @@ type
     procedure TestPageModeA;
     procedure TestPageModeB;
     procedure TestPrintUTF;
+    procedure TestPrintMaxiCode; 
   end;
 
 implementation
@@ -374,15 +378,78 @@ const
 begin
   FPrinter.Initialize;
   FPrinter.PrintText('PDF417 test' + CRLF);
+  Barcode.RowNumber := 1;
   Barcode.ColumnNumber := 4; // 1..30
-  Barcode.SecurityLevel := 0; // 0..8
-  Barcode.HVRatio := 2; // 2..5
+  Barcode.ModuleWidth := 2;
+  Barcode.ModuleHeight := 4;
+  Barcode.ErrorCorrectionLevel := 0;
+  Barcode.Options := 0;
   Barcode.data := BarcodeData;
-  FPrinter.SetLeftMargin(100);
   FPrinter.printPDF417(Barcode);
 end;
 
 procedure TPrinterOA48Test.TestQRCode;
+var
+  QRCode: TQRCode;
+begin
+  QRCode.ModuleSize := 3;
+  QRCode.ECLevel := OA48_QRCODE_ECL_7;
+  QRCode.data := 'http://dev.kofd.kz/consumer?i=1320526842876&f=555697470167&s=2000.00&t=20240327T093611';
+
+  FPrinter.Initialize;
+  FPrinter.printQRCode(QRCode);
+end;
+
+///////////////////////////////////////////////////////////////////////////////
+// ECL - Error correction level
+
+procedure TPrinterOA48Test.TestQRCodeECL;
+var
+  QRCode: TQRCode;
+begin
+  QRCode.ModuleSize := 3;
+  QRCode.data := 'http://dev.kofd.kz/consumer?i=1320526842876&f=555697470167&s=2000.00&t=20240327T093611';
+
+  FPrinter.Initialize;
+  FPrinter.PrintText('ECL 7%' + CRLF);
+  QRCode.ECLevel := OA48_QRCODE_ECL_7;
+  FPrinter.printQRCode(QRCode);
+
+  FPrinter.PrintText('ECL 15%' + CRLF);
+  QRCode.ECLevel := OA48_QRCODE_ECL_15;
+  FPrinter.printQRCode(QRCode);
+
+  FPrinter.PrintText('ECL 25%' + CRLF);
+  QRCode.ECLevel := OA48_QRCODE_ECL_25;
+  FPrinter.printQRCode(QRCode);
+
+  FPrinter.PrintText('ECL 30%' + CRLF);
+  QRCode.ECLevel := OA48_QRCODE_ECL_30;
+  FPrinter.printQRCode(QRCode);
+end;
+
+procedure TPrinterOA48Test.TestQRCodeModuleSize;
+var
+  QRCode: TQRCode;
+begin
+  QRCode.ECLevel := OA48_QRCODE_ECL_7;
+  QRCode.data := 'http://dev.kofd.kz/consumer?i=1320526842876&f=555697470167&s=2000.00&t=20240327T093611';
+
+  FPrinter.Initialize;
+  FPrinter.PrintText('Module size 3' + CRLF);
+  QRCode.ModuleSize := 3;
+  FPrinter.printQRCode(QRCode);
+
+  FPrinter.PrintText('Module size 5' + CRLF);
+  QRCode.ModuleSize := 5;
+  FPrinter.printQRCode(QRCode);
+
+  FPrinter.PrintText('Module size 10' + CRLF);
+  QRCode.ModuleSize := 10;
+  FPrinter.printQRCode(QRCode);
+end;
+
+procedure TPrinterOA48Test.TestQRCodeJustification;
 var
   QRCode: TQRCode;
 begin
@@ -1160,8 +1227,6 @@ end;
 
 procedure TPrinterOA48Test.TestPrintUTF;
 var
-  i: Integer;
-  Code: Word;
   Text: WideString;
   Strings: TTntStringList;
 begin
@@ -1174,18 +1239,21 @@ begin
     Strings.Free;
   end;
 
-(*
-  for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
-  begin
-    Text := Text + WideChar(KazakhUnicodeChars[i]);
-  end;
-*)
+  FPrinter.Initialize;
+  FPrinter.UTF8Enable(True);
+  FPrinter.SelectCodePage(51);
+  FPrinter.Send(UTF8Encode('Printing in UTF mode' + CRLF));
+  FPrinter.Send(UTF8Encode(Text) + CRLF);
+end;
 
-  //FPrinter.Initialize;
-  //FPrinter.Send(#$1F#$1B#$10#$01#$02#$01);
-  //FPrinter.Send(UTF8Encode(Text) + CRLF);
-  //FPrinter.Send(UTF8Encode('Printing in UTF mode' + CRLF));
-  //FPrinter.Send(UTF8Encode('Русский текст' + CRLF));
+procedure TPrinterOA48Test.TestPrintMaxiCode;
+const
+  Data = 'http://dev.kofd.kz/consumer?i=1320526842876&f=555697470167&s=2000.00&t=20240327T093611';
+begin
+  FPrinter.Initialize;
+  FPrinter.MaxiCodeWriteData(Data);
+  FPrinter.MaxiCodeSetMode(0);
+  FPrinter.MaxiCodePrint;
 end;
 
 initialization

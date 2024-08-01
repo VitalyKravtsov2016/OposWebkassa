@@ -21,8 +21,9 @@ uses
   PrinterParameters, CashInReceipt, CashOutReceipt,
   SalesReceipt, TextDocument, ReceiptItem, StringUtils, DebugUtils, VatRate,
   uZintBarcode, uZintInterface, FileUtils, PosWinPrinter, PosPrinterRongta,
-  SerialPort, PrinterPort, SocketPort, ReceiptTemplate, RawPrinterPort,
-  PrinterTypes, DirectIOAPI, BarcodeUtils, PrinterParametersReg, JsonUtils;
+  PosPrinterOA48, SerialPort, PrinterPort, SocketPort, ReceiptTemplate,
+  RawPrinterPort, PrinterTypes, DirectIOAPI, BarcodeUtils, PrinterParametersReg,
+  JsonUtils;
 
 const
   FPTR_DEVICE_DESCRIPTION = 'WebKassa OPOS driver';
@@ -2713,22 +2714,49 @@ end;
 
 function TWebkassaImpl.CreatePrinter: IOPOSPOSPrinter;
 
-  function CreatePosEscPrinter(PrinterPort: IPrinterPort): TPosPrinterRongta;
+  function CreatePosPrinterRongta(PrinterPort: IPrinterPort): IOPOSPOSPrinter;
+  var
+    Printer: TPosPrinterRongta;
   begin
-    Result := TPosPrinterRongta.Create2(nil, PrinterPort, Logger);
-    Result.OnStatusUpdateEvent := PrinterStatusUpdateEvent;
-    Result.OnErrorEvent := PrinterErrorEvent;
-    Result.OnDirectIOEvent := PrinterDirectIOEvent;
-    Result.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
-    Result.FontName := Params.FontName;
-    Result.DevicePollTime := Params.DevicePollTime;
-    Result.Utf8Enabled := Params.Utf8Enabled;
+    Printer := TPosPrinterRongta.Create2(nil, PrinterPort, Logger);
+    Printer.OnStatusUpdateEvent := PrinterStatusUpdateEvent;
+    Printer.OnErrorEvent := PrinterErrorEvent;
+    Printer.OnDirectIOEvent := PrinterDirectIOEvent;
+    Printer.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
+    Printer.FontName := Params.FontName;
+    Printer.DevicePollTime := Params.DevicePollTime;
+    Printer.Utf8Enabled := Params.Utf8Enabled;
+    FPrinterObj := Printer;
+    Result := Printer;
+  end;
+
+  function CreatePosPrinterOA48(PrinterPort: IPrinterPort): IOPOSPOSPrinter;
+  var
+    Printer: TPosPrinterOA48;
+  begin
+    Printer := TPosPrinterOA48.Create2(nil, PrinterPort, Logger);
+    Printer.OnStatusUpdateEvent := PrinterStatusUpdateEvent;
+    Printer.OnErrorEvent := PrinterErrorEvent;
+    Printer.OnDirectIOEvent := PrinterDirectIOEvent;
+    Printer.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
+    Printer.FontName := Params.FontName;
+    Printer.DevicePollTime := Params.DevicePollTime;
+    Printer.Utf8Enabled := Params.Utf8Enabled;
+    FPrinterObj := Printer;
+    Result := Printer;
+  end;
+
+  function CreatePosEscPrinter(PrinterPort: IPrinterPort): IOPOSPOSPrinter;
+  begin
+    if Params.EscPrinterType = EscPrinterTypeRongta then
+      Result := CreatePosPrinterRongta(PrinterPort)
+    else
+      Result := CreatePosPrinterOA48(PrinterPort);
   end;
 
 var
   POSPrinter: TOPOSPOSPrinter;
   PosWinPrinter: TPosWinPrinter;
-  PosEscPrinter: TPosPrinterRongta;
   PrinterPort: IPrinterPort;
   SocketParams: TSocketParams;
 begin
@@ -2755,9 +2783,7 @@ begin
     PrinterTypeEscPrinterSerial:
     begin
       PrinterPort := CreateSerialPort;
-      PosEscPrinter := CreatePosEscPrinter(PrinterPort);
-      FPrinterObj := PosEscPrinter;
-      Result := PosEscPrinter;
+      Result := CreatePosEscPrinter(PrinterPort);
     end;
     PrinterTypeEscPrinterNetwork:
     begin
@@ -2766,16 +2792,12 @@ begin
       SocketParams.ByteTimeout := Params.ByteTimeout;
       SocketParams.MaxRetryCount := 1;
       PrinterPort := TSocketPort.Create(SocketParams, Logger);
-      PosEscPrinter := CreatePosEscPrinter(PrinterPort);
-      FPrinterObj := PosEscPrinter;
-      Result := PosEscPrinter;
+      Result := CreatePosEscPrinter(PrinterPort);
     end;
     PrinterTypeEscPrinterWindows:
     begin
       PrinterPort := TRawPrinterPort.Create(Logger, Params.PrinterName);
-      PosEscPrinter := CreatePosEscPrinter(PrinterPort);
-      FPrinterObj := PosEscPrinter;
-      Result := PosEscPrinter;
+      Result := CreatePosEscPrinter(PrinterPort);
     end;
   end;
 end;

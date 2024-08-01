@@ -64,7 +64,7 @@ uses
   PosWinPrinter in '..\Shared\PosWinPrinter.pas',
   OposServiceDevice19 in '..\Opos\OposServiceDevice19.pas',
   NotifyThread in '..\Shared\NotifyThread.pas',
-  PosPrinterRongta in '..\Shared\PosPrinterRongta.pas',
+  PosPrinterOA48 in '..\Shared\PosPrinterOA48.pas',
   EscPrinterOA48 in '..\Shared\EscPrinterOA48.pas',
   ByteUtils in '..\Shared\ByteUtils.pas',
   Semaphore in '..\Opos\Semaphore.pas',
@@ -95,7 +95,9 @@ uses
   DirectIOAPI in '..\OposWebkassa\units\DirectIOAPI.pas',
   xmlParser in '..\Shared\XMLParser.pas',
   PrinterTypes in '..\Shared\PrinterTypes.pas',
-  BarcodeUtils in '..\Shared\BarcodeUtils.pas';
+  BarcodeUtils in '..\Shared\BarcodeUtils.pas',
+  PosPrinterRongta in '..\Shared\PosPrinterRongta.pas',
+  EscPrinterRongta in '..\Shared\EscPrinterRongta.pas';
 
 {$R *.RES}
 {$R WindowsXP.RES}

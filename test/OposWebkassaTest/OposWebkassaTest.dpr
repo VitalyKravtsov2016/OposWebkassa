@@ -59,7 +59,7 @@ uses
   OposPtrhi in '..\..\src\Opos\OposPtrhi.pas',
   RCSEvents in 'units\RCSEvents.pas',
   RCSEvents_TLB in 'units\RCSEvents_TLB.pas',
-  PosPrinterRongta in '..\..\src\Shared\PosPrinterRongta.pas',
+  PosPrinterOA48 in '..\..\src\Shared\PosPrinterOA48.pas',
   uZintBarcode in '..\..\src\Shared\uZintBarcode.pas',
   uZintInterface in '..\..\src\Shared\uZintInterface.pas',
   POSPrinterLog in '..\..\src\Opos\POSPrinterLog.pas',
@@ -91,7 +91,9 @@ uses
   PrinterTypes in '..\..\src\Shared\PrinterTypes.pas',
   BarcodeUtils in '..\..\src\Shared\BarcodeUtils.pas',
   duEscPrinter in 'units\duEscPrinter.pas',
-  duLogFile in 'units\duLogFile.pas';
+  duLogFile in 'units\duLogFile.pas',
+  PosPrinterRongta in '..\..\src\Shared\PosPrinterRongta.pas',
+  EscPrinterRongta in '..\..\src\Shared\EscPrinterRongta.pas';
 
 {$R *.RES}
 

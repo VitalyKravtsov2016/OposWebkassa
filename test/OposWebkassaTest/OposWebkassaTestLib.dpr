@@ -58,7 +58,7 @@ uses
   OposPtrhi in '..\..\src\Opos\OposPtrhi.pas',
   RCSEvents in 'units\RCSEvents.pas',
   RCSEvents_TLB in 'units\RCSEvents_TLB.pas',
-  PosPrinterRongta in '..\..\src\Shared\PosPrinterRongta.pas',
+  PosPrinterOA48 in '..\..\src\Shared\PosPrinterOA48.pas',
   uZintBarcode in '..\..\src\Shared\uZintBarcode.pas',
   uZintInterface in '..\..\src\Shared\uZintInterface.pas',
   POSPrinterLog in '..\..\src\Opos\POSPrinterLog.pas',
@@ -88,7 +88,9 @@ uses
   duWebkassaImpl2 in 'units\duWebkassaImpl2.pas',
   duPosEscPrinter in 'units\duPosEscPrinter.pas',
   PrinterTypes in '..\..\src\Shared\PrinterTypes.pas',
-  BarcodeUtils in '..\..\src\Shared\BarcodeUtils.pas';
+  BarcodeUtils in '..\..\src\Shared\BarcodeUtils.pas',
+  PosPrinterRongta in '..\..\src\Shared\PosPrinterRongta.pas',
+  EscPrinterRongta in '..\..\src\Shared\EscPrinterRongta.pas';
 
 {$R *.RES}
 

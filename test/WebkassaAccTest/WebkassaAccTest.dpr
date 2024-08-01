@@ -58,7 +58,7 @@ uses
   OposPtrhi in '..\..\src\Opos\OposPtrhi.pas',
   duPrinterTest in 'units\duPrinterTest.pas',
   MockPosPrinter2 in '..\OposWebkassaTest\units\MockPosPrinter2.pas',
-  PosPrinterRongta in '..\..\src\Shared\PosPrinterRongta.pas',
+  PosPrinterOA48 in '..\..\src\Shared\PosPrinterOA48.pas',
   uZintBarcode in '..\..\src\Shared\uZintBarcode.pas',
   uZintInterface in '..\..\src\Shared\uZintInterface.pas',
   POSPrinterLog in '..\..\src\Opos\POSPrinterLog.pas',
@@ -85,7 +85,8 @@ uses
   MockPosPrinter in '..\OposWebkassaTest\units\MockPosPrinter.pas',
   oleFiscalPrinter in '..\..\src\OposWebkassa\Units\oleFiscalPrinter.pas',
   EscPrinterOA48 in '..\..\src\Shared\EscPrinterOA48.pas',
-  EscPrinterRongta in '..\..\src\Shared\EscPrinterRongta.pas';
+  EscPrinterRongta in '..\..\src\Shared\EscPrinterRongta.pas',
+  PosPrinterRongta in '..\..\src\Shared\PosPrinterRongta.pas';
 
 {$R *.RES}
 {$R ..\..\src\OposWebkassa\OposWebkassa.tlb}
