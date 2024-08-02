@@ -189,7 +189,6 @@ type
     FOnStatusUpdateEvent: TOPOSPOSPrinterStatusUpdateEvent;
     FBarcodeInGraphics: Boolean;
     FPrintRasterGraphics: Boolean;
-    FUtf8Enabled: Boolean;
 
     property Device: TOposServiceDevice19 read FDevice;
   public
@@ -609,7 +608,6 @@ type
 
     property FontName: WideString read FFontName write FFontName;
     property DevicePollTime: Integer read FDevicePollTime write FDevicePollTime;
-    property Utf8Enabled: Boolean read FUtf8Enabled write FUtf8Enabled;
 
     property BarcodeInGraphics: Boolean read FBarcodeInGraphics write FBarcodeInGraphics;
     property PrintRasterGraphics: Boolean read FPrintRasterGraphics write FPrintRasterGraphics;
@@ -2505,12 +2503,9 @@ end;
 procedure TPosPrinterRongta.InitializeDevice;
 begin
   FPrinter.Initialize;
-  if not Utf8Enabled then
-  begin
-    FPrinter.WriteKazakhCharacters;
-    FPrinter.DisableUserCharacters;
-    FPrinter.SetCodePage(CODEPAGE_WCP1251);
-  end;
+  FPrinter.WriteKazakhCharacters;
+  FPrinter.DisableUserCharacters;
+  FPrinter.SetCodePage(CODEPAGE_WCP1251);
   FPrinter.SetCharacterFont(FONT_TYPE_A);
   if FontName = FontNameB then
   begin
@@ -2915,18 +2910,12 @@ procedure TPosPrinterRongta.PrintWideString(const AText: WideString);
 var
   CodePage: Integer;
 begin
-  if Utf8Enabled then
-  begin
-    FPrinter.PrintText(UTF8Encode(AText));
-  end else
-  begin
-    case CharacterSet of
-      PTR_CS_UNICODE,
-      PTR_CS_WINDOWS: PrintUnicode(AText);
-    else
-      CodePage := CharacterSetToCodePage(CharacterSet);
-      FPrinter.PrintText(WideStringToAnsiString(CodePage, AText));
-    end;
+  case CharacterSet of
+    PTR_CS_UNICODE,
+    PTR_CS_WINDOWS: PrintUnicode(AText);
+  else
+    CodePage := CharacterSetToCodePage(CharacterSet);
+    FPrinter.PrintText(WideStringToAnsiString(CodePage, AText));
   end;
 end;
 

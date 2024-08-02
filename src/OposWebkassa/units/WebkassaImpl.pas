@@ -2725,7 +2725,6 @@ function TWebkassaImpl.CreatePrinter: IOPOSPOSPrinter;
     Printer.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
     Printer.FontName := Params.FontName;
     Printer.DevicePollTime := Params.DevicePollTime;
-    Printer.Utf8Enabled := Params.Utf8Enabled;
     FPrinterObj := Printer;
     Result := Printer;
   end;

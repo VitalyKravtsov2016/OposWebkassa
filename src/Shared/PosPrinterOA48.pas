@@ -2493,11 +2493,13 @@ end;
 procedure TPosPrinterOA48.InitializeDevice;
 begin
   FPrinter.Initialize;
-  if not Utf8Enabled then
+  FPrinter.SelectCodePage(51);
+  if Utf8Enabled then
   begin
-    FPrinter.WriteKazakhCharacters;
-    FPrinter.DisableUserCharacters;
-    FPrinter.SetCodePage(CODEPAGE_WCP1251);
+    FPrinter.UTF8Enable(True);
+  end else
+  begin
+    FPrinter.UTF8Enable(True);
   end;
   FPrinter.SetCharacterFont(FONT_TYPE_A);
   if FontName = FontNameB then
