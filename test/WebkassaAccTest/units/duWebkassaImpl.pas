@@ -196,11 +196,14 @@ begin
     Params.ReconnectPort := False;
   *)
     Params.PrinterType := PrinterTypeEscPrinterWindows;
-    Params.PrinterName := 'RONGTA 80mm Series Printer';
+    //Params.PrinterName := 'RONGTA 80mm Series Printer';
+    Params.PrinterName := 'POS-80C';
+    Params.EscPrinterType := EscPrinterTypeOA48;
     Params.FontName := FontNameA;
     Params.LineSpacing := 0;
     Params.RecLineChars := 48;
     Params.RecLineHeight := 10;
+    Params.Utf8Enabled := True;
   end;
 end;                            
 

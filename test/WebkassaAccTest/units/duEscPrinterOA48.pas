@@ -65,6 +65,7 @@ type
     procedure TestCutDistanceFontA;
     procedure TestCutDistanceFontB;
     procedure TestBitmap2;
+    procedure TestPageMode;
     procedure TestPageModeA;
     procedure TestPageModeB;
     procedure TestPrintUTF;
@@ -1010,6 +1011,52 @@ begin
   end;
 end;
 
+procedure TPrinterOA48Test.TestPageMode;
+const
+  Barcode = 't=20240719T1314&s=460.00&fn=7380440700076549&i=41110&fp=2026476352&n=1';
+var
+  QRCode: TQRCode;
+  PageSize: TRect;
+begin
+  FPrinter.Initialize;
+  //FPrinter.SetLineSpacing(0);
+  FPrinter.BeginDocument;
+  // Page mode
+  FPrinter.SetPageMode;
+  PageSize.Left := 0;
+  PageSize.Top := 0;
+  PageSize.Right := 652;
+  PageSize.Bottom := 550;
+  //FPrinter.SetPageModeArea(PageSize);
+  // QR code on the right
+  FPrinter.SetJustification(JUSTIFICATION_LEFT);
+  FPrinter.PrintText('«Õ   “ 00106304241645' + CRLF);
+  FPrinter.PrintText('–Õ   “ 0000373856050035' + CRLF);
+  FPrinter.PrintText('»ÕÕ 7725699008' + CRLF);
+  (*
+  QRCode.ECLevel := 0;
+  QRCode.ModuleSize := 6;
+  QRCode.data := Barcode;
+  FPrinter.printQRCode(QRCode);
+  *)
+  // Text on the left
+  //FPrinter.SetPMRelativeVerticalPosition(70);
+  FPrinter.SetPMAbsoluteVerticalPosition(70);
+  FPrinter.SetJustification(JUSTIFICATION_RIGHT);
+  FPrinter.PrintText('‘Õ 7380440700076549' + CRLF);
+  FPrinter.PrintText('‘ƒ 41110' + CRLF);
+  FPrinter.PrintText('‘œ 2026476352' + CRLF);
+  FPrinter.PrintText('œ–»’Œƒ 19.07.24 13:14' + CRLF);
+  FPrinter.PrintAndReturnStandardMode;
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText(CRLF);
+  FPrinter.PartialCut;
+  FPrinter.EndDocument;
+end;
+
+
   (*
   000 " ÓÏÔ‡ÌËˇ œ¿…"
    ‡ÒÒÓ‚˚È ˜ÂÍ
@@ -1107,15 +1154,15 @@ begin
   FPrinter.SetPageModeArea(PageSize);
 
   // QR code on the right
-  FPrinter.PrintText('                              ');
-  FPrinter.SetPMRelativeVerticalPosition(70);
+  FPrinter.SetJustification(JUSTIFICATION_RIGHT);
   QRCode.ECLevel := 0;
   QRCode.ModuleSize := 6;
   QRCode.data := Barcode;
   FPrinter.printQRCode(QRCode);
-  FPrinter.PrintText(CRLF);
   // Text on the left
-  FPrinter.SetPMAbsoluteVerticalPosition(0);
+  FPrinter.SetPMRelativeVerticalPosition(0);
+  //FPrinter.SetPMAbsoluteVerticalPosition(0);
+  FPrinter.SetJustification(JUSTIFICATION_LEFT);
   FPrinter.PrintText('«Õ   “ 00106304241645' + CRLF);
   FPrinter.PrintText('–Õ   “ 0000373856050035' + CRLF);
   FPrinter.PrintText('»ÕÕ 7725699008' + CRLF);
@@ -1124,6 +1171,8 @@ begin
   FPrinter.PrintText('‘œ 2026476352' + CRLF);
   FPrinter.PrintText('œ–»’Œƒ 19.07.24 13:14' + CRLF);
   FPrinter.PrintAndReturnStandardMode;
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText(CRLF);
   FPrinter.PrintText(CRLF);
   FPrinter.PrintText(CRLF);
   FPrinter.PartialCut;
