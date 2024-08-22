@@ -19,12 +19,6 @@ const
   OA48_QRCODE_ECL_25  = $50;
   OA48_QRCODE_ECL_30  = $51;
 
-
-  SupportedCodePages: array [0..36] of Integer = (
-    437,720,737,755,775,850,852,855,856,857,858,860,862,863,864,865,866,874,
-    1250,1251,1252,1253,1254,1255,1256,1257,1258,
-    28591,28592,28593,28594,28595,28596,28597,28598,28599,28605);
-
   ESC   = #$1B;
   CRLF  = #13#10;
 
@@ -74,51 +68,77 @@ const
   /////////////////////////////////////////////////////////////////////////////
   // Codepage constants
 
-  CODEPAGE_CP437        = 0;
-  CODEPAGE_KATAKANA     = 1;
-  CODEPAGE_CP850        = 2;
-  CODEPAGE_CP860        = 3;
-  CODEPAGE_CP863        = 4; // CANADIAN-FRENCH
-  CODEPAGE_CP865        = 5;
-  CODEPAGE_WCP1251      = 6;
-  CODEPAGE_CP866        = 7;
-  CODEPAGE_MIK          = 8;
-  CODEPAGE_CP755        = 9;
-  CODEPAGE_IRAN         = 10;
-  CODEPAGE_RESERVE      = 11;
-  CODEPAGE_CP862        = 15;
-  CODEPAGE_WCP1252      = 16;
-  CODEPAGE_WCP1253      = 17;
-  CODEPAGE_CP852        = 18;
-  CODEPAGE_CP858        = 19;
-  CODEPAGE_IRAN_II      = 20;
-  CODEPAGE_LATVIAN      = 21;
-  CODEPAGE_CP864        = 22;
-  CODEPAGE_ISO_8859_1   = 23;
-  CODEPAGE_CP737        = 24;
-  CODEPAGE_WCP1257      = 25;
-  CODEPAGE_THAI         = 26;
-  CODEPAGE_CP720_ARABIC = 27;
-  CODEPAGE_CP855        = 28;
-  CODEPAGE_CP857        = 29;
-  CODEPAGE_WCP1250      = 30;
-  CODEPAGE_CP775        = 31;
-  CODEPAGE_WCP1254      = 32;
-  CODEPAGE_WCP1255      = 33;
-  CODEPAGE_WCP1256      = 34;
-  CODEPAGE_WCP1258      = 35;
-  CODEPAGE_ISO_8859_2   = 36;
-  CODEPAGE_ISO_8859_3   = 37;
-  CODEPAGE_ISO_8859_4   = 38;
-  CODEPAGE_ISO_8859_5   = 39;
-  CODEPAGE_ISO_8859_6   = 40;
-  CODEPAGE_ISO_8859_7   = 41;
-  CODEPAGE_ISO_8859_8   = 42;
-  CODEPAGE_ISO_8859_9   = 43;
-  CODEPAGE_ISO_8859_15  = 44;
-  CODEPAGE_THAI2        = 45;
-  CODEPAGE_CP856        = 46;
-  CODEPAGE_CP874        = 47;
+  CODEPAGE_CP437              = 0;
+  CODEPAGE_KATAKANA           = 1;
+  CODEPAGE_CP850              = 2;
+  CODEPAGE_CP860              = 3;
+  CODEPAGE_CP863              = 4; // CANADIAN-FRENCH
+  CODEPAGE_CP865              = 5;
+  CODEPAGE_WEST_EUROPE        = 6;
+  CODEPAGE_GREEK              = 7;
+  CODEPAGE_HEBREW             = 8;
+  CODEPAGE_EAST_EUROPE        = 9;
+  CODEPAGE_IRAN               = 10;
+  CODEPAGE_WCP1252            = 11;
+  CODEPAGE_CP866              = 12;
+  CODEPAGE_PC852              = 13;
+  CODEPAGE_PC858              = 14;
+  CODEPAGE_IRAN2              = 15;
+  CODEPAGE_LATVIAN            = 16;
+  CODEPAGE_ARABIC             = 17;
+  CODEPAGE_PT1511251          = 18;
+  CODEPAGE_PC747              = 19;
+  CODEPAGE_WCP1257            = 20;
+  CODEPAGE_THAI               = 21;
+  CODEPAGE_VIETNAM            = 22;
+  CODEPAGE_PC864              = 23;
+  CODEPAGE_PC1001             = 24;
+  CODEPAGE_UIGUR              = 25;
+  CODEPAGE_HEBREW_2           = 26;
+  CODEPAGE_WCP1255            = 27;
+  CODEPAGE_PC437              = 28;
+  CODEPAGE_KATAKANA2          = 29;
+  CODEPAGE_PC437_STD_EUROPE   = 30;
+  CODEPAGE_PC858_MULT         = 31;
+  CODEPAGE_PC852_LATIN_2      = 32;
+  CODEPAGE_PC860_PORTUGU      = 33;
+  CODEPAGE_PC861_ICELANDIC    = 34;
+  CODEPAGE_PC863_CANADIAN     = 35;
+  CODEPAGE_PC865_NORDIC       = 36;
+  CODEPAGE_PC866_RUSSIAN      = 37;
+  CODEPAGE_PC855_BULGARIAN    = 38;
+  CODEPAGE_PC857_TURKEY       = 39;
+  CODEPAGE_PC862_HEBREW       = 40;
+  CODEPAGE_PC864_ARABIC       = 41;
+  CODEPAGE_PC737_GREEK        = 42;
+  CODEPAGE_PC851_GREEK        = 43;
+  CODEPAGE_PC869_GREEK        = 44;
+  CODEPAGE_PC928_GREEK        = 45;
+  CODEPAGE_PC772_LITHUANIAN   = 46;
+  CODEPAGE_PC774_LITHUAN      = 47;
+  CODEPAGE_PC874_THAI         = 48;
+  CODEPAGE_WPC1252_LATINL     = 49;
+  CODEPAGE_WCP1250            = 50;
+  CODEPAGE_WCP1251            = 51;
+  CODEPAGE_PC3840_IBM_RUSSIAN = 52;
+  CODEPAGE_PC3841_GOST        = 53;
+  CODEPAGE_PC3843_POLISH      = 54;
+  CODEPAGE_PC3844_CS2         = 55;
+  CODEPAGE_PC3845_HUNGARIAN   = 56;
+  CODEPAGE_PC3846_TURKISH     = 57;
+  CODEPAGE_PC3847_BRAZI1_ABNI = 58;
+  CODEPAGE_PC3848_BRAZIL      = 59;
+  CODEPAGE_PC1001_ARABIC      = 60;
+  CODEPAGE_PC2001_LITHUAN     = 61;
+  CODEPAGE_PC3001_ESTONIAN_1  = 62;
+  CODEPAGE_PC3002_ESTON_2     = 63;
+  CODEPAGE_PC3011_LATVIAN_1   = 64;
+  CODEPAGE_PC3012_LATV_2      = 65;
+  CODEPAGE_PC3021_BULGARIAN   = 66;
+  CODEPAGE_PC3041_MALTESE     = 67;
+  CODEPAGE_PC852_CROATIA      = 68;
+  CODEPAGE_VISCII             = 69;
+  CODEPAGE_0C1256_ARABIC      = 70;
 
   /////////////////////////////////////////////////////////////////////////////
   // BMP mode constants
@@ -478,7 +498,6 @@ type
   end;
 
 function IsKazakhUnicodeChar(Char: WideChar): Boolean;
-function CharacterSetToPrinterCodePage(CharacterSet: Integer): Integer;
 
 implementation
 
@@ -489,53 +508,6 @@ const
 
 const
   BoolToInt: array [Boolean] of Integer = (0, 1);
-
-function CharacterSetToPrinterCodePage(CharacterSet: Integer): Integer;
-begin
-  case CharacterSet of
-    437: Result := CODEPAGE_CP437;
-    720: Result := CODEPAGE_CP720_ARABIC;
-    737: Result := CODEPAGE_CP737;
-    755: Result := CODEPAGE_CP755;
-    775: Result := CODEPAGE_CP775;
-    850: Result := CODEPAGE_CP850;
-    852: Result := CODEPAGE_CP852;
-    855: Result := CODEPAGE_CP855;
-    856: Result := CODEPAGE_CP856;
-    857: Result := CODEPAGE_CP857;
-    858: Result := CODEPAGE_CP858;
-    860: Result := CODEPAGE_CP860;
-    862: Result := CODEPAGE_CP862;
-    863: Result := CODEPAGE_CP863;
-    864: Result := CODEPAGE_CP864;
-    865: Result := CODEPAGE_CP865;
-    866: Result := CODEPAGE_CP866;
-    874: Result := CODEPAGE_CP874;
-
-    1250: Result := CODEPAGE_WCP1250;
-    1251: Result := CODEPAGE_WCP1251;
-    1252: Result := CODEPAGE_WCP1252;
-    1253: Result := CODEPAGE_WCP1253;
-    1254: Result := CODEPAGE_WCP1254;
-    1255: Result := CODEPAGE_WCP1255;
-    1256: Result := CODEPAGE_WCP1256;
-    1257: Result := CODEPAGE_WCP1257;
-    1258: Result := CODEPAGE_WCP1258;
-
-    28591: Result := CODEPAGE_ISO_8859_1;
-    28592: Result := CODEPAGE_ISO_8859_2;
-    28593: Result := CODEPAGE_ISO_8859_3;
-    28594: Result := CODEPAGE_ISO_8859_4;
-    28595: Result := CODEPAGE_ISO_8859_5;
-    28596: Result := CODEPAGE_ISO_8859_6;
-    28597: Result := CODEPAGE_ISO_8859_7;
-    28598: Result := CODEPAGE_ISO_8859_8;
-    28599: Result := CODEPAGE_ISO_8859_9;
-    28605: Result := CODEPAGE_ISO_8859_15;
-  else
-    raise Exception.Create('Character set not supported');
-  end;
-end;
 
 function IsKazakhUnicodeChar(Char: WideChar): Boolean;
 var
@@ -1175,7 +1147,7 @@ end;
 
 procedure TEscPrinterOA48.SetCodePage(CodePage: Integer);
 begin
-  //if FCodePage = CodePage then Exit;
+  if FCodePage = CodePage then Exit;
 
   Logger.Debug(Format('TEscPrinterOA48.SetCodePage(%d)', [CodePage]));
   Send(#$1B#$74 + Chr(CodePage));

@@ -13,7 +13,7 @@ object fmPrinter: TfmPrinter
   OldCreateOrder = False
   DesignSize = (
     455
-    464)
+    463)
   PixelsPerInch = 96
   TextHeight = 13
   object lblResultCode: TTntLabel
@@ -205,15 +205,6 @@ object fmPrinter: TfmPrinter
         Value = 0
         OnClick = ModifiedClick
       end
-      object chbUtf8Enabled: TCheckBox
-        Left = 8
-        Top = 280
-        Width = 188
-        Height = 17
-        Alignment = taLeftJustify
-        Caption = #1055#1077#1095#1072#1090#1100' '#1074' '#1082#1086#1076#1080#1088#1086#1074#1082#1077' UTF8'
-        TabOrder = 8
-      end
       object cbEscPrinterType: TTntComboBox
         Left = 120
         Top = 56
@@ -342,7 +333,7 @@ object fmPrinter: TfmPrinter
         Width = 113
         Height = 21
         Style = csDropDownList
-        ItemHeight = 0
+        ItemHeight = 13
         TabOrder = 0
         OnChange = ModifiedClick
       end
@@ -399,7 +390,7 @@ object fmPrinter: TfmPrinter
         Width = 113
         Height = 21
         Style = csDropDownList
-        ItemHeight = 0
+        ItemHeight = 13
         TabOrder = 4
         OnChange = ModifiedClick
       end

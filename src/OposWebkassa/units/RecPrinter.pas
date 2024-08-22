@@ -11,8 +11,8 @@ uses
   Opos, OposPtr, Oposhi, OposException, OposEsc, OposUtils, OposDevice,
   OposPOSPrinter_CCO_TLB,
   // This
-  PosWinPrinter, PosPrinterRongta, LogFile, PrinterParameters,
-  SerialPort, SocketPort, RawPrinterPort, FiscalPrinterDevice;
+  PosWinPrinter, PosPrinterRongta, PosPrinterOA48, LogFile, PrinterParameters,
+  SerialPort, SocketPort, RawPrinterPort, FiscalPrinterDevice, PrinterPort;
 
 
 type
@@ -31,6 +31,7 @@ type
     procedure AddProp(const PropName: WideString; PropVal: Variant;
       PropText: WideString = '');
     procedure AddProps;
+    procedure CreatePOSPrinter(Port: IPrinterPort);
 
     property Logger: ILogFile read GetLogger;
     property Printer: IOPOSPOSPrinter read FPrinter;
@@ -121,6 +122,7 @@ end;
 destructor TRecPrinter.Destroy;
 begin
   FLines.Free;
+  FPrinterObj.Free;
   inherited Destroy;
 end;
 
@@ -396,6 +398,31 @@ begin
   Result := FDevice.Parameters;
 end;
 
+procedure TRecPrinter.CreatePOSPrinter(Port: IPrinterPort);
+var
+  OAPrinter: TPosPrinterOA48;
+  RongtaPrinter: TPosPrinterRongta;
+begin
+  if FDevice.Parameters.EscPrinterType = EscPrinterTypeRongta then
+  begin
+    RongtaPrinter := TPosPrinterRongta.Create2(nil, Port, FDevice.Logger);
+    RongtaPrinter.FontName := FDevice.Parameters.FontName;
+    RongtaPrinter.DevicePollTime := FDevice.Parameters.DevicePollTime;
+
+    FPrinter := RongtaPrinter;
+    FPrinterObj := RongtaPrinter;
+  end else
+  begin
+    OAPrinter := TPosPrinterOA48.Create2(nil, Port, FDevice.Logger);
+    OAPrinter.FontName := FDevice.Parameters.FontName;
+    OAPrinter.DevicePollTime := FDevice.Parameters.DevicePollTime;
+    OAPrinter.Utf8Enabled := FDevice.Parameters.Utf8Enabled;
+    FPrinter := OAPrinter;
+    FPrinterObj := OAPrinter;
+  end;
+end;
+
+
 { TWinPrinter }
 
 constructor TWinPrinter.Create(ADevice: TFiscalPrinterDevice);
@@ -442,13 +469,9 @@ end;
 { TSerialEscPrinter }
 
 constructor TSerialEscPrinter.Create(ADevice: TFiscalPrinterDevice);
-var
-  PosPrinter: TPosPrinterRongta;
 begin
   inherited Create(ADevice);
-  PosPrinter := TPosPrinterRongta.Create2(nil, CreateSerialPort, Logger);
-  FPrinterObj := PosPrinter;
-  FPrinter := PosPrinter;
+  CreatePOSPrinter(CreateSerialPort);
 end;
 
 function TSerialEscPrinter.CreateSerialPort: TSerialPort;
@@ -474,13 +497,9 @@ end;
 { TNetworkEscPrinter }
 
 constructor TNetworkEscPrinter.Create(ADevice: TFiscalPrinterDevice);
-var
-  PosPrinter: TPosPrinterRongta;
 begin
   inherited Create(ADevice);
-  PosPrinter := TPosPrinterRongta.Create2(nil, CreateSocketPort, Logger);
-  FPrinterObj := PosPrinter;
-  FPrinter := PosPrinter;
+  CreatePOSPrinter(CreateSocketPort);
 end;
 
 function TNetworkEscPrinter.CreateSocketPort: TSocketPort;
@@ -502,13 +521,9 @@ end;
 { TWindowsEscPrinter }
 
 constructor TWindowsEscPrinter.Create(ADevice: TFiscalPrinterDevice);
-var
-  PosPrinter: TPosPrinterRongta;
 begin
   inherited Create(ADevice);
-  PosPrinter := TPosPrinterRongta.Create2(nil, CreatePort, Logger);
-  FPrinterObj := PosPrinter;
-  FPrinter := PosPrinter;
+  CreatePOSPrinter(CreatePort);
 end;
 
 function TWindowsEscPrinter.CreatePort: TRawPrinterPort;

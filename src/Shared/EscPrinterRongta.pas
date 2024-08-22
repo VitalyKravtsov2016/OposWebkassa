@@ -1152,7 +1152,7 @@ end;
 
 procedure TEscPrinterRongta.SetCodePage(CodePage: Integer);
 begin
-  //if FCodePage = CodePage then Exit;
+  if FCodePage = CodePage then Exit;
 
   Logger.Debug(Format('TEscPrinterRongta.SetCodePage(%d)', [CodePage]));
   Send(#$1B#$74 + Chr(CodePage));

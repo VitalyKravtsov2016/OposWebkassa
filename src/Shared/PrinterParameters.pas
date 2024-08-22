@@ -110,7 +110,7 @@ const
   DefRecLineChars = 48;
   DefRecLineHeight = 24;
   DefHeaderPrinted = false;
-  DefUtf8Enabled = False;
+  DefUtf8Enabled = True;
 
   /////////////////////////////////////////////////////////////////////////////
   // Header and trailer parameters

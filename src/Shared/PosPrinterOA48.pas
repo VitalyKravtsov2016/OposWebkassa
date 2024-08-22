@@ -627,10 +627,9 @@ procedure RenderBarcodeToBitmap(var Barcode: TPosBarcode; Bitmap: TBitmap);
 implementation
 
 const
-  SupportedCodePages: array [0..39] of Integer = (
-    437,720,737,755,775,850,852,855,856,857,858,860,862,863,864,865,866,874,
-    997,998,999,1250,1251,1252,1253,1254,1255,1256,1257,1258,
-    28591,28592,28593,28594,28595,28596,28597,28598,28599,28605);
+  SupportedCodePages: array [0..21] of Integer = (
+    437,737,850,852,855,857,858,860,862,863,864,865,866,874,
+    997,998,999,1250,1251,1252,1255,1257);
 
 function CharacterSetToPrinterCodePage(CharacterSet: Integer): Integer;
 begin
@@ -640,44 +639,25 @@ begin
     PTR_CS_WINDOWS: Result := CODEPAGE_WCP1251;
 
     437: Result := CODEPAGE_CP437;
-    720: Result := CODEPAGE_CP720_ARABIC;
-    737: Result := CODEPAGE_CP737;
-    755: Result := CODEPAGE_CP755;
-    775: Result := CODEPAGE_CP775;
+    737: Result := CODEPAGE_PC737_GREEK;
     850: Result := CODEPAGE_CP850;
-    852: Result := CODEPAGE_CP852;
-    855: Result := CODEPAGE_CP855;
-    856: Result := CODEPAGE_CP856;
-    857: Result := CODEPAGE_CP857;
-    858: Result := CODEPAGE_CP858;
+    852: Result := CODEPAGE_PC852;
+    855: Result := CODEPAGE_PC855_BULGARIAN;
+    857: Result := CODEPAGE_PC857_TURKEY;
+    858: Result := CODEPAGE_PC858;
     860: Result := CODEPAGE_CP860;
-    862: Result := CODEPAGE_CP862;
+    862: Result := CODEPAGE_PC862_HEBREW;
     863: Result := CODEPAGE_CP863;
-    864: Result := CODEPAGE_CP864;
+    864: Result := CODEPAGE_PC864;
     865: Result := CODEPAGE_CP865;
-    866: Result := CODEPAGE_CP866;
-    874: Result := CODEPAGE_CP874;
+    866: Result := CODEPAGE_PC866_RUSSIAN;
+    874: Result := CODEPAGE_PC874_THAI;
 
     1250: Result := CODEPAGE_WCP1250;
     1251: Result := CODEPAGE_WCP1251;
     1252: Result := CODEPAGE_WCP1252;
-    1253: Result := CODEPAGE_WCP1253;
-    1254: Result := CODEPAGE_WCP1254;
     1255: Result := CODEPAGE_WCP1255;
-    1256: Result := CODEPAGE_WCP1256;
     1257: Result := CODEPAGE_WCP1257;
-    1258: Result := CODEPAGE_WCP1258;
-
-    28591: Result := CODEPAGE_ISO_8859_1;
-    28592: Result := CODEPAGE_ISO_8859_2;
-    28593: Result := CODEPAGE_ISO_8859_3;
-    28594: Result := CODEPAGE_ISO_8859_4;
-    28595: Result := CODEPAGE_ISO_8859_5;
-    28596: Result := CODEPAGE_ISO_8859_6;
-    28597: Result := CODEPAGE_ISO_8859_7;
-    28598: Result := CODEPAGE_ISO_8859_8;
-    28599: Result := CODEPAGE_ISO_8859_9;
-    28605: Result := CODEPAGE_ISO_8859_15;
   else
     raise Exception.Create('Character set not supported');
   end;
@@ -835,6 +815,7 @@ begin
   FLogger := ALogger;
   FDevice := TOposServiceDevice19.Create(FLogger);
   FDevice.ErrorEventEnabled := False;
+  Utf8Enabled := True;
   Initialize;
 end;
 
@@ -2493,15 +2474,15 @@ end;
 procedure TPosPrinterOA48.InitializeDevice;
 begin
   FPrinter.Initialize;
-  FPrinter.SelectCodePage(51);
   if Utf8Enabled then
   begin
     FPrinter.UTF8Enable(True);
   end else
   begin
-    FPrinter.UTF8Enable(True);
+    FPrinter.UTF8Enable(False);
   end;
-  FPrinter.SetCharacterFont(FONT_TYPE_A);
+  FPrinter.SelectCodePage(51);
+  //FPrinter.SetCharacterFont(FONT_TYPE_A);
   if FontName = FontNameB then
   begin
     FLastPrintMode := [pmFontB];
@@ -2946,9 +2927,9 @@ var
   i: Integer;
 begin
   if TestCodePage(C, CodePage) then Exit;
-  for i := Low(EscPrinterOA48.SupportedCodePages) to High(EscPrinterOA48.SupportedCodePages) do
+  for i := Low(SupportedCodePages) to High(SupportedCodePages) do
   begin
-    CodePage := EscPrinterOA48.SupportedCodePages[i];
+    CodePage := SupportedCodePages[i];
     if TestCodePage(C, CodePage) then Exit;
   end;
   CodePage := 1251;

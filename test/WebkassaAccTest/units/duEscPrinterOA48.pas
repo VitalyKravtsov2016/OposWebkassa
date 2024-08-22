@@ -650,14 +650,6 @@ begin
     WideText := Strings[0];
     Text := WideStringToAnsiString(1255, WideText);
     FPrinter.PrintText(Text + CRLF);
-    // 1256 Arabic
-    FPrinter.SetCodePage(CODEPAGE_WCP1251);
-    FPrinter.PrintText('CODEPAGE 1256 Arabic' + CRLF);
-    FPrinter.SetCodePage(CODEPAGE_WCP1256);
-    Strings.LoadFromFile(GetModulePath + 'ArabicText.txt');
-    WideText := Strings[0];
-    Text := WideStringToAnsiString(1256, WideText);
-    FPrinter.PrintText(Text + CRLF);
   finally
     Strings.Free;
   end;
@@ -689,15 +681,6 @@ begin
     Strings.LoadFromFile(GetModulePath + 'HebrewText.txt');
     WideText := Strings[0];
     Text := WideStringToAnsiString(1255, WideText);
-    FPrinter.PrintText(Text);
-    // 1256 Arabic
-    FPrinter.SetCodePage(CODEPAGE_WCP1251);
-    FPrinter.PrintText('CODEPAGE 1256 Arabic');
-    FPrinter.SetCodePage(CODEPAGE_WCP1256);
-
-    Strings.LoadFromFile(GetModulePath + 'ArabicText.txt');
-    WideText := Strings[0];
-    Text := WideStringToAnsiString(1256, WideText);
     FPrinter.PrintText(Text);
   finally
     Strings.Free;
@@ -1015,7 +998,7 @@ procedure TPrinterOA48Test.TestPageMode;
 const
   Barcode = 't=20240719T1314&s=460.00&fn=7380440700076549&i=41110&fp=2026476352&n=1';
 var
-  QRCode: TQRCode;
+  //QRCode: TQRCode;
   PageSize: TRect;
 begin
   FPrinter.Initialize;
@@ -1291,8 +1274,8 @@ begin
   FPrinter.Initialize;
   FPrinter.UTF8Enable(True);
   FPrinter.SelectCodePage(51);
-  FPrinter.Send(UTF8Encode('Printing in UTF mode' + CRLF));
-  FPrinter.Send(UTF8Encode(Text) + CRLF);
+  FPrinter.PrintText(UTF8Encode('Printing in UTF mode' + CRLF));
+  FPrinter.PrintText(UTF8Encode(Text + CRLF));
 end;
 
 procedure TPrinterOA48Test.TestPrintMaxiCode;

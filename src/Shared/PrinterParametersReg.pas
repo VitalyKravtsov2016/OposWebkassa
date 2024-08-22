@@ -294,9 +294,6 @@ begin
       if Reg.ValueExists('HeaderPrinted') then
         Parameters.HeaderPrinted := Reg.ReadBool('HeaderPrinted');
 
-      if Reg.ValueExists('Utf8Enabled') then
-        Parameters.Utf8Enabled := Reg.ReadBool('Utf8Enabled');
-
       Reg.CloseKey;
     end;
     // VatRates
@@ -393,7 +390,6 @@ begin
     Reg.WriteInteger('RecLineChars', FParameters.RecLineChars);
     Reg.WriteInteger('RecLineHeight', FParameters.RecLineHeight);
     Reg.WriteBool('HeaderPrinted', FParameters.HeaderPrinted);
-    Reg.WriteBool('Utf8Enabled', FParameters.Utf8Enabled);
 
     Reg.CloseKey;
     // VatRates

@@ -146,8 +146,8 @@ begin
     Params.CashboxNumber := 'SWK00033444';
 
     Params.ConnectTimeout := 10;
-    //Params.WebkassaAddress := 'https://devkkm.webkassa.kz';
-    Params.WebkassaAddress := 'http://localhost:1332';
+    Params.WebkassaAddress := 'https://devkkm.webkassa.kz';
+    //Params.WebkassaAddress := 'http://localhost:1332';
 
     Params.NumHeaderLines := 4;
     Params.NumTrailerLines := 3;
@@ -338,12 +338,14 @@ begin
   FptrCheck(Driver.EndNonFiscal, 'EndNonFiscal');
   //Application.MessageBox('Restart printer', 'Attention');
 
+(*
   FptrCheck(Driver.ResetPrinter, 'ResetPrinter');
   FptrCheck(Driver.BeginNonFiscal, 'BeginNonFiscal');
   FptrCheck(Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 1'));
   FptrCheck(Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 2'));
   FptrCheck(Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 3'));
   FptrCheck(Driver.EndNonFiscal, 'EndNonFiscal');
+*)
 end;
 
 procedure TWebkassaImplTest.TestNonFiscal2;
