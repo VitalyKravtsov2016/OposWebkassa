@@ -17,7 +17,28 @@ const
   MaxPayments = 4;
 
 type
-  TPayments = array [0..MaxPayments] of Currency;
+  { TReceiptPayment }
+
+  TReceiptPayment = class(TCollectionItem)
+  private
+    FAmount: Currency;
+    FPayType: Integer;
+  public
+    property Amount: Currency read FAmount;
+    property PayType: Integer read FPayType;
+  end;
+
+  { TReceiptPayments }
+
+  TReceiptPayments = class(TCollection)
+  published
+    function GetItem(Index: Integer): TReceiptPayment;
+  public
+    function Add(PayType: Integer; Amount: Currency): TReceiptPayment;
+    property Items[Index: Integer]: TReceiptPayment read GetItem; default;
+  end;
+
+
   TRecType = (rtBuy, rtRetBuy, rtSell, rtRetSell);
 
   { TSalesReceipt }
@@ -28,10 +49,10 @@ type
     FChange: Currency;
     FRecType: TRecType;
     FRoundType: Integer;
-    FPayments: TPayments;
     FItems: TReceiptItems;
     FCharges: TAdjustments;
     FDiscounts: TAdjustments;
+    FPayments: TReceiptPayments;
     FAmountDecimalPlaces: Integer;
 
     function AddItem: TSalesReceiptItem;
@@ -128,16 +149,17 @@ type
     procedure PrintRecMessage(const Message: WideString); override;
     procedure PrintBarcode(const Barcode: string); override;
     function GetVatAmount(const VatRate: TVatRate): Currency;
+    function GetPaymentAmount(PayType: Integer): Currency;
 
     property Change: Currency read FChange;
     property Charge: Currency read GetCharge;
     property RecType: TRecType read FRecType;
     property Items: TReceiptItems read FItems;
     property RoundType: Integer read FRoundType;
-    property Payments: TPayments read FPayments;
     property Discount: Currency read GetDiscount;
     property Charges: TAdjustments read FCharges;
     property Discounts: TAdjustments read FDiscounts;
+    property Payments: TReceiptPayments read FPayments;
     property AmountDecimalPlaces: Integer read FAmountDecimalPlaces;
   end;
 
@@ -165,6 +187,21 @@ begin
   end;
 end;
 
+{ TReceiptPayments }
+
+function TReceiptPayments.Add(PayType: Integer;
+  Amount: Currency): TReceiptPayment;
+begin
+  Result := TReceiptPayment.Create(Self);
+  Result.FPayType := PayType;
+  Result.FAmount := Amount;
+end;
+
+function TReceiptPayments.GetItem(Index: Integer): TReceiptPayment;
+begin
+  Result := inherited Items[Index] as TReceiptPayment;
+end;
+
 { TSalesReceipt }
 
 constructor TSalesReceipt.CreateReceipt(ARecType: TRecType;
@@ -183,6 +220,7 @@ begin
   FItems := TReceiptItems.Create;
   FCharges := TAdjustments.Create;
   FDiscounts := TAdjustments.Create;
+  FPayments := TReceiptPayments.Create(TReceiptPayment);
 end;
 
 destructor TSalesReceipt.Destroy;
@@ -191,7 +229,20 @@ begin
   FCharges.Free;
   FRecItems.Free;
   FDiscounts.Free;
+  FPayments.Free;
   inherited Destroy;
+end;
+
+function TSalesReceipt.GetPaymentAmount(PayType: Integer): Currency;
+var
+  i: integer;
+begin
+  Result := 0;
+  for i := 0 to Payments.Count-1 do
+  begin
+    if Payments[i].PayType = PayType then
+      Result := Result + Payments[i].Amount;
+  end;
 end;
 
 function TSalesReceipt.GetCharge: Currency;
@@ -592,9 +643,9 @@ var
   i: Integer;
 begin
   Result := 0;
-  for i := Low(FPayments) to High(FPayments) do
+  for i := 0 to Payments.Count-1 do
   begin
-    Result := Result + FPayments[i];
+    Result := Result + Payments[i].Amount;
   end;
 end;
 
@@ -609,16 +660,15 @@ end;
 procedure TSalesReceipt.PrintRecTotal(Total: Currency; Payment: Currency;
   const Description: WideString);
 var
-  Index: Integer;
+  PayType: Integer;
 begin
   CheckNotVoided;
   CheckAmount(Total);
   CheckAmount(Payment);
 
   FAfterTotal := True;
-  Index := StrToIntDef(Description, 0);
-  FPayments[Index] := FPayments[Index] + Payment;
-
+  PayType := StrToIntDef(Description, 0);
+  Payments.Add(PayType, Payment);
   if GetPayment >= GetTotal then
   begin
     FChange := GetPayment - GetTotal;

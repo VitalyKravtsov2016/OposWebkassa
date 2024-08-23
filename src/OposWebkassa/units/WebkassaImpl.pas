@@ -3205,14 +3205,11 @@ begin
       Modifier.Tax := 0;
     end;
     // Payments
-    for i := Low(Receipt.Payments) to High(Receipt.Payments) do
+    for i := 0 to Receipt.Payments.Count-1 do
     begin
-      if Receipt.Payments[i] <> 0 then
-      begin
-        Payment := Command.Request.Payments.Add as TPayment;
-        Payment.PaymentType := i;
-        Payment.Sum := Receipt.Payments[i];
-      end;
+      Payment := Command.Request.Payments.Add as TPayment;
+      Payment.Sum := Receipt.Payments[i].Amount;
+      Payment.PaymentType := Receipt.Payments[i].PayType;
     end;
     FClient.SendReceipt(Command);
     Params.CheckNumber := Command.Data.CheckNumber;
@@ -3317,6 +3314,7 @@ procedure TWebkassaImpl.PrintReceipt(Receipt: TSalesReceipt;
 var
   i: Integer;
   Text: WideString;
+  PayType: Integer;
   VatRate: TVatRate;
   Amount: Currency;
   TextItem: TRecTexItem;
@@ -3409,12 +3407,13 @@ begin
   Text := Document.ConcatLines('хрнц', AmountToStrEq(Receipt.GetTotal), Document.LineChars div 2);
   Document.AddLine(Text, STYLE_DWIDTH_HEIGHT);
   // Payments
-  for i := Low(Receipt.Payments) to High(Receipt.Payments) do
+  for i := 0 to Receipt.Payments.Count-1 do
   begin
-    Amount := Receipt.Payments[i];
+    PayType := Receipt.Payments[i].PayType;
+    Amount := Receipt.Payments[i].Amount;
     if Amount <> 0 then
     begin
-      Document.AddLines(GetPaymentName(i) + ':', AmountToStrEq(Amount));
+      Document.AddLines(GetPaymentName(PayType) + ':', AmountToStrEq(Amount));
     end;
   end;
   if Receipt.Change <> 0 then
@@ -3644,35 +3643,35 @@ begin
   end;
   if WideCompareText(Item.Text, 'Payment0') = 0 then
   begin
-    Amount := Abs(Receipt.Payments[0]);
+    Amount := Abs(Receipt.GetPaymentAmount(0));
     if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
       Result := Tnt_WideFormat('%.2f', [Amount]);
     Exit;
   end;
   if WideCompareText(Item.Text, 'Payment1') = 0 then
   begin
-    Amount := Abs(Receipt.Payments[1]);
+    Amount := Abs(Receipt.GetPaymentAmount(1));
     if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
       Result := Tnt_WideFormat('%.2f', [Amount]);
     Exit;
   end;
   if WideCompareText(Item.Text, 'Payment2') = 0 then
   begin
-    Amount := Abs(Receipt.Payments[2]);
+    Amount := Abs(Receipt.GetPaymentAmount(2));
     if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
       Result := Tnt_WideFormat('%.2f', [Amount]);
     Exit;
   end;
   if WideCompareText(Item.Text, 'Payment3') = 0 then
   begin
-    Amount := Abs(Receipt.Payments[3]);
+    Amount := Abs(Receipt.GetPaymentAmount(3));
     if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
       Result := Tnt_WideFormat('%.2f', [Amount]);
     Exit;
   end;
   if WideCompareText(Item.Text, 'Payment4') = 0 then
   begin
-    Amount := Abs(Receipt.Payments[4]);
+    Amount := Abs(Receipt.GetPaymentAmount(4));
     if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
       Result := Tnt_WideFormat('%.2f', [Amount]);
     Exit;

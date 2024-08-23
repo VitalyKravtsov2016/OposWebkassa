@@ -93,6 +93,7 @@ type
     procedure TestBarcode;
     procedure TestFiscalreceiptType;
     procedure TestFiscalreceiptType2;
+    procedure TestZeroFiscalReceipt;
   end;
 
 implementation
@@ -589,7 +590,7 @@ begin
 (*
   SetLength(CustomerEmail, Length(S) div Sizeof(WideChar));
   Move(S[1], CustomerEmail[1], Length(S));
-*)  
+*)
 
 
   FDriver.Client.TestMode := True;
@@ -1399,6 +1400,39 @@ begin
   FptrCheck(Driver.DirectIO2(30, 300, '2965055'));
   FptrCheck(Driver.PrintRecMessage('Транз. продажи: 2965015 (2920,00 тг));'));
   FptrCheck(Driver.EndFiscalReceipt(False));
+end;
+
+procedure TWebkassaImplTest.TestZeroFiscalReceipt;
+var
+  pData: Integer;
+  pString: WideString;
+  JsonText: string;
+  ExpectedText: string;
+begin
+  OpenClaimEnable;
+  FDriver.Client.TestMode := True;
+  FDriver.Params.VATSeries := 'VATSeries';
+  FDriver.Params.VATNumber := 'VATNumber';
+  FptrCheck(Driver.ResetPrinter);
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+
+  // ExternalCheckNumber
+  pData := DriverParameterExternalCheckNumber;
+  pString := 'ExternalCheckNumber';
+  FptrCheck(FDriver.DirectIO(DIO_SET_DRIVER_PARAMETER, pData, pString));
+
+  FptrCheck(Driver.PrintRecItem('Item1', 0, 1000, 1, 0, 'шт'));
+  FptrCheck(Driver.PrintRecTotal(0, 0, '0'));
+  CheckEquals(OPOS_SUCCESS, Driver.EndFiscalReceipt(False));
+
+  JsonText := UTF8Decode(Driver.Client.CommandJson);
+  ExpectedText := UTF8Decode(ReadFileData(GetModulePath + 'ZeroReceiptRequest.json'));
+  if JsonText <> ExpectedText then
+  begin
+    WriteFileData(GetModulePath + 'JsonText1.json', JsonText);
+  end;
+  CheckEquals(ExpectedText, JsonText, 'Driver.Client.CommandJson');
 end;
 
 initialization
