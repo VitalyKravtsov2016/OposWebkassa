@@ -24,7 +24,7 @@ object fmFptrReceipt: TfmFptrReceipt
     Top = 0
     Width = 581
     Height = 417
-    ActivePage = tsXmlTemplate
+    ActivePage = tsReceipt
     Align = alTop
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 0
@@ -70,6 +70,7 @@ object fmFptrReceipt: TfmFptrReceipt
         Gutter.Font.Style = []
         Highlighter = SynXMLSyn
         OnChange = ReceiptChange
+        FontSmoothing = fsmNone
       end
     end
   end
@@ -83,6 +84,9 @@ object fmFptrReceipt: TfmFptrReceipt
     TabOrder = 1
   end
   object SynXMLSyn: TSynXMLSyn
+    Options.AutoDetectEnabled = False
+    Options.AutoDetectLineLimit = 0
+    Options.Visible = False
     WantBracesParsed = False
     Left = 48
     Top = 32
