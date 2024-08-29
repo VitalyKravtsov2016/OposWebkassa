@@ -132,7 +132,7 @@ begin
   Logger.MaxCount := Parameters.LogMaxCount;
   Logger.Enabled := Parameters.LogFileEnabled;
   Logger.FilePath := Parameters.LogFilePath;
-  Logger.DeviceName := DeviceName;
+  Logger.DeviceName := 'OposConfig';
 end;
 
 { TFptrPage }

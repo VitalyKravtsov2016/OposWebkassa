@@ -90,7 +90,8 @@ uses
   PrinterTypes in '..\..\src\Shared\PrinterTypes.pas',
   BarcodeUtils in '..\..\src\Shared\BarcodeUtils.pas',
   PosPrinterRongta in '..\..\src\Shared\PosPrinterRongta.pas',
-  EscPrinterRongta in '..\..\src\Shared\EscPrinterRongta.pas';
+  EscPrinterRongta in '..\..\src\Shared\EscPrinterRongta.pas',
+  OposDevice in '..\..\src\Opos\OposDevice.pas';
 
 {$R *.RES}
 

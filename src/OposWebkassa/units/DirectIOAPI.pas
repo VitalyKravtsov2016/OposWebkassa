@@ -121,6 +121,10 @@ const
   DIO_GET_REQUEST_JSON_FIELD      = 103;
   DIO_GET_RESPONSE_JSON_FIELD     = 104;
 
+  DIO_PRINT_TEST_RECEIPT          = 105;
+  DIO_READ_PRINTER_PARAMS         = 106;
+  DIO_READ_PRINTER_LIST           = 107;
+  DIO_READ_FONT_LIST              = 108;
 
 
   DIO_PRINT_TEXT2                = 1000;  // print text

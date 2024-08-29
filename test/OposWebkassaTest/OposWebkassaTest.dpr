@@ -93,7 +93,8 @@ uses
   duEscPrinter in 'units\duEscPrinter.pas',
   duLogFile in 'units\duLogFile.pas',
   PosPrinterRongta in '..\..\src\Shared\PosPrinterRongta.pas',
-  EscPrinterRongta in '..\..\src\Shared\EscPrinterRongta.pas';
+  EscPrinterRongta in '..\..\src\Shared\EscPrinterRongta.pas',
+  OposDevice in '..\..\src\Opos\OposDevice.pas';
 
 {$R *.RES}
 

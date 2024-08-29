@@ -215,6 +215,7 @@ type
     DailyTotal: Currency;
     SellTotal: Currency;
     RefundTotal: Currency;
+    TemplateFileName: WideString;
 
     constructor Create(ALogger: ILogFile);
     destructor Destroy; override;
@@ -466,6 +467,7 @@ begin
   Logger.Debug('RecLineChars: ' + IntToStr(RecLineChars));
   Logger.Debug('RecLineHeight: ' + IntToStr(RecLineHeight));
   Logger.Debug('Utf8Enabled: ' + BoolToStr(Utf8Enabled));
+  Logger.Debug('TemplateFileName: ' + TemplateFileName);
 
   // VatRates
   for i := 0 to VatRates.Count-1 do
@@ -712,14 +714,8 @@ begin
 end;
 
 procedure TPrinterParameters.Load(const DeviceName: WideString);
-var
-  FileName: WideString;
 begin
-  FileName := GetModulePath + 'Params\' + DeviceName + '\Receipt.xml';
-  if FileExists(FileName) then
-  begin
-    FTemplate.LoadFromFile(FileName);
-  end;
+  FTemplate.LoadFromFile(TemplateFileName);
 end;
 
 procedure TPrinterParameters.Save(const DeviceName: WideString);
@@ -730,7 +726,8 @@ begin
   if not DirectoryExists(Path) then CreateDir(Path);
   Path := Path + '\' + DeviceName;
   if not DirectoryExists(Path) then CreateDir(Path);
-  FTemplate.SaveToFile(Path + '\Receipt.xml');
+
+  FTemplate.SaveToFile(TemplateFileName);
 end;
 
 function TPrinterParameters.ItemByText(const ParamName: WideString): WideString;

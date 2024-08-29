@@ -549,13 +549,13 @@
 #define ComStrs_sPageIndexError 65222
 #define ComStrs_sInvalidComCtl32 65223
 #define WinHelpViewer_hNoKeyword 65224
-#define ComConst_SOleError 65225
-#define ComConst_SNoMethod 65226
-#define ComConst_SVarNotObject 65227
-#define ComConst_STooManyParams 65228
-#define ComConst_SDCOMNotInstalled 65229
-#define TntSystem_SBufferOverflow 65230
-#define TntSystem_SInvalidUTF7 65231
+#define TntSystem_SBufferOverflow 65225
+#define TntSystem_SInvalidUTF7 65226
+#define ComConst_SOleError 65227
+#define ComConst_SNoMethod 65228
+#define ComConst_SVarNotObject 65229
+#define ComConst_STooManyParams 65230
+#define ComConst_SDCOMNotInstalled 65231
 #define ExtCtrls_clNameInfoBk 65232
 #define ExtCtrls_clNameInfoText 65233
 #define ExtCtrls_clNameMenu 65234
@@ -1403,13 +1403,13 @@ BEGIN
 	ComStrs_sPageIndexError,	"%d is an invalid PageIndex value.  PageIndex must be between 0 and %d"
 	ComStrs_sInvalidComCtl32,	"This control requires version 4.70 or greater of COMCTL32.DLL"
 	WinHelpViewer_hNoKeyword,	"No help keyword specified."
+	TntSystem_SBufferOverflow,	"Buffer overflow"
+	TntSystem_SInvalidUTF7,	"Invalid UTF7"
 	ComConst_SOleError,	"OLE error %.8x"
 	ComConst_SNoMethod,	"Method '%s' not supported by automation object"
 	ComConst_SVarNotObject,	"Variant does not reference an automation object"
 	ComConst_STooManyParams,	"Dispatch methods do not support more than 64 parameters"
 	ComConst_SDCOMNotInstalled,	"DCOM not installed"
-	TntSystem_SBufferOverflow,	"Buffer overflow"
-	TntSystem_SInvalidUTF7,	"Invalid UTF7"
 	ExtCtrls_clNameInfoBk,	"Info Background"
 	ExtCtrls_clNameInfoText,	"Info Text"
 	ExtCtrls_clNameMenu,	"Menu Background"

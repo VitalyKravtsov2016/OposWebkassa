@@ -9,7 +9,7 @@ uses
   TntClasses, TntStdCtrls, TntRegistry, TntSysUtils,
   // This
   PrinterParameters, LogFile, Oposhi, WException, gnugettext,
-  DriverError, VatRate, WebkassaClient;
+  DriverError, VatRate, WebkassaClient, FileUtils;
 
 type
   { TPrinterParametersReg }
@@ -37,13 +37,13 @@ type
   end;
 
 procedure DeleteParametersReg(const DeviceName: WideString; Logger: ILogFile);
-procedure LoadParametersReg(Item: TPrinterParameters; const DeviceName: WideString;
+procedure LoadParametersReg(Parameters: TPrinterParameters; const DeviceName: WideString;
   Logger: ILogFile);
 
-procedure SaveParametersReg(Item: TPrinterParameters; const DeviceName: WideString;
+procedure SaveParametersReg(Parameters: TPrinterParameters; const DeviceName: WideString;
   Logger: ILogFile);
 
-procedure SaveUsrParametersReg(Item: TPrinterParameters;
+procedure SaveUsrParametersReg(Parameters: TPrinterParameters;
   const DeviceName: WideString; Logger: ILogFile);
 
 implementation
@@ -72,40 +72,39 @@ begin
   Reg.Free;
 end;
 
-procedure LoadParametersReg(Item: TPrinterParameters; const DeviceName: WideString;
+procedure LoadParametersReg(Parameters: TPrinterParameters; const DeviceName: WideString;
   Logger: ILogFile);
 var
   Reader: TPrinterParametersReg;
 begin
-  Reader := TPrinterParametersReg.Create(Item, Logger);
+  Reader := TPrinterParametersReg.Create(Parameters, Logger);
   try
     Reader.Load(DeviceName);
-    Item.Load(DeviceName);     
   finally
     Reader.Free;
   end;
 end;
 
-procedure SaveParametersReg(Item: TPrinterParameters; const DeviceName: WideString;
+procedure SaveParametersReg(Parameters: TPrinterParameters; const DeviceName: WideString;
   Logger: ILogFile);
 var
   Writer: TPrinterParametersReg;
 begin
-  Writer := TPrinterParametersReg.Create(Item, Logger);
+  Writer := TPrinterParametersReg.Create(Parameters, Logger);
   try
     Writer.Save(DeviceName);
-    Item.Save(DeviceName);
+    Parameters.Save(DeviceName);
   finally
     Writer.Free;
   end;
 end;
 
-procedure SaveUsrParametersReg(Item: TPrinterParameters;
+procedure SaveUsrParametersReg(Parameters: TPrinterParameters;
   const DeviceName: WideString; Logger: ILogFile);
 var
   Writer: TPrinterParametersReg;
 begin
-  Writer := TPrinterParametersReg.Create(Item, Logger);
+  Writer := TPrinterParametersReg.Create(Parameters, Logger);
   try
     Writer.SaveUsrParameters(DeviceName);
   finally
@@ -132,12 +131,14 @@ procedure TPrinterParametersReg.Load(const DeviceName: WideString);
 begin
   LoadSysParameters(DeviceName);
   LoadUsrParameters(DeviceName);
+  Parameters.Load(DeviceName);
 end;
 
 procedure TPrinterParametersReg.Save(const DeviceName: WideString);
 begin
   SaveUsrParameters(DeviceName);
   SaveSysParameters(DeviceName);
+  Parameters.Save(DeviceName);
 end;
 
 procedure TPrinterParametersReg.LoadSysParameters(const DeviceName: WideString);
@@ -294,6 +295,10 @@ begin
       if Reg.ValueExists('HeaderPrinted') then
         Parameters.HeaderPrinted := Reg.ReadBool('HeaderPrinted');
 
+      Parameters.TemplateFileName := GetModulePath + 'Params\' + DeviceName + '\Receipt.xml';
+      if Reg.ValueExists('TemplateFileName') then
+        Parameters.TemplateFileName := Reg.ReadString('TemplateFileName');
+
       Reg.CloseKey;
     end;
     // VatRates
@@ -390,6 +395,7 @@ begin
     Reg.WriteInteger('RecLineChars', FParameters.RecLineChars);
     Reg.WriteInteger('RecLineHeight', FParameters.RecLineHeight);
     Reg.WriteBool('HeaderPrinted', FParameters.HeaderPrinted);
+    Reg.WriteString('TemplateFileName', FParameters.TemplateFileName);
 
     Reg.CloseKey;
     // VatRates

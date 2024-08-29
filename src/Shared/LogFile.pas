@@ -264,7 +264,7 @@ end;
 procedure ODS(const S: WideString);
 begin
 {$IFDEF DEBUG}
-  //OutputDebugString(PChar(S));
+  //OutputDebugStringW(PWideChar(S));
 {$ENDIF}
 end;
 
@@ -487,10 +487,12 @@ begin
   try
     S := Data;
 
+    (*
     if GetDefaultFileName <> FFileName then
     begin
       CloseFile;
     end;
+    *)
     OpenFile;
     if Opened then
     begin

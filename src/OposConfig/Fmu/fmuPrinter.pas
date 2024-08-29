@@ -5,14 +5,15 @@ interface
 uses
   // VCL
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ComCtrls, Spin, ActiveX, ComObj, ExtCtrls,
+  Dialogs, StdCtrls, ComCtrls, Spin, ActiveX, ComObj, ExtCtrls, Printers,
   // Tnt
   TntStdCtrls, TntSysUtils, TntComCtrls,
   // Opos
-  Opos, OposPtr, Oposhi, OposUtils, OposDevice,
+  Opos, OposPtr, Oposhi, OposUtils, OposDevice, OposFptrUtils,
   // This
   untUtil, PrinterParameters, FptrTypes, FiscalPrinterDevice, FileUtils,
-  WebkassaImpl, RecPrinter, SerialPort, PosPrinterRongta;
+  WebkassaImpl, OposFiscalPrinter_1_13_Lib_TLB, SerialPort, DirectIOAPI,
+  PosPrinterOA48, TntClasses;
 
 type
   { TfmPrinter }
@@ -68,10 +69,8 @@ type
     procedure cbPrinterNameChange(Sender: TObject);
     procedure ModifiedClick(Sender: TObject);
     procedure cbFontNameChange(Sender: TObject);
+    procedure cbEscPrinterTypeChange(Sender: TObject);
   private
-    function GetPrinter: TRecPrinter;
-  private
-    FPrinter: TRecPrinter;
     procedure UpdateFontNames;
     procedure UpdateDeviceNames;
     procedure UpdateBaudRates;
@@ -80,11 +79,11 @@ type
     procedure UpdateDataBits;
     procedure UpdateParity;
     procedure UpdateFlowControl;
-    function CreatePrinter(PrinterType: Integer): TRecPrinter;
 
-    property Printer: TRecPrinter read GetPrinter;
+    function ReadPrinterNames(APrinterType: Integer): WideString;
+    procedure FptrCheck(Printer: TOPOSFiscalPrinter; Code: Integer);
+    function ReadFontNames(APrinterType: Integer): WideString;
   public
-    destructor Destroy; override;
     procedure UpdatePage; override;
     procedure UpdateObject; override;
   end;
@@ -94,19 +93,6 @@ implementation
 {$R *.dfm}
 
 { TfmFptrConnection }
-
-destructor TfmPrinter.Destroy;
-begin
-  FPrinter.Free;
-  inherited Destroy;
-end;
-
-function TfmPrinter.GetPrinter: TRecPrinter;
-begin
-  if FPrinter = nil then
-    FPrinter := CreatePrinter(cbPrinterType.ItemIndex);
-  Result := FPrinter;
-end;
 
 procedure TfmPrinter.UpdatePage;
 begin
@@ -251,26 +237,52 @@ begin
   Parameters.ByteTimeout := seByteTimeout.Value;
 end;
 
-function TfmPrinter.CreatePrinter(PrinterType: Integer): TRecPrinter;
+procedure TfmPrinter.FptrCheck(Printer: TOPOSFiscalPrinter; Code: Integer);
+var
+  Text: WideString;
+  ResultCode: Integer;
+  ErrorString: WideString;
+  ResultCodeExtended: Integer;
 begin
-  case PrinterType of
-    PrinterTypePosPrinter: Result := TOposPrinter.Create(Device);
-    PrinterTypeWinPrinter: Result := TWinPrinter.Create(Device);
-    PrinterTypeEscPrinterSerial: Result := TSerialEscPrinter.Create(Device);
-    PrinterTypeEscPrinterNetwork: Result := TNetworkEscPrinter.Create(Device);
-    PrinterTypeEscPrinterWindows: Result := TWindowsEscPrinter.Create(Device);
-  else
-    raise Exception.CreateFmt('Неизвестный тип принтера, %d', [PrinterType]);
+  if Code <> OPOS_SUCCESS then
+  begin
+    ResultCode := Printer.ResultCode;
+    ResultCodeExtended := Printer.ResultCodeExtended;
+    ErrorString := Printer.ErrorString;
+
+    if ResultCode = OPOS_E_EXTENDED then
+      Text := Tnt_WideFormat('%d, %d, %s [%s]', [ResultCode, ResultCodeExtended,
+      GetResultCodeExtendedText(ResultCodeExtended), ErrorString])
+    else
+      Text := Tnt_WideFormat('%d, %s [%s]', [ResultCode,
+        GetResultCodeText(ResultCode), ErrorString]);
+
+    raise Exception.Create(Text);
   end;
 end;
 
 procedure TfmPrinter.btnTestConnectionClick(Sender: TObject);
+var
+  pData: Integer;
+  pString: WideString;
+  Printer: TOPOSFiscalPrinter;
 begin
   EnableButtons(False);
   memResult.Clear;
   try
     UpdateObject;
-    memResult.Text := Printer.TestConnection;
+    Printer := TOPOSFiscalPrinter.Create(Self);
+    try
+      FptrCheck(Printer, Printer.Open(DeviceName));
+      try
+        FptrCheck(Printer, Printer.DirectIO(DIO_READ_PRINTER_PARAMS, pData, pString));
+        memResult.Text := pString;
+      finally
+        Printer.Close;
+      end;
+    finally
+      Printer.Free;
+    end;
   except
     on E: Exception do
     begin
@@ -281,12 +293,27 @@ begin
 end;
 
 procedure TfmPrinter.btnPrintReceiptClick(Sender: TObject);
+var
+  pData: Integer;
+  pString: WideString;
+  Printer: TOPOSFiscalPrinter;
 begin
   EnableButtons(False);
   memResult.Clear;
   try
     UpdateObject;
-    memResult.Text := Printer.PrintTestReceipt;
+    Printer := TOPOSFiscalPrinter.Create(Self);
+    try
+      FptrCheck(Printer, Printer.Open(DeviceName));
+      try
+        FptrCheck(Printer, Printer.DirectIO(DIO_PRINT_TEST_RECEIPT, pData, pString));
+        memResult.Text := pString;
+      finally
+        Printer.Close;
+      end;
+    finally
+      Printer.Free;
+    end;
   except
     on E: Exception do
     begin
@@ -298,12 +325,53 @@ end;
 
 procedure TfmPrinter.cbPrinterTypeChange(Sender: TObject);
 begin
-  FPrinter.Free;
-  FPrinter := nil;
-
   UpdateDeviceNames;
   UpdateFontNames;
   Modified;
+end;
+
+function TfmPrinter.ReadPrinterNames(APrinterType: Integer): WideString;
+
+  function ReadPosPrinterDeviceList: WideString;
+  var
+    Device: TOposDevice;
+    Strings: TTntStrings;
+  begin
+    Strings := TTntStringList.Create;
+    Device := TOposDevice.Create(nil, OPOS_CLASSKEY_PTR, OPOS_CLASSKEY_PTR,
+      'Opos.PosPrinter');
+    try
+      Device.GetDeviceNames(Strings);
+      Result := Strings.Text;
+    finally
+      Device.Free;
+      Strings.Free;
+    end;
+  end;
+
+begin
+  Result := '';
+  case APrinterType of
+    PrinterTypePosPrinter: Result := ReadPosPrinterDeviceList;
+    PrinterTypeWinPrinter: Result := Printers.Printer.Printers.Text;
+    PrinterTypeEscPrinterSerial: Result := 'Serial ESC printer';
+    PrinterTypeEscPrinterNetwork: Result := 'Network ESC printer';
+    PrinterTypeEscPrinterWindows: Result := Printers.Printer.Printers.Text;
+  end;
+end;
+
+function TfmPrinter.ReadFontNames(APrinterType: Integer): WideString;
+const
+  FontNames = 'Font A (12x24)'#13#10'Font B (9x17)';
+begin
+  Result := '';
+  case APrinterType of
+    PrinterTypePosPrinter: Result := '';
+    PrinterTypeWinPrinter: Result := Printers.Printer.Fonts.GetText;
+    PrinterTypeEscPrinterSerial: Result := FontNames;
+    PrinterTypeEscPrinterNetwork: Result := FontNames;
+    PrinterTypeEscPrinterWindows: Result := FontNames;
+  end;
 end;
 
 procedure TfmPrinter.UpdateDeviceNames;
@@ -313,7 +381,7 @@ begin
   try
     cbPrinterName.Items.BeginUpdate;
     try
-      cbPrinterName.Items.Text := Printer.ReadDeviceList;
+      cbPrinterName.Items.Text := ReadPrinterNames(cbPrinterType.ItemIndex);
       Index := cbPrinterName.Items.IndexOf(Parameters.PrinterName);
       if Index = -1 then
         Index := 0;
@@ -334,11 +402,9 @@ begin
   try
     cbFontName.Items.BeginUpdate;
     try
-      Parameters.PrinterName := cbPrinterName.Text;
-      cbFontName.Items.Text := Printer.GetFontNames;
+      cbFontName.Items.Text := ReadFontNames(cbPrinterType.ItemIndex);
       Index := cbFontName.Items.IndexOf(Parameters.FontName);
-      if Index = -1 then
-        Index := 0;
+      if Index = -1 then Index := 0;
       cbFontName.ItemIndex := Index;
     finally
       cbFontName.Items.EndUpdate;
@@ -375,6 +441,13 @@ begin
     seRecLineChars.Value := 64;
     seRecLineHeight.Value := 17;
   end;
+  Modified;
+end;
+
+procedure TfmPrinter.cbEscPrinterTypeChange(Sender: TObject);
+begin
+  Parameters.EscPrinterType := cbEscPrinterType.ItemIndex;
+  UpdateFontNames;
   Modified;
 end;
 

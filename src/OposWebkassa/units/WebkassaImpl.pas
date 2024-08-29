@@ -5,12 +5,13 @@ interface
 uses
   // VCL
   Classes, SysUtils, Windows, DateUtils, ActiveX, ComObj, Math, Graphics,
+  Printers,
   // Tnt
   TntSysUtils, TntClasses,
   // Opos
   Opos, OposPtr, OposPtrUtils, Oposhi, OposFptr, OposFptrHi, OposEvents,
   OposEventsRCS, OposException, OposFptrUtils, OposServiceDevice19,
-  OposUtils, OposEsc, OposPOSPrinter_CCO_TLB, PosPrinterLog,
+  OposUtils, OposEsc, OposPOSPrinter_CCO_TLB, PosPrinterLog, OposDevice,
   // Json
   uLkJSON,
   // gnugettext
@@ -23,7 +24,7 @@ uses
   uZintBarcode, uZintInterface, FileUtils, PosWinPrinter, PosPrinterRongta,
   PosPrinterOA48, SerialPort, PrinterPort, SocketPort, ReceiptTemplate,
   RawPrinterPort, PrinterTypes, DirectIOAPI, BarcodeUtils, PrinterParametersReg,
-  JsonUtils;
+  JsonUtils, EscPrinterRongta;
 
 const
   FPTR_DEVICE_DESCRIPTION = 'WebKassa OPOS driver';
@@ -101,6 +102,12 @@ type
     procedure DioGetReceiptResponse(var pData: Integer;
       var pString: WideString);
     procedure SaveUsrParams;
+    function DioReadPrinterParams: WideString;
+    function DioReadPrinterList: WideString;
+    function DioReadFontList: WideString;
+    function DioPrintTestReceipt: WideString;
+    procedure PrintSalesReceipt(Receipt: TSalesREceipt;
+      Command: TSendReceiptCommand);
   public
     procedure PrintDocumentSafe(Document: TTextDocument);
     procedure CheckCanPrint;
@@ -1046,6 +1053,295 @@ begin
   PrintBarcode(BarcodeToStr(Barcode));
 end;
 
+function TWebkassaImpl.DioReadPrinterList: WideString;
+
+  function ReadPosPrinterDeviceList: WideString;
+  var
+    Device: TOposDevice;
+    Strings: TTntStrings;
+  begin
+    Strings := TTntStringList.Create;
+    Device := TOposDevice.Create(nil, OPOS_CLASSKEY_PTR, OPOS_CLASSKEY_PTR,
+      'Opos.PosPrinter');
+    try
+      Device.GetDeviceNames(Strings);
+      Result := Strings.Text;
+    finally
+      Device.Free;
+      Strings.Free;
+    end;
+  end;
+
+begin
+  Result := '';
+  case Params.PrinterType of
+    PrinterTypePosPrinter: Result := ReadPosPrinterDeviceList;
+    PrinterTypeWinPrinter: Result := Printers.Printer.Printers.Text;
+    PrinterTypeEscPrinterSerial: Result := 'Serial ESC printer';
+    PrinterTypeEscPrinterNetwork: Result := 'Network ESC printer';
+    PrinterTypeEscPrinterWindows: Result := Printers.Printer.Printers.Text;
+  end;
+end;
+
+function TWebkassaImpl.DioReadFontList: WideString;
+begin
+  Result := StringReplace(Printer.FontTypefaceList,
+    ',', CRLF, [rfReplaceAll, rfIgnoreCase]);
+end;
+
+function TWebkassaImpl.DioReadPrinterParams: WideString;
+var
+  Lines: TStrings;
+
+  procedure AddProp(const PropName: WideString;
+    PropVal: Variant; PropText: WideString = '');
+  var
+    Line: WideString;
+  begin
+    Line := Tnt_WideFormat('%-30s: %s', [PropName, PropVal]);
+    if PropText <> '' then
+      Line := Line + ', ' + PropText;
+    Lines.Add(Line);
+  end;
+
+  procedure AddProps;
+  begin
+    AddProp('ControlObjectDescription', Printer.ControlObjectDescription);
+    AddProp('ControlObjectVersion', Printer.ControlObjectVersion);
+    AddProp('ServiceObjectDescription', Printer.ServiceObjectDescription);
+    AddProp('ServiceObjectVersion', Printer.ServiceObjectVersion);
+    AddProp('DeviceDescription', Printer.DeviceDescription);
+    AddProp('DeviceName', Printer.DeviceName);
+    AddProp('CapConcurrentJrnRec', Printer.CapConcurrentJrnRec);
+    AddProp('CapConcurrentJrnSlp', Printer.CapConcurrentJrnSlp);
+    AddProp('CapConcurrentRecSlp', Printer.CapConcurrentRecSlp);
+    AddProp('CapCoverSensor', Printer.CapCoverSensor);
+    AddProp('CapJrn2Color', Printer.CapJrn2Color);
+    AddProp('CapJrnBold', Printer.CapJrnBold);
+    AddProp('CapJrnDhigh', Printer.CapJrnDhigh);
+    AddProp('CapJrnDwide', Printer.CapJrnDwide);
+    AddProp('CapJrnDwideDhigh', Printer.CapJrnDwideDhigh);
+    AddProp('CapJrnEmptySensor', Printer.CapJrnEmptySensor);
+    AddProp('CapJrnItalic', Printer.CapJrnItalic);
+    AddProp('CapJrnNearEndSensor', Printer.CapJrnNearEndSensor);
+    AddProp('CapJrnPresent', Printer.CapJrnPresent);
+    AddProp('CapJrnUnderline', Printer.CapJrnUnderline);
+    AddProp('CapRec2Color', Printer.CapRec2Color);
+    AddProp('CapRecBarCode', Printer.CapRecBarCode);
+    AddProp('CapRecBitmap', Printer.CapRecBitmap);
+    AddProp('CapRecBold', Printer.CapRecBold);
+    AddProp('CapRecDhigh', Printer.CapRecDhigh);
+    AddProp('CapRecDwide', Printer.CapRecDwide);
+    AddProp('CapRecDwideDhigh', Printer.CapRecDwideDhigh);
+    AddProp('CapRecEmptySensor', Printer.CapRecEmptySensor);
+    AddProp('CapRecItalic', Printer.CapRecItalic);
+    AddProp('CapRecLeft90', Printer.CapRecLeft90);
+    AddProp('CapRecNearEndSensor', Printer.CapRecNearEndSensor);
+    AddProp('CapRecPapercut', Printer.CapRecPapercut);
+    AddProp('CapRecPresent', Printer.CapRecPresent);
+    AddProp('CapRecRight90', Printer.CapRecRight90);
+    AddProp('CapRecRotate180', Printer.CapRecRotate180);
+    AddProp('CapRecStamp', Printer.CapRecStamp);
+    AddProp('CapRecUnderline', Printer.CapRecUnderline);
+    AddProp('CapSlp2Color', Printer.CapSlp2Color);
+    AddProp('CapSlpBarCode', Printer.CapSlpBarCode);
+    AddProp('CapSlpBitmap', Printer.CapSlpBitmap);
+    AddProp('CapSlpBold', Printer.CapSlpBold);
+    AddProp('CapSlpDhigh', Printer.CapSlpDhigh);
+    AddProp('CapSlpDwide', Printer.CapSlpDwide);
+    AddProp('CapSlpDwideDhigh', Printer.CapSlpDwideDhigh);
+    AddProp('CapSlpEmptySensor', Printer.CapSlpEmptySensor);
+    AddProp('CapSlpFullslip', Printer.CapSlpFullslip);
+    AddProp('CapSlpItalic', Printer.CapSlpItalic);
+    AddProp('CapSlpLeft90', Printer.CapSlpLeft90);
+    AddProp('CapSlpNearEndSensor', Printer.CapSlpNearEndSensor);
+    AddProp('CapSlpPresent', Printer.CapSlpPresent);
+    AddProp('CapSlpRight90', Printer.CapSlpRight90);
+    AddProp('CapSlpRotate180', Printer.CapSlpRotate180);
+    AddProp('CapSlpUnderline', Printer.CapSlpUnderline);
+
+    AddProp('CharacterSetList', Printer.CharacterSetList);
+    AddProp('CoverOpen', Printer.CoverOpen);
+    AddProp('ErrorStation', Printer.ErrorStation);
+    AddProp('JrnEmpty', Printer.JrnEmpty);
+    AddProp('JrnLineCharsList', Printer.JrnLineCharsList);
+    AddProp('JrnLineWidth', Printer.JrnLineWidth);
+    AddProp('JrnNearEnd', Printer.JrnNearEnd);
+    AddProp('RecEmpty', Printer.RecEmpty);
+    AddProp('RecLineCharsList', Printer.RecLineCharsList);
+    AddProp('RecLinesToPaperCut', Printer.RecLinesToPaperCut);
+    AddProp('RecLineWidth', Printer.RecLineWidth);
+    AddProp('RecNearEnd', Printer.RecNearEnd);
+    AddProp('RecSidewaysMaxChars', Printer.RecSidewaysMaxChars);
+    AddProp('RecSidewaysMaxLines', Printer.RecSidewaysMaxLines);
+    AddProp('SlpEmpty', Printer.SlpEmpty);
+    AddProp('SlpLineCharsList', Printer.SlpLineCharsList);
+    AddProp('SlpLinesNearEndToEnd', Printer.SlpLinesNearEndToEnd);
+    AddProp('SlpLineWidth', Printer.SlpLineWidth);
+    AddProp('SlpMaxLines', Printer.SlpMaxLines);
+    AddProp('SlpNearEnd', Printer.SlpNearEnd);
+    AddProp('SlpSidewaysMaxChars', Printer.SlpSidewaysMaxChars);
+    AddProp('SlpSidewaysMaxLines', Printer.SlpSidewaysMaxLines);
+    AddProp('CapCharacterSet', Printer.CapCharacterSet);
+    AddProp('CapTransaction', Printer.CapTransaction);
+    AddProp('ErrorLevel', Printer.ErrorLevel);
+    AddProp('ErrorString', Printer.ErrorString);
+    AddProp('FontTypefaceList', Printer.FontTypefaceList);
+    AddProp('RecBarCodeRotationList', Printer.RecBarCodeRotationList);
+    AddProp('SlpBarCodeRotationList', Printer.SlpBarCodeRotationList);
+    AddProp('CapPowerReporting', Printer.CapPowerReporting);
+    AddProp('PowerState', Printer.PowerState);
+    AddProp('CapJrnCartridgeSensor', Printer.CapJrnCartridgeSensor);
+    AddProp('CapJrnColor', Printer.CapJrnColor);
+    AddProp('CapRecCartridgeSensor', Printer.CapRecCartridgeSensor);
+    AddProp('CapRecColor', Printer.CapRecColor);
+    AddProp('CapRecMarkFeed', Printer.CapRecMarkFeed);
+    AddProp('CapSlpBothSidesPrint', Printer.CapSlpBothSidesPrint);
+    AddProp('CapSlpCartridgeSensor', Printer.CapSlpCartridgeSensor);
+    AddProp('CapSlpColor', Printer.CapSlpColor);
+    AddProp('JrnCartridgeState', Printer.JrnCartridgeState);
+    AddProp('RecCartridgeState', Printer.RecCartridgeState);
+    AddProp('SlpCartridgeState', Printer.SlpCartridgeState);
+    AddProp('SlpPrintSide', Printer.SlpPrintSide);
+    AddProp('CapMapCharacterSet', Printer.CapMapCharacterSet);
+    AddProp('RecBitmapRotationList', Printer.RecBitmapRotationList);
+    AddProp('SlpBitmapRotationList', Printer.SlpBitmapRotationList);
+    AddProp('CapStatisticsReporting', Printer.CapStatisticsReporting);
+    AddProp('CapUpdateStatistics', Printer.CapUpdateStatistics);
+    AddProp('CapCompareFirmwareVersion', Printer.CapCompareFirmwareVersion);
+    AddProp('CapUpdateFirmware', Printer.CapUpdateFirmware);
+    AddProp('CapConcurrentPageMode', Printer.CapConcurrentPageMode);
+    AddProp('CapRecPageMode', Printer.CapRecPageMode);
+    AddProp('CapSlpPageMode', Printer.CapSlpPageMode);
+    AddProp('PageModeArea', Printer.PageModeArea);
+    AddProp('PageModeDescriptor', Printer.PageModeDescriptor);
+    AddProp('CapRecRuledLine', Printer.CapRecRuledLine);
+    AddProp('CapSlpRuledLine', Printer.CapSlpRuledLine);
+    AddProp('FreezeEvents', Printer.FreezeEvents);
+    AddProp('AsyncMode', Printer.AsyncMode);
+    AddProp('CharacterSet', Printer.CharacterSet);
+    AddProp('FlagWhenIdle', Printer.FlagWhenIdle);
+    AddProp('JrnLetterQuality', Printer.JrnLetterQuality);
+    AddProp('JrnLineChars', Printer.JrnLineChars);
+    AddProp('JrnLineHeight', Printer.JrnLineHeight);
+
+    AddProp('JrnLineSpacing', Printer.JrnLineSpacing);
+    AddProp('MapMode', Printer.MapMode);
+    AddProp('RecLetterQuality', Printer.RecLetterQuality);
+    AddProp('RecLineChars', Printer.RecLineChars);
+    AddProp('RecLineHeight', Printer.RecLineHeight);
+    AddProp('RecLineSpacing', Printer.RecLineSpacing);
+    AddProp('SlpLetterQuality', Printer.SlpLetterQuality);
+    AddProp('SlpLineChars', Printer.SlpLineChars);
+    AddProp('SlpLineHeight', Printer.SlpLineHeight);
+    AddProp('SlpLineSpacing', Printer.SlpLineSpacing);
+    AddProp('RotateSpecial', Printer.RotateSpecial);
+    AddProp('BinaryConversion', Printer.BinaryConversion);
+    AddProp('PowerNotify', Printer.PowerNotify);
+    AddProp('CartridgeNotify', Printer.CartridgeNotify);
+    AddProp('JrnCurrentCartridge', Printer.JrnCurrentCartridge);
+    AddProp('RecCurrentCartridge', Printer.RecCurrentCartridge);
+    AddProp('SlpCurrentCartridge', Printer.SlpCurrentCartridge);
+    AddProp('MapCharacterSet', Printer.MapCharacterSet);
+    AddProp('PageModeHorizontalPosition', Printer.PageModeHorizontalPosition);
+    AddProp('PageModePrintArea', Printer.PageModePrintArea);
+    AddProp('PageModePrintDirection', Printer.PageModePrintDirection);
+    AddProp('PageModeStation', Printer.PageModeStation);
+    AddProp('PageModeVerticalPosition', Printer.PageModeVerticalPosition);
+    AddProp('CheckHealthText', Printer.CheckHealthText);
+  end;
+
+begin
+  Lines := TStringList.Create;
+  try
+    CheckPtr(Printer.ClaimDevice(0));
+    try
+      Printer.DeviceEnabled := True;
+      CheckPtr(Printer.ResultCode);
+      AddProps;
+    finally
+      Printer.ReleaseDevice;
+    end;
+    Result := Lines.Text;
+  finally
+    Lines.Free;
+  end;
+end;
+
+function TWebkassaImpl.DioPrintTestReceipt: WideString;
+
+  function GetKazakhText: WideString;
+  var
+   i: Integer;
+  begin
+    Result := '';
+    for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
+      Result := Result + WideChar(KazakhUnicodeChars[i]);
+  end;
+
+  procedure UpdateTemplateItems(Items: TTemplateItems);
+  var
+    i: Integer;
+    UnicodeText: WideString;
+  begin
+    UnicodeText := GetKazakhText;
+    for i := 0 to Items.Count-1 do
+    begin
+      if Items[i].ItemType = TEMPLATE_TYPE_TEXT then
+        Items[i].Text := Items[i].Text + UnicodeText;
+    end;
+  end;
+
+const
+  ReceiptAnswerJson =
+  '{"Data":{"CheckNumber":"1746195026063","DateTime":"03.11.2023 15:11:55",' +
+  '"DateTimeUTC":"03.11.2023 15:11:55 +06:00","OfflineMode":false,' +
+  '"CashboxOfflineMode":false,"Cashbox":{"UniqueNumber":"SWK00033444",' +
+  '"RegistrationNumber":"993877110665","IdentityNumber":"353186","Address":"",' +
+  '"Ofd":{"Name":"¿Œ \" ‡Á“‡ÌÒÍÓÏ\"","Host":"dev.kofd.kz/consumer","Code":3}},' +
+  '"Organization":{"TaxPayerName":"“ŒŒ SOFT IT KAZAKHSTAN",' +
+  '"TaxPayerIN":"131240010479"},"CheckOrderNumber":2,"ShiftNumber":26,' +
+  '"EmployeeName":"apykhtin@ibtsmail.ru",' +
+  '"TicketUrl":"http://dev.kofd.kz/consumer?i=1746195026063&f=993877110665&s=15443.72&t=20231103T151155",' +
+  '"TicketPrintUrl":"https://devkkm.webkassa.kz/Ticket?chb=SWK00033444&sh=26&extnum=FCAF3FE7-C37F-44E3-B190-0706B3238331"}}';
+var
+  Receipt: TSalesREceipt;
+  Command: TSendReceiptCommand;
+  //TemplateXml: WideString;
+begin
+  //Params.Template.SaveToXml(TemplateXml);
+  CheckPtr(Printer.ClaimDevice(0));
+  Printer.DeviceEnabled := True;
+  CheckPtr(Printer.ResultCode);
+
+  Command := TSendReceiptCommand.Create;
+  Receipt := TSalesReceipt.CreateReceipt(rtSell, Params.AmountDecimalPlaces, Params.RoundType);
+  try
+    // Template
+    //UpdateTemplateItems(Params.Template.Header);
+    //UpdateTemplateItems(Params.Template.RecItem);
+    //UpdateTemplateItems(Params.Template.Trailer);
+    // Receipt
+    Receipt := TSalesReceipt.CreateReceipt(rtSell,
+      Params.AmountDecimalPlaces, Params.RoundType);
+    Receipt.BeginFiscalReceipt(False);
+    Receipt.PrintRecItem('Item 1', 1.23, 1, 0, 1.23, '');
+    Receipt.printRecTotal(1.23, 1.23, '');
+    Receipt.EndFiscalReceipt(False);
+    // Command
+    Client.AnswerJson := ReceiptAnswerJson;
+    Command.ResponseJson := ReceiptAnswerJson;
+    JsonToObject(Command.ResponseJson, Command);
+
+    PrintSalesReceipt(Receipt, Command);
+  finally
+    Command.Free;
+    Receipt.Free;
+    Printer.ReleaseDevice;
+    //Params.Template.LoadFromXml(TemplateXml);
+  end;
+end;
+
 procedure TWebkassaImpl.DioSetDriverParameter(var pData: Integer;
   var pString: WideString);
 begin
@@ -1161,7 +1457,6 @@ end;
 function TWebkassaImpl.DirectIO(Command: Integer; var pData: Integer;
   var pString: WideString): Integer;
 begin
-
   try
     FOposDevice.CheckOpened;
     case Command of
@@ -1176,6 +1471,11 @@ begin
       DIO_GET_RECEIPT_RESPONSE_FIELD: pString := GetJsonField(FClient.SendReceiptCommand.ResponseJson, pString);
       DIO_GET_REQUEST_JSON_FIELD: pString := GetJsonField(FClient.CommandJson, pString);
       DIO_GET_RESPONSE_JSON_FIELD: pString := GetJsonField(FClient.AnswerJson, pString);
+
+      DIO_READ_PRINTER_PARAMS: pString := DioReadPrinterParams;
+      DIO_PRINT_TEST_RECEIPT: pString := DioPrintTestReceipt;
+      DIO_READ_PRINTER_LIST: pString := DioReadPrinterList;
+      DIO_READ_FONT_LIST: pString := DioReadFontList;
     else
       if Receipt.IsOpened then
       begin
@@ -2208,7 +2508,7 @@ begin
       Document.AddLine(Document.AlignCenter(Params.OfflineText));
     end;
     Separator := StringOfChar('-', Document.LineChars);
-    Document.AddLines('»ÕÕ/¡»Õ', Command.Data.CashboxRN);
+    Document.AddLines('»ÕÕ/¡»Õ', IntToStr(Command.Data.CashboxIN));
     Document.AddLines('«ÕÃ', Command.Data.CashboxSN);
     Document.AddLines(' Ó‰   Ã  √ƒ (–ÕÃ)', Command.Data.CashboxRN);
     if IsZReport then
@@ -2699,7 +2999,8 @@ begin
     Logger.Debug('System               : ' + GetSystemVersionStr);
     Logger.Debug('System locale        : ' + GetSystemLocaleStr);
     Logger.Debug(Logger.Separator);
-    FParams.WriteLogParameters;
+    Params.WriteLogParameters;
+    Params.Load(DeviceName);
 
     FQuantityDecimalPlaces := 3;
     Result := ClearResult;
@@ -3216,25 +3517,31 @@ begin
     Params.ShiftNumber := Command.Data.ShiftNumber;
     SaveUsrParams;
 
-    if Command.Data.OfflineMode then
-    begin
-      Document.AddLine(Document.AlignCenter(Params.OfflineText));
-    end;
-
-    if Params.TemplateEnabled then
-    begin
-      Receipt.ReguestJson := FClient.CommandJson;
-      Receipt.AnswerJson := FClient.AnswerJson;
-      PrintReceiptTemplate(Receipt, Params.Template);
-    end else
-    begin
-      PrintReceipt(Receipt, Command);
-    end;
-    PrintDocumentSafe(Document);
-    Printer.RecLineChars := Params.RecLineChars;
+    PrintSalesReceipt(Receipt, Command);
   finally
     Command.Free;
   end;
+end;
+
+procedure TWebkassaImpl.PrintSalesReceipt(Receipt: TSalesREceipt;
+  Command: TSendReceiptCommand);
+begin
+  if Command.Data.OfflineMode then
+  begin
+    Document.AddLine(Document.AlignCenter(Params.OfflineText));
+  end;
+
+  if Params.TemplateEnabled then
+  begin
+    Receipt.ReguestJson := FClient.CommandJson;
+    Receipt.AnswerJson := FClient.AnswerJson;
+    PrintReceiptTemplate(Receipt, Params.Template);
+  end else
+  begin
+    PrintReceipt(Receipt, Command);
+  end;
+  PrintDocumentSafe(Document);
+  Printer.RecLineChars := Params.RecLineChars;
 end;
 
 function GetPaperKind(WidthInDots: Integer): Integer;

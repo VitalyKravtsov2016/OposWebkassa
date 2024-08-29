@@ -80,7 +80,7 @@ UnsafeType=0
 UnsafeCode=0
 UnsafeCast=0
 [Linker]
-MapFile=3
+MapFile=0
 OutputObjs=0
 ConsoleApp=1
 DebugInfo=1
@@ -90,18 +90,18 @@ MaxStackSize=1048576
 ImageBase=4194304
 ExeDescription=
 [Directories]
-OutputDir=..\Bin
+OutputDir=
 UnitOutputDir=DCU
 PackageDLLOutputDir=
 PackageDCPOutputDir=
-SearchPath=$(DELPHI)\Lib\Debug;c:\PROGRA~2\Borland\Delphi7\Comp\jcl\lib\d7\debug;$(DELPHI)\Comp\jvcl\lib\D7\debug
+SearchPath=$(DELPHI)\Lib\Debug;C:\PROGRA~2\Borland\Delphi7\Comp\jcl\lib\d7\debug;c:\PROGRA~2\Borland\Delphi7\Comp\jcl\lib\d7\debug;$(DELPHI)\Comp\jvcl\lib\D7\debug
 Packages=vcl;rtl;vclx;dbrtl;Ean7;qrpt;bdertl;vcldb;EanRave7;Rave50VCL;Ean7Editors;VclSmp;RxCtl7;TntUnicodeVcl_R70;RxDB7;RxBDE7;Jcl;CnPack_D7;adortl;AdvOfficePagerPkgd7;JclVcl;JvCoreD7R;JvSystemD7R;JvStdCtrlsD7R;JvAppFrmD7R;JvBandsD7R;JvCmpD7R;JvCryptD7R;JvCtrlsD7R;JvCustomD7R;JvDlgsD7R;JvDockingD7R;JvDotNetCtrlsD7R;JvEDID7R;JvGlobusD7R;JvHMID7R;JvInterpreterD7R;JvJansD7R;JvManagedThreadsD7R;JvMMD7R;JvNetD7R;JvPageCompsD7R;JvPluginD7R;JvPrintPreviewD7R;JvRuntimeDesignD7R;JvTimeFrameworkD7R;JvValidatorsD7R;tdbf_d7d;tdbf_d7r;RaizeComponentsVcl;RaizeComponentsVclDb;PNG_D7;PngComponentsD7;vcldbx;teeui;teedb;tee;JvDBD7R;JvBDED7R;JvWizardD7R;JvXPCtrlsD7R;vclactnband;visualclx;visualdbclx;dsnap;dsnapcon;dbexpress;dss;inet;vclie;dbxcds;ibxpress;IntrawebDB_50_70;Intraweb_50_70;TIE_http_https;vclshlctrls;Rave50CLX;GmXml_D7;inetdb;IndyCore70;IndySystem70;IndyProtocols70
 Conditionals=DEBUG
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
 RunParams=
-HostApplication=C:\projects\WebKassa\bin\OposTest.exe
+HostApplication=..\Bin\OposConfig.exe
 Launcher=
 UseLauncher=0
 DebugCWD=
@@ -122,7 +122,7 @@ AutoIncBuild=1
 MajorVer=1
 MinorVer=13
 Release=0
-Build=130
+Build=141
 Debug=0
 PreRelease=0
 Special=0
@@ -133,7 +133,7 @@ CodePage=1252
 [Version Info Keys]
 CompanyName=SHTRIH-M
 FileDescription=WebKassa OPOS fiscal printer service
-FileVersion=1.13.0.130
+FileVersion=1.13.0.141
 InternalName=WebKassa OPOS fiscal printer driver
 LegalCopyright=SHTRIH-M © 2022
 LegalTrademarks=
@@ -141,8 +141,6 @@ OriginalFilename=OposWebkassa.dll
 ProductName=OPOS drivers
 ProductVersion=1.13
 Comments=http://www.shtrih-m.ru
-[Excluded Packages]
-C:\Program Files (x86)\Borland\Delphi7\Projects\Bpl\PngComponentsD7.bpl=Png components
 [HistoryLists\hlConditionals]
 Count=1
 Item0=DEBUG
@@ -150,12 +148,14 @@ Item0=DEBUG
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
-Count=1
-Item0=Barcode
+Count=2
+Item0=c:\PROGRA~2\Borland\Delphi7\Comp\jcl\lib\d7\debug;$(DELPHI)\Comp\jvcl\lib\D7\debug
+Item1=Barcode
 [HistoryLists\hlUnitOutputDirectory]
 Count=2
 Item0=DCU
 Item1=..\..\DCU
 [HistoryLists\hlOutputDirectorry]
-Count=1
-Item0=Bin
+Count=2
+Item0=..\Bin
+Item1=Bin

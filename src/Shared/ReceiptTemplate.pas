@@ -142,17 +142,18 @@ var
   Root: IXmlNode;
   Doc: IXmlDocument;
 begin
-  Clear;
-
-  if not FileExists(FileName) then
-    raise Exception.Create('File not found, ' + FileName);
-
+  Logger.Debug('TReceiptTemplate.LoadFromFile, ' + FileName);
   try
+    if not FileExists(FileName) then
+      raise Exception.Create('File not found, ' + FileName);
+
+    Clear;
     Doc := LoadXMLDocument(FileName);
     Root := Doc.DocumentElement;
     LoadItems(Root.ChildNodes.FindNode('Header'), Header);
     LoadItems(Root.ChildNodes.FindNode('RecItem'), RecItem);
     LoadItems(Root.ChildNodes.FindNode('Trailer'), Trailer);
+    Logger.Debug('TReceiptTemplate.LoadFromFile: OK');
   except
     on E: Exception do
     begin
@@ -233,6 +234,7 @@ var
   Root: IXmlNode;
   Doc: IXmlDocument;
 begin
+  Logger.Debug('TReceiptTemplate.SaveToFile, ' + FileName);
   try
     Doc := NewXMLDocument('');
     Root := Doc.CreateElement('root', '');

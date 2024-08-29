@@ -86,7 +86,8 @@ uses
   oleFiscalPrinter in '..\..\src\OposWebkassa\Units\oleFiscalPrinter.pas',
   EscPrinterOA48 in '..\..\src\Shared\EscPrinterOA48.pas',
   EscPrinterRongta in '..\..\src\Shared\EscPrinterRongta.pas',
-  PosPrinterRongta in '..\..\src\Shared\PosPrinterRongta.pas';
+  PosPrinterRongta in '..\..\src\Shared\PosPrinterRongta.pas',
+  OposDevice in '..\..\src\Opos\OposDevice.pas';
 
 {$R *.RES}
 {$R ..\..\src\OposWebkassa\OposWebkassa.tlb}

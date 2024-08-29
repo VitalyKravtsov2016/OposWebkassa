@@ -152,9 +152,9 @@ object fmPrinter: TfmPrinter
           'ESC Windows '#1087#1088#1080#1085#1090#1077#1088)
       end
       object cbFontName: TTntComboBox
-        Left = 184
+        Left = 120
         Top = 120
-        Width = 241
+        Width = 305
         Height = 21
         Style = csDropDownList
         ItemHeight = 13
@@ -213,7 +213,7 @@ object fmPrinter: TfmPrinter
         Style = csDropDownList
         ItemHeight = 13
         TabOrder = 1
-        OnChange = cbPrinterTypeChange
+        OnChange = cbEscPrinterTypeChange
         Items.Strings = (
           'Rongta'
           'OA-48')
