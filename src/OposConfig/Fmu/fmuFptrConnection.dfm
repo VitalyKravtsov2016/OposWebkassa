@@ -1,6 +1,6 @@
 object fmFptrConnection: TfmFptrConnection
-  Left = 359
-  Top = 251
+  Left = 594
+  Top = 238
   Width = 496
   Height = 363
   Caption = #1055#1086#1076#1082#1083#1102#1095#1077#1085#1080#1077

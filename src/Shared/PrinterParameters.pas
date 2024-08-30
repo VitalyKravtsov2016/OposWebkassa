@@ -195,6 +195,7 @@ type
     procedure SetBaudRate(const Value: Integer);
     function GetTranslation: TTranslation;
     function GetTranslationRus: TTranslation;
+    function GetTemplateFileName(const DeviceName: WideString): WideString;
   public
     PortName: string;
     DataBits: Integer;
@@ -215,7 +216,6 @@ type
     DailyTotal: Currency;
     SellTotal: Currency;
     RefundTotal: Currency;
-    TemplateFileName: WideString;
 
     constructor Create(ALogger: ILogFile);
     destructor Destroy; override;
@@ -467,7 +467,6 @@ begin
   Logger.Debug('RecLineChars: ' + IntToStr(RecLineChars));
   Logger.Debug('RecLineHeight: ' + IntToStr(RecLineHeight));
   Logger.Debug('Utf8Enabled: ' + BoolToStr(Utf8Enabled));
-  Logger.Debug('TemplateFileName: ' + TemplateFileName);
 
   // VatRates
   for i := 0 to VatRates.Count-1 do
@@ -715,7 +714,12 @@ end;
 
 procedure TPrinterParameters.Load(const DeviceName: WideString);
 begin
-  FTemplate.LoadFromFile(TemplateFileName);
+  FTemplate.LoadFromFile(GetTemplateFileName(DeviceName));
+end;
+
+function TPrinterParameters.GetTemplateFileName(const DeviceName: WideString): WideString;
+begin
+  Result := GetModulePath + 'Params\' + DeviceName + '\Receipt.xml';
 end;
 
 procedure TPrinterParameters.Save(const DeviceName: WideString);
@@ -727,7 +731,7 @@ begin
   Path := Path + '\' + DeviceName;
   if not DirectoryExists(Path) then CreateDir(Path);
 
-  FTemplate.SaveToFile(TemplateFileName);
+  FTemplate.SaveToFile(GetTemplateFileName(DeviceName));
 end;
 
 function TPrinterParameters.ItemByText(const ParamName: WideString): WideString;

@@ -283,6 +283,14 @@ begin
   Clear;
   // Line 1
   Item := Header.Add;
+  Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'Data.Organization.TaxPayerIN';
+  Item.FormatText := 'аям/ахм: %s';
+  Item.Alignment := ALIGN_LEFT;
+  Header.NewLine;
+  // Line 1
+  Item := Header.Add;
   Item.ItemType := TEMPLATE_TYPE_PARAM;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'VATSeries';

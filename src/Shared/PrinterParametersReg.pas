@@ -295,10 +295,6 @@ begin
       if Reg.ValueExists('HeaderPrinted') then
         Parameters.HeaderPrinted := Reg.ReadBool('HeaderPrinted');
 
-      Parameters.TemplateFileName := GetModulePath + 'Params\' + DeviceName + '\Receipt.xml';
-      if Reg.ValueExists('TemplateFileName') then
-        Parameters.TemplateFileName := Reg.ReadString('TemplateFileName');
-
       Reg.CloseKey;
     end;
     // VatRates
@@ -395,7 +391,6 @@ begin
     Reg.WriteInteger('RecLineChars', FParameters.RecLineChars);
     Reg.WriteInteger('RecLineHeight', FParameters.RecLineHeight);
     Reg.WriteBool('HeaderPrinted', FParameters.HeaderPrinted);
-    Reg.WriteString('TemplateFileName', FParameters.TemplateFileName);
 
     Reg.CloseKey;
     // VatRates

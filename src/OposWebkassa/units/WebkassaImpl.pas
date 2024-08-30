@@ -1269,29 +1269,6 @@ begin
 end;
 
 function TWebkassaImpl.DioPrintTestReceipt: WideString;
-
-  function GetKazakhText: WideString;
-  var
-   i: Integer;
-  begin
-    Result := '';
-    for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
-      Result := Result + WideChar(KazakhUnicodeChars[i]);
-  end;
-
-  procedure UpdateTemplateItems(Items: TTemplateItems);
-  var
-    i: Integer;
-    UnicodeText: WideString;
-  begin
-    UnicodeText := GetKazakhText;
-    for i := 0 to Items.Count-1 do
-    begin
-      if Items[i].ItemType = TEMPLATE_TYPE_TEXT then
-        Items[i].Text := Items[i].Text + UnicodeText;
-    end;
-  end;
-
 const
   ReceiptAnswerJson =
   '{"Data":{"CheckNumber":"1746195026063","DateTime":"03.11.2023 15:11:55",' +
@@ -1307,9 +1284,7 @@ const
 var
   Receipt: TSalesREceipt;
   Command: TSendReceiptCommand;
-  //TemplateXml: WideString;
 begin
-  //Params.Template.SaveToXml(TemplateXml);
   CheckPtr(Printer.ClaimDevice(0));
   Printer.DeviceEnabled := True;
   CheckPtr(Printer.ResultCode);
@@ -1317,16 +1292,15 @@ begin
   Command := TSendReceiptCommand.Create;
   Receipt := TSalesReceipt.CreateReceipt(rtSell, Params.AmountDecimalPlaces, Params.RoundType);
   try
-    // Template
-    //UpdateTemplateItems(Params.Template.Header);
-    //UpdateTemplateItems(Params.Template.RecItem);
-    //UpdateTemplateItems(Params.Template.Trailer);
     // Receipt
     Receipt := TSalesReceipt.CreateReceipt(rtSell,
       Params.AmountDecimalPlaces, Params.RoundType);
     Receipt.BeginFiscalReceipt(False);
     Receipt.PrintRecItem('Item 1', 1.23, 1, 0, 1.23, '');
     Receipt.printRecTotal(1.23, 1.23, '');
+    Receipt.CustomerINN := '27635472354';
+    Receipt.CustomerEmail := 'Test@Test.com';
+    Receipt.CustomerPhone := '322223322223';
     Receipt.EndFiscalReceipt(False);
     // Command
     Client.AnswerJson := ReceiptAnswerJson;
@@ -1338,7 +1312,6 @@ begin
     Command.Free;
     Receipt.Free;
     Printer.ReleaseDevice;
-    //Params.Template.LoadFromXml(TemplateXml);
   end;
 end;
 
@@ -3000,7 +2973,6 @@ begin
     Logger.Debug('System locale        : ' + GetSystemLocaleStr);
     Logger.Debug(Logger.Separator);
     Params.WriteLogParameters;
-    Params.Load(DeviceName);
 
     FQuantityDecimalPlaces := 3;
     Result := ClearResult;
@@ -3632,6 +3604,7 @@ var
   Adjustment: TAdjustmentRec;
   BarcodeItem: TBarcodeItem;
 begin
+  Document.AddLine('ÁÑÍ/ÁÈÍ: ' + Command.Data.Organization.TaxPayerIN);
   Document.Addlines(Tnt_WideFormat('ÍÄÑ Ñåðèÿ %s', [Params.VATSeries]),
     Tnt_WideFormat('¹ %s', [Params.VATNumber]));
   Document.AddSeparator;

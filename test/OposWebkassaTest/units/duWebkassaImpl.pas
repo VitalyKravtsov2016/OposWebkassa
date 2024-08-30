@@ -472,6 +472,7 @@ end;
 
 const
   Receipt3Text: string =
+    'ÁÑÍ/ÁÈÍ:                                  ' + CRLF +
     'ÍÄÑ Ñåðèÿ VATSeries            ¹ VATNumber' + CRLF +
     '------------------------------------------' + CRLF +
     '               SWK00032685                ' + CRLF +
@@ -1211,6 +1212,7 @@ end;
 procedure TWebkassaImplTest.TestReceiptTemplate4;
 const
   ReceiptText =
+    'ÁÑÍ/ÁÈÍ:                                  ' + CRLF +
     'ÍÄÑ Ñåðèÿ 00000                    ¹ 00000' + CRLF +
     '------------------------------------------' + CRLF +
     '                                          ' + CRLF +

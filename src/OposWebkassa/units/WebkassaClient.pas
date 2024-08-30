@@ -382,6 +382,19 @@ type
     property CustomerXin: WideString read FCustomerXin write FCustomerXin;
   end;
 
+  { TOrganization }
+
+  TOrganization = class(TJsonPersistent)
+  private
+    FTaxPayerIN: WideString;
+    FTaxPayerName: WideString;
+  public
+    procedure Assign(Source: TPersistent); override;
+  published
+    property TaxPayerIN: WideString read FTaxPayerIN write FTaxPayerIN;
+    property TaxPayerName: WideString read FTaxPayerName write FTaxPayerName;
+  end;
+
   { TSendReceiptCommandResponse }
 
   TSendReceiptCommandResponse = class(TJsonPersistent)
@@ -396,7 +409,9 @@ type
 		FEmployeeName: WideString;
 		FTicketUrl: WideString;
 		FTicketPrintUrl: WideString;
+    FOrganization: TOrganization;
     procedure SetCashbox(const Value: TCashboxParameters);
+    procedure SetOrganization(const Value: TOrganization);
   public
     constructor Create;
     destructor Destroy; override;
@@ -412,6 +427,7 @@ type
 		property EmployeeName: WideString read FEmployeeName write FEmployeeName;
 		property TicketUrl: WideString read FTicketUrl write FTicketUrl;
 		property TicketPrintUrl: WideString read FTicketPrintUrl write FTicketPrintUrl;
+    property Organization: TOrganization read FOrganization write SetOrganization;
   end;
 
   { TPayment }
@@ -3250,11 +3266,13 @@ constructor TSendReceiptCommandResponse.Create;
 begin
   inherited Create;
   FCashbox := TCashboxParameters.Create;
+  FOrganization := TOrganization.Create;
 end;
 
 destructor TSendReceiptCommandResponse.Destroy;
 begin
   FCashbox.Free;
+  FOrganization.Free;
   inherited Destroy;
 end;
 
@@ -3262,6 +3280,12 @@ procedure TSendReceiptCommandResponse.SetCashbox(
   const Value: TCashboxParameters);
 begin
   FCashbox.Assign(Value);
+end;
+
+procedure TSendReceiptCommandResponse.SetOrganization(
+  const Value: TOrganization);
+begin
+  FOrganization.Assign(Value);
 end;
 
 { TReceiptTextItem }
@@ -3494,6 +3518,20 @@ begin
   begin
     RequestJson := (Source as TJsonCommand).RequestJson;
     ResponseJson := (Source as TJsonCommand).ResponseJson;
+  end;
+end;
+
+{ TOrganization }
+
+procedure TOrganization.Assign(Source: TPersistent);
+var
+  Src: TOrganization;
+begin
+  if Source is TOrganization then
+  begin
+    Src := Source as TOrganization;
+    FTaxPayerIN := Src.TaxPayerIN;
+    FTaxPayerName := Src.TaxPayerName;
   end;
 end;
 

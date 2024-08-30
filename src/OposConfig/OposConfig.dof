@@ -115,7 +115,7 @@ AutoIncBuild=1
 MajorVer=1
 MinorVer=13
 Release=0
-Build=112
+Build=77
 Debug=0
 PreRelease=0
 Special=0
@@ -126,16 +126,14 @@ CodePage=1252
 [Version Info Keys]
 CompanyName=SHTRIH-M
 FileDescription=WebKassa OPOS setup utility
-FileVersion=1.13.0.112
-InternalName=WebKassa OPOS setup
-LegalCopyright=SHTRIH-M © 2013
+FileVersion=1.13.0.77
+InternalName=WebKassa OPOS setup 
+LegalCopyright=SHTRIH-M © 2013 
 LegalTrademarks=
 OriginalFilename=OposConfig.exe
 ProductName=WebKassa OPOS driver
 ProductVersion=1.13
 Comments=http://www.shtrih-m.ru
-[Excluded Packages]
-C:\Program Files (x86)\Borland\Delphi7\Projects\Bpl\PngComponentsD7.bpl=Png components
 [HistoryLists\hlConditionals]
 Count=1
 Item0=DEBUG
@@ -143,9 +141,10 @@ Item0=DEBUG
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
-Count=2
-Item0=c:\PROGRA~2\Borland\Delphi7\Comp\jcl\lib\d7\debug;$(DELPHI)\Comp\jvcl\lib\D7\debug
-Item1=Barcode
+Count=3
+Item0=$(DELPHI)\Lib\Debug;C:\PROGRA~2\Borland\Delphi7\Comp\jcl\lib\d7\debug;C:\COMPON~1\JVCL\jcl\lib\d7\debug
+Item1=c:\PROGRA~2\Borland\Delphi7\Comp\jcl\lib\d7\debug;$(DELPHI)\Comp\jvcl\lib\D7\debug
+Item2=Barcode
 [HistoryLists\hlUnitOutputDirectory]
 Count=2
 Item0=DCU

@@ -31,9 +31,9 @@ type
     function GetPayment: Currency; virtual;
     property IsVoided: Boolean read FIsVoided;
     property IsOpened: Boolean read FIsOpened;
-    property CustomerINN: WideString read FCustomerINN;
-    property CustomerEmail: WideString read FCustomerEmail;
-    property CustomerPhone: WideString read FCustomerPhone;
+    property CustomerINN: WideString read FCustomerINN write FCustomerINN;
+    property CustomerEmail: WideString read FCustomerEmail write FCustomerEmail;
+    property CustomerPhone: WideString read FCustomerPhone write FCustomerPhone;
   public
     constructor Create; virtual;
     destructor Destroy; override;
