@@ -1,27 +1,26 @@
 [Closed Files]
-File_0=SourceModule,'D:\Projects\OposWebkassa\test\OposWebkassaTest\units\duWebkassaImpl.pas',0,1,106,21,117,0,0
-File_1=SourceModule,'D:\Projects\OposWebkassa\src\Shared\PrinterParametersReg.pas',0,1,130,14,134,0,0
-File_2=SourceModule,'D:\Projects\OposWebkassa\src\Shared\ReceiptTemplate.pas',0,1,93,1,101,0,0
-File_3=SourceModule,'D:\Projects\OposWebkassa\src\Shared\PrinterParameters.pas',0,1,711,1,721,0,0
-File_4=SourceModule,'D:\Projects\OposWebkassa\src\OposConfig\Fmu\fmuPrinter.pas',0,1,298,25,309,1,0
-File_5=SourceModule,'D:\Projects\OposWebkassa\src\Shared\PosPrinterOA48.pas',0,1,1,1,21,0,0
-File_6=SourceModule,'D:\Projects\OposWebkassa\src\OposWebkassa\units\RecPrinter.pas',0,1,1,22,23,0,0
-File_7=SourceModule,'D:\Projects\OposWebkassa\src\Shared\LogFile.pas',0,1,253,14,262,0,0
-File_8=SourceModule,'D:\Projects\OposWebkassa\test\OposWebkassaTest\units\duPrinterParameters.pas',0,1,169,8,172,0,0
+File_0=SourceModule,'D:\Projects\OposWebkassa\test\OposWebkassaTest\units\duWebkassaImpl.pas',0,1,1098,1,1247,0,0
+File_1=SourceModule,'D:\Projects\OposWebkassa\src\Shared\PrinterParameters.pas',0,1,1,1,1,0,0
+File_2=SourceModule,'D:\Projects\OposWebkassa\src\OposWebkassa\Units\WebkassaImpl.pas',0,1,3597,99,3606,0,0
+File_3=SourceModule,'D:\Projects\OposWebkassa\src\OposWebkassa\Units\WebkassaClient.pas',0,1,3521,1,3526,0,0
+File_4=SourceModule,'D:\Projects\OposWebkassa\src\OposWebkassa\units\CustomReceipt.pas',0,1,335,99,352,0,0
+File_5=SourceModule,'D:\Projects\OposWebkassa\src\OposTest\Fmu\fmuFptrEvents.pas',0,1,54,24,68,0,0
+File_6=SourceModule,'D:\Projects\OposWebkassa\test\WebkassaAccTest\units\duWebkassaImpl.pas',0,1,134,60,150,0,0
+File_7=SourceModule,'D:\Projects\OposWebkassa\src\OposConfig\Fmu\fmuPrinter.pas',0,1,295,11,306,1,1
 
 [Modules]
-Module0=c:\program files (x86)\borland\delphi7\source\rtl\Sys\sysutils.pas
-Module1=D:\Projects\OposWebkassa\src\OposWebkassa\units\WebkassaImpl.pas
+Module0=D:\Projects\OposWebkassa\src\Shared\PrinterTypes.pas
+Module1=D:\Projects\OposWebkassa\src\Shared\ReceiptTemplate.pas
 Count=2
 EditWindowCount=1
 TypeLibWindowCount=1
 
-[c:\program files (x86)\borland\delphi7\source\rtl\Sys\sysutils.pas]
+[D:\Projects\OposWebkassa\src\Shared\PrinterTypes.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[D:\Projects\OposWebkassa\src\OposWebkassa\units\WebkassaImpl.pas]
+[D:\Projects\OposWebkassa\src\Shared\ReceiptTemplate.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -67,37 +66,35 @@ CodeExplorer=CodeExplorer@EditWindow0
 MessageView=MessageView@EditWindow0
 Create=1
 Visible=1
-State=2
+State=0
 Left=366
 Top=140
 Width=1302
 Height=682
-MaxLeft=-8
-MaxTop=107
-MaxWidth=1936
-MaxHeight=941
-ClientWidth=1920
-ClientHeight=902
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=1286
+ClientHeight=643
 LeftPanelSize=0
 LeftPanelClients=CodeExplorer@EditWindow0
 LeftPanelData=00000400010000000C000000436F64654578706C6F7265720000000000000000000000000000000000FFFFFFFF
 RightPanelSize=0
-BottomPanelSize=85
+BottomPanelSize=0
 BottomPanelClients=MessageView@EditWindow0
-BottomPanelData=000004000000000000000000000000000000000000000000000100000000000000000B0000004D65737361676556696577FFFFFFFF
+BottomPanelData=00000400010000000B0000004D657373616765566965770000000000000000000000000000000000FFFFFFFF
 
 [View0]
-Module=D:\Projects\OposWebkassa\src\OposWebkassa\units\WebkassaImpl.pas
-CursorX=12
-CursorY=407
-TopLine=395
+Module=D:\Projects\OposWebkassa\src\Shared\ReceiptTemplate.pas
+CursorX=38
+CursorY=500
+TopLine=485
 LeftCol=1
 
 [View1]
-Module=c:\program files (x86)\borland\delphi7\source\rtl\Sys\sysutils.pas
-CursorX=16
-CursorY=178
-TopLine=161
+Module=D:\Projects\OposWebkassa\src\Shared\PrinterTypes.pas
+CursorX=1
+CursorY=53
+TopLine=51
 LeftCol=1
 
 [TypeLibEditWindow0]
@@ -210,7 +207,7 @@ ClientHeight=60
 
 [PropertyInspector]
 Create=1
-Visible=1
+Visible=0
 State=0
 Left=-8
 Top=113
@@ -429,15 +426,15 @@ Dockable=1
 
 [MessageView@EditWindow0]
 Create=1
-Visible=1
+Visible=0
 State=0
-Left=12
-Top=0
-Width=1908
+Left=-176
+Top=-707
+Width=443
 Height=85
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1908
+ClientWidth=443
 ClientHeight=85
 TBDockHeight=85
 LRDockWidth=443

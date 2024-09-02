@@ -283,9 +283,9 @@ begin
   Clear;
   // Line 1
   Item := Header.Add;
-  Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
+  Item.ItemType := TEMPLATE_TYPE_CASHBOX_STATE_JSON;
   Item.TextStyle := STYLE_NORMAL;
-  Item.Text := 'Data.Organization.TaxPayerIN';
+  Item.Text := 'Data.Xin';
   Item.FormatText := 'аям/ахм: %s';
   Item.Alignment := ALIGN_LEFT;
   Header.NewLine;

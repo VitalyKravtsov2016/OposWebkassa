@@ -53,6 +53,7 @@ type
   private
     FLines: TTntStrings;
     FCashboxStatus: TlkJSONbase;
+    FCashboxStatusAnswerJson: WideString;
     FTestMode: Boolean;
     FLoadParamsEnabled: Boolean;
     FPOSID: WideString;
@@ -108,6 +109,8 @@ type
     function DioPrintTestReceipt: WideString;
     procedure PrintSalesReceipt(Receipt: TSalesREceipt;
       Command: TSendReceiptCommand);
+    function ReadINN: WideString;
+    function ReadCasboxStatusAnswerJson: WideString;
   public
     procedure PrintDocumentSafe(Document: TTextDocument);
     procedure CheckCanPrint;
@@ -1567,18 +1570,26 @@ end;
 
 function TWebkassaImpl.ReadCashboxStatus: TlkJSONbase;
 var
+  AnswerJson: WideString;
+  CommandJson: WideString;
   Request: TCashboxRequest;
 begin
   if FCashboxStatus = nil then
   begin
+    AnswerJson := Client.AnswerJson;
+    CommandJson := Client.CommandJson;
     Request := TCashboxRequest.Create;
     try
       Request.Token := Client.Token;
       Request.CashboxUniqueNumber := Params.CashboxNumber;
       Client.ReadCashboxStatus(Request);
+
+      FCashboxStatusAnswerJson := FClient.AnswerJson;
       FCashboxStatus := TlkJSON.ParseText(FClient.AnswerJson);
     finally
       Request.Free;
+      Client.AnswerJson := AnswerJson;
+      Client.CommandJson := CommandJson;
     end;
   end;
   Result := FCashboxStatus;
@@ -3587,6 +3598,30 @@ begin
   end;
 end;
 
+function TWebkassaImpl.ReadCasboxStatusAnswerJson: WideString;
+begin
+  try
+    ReadCashboxStatus;
+    Result := FCashboxStatusAnswerJson;
+  except
+    on E: Exception do
+    begin
+      Logger.Error('Failed to read CasboxStatusAnswerJson, ' + E.Message);
+    end;
+  end;
+end;
+
+function TWebkassaImpl.ReadINN: WideString;
+begin
+  try
+    Result := ReadCashboxStatus.Get('Data').Get('Xin').Value;
+  except
+    on E: Exception do
+    begin
+      Logger.Error('Failed to read Xin, ' + E.Message);
+    end;
+  end;
+end;
 
 procedure TWebkassaImpl.PrintReceipt(Receipt: TSalesReceipt;
   Command: TSendReceiptCommand);
@@ -3604,7 +3639,8 @@ var
   Adjustment: TAdjustmentRec;
   BarcodeItem: TBarcodeItem;
 begin
-  Document.AddLine('ÁÑÍ/ÁÈÍ: ' + Command.Data.Organization.TaxPayerIN);
+  Document.AddLine('ÁÑÍ/ÁÈÍ: ' + ReadINN);
+
   Document.Addlines(Tnt_WideFormat('ÍÄÑ Ñåðèÿ %s', [Params.VATSeries]),
     Tnt_WideFormat('¹ %s', [Params.VATNumber]));
   Document.AddSeparator;
@@ -3786,6 +3822,7 @@ begin
     TEMPLATE_TYPE_JSON_REQ_FIELD: Result := GetJsonField(Receipt.ReguestJson, Item.Text);
     TEMPLATE_TYPE_JSON_ANS_FIELD: Result := GetJsonField(Receipt.AnswerJson, Item.Text);
     TEMPLATE_TYPE_NEWLINE: Result := CRLF;
+    TEMPLATE_TYPE_CASHBOX_STATE_JSON: Result := GetJsonField(ReadCasboxStatusAnswerJson, Item.Text);
   else
     Result := '';
   end;

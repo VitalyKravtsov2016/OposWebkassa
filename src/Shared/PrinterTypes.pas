@@ -47,14 +47,15 @@ const
   /////////////////////////////////////////////////////////////////////////////
   // Template item types
 
-  TEMPLATE_TYPE_TEXT            = 0;
-  TEMPLATE_TYPE_PARAM           = 1;
-  TEMPLATE_TYPE_ITEM_FIELD      = 2;
-  TEMPLATE_TYPE_JSON_REQ_FIELD  = 3;
-  TEMPLATE_TYPE_JSON_ANS_FIELD  = 4;
-  TEMPLATE_TYPE_JSON_REC_FIELD  = 5;
-  TEMPLATE_TYPE_SEPARATOR       = 6;
-  TEMPLATE_TYPE_NEWLINE         = 7;
+  TEMPLATE_TYPE_TEXT                = 0;
+  TEMPLATE_TYPE_PARAM               = 1;
+  TEMPLATE_TYPE_ITEM_FIELD          = 2;
+  TEMPLATE_TYPE_JSON_REQ_FIELD      = 3;
+  TEMPLATE_TYPE_JSON_ANS_FIELD      = 4;
+  TEMPLATE_TYPE_JSON_REC_FIELD      = 5;
+  TEMPLATE_TYPE_SEPARATOR           = 6;
+  TEMPLATE_TYPE_NEWLINE             = 7;
+  TEMPLATE_TYPE_CASHBOX_STATE_JSON = 8;
 
   /////////////////////////////////////////////////////////////////////////////
   // Alignment constants
