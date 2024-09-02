@@ -32,7 +32,6 @@ type
     procedure SetDefaults;
     procedure SaveToXml(var Xml: WideString);
     procedure LoadFromXml(const Xml: WideString);
-
     procedure SaveToFile(const FileName: WideString);
     procedure LoadFromFile(const FileName: WideString);
 
@@ -55,6 +54,7 @@ type
     function AddText(const Text: WideString): TTemplateItem;
     function AddParam(const Text: WideString): TTemplateItem;
     function AddField(const Text: WideString): TTemplateItem;
+    function ItemByText(const Text: WideString): TTemplateItem;
 
     property Items[Index: Integer]: TTemplateItem read GetItem; default;
   end;
@@ -72,6 +72,7 @@ type
     FFormatText: WideString;
     FLineChars: Integer;
     FLineSpacing: Integer;
+    FParameter: Integer;
   public
     function GetLineLength: Integer;
 
@@ -84,6 +85,7 @@ type
     property FormatText: WideString read FFormatText write FFormatText;
     property LineChars: Integer read FLineChars write FLineChars;
     property LineSpacing: Integer read FLineSpacing write FLineSpacing;
+    property Parameter: Integer read FParameter write FParameter;
   end;
 
 implementation
@@ -205,6 +207,7 @@ begin
   Item.FormatText := GetChildValue(Root, 'FormatText');
   Item.LineChars := GetIntChildValue(Root, 'LineChars');
   Item.LineSpacing := GetIntChildValue(Root, 'LineSpacing');
+  Item.Parameter := GetIntChildValue(Root, 'Parameter');
 end;
 
 procedure TReceiptTemplate.SaveToXml(var Xml: WideString);
@@ -274,6 +277,7 @@ begin
   Root.SetChildValue('FormatText', Item.FormatText);
   Root.SetChildValue('LineChars', IntToStr(Item.LineChars));
   Root.SetChildValue('LineSpacing', IntToStr(Item.LineSpacing));
+  Root.SetChildValue('Parameter', IntToStr(Item.Parameter));
 end;
 
 procedure TReceiptTemplate.SetDefaults;
@@ -503,6 +507,7 @@ begin
   Item.FormatText := '=%s';
   Item.Alignment := ALIGN_RIGHT;
   Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
+  Item.Parameter := 1;
   Trailer.NewLine;
   // Separator
   Trailer.AddSeparator;
@@ -653,6 +658,18 @@ begin
 
   Item := TTemplateItem.Create(Self);
   Item.ItemType := TEMPLATE_TYPE_NEWLINE;
+end;
+
+function TTemplateItems.ItemByText(const Text: WideString): TTemplateItem;
+var
+  i: Integer;
+begin
+  for i := 0 to Count-1 do
+  begin
+    Result := Items[i];
+    if CompareText(Result.Text, Text) = 0 then Exit;
+  end;
+  Result := nil;
 end;
 
 { TTemplateItem }

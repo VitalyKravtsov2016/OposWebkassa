@@ -55,7 +55,8 @@ const
   TEMPLATE_TYPE_JSON_REC_FIELD      = 5;
   TEMPLATE_TYPE_SEPARATOR           = 6;
   TEMPLATE_TYPE_NEWLINE             = 7;
-  TEMPLATE_TYPE_CASHBOX_STATE_JSON = 8;
+  TEMPLATE_TYPE_CASHBOX_STATE_JSON  = 8;
+
 
   /////////////////////////////////////////////////////////////////////////////
   // Alignment constants

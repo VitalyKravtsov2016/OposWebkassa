@@ -1,8 +1,8 @@
 [Closed Files]
-File_0=SourceModule,'D:\Projects\OposWebkassa\test\OposWebkassaTest\units\duWebkassaImpl.pas',0,1,1098,1,1247,0,0
-File_1=SourceModule,'D:\Projects\OposWebkassa\src\Shared\PrinterParameters.pas',0,1,1,1,1,0,0
-File_2=SourceModule,'D:\Projects\OposWebkassa\src\OposWebkassa\Units\WebkassaImpl.pas',0,1,3597,99,3606,0,0
-File_3=SourceModule,'D:\Projects\OposWebkassa\src\OposWebkassa\Units\WebkassaClient.pas',0,1,3521,1,3526,0,0
+File_0=SourceModule,'D:\Projects\OposWebkassa\src\OposWebkassa\units\WebkassaImpl.pas',0,1,3585,44,3596,0,0
+File_1=SourceModule,'D:\Projects\OposWebkassa\src\OposWebkassa\units\WebkassaClient.pas',0,1,1426,25,1445,0,0
+File_2=SourceModule,'D:\Projects\OposWebkassa\test\OposWebkassaTest\units\duWebkassaImpl.pas',0,1,1098,1,1247,0,0
+File_3=SourceModule,'D:\Projects\OposWebkassa\src\Shared\PrinterParameters.pas',0,1,1,1,1,0,0
 File_4=SourceModule,'D:\Projects\OposWebkassa\src\OposWebkassa\units\CustomReceipt.pas',0,1,335,99,352,0,0
 File_5=SourceModule,'D:\Projects\OposWebkassa\src\OposTest\Fmu\fmuFptrEvents.pas',0,1,54,24,68,0,0
 File_6=SourceModule,'D:\Projects\OposWebkassa\test\WebkassaAccTest\units\duWebkassaImpl.pas',0,1,134,60,150,0,0
@@ -11,7 +11,8 @@ File_7=SourceModule,'D:\Projects\OposWebkassa\src\OposConfig\Fmu\fmuPrinter.pas'
 [Modules]
 Module0=D:\Projects\OposWebkassa\src\Shared\PrinterTypes.pas
 Module1=D:\Projects\OposWebkassa\src\Shared\ReceiptTemplate.pas
-Count=2
+Module2=D:\Projects\OposWebkassa\test\WebkassaAccTest\WebkassaAccTest.dpr
+Count=3
 EditWindowCount=1
 TypeLibWindowCount=1
 
@@ -26,6 +27,7 @@ FormState=0
 FormOnTop=0
 
 [D:\Projects\OposWebkassa\test\WebkassaAccTest\WebkassaAccTest.dpr]
+ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
@@ -58,17 +60,18 @@ FormState=0
 FormOnTop=0
 
 [EditWindow0]
-ViewCount=2
-CurrentView=1
+ViewCount=3
+CurrentView=2
 View0=0
 View1=1
+View2=2
 CodeExplorer=CodeExplorer@EditWindow0
 MessageView=MessageView@EditWindow0
 Create=1
 Visible=1
 State=0
-Left=366
-Top=140
+Left=423
+Top=100
 Width=1302
 Height=682
 MaxLeft=-1
@@ -84,17 +87,24 @@ BottomPanelClients=MessageView@EditWindow0
 BottomPanelData=00000400010000000B0000004D657373616765566965770000000000000000000000000000000000FFFFFFFF
 
 [View0]
-Module=D:\Projects\OposWebkassa\src\Shared\ReceiptTemplate.pas
-CursorX=38
-CursorY=500
-TopLine=485
+Module=D:\Projects\OposWebkassa\test\WebkassaAccTest\WebkassaAccTest.dpr
+CursorX=28
+CursorY=7
+TopLine=1
 LeftCol=1
 
 [View1]
+Module=D:\Projects\OposWebkassa\src\Shared\ReceiptTemplate.pas
+CursorX=48
+CursorY=286
+TopLine=276
+LeftCol=1
+
+[View2]
 Module=D:\Projects\OposWebkassa\src\Shared\PrinterTypes.pas
-CursorX=1
-CursorY=53
-TopLine=51
+CursorX=48
+CursorY=56
+TopLine=45
 LeftCol=1
 
 [TypeLibEditWindow0]
@@ -413,7 +423,7 @@ Create=1
 Visible=0
 State=0
 Left=-170
-Top=-9
+Top=-16
 Width=140
 Height=305
 MaxLeft=-1
@@ -429,7 +439,7 @@ Create=1
 Visible=0
 State=0
 Left=-176
-Top=-707
+Top=-714
 Width=443
 Height=85
 MaxLeft=-1

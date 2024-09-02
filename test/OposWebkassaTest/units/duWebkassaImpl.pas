@@ -139,6 +139,9 @@ begin
   FDriver.Params.PaymentType2 := PaymentTypeCard;
   FDriver.Params.PaymentType3 := PaymentTypeCredit;
   FDriver.Params.PaymentType4 := PaymentTypeMobile;
+  FDriver.Params.VatRates.Clear;
+  FDriver.Params.VatRates.Add(4, 12, 'VAT 12%');
+  FDriver.Params.VatRateEnabled := True;
 
   FDriver.Params.HeaderText :=
     '                                          ' + CRLF +
@@ -450,7 +453,7 @@ begin
     FptrCheck(Driver.BeginFiscalReceipt(True));
     CheckEquals(FPTR_PS_FISCAL_RECEIPT, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
 
-    FptrCheck(Driver.PrintRecItem('Item 1', 123.45, 1000, 0, 123.45, 'кг'));
+    FptrCheck(Driver.PrintRecItem('Item 1', 123.45, 1000, 1, 123.45, 'кг'));
 
     FptrCheck(Driver.PrintRecTotal(123.45, 10, '0'));
     FptrCheck(Driver.PrintRecTotal(123.45, 20, '1'));
@@ -502,7 +505,7 @@ const
     'Кредит:                             =20.00' + CRLF +
     'Мобильный платеж:                   =30.00' + CRLF +
     '  СДАЧА                             =15.18' + CRLF +
-    'в т.ч. НДС 12%                      =12.14' + CRLF +
+    'в т.ч. VAT 12%                      =12.14' + CRLF +
     '------------------------------------------' + CRLF +
     'Фискальный признак: 923956785162          ' + CRLF +
     'Время: 04.08.2022 17:09:35                ' + CRLF +
@@ -629,15 +632,15 @@ begin
   pData := DriverParameterBarcode;
   pString := ItemBarcode;
   FptrCheck(Driver.DirectIO(DIO_SET_DRIVER_PARAMETER, pData, pString));
-  FptrCheck(Driver.PrintRecItem('Сер. № 5                                  ШОКОЛАДНАЯ ПЛИТКА MILKA BUBBLES МОЛОЧНЫЙ', 123.45, 1000, 1, 123.45, 'шт'));
-  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка 10', 10, 1));
-  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_SURCHARGE, 'Надбавка 5', 5, 1));
-  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_PERCENTAGE_DISCOUNT, 'Скидка 10%', 10, 1));
-  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_PERCENTAGE_SURCHARGE, 'Скидка 5%', 5, 1));
+  FptrCheck(Driver.PrintRecItem('Сер. № 5                                  ШОКОЛАДНАЯ ПЛИТКА MILKA BUBBLES МОЛОЧНЫЙ', 123.45, 1000, 4, 123.45, 'шт'));
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка 10', 10, 4));
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_SURCHARGE, 'Надбавка 5', 5, 4));
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_PERCENTAGE_DISCOUNT, 'Скидка 10%', 10, 4));
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_PERCENTAGE_SURCHARGE, 'Скидка 5%', 5, 4));
   // Item 2
   FptrCheck(Driver.PrintRecMessage('Message 2'));
-  FptrCheck(Driver.PrintRecItem('Item 2', 1.45, 1000, 1, 1.45, 'кг'));
-  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка', 0.45, 1));
+  FptrCheck(Driver.PrintRecItem('Item 2', 1.45, 1000, 4, 1.45, 'кг'));
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка', 0.45, 4));
   // Total adjustment
   FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка 10', 10));
   FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_AMOUNT_SURCHARGE, 'Надбавка 5', 5));
@@ -1143,9 +1146,18 @@ begin
 end;
 
 procedure TWebkassaImplTest.TestReceiptTemplate2;
+var
+  TemplateItem: TTemplateItem;
 begin
   Driver.Params.TemplateEnabled := True;
   Driver.Params.Template.SetDefaults;
+  TemplateItem := FDriver.Params.Template.Trailer.ItemByText('TaxAmount');
+  if TemplateItem <> nil then
+  begin
+    TemplateItem.parameter := 4;
+    FDriver.Params.Template.Trailer.Items[TemplateItem.Index-1].Text := 'в т.ч. VAT 12%';
+  end;
+
   OpenClaimEnable;
   PrintReceipt3;
   FLines.Text := Receipt3Text;
@@ -1424,7 +1436,7 @@ begin
   pString := 'ExternalCheckNumber';
   FptrCheck(FDriver.DirectIO(DIO_SET_DRIVER_PARAMETER, pData, pString));
 
-  FptrCheck(Driver.PrintRecItem('Item1', 0, 1000, 1, 0, 'шт'));
+  FptrCheck(Driver.PrintRecItem('Item1', 0, 1000, 4, 0, 'шт'));
   FptrCheck(Driver.PrintRecTotal(0, 0, '0'));
   CheckEquals(OPOS_SUCCESS, Driver.EndFiscalReceipt(False));
 
@@ -1432,6 +1444,7 @@ begin
   ExpectedText := UTF8Decode(ReadFileData(GetModulePath + 'ZeroReceiptRequest.json'));
   if JsonText <> ExpectedText then
   begin
+    WriteFileData(GetModulePath + 'ExpectedText1.json', ExpectedText);
     WriteFileData(GetModulePath + 'JsonText1.json', JsonText);
   end;
   CheckEquals(ExpectedText, JsonText, 'Driver.Client.CommandJson');
