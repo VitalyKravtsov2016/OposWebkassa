@@ -101,7 +101,7 @@ DebugSourceDirs=
 UsePackages=0
 [Parameters]
 RunParams=
-HostApplication=..\Bin\OposTest.exe
+HostApplication=..\Bin\OposConfig.exe
 Launcher=
 UseLauncher=0
 DebugCWD=

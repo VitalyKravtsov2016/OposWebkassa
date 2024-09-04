@@ -111,6 +111,7 @@ type
       Command: TSendReceiptCommand);
     function ReadINN: WideString;
     function ReadCasboxStatusAnswerJson: WideString;
+    procedure EnablePosPrinter;
   public
     procedure PrintDocumentSafe(Document: TTextDocument);
     procedure CheckCanPrint;
@@ -546,6 +547,12 @@ begin
   else
     raise Exception.CreateFmt('Barcode type not supported, %d', [BarcodeType]);
   end;
+end;
+
+function IsCharacterSetSupported(const CharacterSetList: string;
+  CharacterSet: Integer): Boolean;
+begin
+  Result := Pos(IntToStr(CharacterSet), CharacterSetList) <> 0;
 end;
 
 { TWebkassaImpl }
@@ -1259,8 +1266,7 @@ begin
   try
     CheckPtr(Printer.ClaimDevice(0));
     try
-      Printer.DeviceEnabled := True;
-      CheckPtr(Printer.ResultCode);
+      EnablePosPrinter;
       AddProps;
     finally
       Printer.ReleaseDevice;
@@ -1289,8 +1295,7 @@ var
   Command: TSendReceiptCommand;
 begin
   CheckPtr(Printer.ClaimDevice(0));
-  Printer.DeviceEnabled := True;
-  CheckPtr(Printer.ResultCode);
+  EnablePosPrinter;
 
   Command := TSendReceiptCommand.Create;
   Receipt := TSalesReceipt.CreateReceipt(rtSell, Params.AmountDecimalPlaces, Params.RoundType);
@@ -3171,50 +3176,43 @@ begin
   end;
 end;
 
+procedure TWebkassaImpl.EnablePosPrinter;
+var
+  CharacterSetList: WideString;
+begin
+  Printer.DeviceEnabled := True;
+  CheckPtr(Printer.ResultCode);
+
+  CharacterSetList := Printer.CharacterSetList;
+  if IsCharacterSetSupported(CharacterSetList, PTR_CS_UNICODE) then
+  begin
+    Printer.CharacterSet := PTR_CS_UNICODE;
+  end else
+  begin
+    if IsCharacterSetSupported(CharacterSetList, PTR_CS_WINDOWS) then
+      Printer.CharacterSet := PTR_CS_WINDOWS;
+  end;
+
+  FPtrMapCharacterSet := Printer.CapMapCharacterSet;
+  if FPtrMapCharacterSet then
+    Printer.MapCharacterSet := True;
+
+  if Params.RecLineChars <> 0 then
+  begin
+    Printer.RecLineChars := Params.RecLineChars;
+  end;
+  if Params.LineSpacing >= 0 then
+  begin
+    Printer.RecLineSpacing := Params.LineSpacing;
+  end;
+  if Params.RecLineHeight <> 0 then
+  begin
+    Printer.RecLineHeight := Params.RecLineHeight;
+  end;
+  FOposDevice.DeviceEnabled := True;
+end;
+
 procedure TWebkassaImpl.SetDeviceEnabled(Value: Boolean);
-
-  function IsCharacterSetSupported(const CharacterSetList: string;
-    CharacterSet: Integer): Boolean;
-  begin
-    Result := Pos(IntToStr(CharacterSet), CharacterSetList) <> 0;
-  end;
-
-  procedure EnableDevice;
-  var
-    CharacterSetList: WideString;
-  begin
-    FClient.Connect;
-    Printer.DeviceEnabled := True;
-    CheckPtr(Printer.ResultCode);
-
-    CharacterSetList := Printer.CharacterSetList;
-    if IsCharacterSetSupported(CharacterSetList, PTR_CS_UNICODE) then
-    begin
-      Printer.CharacterSet := PTR_CS_UNICODE;
-    end else
-    begin
-      if IsCharacterSetSupported(CharacterSetList, PTR_CS_WINDOWS) then
-        Printer.CharacterSet := PTR_CS_WINDOWS;
-    end;
-
-    FPtrMapCharacterSet := Printer.CapMapCharacterSet;
-    if FPtrMapCharacterSet then
-      Printer.MapCharacterSet := True;
-
-    if Params.RecLineChars <> 0 then
-    begin
-      Printer.RecLineChars := Params.RecLineChars;
-    end;
-    if Params.LineSpacing >= 0 then
-    begin
-      Printer.RecLineSpacing := Params.LineSpacing;
-    end;
-    if Params.RecLineHeight <> 0 then
-    begin
-      Printer.RecLineHeight := Params.RecLineHeight;
-    end;
-    FOposDevice.DeviceEnabled := True;
-  end;
 
   procedure DisableDevice;
   begin
@@ -3229,7 +3227,8 @@ begin
     if Value then
     begin
       try
-        EnableDevice;
+        FClient.Connect;
+        EnablePosPrinter;
       except
         on E: Exception do
         begin
