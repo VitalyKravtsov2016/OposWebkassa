@@ -21,13 +21,22 @@ type
     FLogger: ILogFile;
     FPrinter: TEscPrinterOA48;
     FPrinterPort: IPrinterPort;
+    function GetKazakhChars2: AnsiString;
   protected
     procedure SetUp; override;
     procedure TearDown; override;
 
+    procedure PrintCodePage;
+    procedure PrintCodePage2;
+    procedure PrintCodePageUTF8;
+    procedure PrintCodePages(const CodePageName: string);
+
     function CreateRawPort: TRawPrinterPort;
     function CreateSerialPort: TSerialPort;
     function CreateSocketPort: TSocketPort;
+    function GetKazakhText: WideString;
+    function GetKazakhChars: AnsiString;
+
     property Printer: TEscPrinterOA48 read FPrinter;
   published
     procedure TestBitmap;
@@ -68,8 +77,11 @@ type
     procedure TestPageMode;
     procedure TestPageModeA;
     procedure TestPageModeB;
+    procedure TestPrintMaxiCode;
     procedure TestPrintUTF;
-    procedure TestPrintMaxiCode; 
+    procedure TestPrintRussianFontB;
+    procedure TestPrintFontBMode;
+    procedure TestPrintFontBMode2;
   end;
 
 implementation
@@ -863,40 +875,50 @@ arabic letter uighur kazakh kirghiz alef maksura medial form
 kazakhstan flag
 *)
 
-procedure TPrinterOA48Test.TestUserCharacter;
+function TPrinterOA48Test.GetKazakhChars: AnsiString;
 var
   i: Integer;
   Code: Byte;
-  Text: AnsiString;
 begin
-  FPrinter.Initialize;
-  FPrinter.WriteKazakhCharacters;
-  // FONT A
-  Text := '';
+  Result := '';
   Code := USER_CHAR_CODE_MIN;
   for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
   begin
-    Text := Text + Chr(Code);
+    Result := Result + Chr(Code);
     Inc(Code);
   end;
+end;
+
+function TPrinterOA48Test.GetKazakhChars2: AnsiString;
+var
+  i: Integer;
+  Code: Byte;
+begin
+  Result := '';
+  Code := USER_CHAR_CODE_MIN;
+  for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
+  begin
+    Result := Result + Chr(Code);
+    Inc(Code);
+  end;
+end;
+
+procedure TPrinterOA48Test.TestUserCharacter;
+begin
+  FPrinter.Initialize;
+  FPrinter.UTF8Enable(False);
+  FPrinter.WriteKazakhCharacters;
+  // FONT A
   FPrinter.SetCharacterFont(FONT_TYPE_A);
   FPrinter.PrintText('KAZAKH CHARACTERS A: ');
   FPrinter.SelectUserCharacter(1);
-  FPrinter.PrintText(Text + CRLF);
+  FPrinter.PrintText(GetKazakhChars2 + CRLF);
   FPrinter.SelectUserCharacter(0);
-
   // FONT B
-  Text := '';
-  Code := USER_CHAR_CODE_MIN;
-  for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
-  begin
-    Text := Text + Chr(Code);
-    Inc(Code);
-  end;
   FPrinter.SetCharacterFont(FONT_TYPE_B);
   FPrinter.PrintText('KAZAKH CHARACTERS B: ');
   FPrinter.SelectUserCharacter(1);
-  FPrinter.PrintText(Text + CRLF);
+  FPrinter.PrintText(GetKazakhChars2 + CRLF);
   FPrinter.SelectUserCharacter(0);
 
 
@@ -938,7 +960,7 @@ begin
     UserChar.c1 := $7E;
     UserChar.c2 := $7E;
     UserChar.Font := FONT_TYPE_A;
-    UserChar.Data := FPrinter.GetBitmapData(Bitmap);
+    UserChar.Data := FPrinter.GetBitmapData(Bitmap, Bitmap.Height);
     UserChar.Width := Bitmap.Width;
 
     FPrinter.SelectUserCharacter(1);
@@ -1257,27 +1279,6 @@ begin
   FPrinter.EndDocument;
 end;
 
-procedure TPrinterOA48Test.TestPrintUTF;
-var
-  Text: WideString;
-  Strings: TTntStringList;
-begin
-  Text := '';
-  Strings := TTntStringList.Create;
-  try
-    Strings.LoadFromFile('KazakhText.txt');
-    Text := Strings.Text;
-  finally
-    Strings.Free;
-  end;
-
-  FPrinter.Initialize;
-  FPrinter.UTF8Enable(True);
-  FPrinter.SelectCodePage(51);
-  FPrinter.PrintText(UTF8Encode('Printing in UTF mode' + CRLF));
-  FPrinter.PrintText(UTF8Encode(Text + CRLF));
-end;
-
 procedure TPrinterOA48Test.TestPrintMaxiCode;
 const
   Data = 'http://dev.kofd.kz/consumer?i=1320526842876&f=555697470167&s=2000.00&t=20240327T093611';
@@ -1286,6 +1287,179 @@ begin
   FPrinter.MaxiCodeWriteData(Data);
   FPrinter.MaxiCodeSetMode(0);
   FPrinter.MaxiCodePrint;
+end;
+
+function TPrinterOA48Test.GetKazakhText: WideString;
+var
+  Strings: TTntStringList;
+begin
+  Result := '';
+  Strings := TTntStringList.Create;
+  try
+    Strings.LoadFromFile('KazakhText.txt');
+    Result := Strings.Text;
+  finally
+    Strings.Free;
+  end;
+end;
+
+procedure TPrinterOA48Test.TestPrintUTF;
+var
+  Text: WideString;
+begin
+  Text := GetKazakhText;
+  // Font A
+  FPrinter.Initialize;
+  FPrinter.UTF8Enable(True);
+  FPrinter.SelectCodePage(CODEPAGE_WCP1251);
+  FPrinter.SetCharacterFont(FONT_TYPE_A);
+  FPrinter.PrintText(UTF8Encode('Printing in UTF mode, font A' + CRLF));
+  FPrinter.PrintText(UTF8Encode(Text + CRLF));
+  // Font B
+  FPrinter.Initialize;
+  FPrinter.UTF8Enable(True);
+  FPrinter.SelectCodePage(CODEPAGE_WCP1251);
+  FPrinter.SetCharacterFont(FONT_TYPE_B);
+  FPrinter.PrintText(UTF8Encode('Printing in UTF mode, font B' + CRLF));
+  FPrinter.PrintText(UTF8Encode(Text + CRLF));
+
+  // ASCII mode
+  // Font A
+  FPrinter.Initialize;
+  FPrinter.UTF8Enable(False);
+  FPrinter.SelectCodePage(51);
+  FPrinter.SetCharacterFont(FONT_TYPE_A);
+  FPrinter.PrintText('Printing in normal mode, font A' + CRLF);
+  FPrinter.PrintText(Text + CRLF);
+  // Font B
+  FPrinter.Initialize;
+  FPrinter.UTF8Enable(False);
+  FPrinter.SelectCodePage(CODEPAGE_WCP1251);
+  FPrinter.SetCharacterFont(FONT_TYPE_B);
+  FPrinter.PrintText('Printing in normal mode, font B' + CRLF);
+  FPrinter.PrintText(Text + CRLF);
+end;
+
+procedure TPrinterOA48Test.PrintCodePage;
+var
+  i: Integer;
+  S: AnsiString;
+begin
+  S := '';
+  for i := $20 to $ff do
+  begin
+    S := S + Chr(i);
+    if Length(S) = 32 then
+    begin
+      FPrinter.PrintText('0x' + IntToHex(i-$1F, 2) + '  ' + S + CRLF);
+      S := '';
+    end;
+  end;
+end;
+
+procedure TPrinterOA48Test.PrintCodePageUTF8;
+var
+  i: Integer;
+  S: AnsiString;
+begin
+  S := '';
+  for i := $20 to $ff do
+  begin
+    S := S + Chr(i);
+    if Length(S) = 32 then
+    begin
+      FPrinter.PrintText(UTF8Encode('0x' + IntToHex(i-$1F, 2) + '  ' + S + CRLF));
+      S := '';
+    end;
+  end;
+end;
+
+procedure TPrinterOA48Test.PrintCodePage2;
+var
+  i: Integer;
+  S: AnsiString;
+begin
+  S := '';
+  for i := $80 to $ff do
+  begin
+    S := S + Chr(i);
+    if Length(S) = 32 then
+    begin
+      FPrinter.PrintText('0x' + IntToHex(i-$1F, 2) + '  ' + S + CRLF);
+      S := '';
+    end;
+  end;
+end;
+
+procedure TPrinterOA48Test.PrintCodePages(const CodePageName: string);
+begin
+  FPrinter.PrintText('-----------------------------------------' + CRLF);
+  FPrinter.PrintText(CodePageName + CRLF);
+  FPrinter.SetCharacterFont(FONT_TYPE_A);
+  FPrinter.PrintText('Normal mode, font A' + CRLF);
+  PrintCodePage;
+  FPrinter.SetCharacterFont(FONT_TYPE_B);
+  FPrinter.PrintText('Normal mode, font B' + CRLF);
+  PrintCodePage;
+end;
+
+procedure TPrinterOA48Test.TestPrintRussianFontB;
+var
+  CodePage: Integer;
+begin
+  FPrinter.Initialize;
+  FPrinter.UTF8Enable(False);
+  FPrinter.SetCharacterFont(FONT_TYPE_B);
+
+  for CodePage := 0 to 20 do
+  begin
+    FPrinter.SelectCodePage(CodePage);
+    FPrinter.PrintText('---------------------------------------------' + CRLF);
+    FPrinter.PrintText('Normal mode, font B, CodePage: ' + IntToStr(CodePage) + CRLF);
+    FPrinter.PrintText('---------------------------------------------' + CRLF);
+    PrintCodePage2;
+  end;
+end;
+
+procedure TPrinterOA48Test.TestPrintFontBMode;
+var
+  Text: AnsiString;
+  KazakhText: WideString;
+begin
+  KazakhText := GetKazakhText;
+
+  FPrinter.Initialize;
+  FPrinter.SetCharacterFont(FONT_TYPE_B);
+  FPrinter.SelectCodePage(CODEPAGE_CP866);
+
+  FPrinter.UTF8Enable(False);
+  Text := WideStringToAnsiString(866, 'Normal mode, font B, CODEPAGE_CP866' + CRLF);
+  FPrinter.PrintText(Text);
+  Text := WideStringToAnsiString(866, 'Казахский текст: ' + KazakhText + CRLF);
+  FPrinter.PrintText(Text);
+
+  FPrinter.UTF8Enable(True);
+  FPrinter.PrintText(UTF8Encode('UTF mode, font B, CODEPAGE_CP866' + CRLF));
+  FPrinter.PrintText(UTF8Encode('Казахский текст: ' + KazakhText + CRLF));
+end;
+
+procedure TPrinterOA48Test.TestPrintFontBMode2;
+var
+  KazakhText: WideString;
+begin
+  KazakhText := GetKazakhText;
+
+  FPrinter.Initialize;
+  FPrinter.SetCharacterFont(FONT_TYPE_A);
+  FPrinter.UTF8Enable(True);
+
+  FPrinter.SelectCodePage(CODEPAGE_CP866);
+  FPrinter.PrintText(UTF8Encode('UTF mode, font A, CODEPAGE_CP866' + CRLF));
+  FPrinter.PrintText(UTF8Encode('Казахский текст: ' + KazakhText + CRLF));
+
+  FPrinter.SelectCodePage(CODEPAGE_WCP1251);
+  FPrinter.PrintText(UTF8Encode('UTF mode, font A, CODEPAGE_WCP1251' + CRLF));
+  FPrinter.PrintText(UTF8Encode('Казахский текст: ' + KazakhText + CRLF));
 end;
 
 initialization

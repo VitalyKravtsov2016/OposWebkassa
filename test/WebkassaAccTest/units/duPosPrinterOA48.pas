@@ -1,4 +1,4 @@
-unit duPosEscPrinter;
+unit duPosPrinterOA48;
 
 interface
 
@@ -12,27 +12,27 @@ uses
   OposPOSPrinter_CCO_TLB, OposEvents,
   // Tnt
   TntClasses, TntSysUtils, DebugUtils, StringUtils, SocketPort, LogFile,
-  PrinterPort, PosPrinterRongta, SerialPort, RawPrinterPort, EscPrinterRongta;
+  PrinterPort, PosPrinterOA48, SerialPort, RawPrinterPort, EscPrinterOA48;
 
 type
-  { TPosEscPrinterTest }
+  { TPosPrinterOA48Test }
 
-  TPosEscPrinterTest = class(TTestCase)
+  TPosPrinterOA48Test = class(TTestCase)
   private
     FLogger: ILogFile;
     FEvents: TStrings;
-    FPrinter: TPosPrinterRongta;
+    FPrinter: TPosPrinterOA48;
     FPrinterPort: IPrinterPort;
 
     procedure ClaimDevice;
     procedure EnableDevice;
     procedure OpenService;
-    procedure OpenClaimEnable;
     procedure PtrCheck(Code: Integer);
     procedure StatusUpdateEvent(ASender: TObject; Data: Integer);
 
     property Events: TStrings read FEvents;
-    property Printer: TPosPrinterRongta read FPrinter;
+    property Printer: TPosPrinterOA48 read FPrinter;
+    function GetKazakhText2: WideString;
   protected
     procedure SetUp; override;
     procedure TearDown; override;
@@ -40,7 +40,10 @@ type
     function CreateRawPort: TRawPrinterPort;
     function CreateSerialPort: TSerialPort;
     function CreateSocketPort: TSocketPort;
+    function GetKazakhUnicodeChars: WideString;
+    function GetKazakhUnicodeChars2: WideString;
   published
+    procedure OpenClaimEnable;
     procedure TestCheckHealth;
     procedure TestPrintBarCode;
     procedure TestPrintBarCode2;
@@ -51,14 +54,16 @@ type
     procedure TestPowerStateEvent;
     procedure TestPrintReceipt;
     procedure TestPrintNormal;
+    procedure TestPrintNormal2;
     procedure TestCharacterToCodePage;
+    procedure TestArrayToString;
   end;
 
 implementation
 
-{ TPosEscPrinterTest }
+{ TPosPrinterOA48Test }
 
-procedure TPosEscPrinterTest.PtrCheck(Code: Integer);
+procedure TPosPrinterOA48Test.PtrCheck(Code: Integer);
 var
   Text: WideString;
 begin
@@ -75,7 +80,7 @@ begin
   end;
 end;
 
-procedure TPosEscPrinterTest.SetUp;
+procedure TPosPrinterOA48Test.SetUp;
 begin
   inherited SetUp;
   FLogger := TLogFile.Create;
@@ -86,22 +91,23 @@ begin
   FEvents := TStringList.Create;
   //FPrinterPort := CreateSerialPort;
   FPrinterPort := CreateRawPort;
-  FPrinter := TPosPrinterRongta.Create2(nil, FPrinterPort, FLogger);
+  FPrinter := TPosPrinterOA48.Create2(nil, FPrinterPort, FLogger);
   FPrinter.OnStatusUpdateEvent := StatusUpdateEvent;
   FPrinter.BarcodeInGraphics := False;
 end;
 
-procedure TPosEscPrinterTest.StatusUpdateEvent(ASender: TObject; Data: Integer);
+procedure TPosPrinterOA48Test.StatusUpdateEvent(ASender: TObject; Data: Integer);
 begin
   Events.Add(PtrStatusUpdateEventText(Data));
 end;
 
-function TPosEscPrinterTest.CreateRawPort: TRawPrinterPort;
+function TPosPrinterOA48Test.CreateRawPort: TRawPrinterPort;
 begin
-  Result := TRawPrinterPort.Create(FLogger, 'RONGTA 80mm Series Printer');
+  //Result := TRawPrinterPort.Create(FLogger, 'RONGTA 80mm Series Printer');
+  Result := TRawPrinterPort.Create(FLogger, 'POS-80C');
 end;
 
-function TPosEscPrinterTest.CreateSerialPort: TSerialPort;
+function TPosPrinterOA48Test.CreateSerialPort: TSerialPort;
 var
   SerialParams: TSerialParams;
 begin
@@ -116,7 +122,7 @@ begin
   Result := TSerialPort.Create(SerialParams, FLogger);
 end;
 
-function TPosEscPrinterTest.CreateSocketPort: TSocketPort;
+function TPosPrinterOA48Test.CreateSocketPort: TSocketPort;
 var
   SocketParams: TSocketParams;
 begin
@@ -127,7 +133,7 @@ begin
   Result := TSocketPort.Create(SocketParams, FLogger);
 end;
 
-procedure TPosEscPrinterTest.TearDown;
+procedure TPosPrinterOA48Test.TearDown;
 begin
   FPrinter.Close;
   FPrinter.Free;
@@ -136,7 +142,7 @@ begin
   inherited TearDown;
 end;
 
-procedure TPosEscPrinterTest.OpenService;
+procedure TPosPrinterOA48Test.OpenService;
 begin
   PtrCheck(Printer.Open('ThermalU'));
 
@@ -154,34 +160,34 @@ begin
   end;
 end;
 
-procedure TPosEscPrinterTest.ClaimDevice;
+procedure TPosPrinterOA48Test.ClaimDevice;
 begin
   CheckEquals(False, Printer.Claimed, 'Printer.Claimed');
   PtrCheck(Printer.ClaimDevice(1000));
   CheckEquals(True, Printer.Claimed, 'Printer.Claimed');
 end;
 
-procedure TPosEscPrinterTest.EnableDevice;
+procedure TPosPrinterOA48Test.EnableDevice;
 begin
   Printer.DeviceEnabled := True;
   PtrCheck(Printer.ResultCode);
   CheckEquals(True, Printer.DeviceEnabled, 'DeviceEnabled <> True');
 end;
 
-procedure TPosEscPrinterTest.OpenClaimEnable;
+procedure TPosPrinterOA48Test.OpenClaimEnable;
 begin
   OpenService;
   ClaimDevice;
   EnableDevice;
 end;
 
-procedure TPosEscPrinterTest.TestCheckHealth;
+procedure TPosPrinterOA48Test.TestCheckHealth;
 begin
   OpenClaimEnable;
   PtrCheck(Printer.CheckHealth(OPOS_CH_INTERACTIVE));
 end;
 
-procedure TPosEscPrinterTest.TestPrintBarCode;
+procedure TPosPrinterOA48Test.TestPrintBarCode;
 const
   Barcode = 'http://dev.kofd.kz/consumer?i=925871425876&f=211030200207&s=15443.72&t=20220826T210014';
   CRLF = #13#10;
@@ -212,7 +218,7 @@ begin
   end;
 end;
 
-procedure TPosEscPrinterTest.TestPrintBarCode2;
+procedure TPosPrinterOA48Test.TestPrintBarCode2;
 const
   Barcode = 'http://dev.kofd.kz/consumer?i=925871425876&f=211030200207&s=15443.72&t=20220826T210014';
   CRLF = #13#10;
@@ -230,7 +236,7 @@ begin
     PTR_BCS_QRCODE, 200, 200, PTR_BC_CENTER, PTR_BC_TEXT_NONE));
 end;
 
-procedure TPosEscPrinterTest.TestPrintBarCodeEsc;
+procedure TPosPrinterOA48Test.TestPrintBarCodeEsc;
 var
   L: Word;
   Data: string;
@@ -271,7 +277,7 @@ begin
 *)
 end;
 
-procedure TPosEscPrinterTest.TestStatusUpdateEvent;
+procedure TPosPrinterOA48Test.TestStatusUpdateEvent;
 begin
   OpenClaimEnable;
   if Printer.PowerNotify <> OPOS_PN_DISABLED then
@@ -281,7 +287,7 @@ begin
   end;
 end;
 
-procedure TPosEscPrinterTest.TestCoverStateEvent;
+procedure TPosPrinterOA48Test.TestCoverStateEvent;
 begin
   OpenClaimEnable;
   if Printer.PowerNotify <> OPOS_PN_DISABLED then
@@ -299,7 +305,7 @@ begin
   end;
 end;
 
-procedure TPosEscPrinterTest.TestPowerStateEvent;
+procedure TPosPrinterOA48Test.TestPowerStateEvent;
 begin
   OpenClaimEnable;
   if Printer.PowerNotify <> OPOS_PN_DISABLED then
@@ -318,7 +324,7 @@ begin
   end;
 end;
 
-procedure TPosEscPrinterTest.TestPrintReceipt;
+procedure TPosPrinterOA48Test.TestPrintReceipt;
 var
   i: Integer;
 const
@@ -348,34 +354,50 @@ begin
   end;
 end;
 
-procedure TPosEscPrinterTest.TestPrintNormal;
+function TPosPrinterOA48Test.GetKazakhUnicodeChars: WideString;
 var
   i: Integer;
+begin
+  Result := '';
+  for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
+  begin
+    Result := Result + WideChar(KazakhUnicodeChars[i]);
+  end;
+end;
+
+function TPosPrinterOA48Test.GetKazakhUnicodeChars2: WideString;
+var
+  i: Integer;
+begin
+  Result := '';
+  for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
+  begin
+    Result := Result + WideChar(KazakhUnicodeChars[i]) + ' ';
+  end;
+end;
+
+procedure TPosPrinterOA48Test.TestPrintNormal;
+var
   Text: WideString;
 begin
   OpenClaimEnable;
+  Printer.FontName := FontNameA;
   Printer.CharacterSet := PTR_CS_UNICODE;
   if Printer.CapTransaction then
   begin
     PtrCheck(Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_TRANSACTION));
   end;
-  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'Line 1' + CRLF));
-  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'Line 2' + CRLF));
-  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'Line 3' + CRLF));
-
-  Text := 'KAZAKH CHARACTERS A: ';
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, '-------------------------------' + CRLF));
+  Text := 'KAZAKH CHARACTERS A: ' + GetKazakhUnicodeChars;
   PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Text + CRLF));
 
-  Text := ' ¿«¿’— »≈ —»Ã¬ŒÀ€ A: ';
-  for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
-  begin
-    Text := Text + WideChar(KazakhUnicodeChars[i]);
-  end;
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, '-------------------------------' + CRLF));
+  Text := ' ¿«¿’— »≈ —»Ã¬ŒÀ€ A: ' + GetKazakhUnicodeChars;
   PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Text + CRLF));
 
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, '-------------------------------' + CRLF));
   Text := 'ARABIC CHARACTERS A: ';
   Text := Text + WideChar($062B) + WideChar($062C) + WideChar($0635);
-  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Text + CRLF));
 
   if Printer.CapTransaction then
   begin
@@ -383,7 +405,39 @@ begin
   end;
 end;
 
-procedure TPosEscPrinterTest.TestCharacterToCodePage;
+function TPosPrinterOA48Test.GetKazakhText2: WideString;
+var
+  Strings: TTntStringList;
+begin
+  Result := '';
+  Strings := TTntStringList.Create;
+  try
+    Strings.LoadFromFile('KazakhText2.txt');
+    Result := Strings.Text;
+  finally
+    Strings.Free;
+  end;
+end;
+
+procedure TPosPrinterOA48Test.TestPrintNormal2;
+begin
+  OpenClaimEnable;
+
+  PtrCheck(Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_TRANSACTION));
+  try
+    Printer.CharacterSet := PTR_CS_UNICODE;
+    Printer.FontName := FontNameA;
+    PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'KAZAKH FONT A' + CRLF));
+    PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, GetKazakhText2 + CRLF));
+    Printer.FontName := FontNameB;
+    PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'KAZAKH FONT B' + CRLF));
+    PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, GetKazakhText2 + CRLF));
+  finally
+    Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_NORMAL);
+  end;
+end;
+
+procedure TPosPrinterOA48Test.TestCharacterToCodePage;
 var
   C: WideChar;
   CodePage: Integer;
@@ -406,7 +460,14 @@ begin
   CheckEquals(720, CodePage);
 end;
 
+procedure TPosPrinterOA48Test.TestArrayToString;
+const
+  Src: array [0..2] of Integer = (866,437,737);
+begin
+  CheckEquals('437,737,866', ArrayToString(Src), 'ArrayToString');
+end;
+
 initialization
-  RegisterTest('', TPosEscPrinterTest.Suite);
+  RegisterTest('', TPosPrinterOA48Test.Suite);
 
 end.

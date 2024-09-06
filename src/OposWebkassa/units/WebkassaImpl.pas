@@ -1296,6 +1296,8 @@ var
 begin
   CheckPtr(Printer.ClaimDevice(0));
   EnablePosPrinter;
+  FExternalCheckNumber := CreateGUIDStr;
+  BeginDocument;
 
   Command := TSendReceiptCommand.Create;
   Receipt := TSalesReceipt.CreateReceipt(rtSell, Params.AmountDecimalPlaces, Params.RoundType);
@@ -3029,7 +3031,6 @@ function TWebkassaImpl.CreatePrinter: IOPOSPOSPrinter;
     Printer.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
     Printer.FontName := Params.FontName;
     Printer.DevicePollTime := Params.DevicePollTime;
-    Printer.Utf8Enabled := Params.Utf8Enabled;
     FPrinterObj := Printer;
     Result := Printer;
   end;

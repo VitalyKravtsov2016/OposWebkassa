@@ -190,8 +190,10 @@ type
     FBarcodeInGraphics: Boolean;
     FPrintRasterGraphics: Boolean;
     FUtf8Enabled: Boolean;
+    FPrinterCodePage: Integer;
 
     property Device: TOposServiceDevice19 read FDevice;
+    function CharSetToPrinterCP(CharacterSet: Integer): Integer;
   public
     procedure PrintMemoryGraphic(const Data: WideString;
       BMPType, Width, Alignment: Integer);
@@ -608,9 +610,8 @@ type
       ErrorLocus: Integer; var pErrorResponse: Integer);
 
     property FontName: WideString read FFontName write FFontName;
-    property DevicePollTime: Integer read FDevicePollTime write FDevicePollTime;
     property Utf8Enabled: Boolean read FUtf8Enabled write FUtf8Enabled;
-
+    property DevicePollTime: Integer read FDevicePollTime write FDevicePollTime;
     property BarcodeInGraphics: Boolean read FBarcodeInGraphics write FBarcodeInGraphics;
     property PrintRasterGraphics: Boolean read FPrintRasterGraphics write FPrintRasterGraphics;
     property OnDirectIOEvent: TOPOSPOSPrinterDirectIOEvent read FOnDirectIOEvent write FOnDirectIOEvent;
@@ -623,68 +624,79 @@ function BitmapToStr(Bitmap: TBitmap): AnsiString;
 function RenderBarcodeRec(var Barcode: TPosBarcode): AnsiString;
 procedure CharacterToCodePage(C: WideChar; var CodePage: Integer);
 procedure RenderBarcodeToBitmap(var Barcode: TPosBarcode; Bitmap: TBitmap);
+function ArrayToString(const Src: array of Integer): string;
 
 implementation
 
 const
-  SupportedCodePages: array [0..21] of Integer = (
-    437,737,850,852,855,857,858,860,862,863,864,865,866,874,
-    997,998,999,1250,1251,1252,1255,1257);
+  SupportedCodePagesB: array [0..11] of Integer = (
+    437,850,852,858,860,863,865,866,997,998,
+    999,1252);
 
-function CharacterSetToPrinterCodePage(CharacterSet: Integer): Integer;
-begin
-  case CharacterSet of
-    PTR_CS_ASCII: Result := CODEPAGE_WCP1251;
-    PTR_CS_UNICODE: Result := CODEPAGE_WCP1251;
-    PTR_CS_WINDOWS: Result := CODEPAGE_WCP1251;
-
-    437: Result := CODEPAGE_CP437;
-    737: Result := CODEPAGE_PC737_GREEK;
-    850: Result := CODEPAGE_CP850;
-    852: Result := CODEPAGE_PC852;
-    855: Result := CODEPAGE_PC855_BULGARIAN;
-    857: Result := CODEPAGE_PC857_TURKEY;
-    858: Result := CODEPAGE_PC858;
-    860: Result := CODEPAGE_CP860;
-    862: Result := CODEPAGE_PC862_HEBREW;
-    863: Result := CODEPAGE_CP863;
-    864: Result := CODEPAGE_PC864;
-    865: Result := CODEPAGE_CP865;
-    866: Result := CODEPAGE_PC866_RUSSIAN;
-    874: Result := CODEPAGE_PC874_THAI;
-
-    1250: Result := CODEPAGE_WCP1250;
-    1251: Result := CODEPAGE_WCP1251;
-    1252: Result := CODEPAGE_WCP1252;
-    1255: Result := CODEPAGE_WCP1255;
-    1257: Result := CODEPAGE_WCP1257;
-  else
-    raise Exception.Create('Character set not supported');
-  end;
-end;
+  SupportedCodePagesA: array [0..28] of Integer = (
+    437,737,747,772,774,850,851,852,855,857,
+    858,860,861,862,863,864,865,866,869,874,
+    928,997,998,999,1250,1251,1252,1255,1257);
 
 function IsValidCharacterSet(CharacterSet: Integer): Boolean;
 var
   i: Integer;
 begin
-  for i := Low(SupportedCodePages) to High(SupportedCodePages) do
+  for i := Low(SupportedCodePagesB) to High(SupportedCodePagesB) do
   begin
-    Result := CharacterSet = SupportedCodePages[i];
+    Result := CharacterSet = SupportedCodePagesB[i];
     if Result then Break;
   end;
 end;
 
-function ArrayToString(const Items: array of Integer): string;
+function CompareInt(Item1, Item2: Integer): Integer;
+begin
+  if Item1 = Item2 then Result := 0 else
+  if Item1 > Item2 then Result := 1 else
+  Result := -1;
+end;
+
+function SortIntProc(Item1, Item2: Pointer): Integer;
+begin
+  Result := CompareInt(Integer(Item1), Integer(Item2));
+end;
+
+procedure SortArray(Src: array of Integer; var Dst: array of Integer);
 var
   i: Integer;
+  List: TList;
+begin
+  List := TList.Create;
+  try
+    for i := Low(Src) to High(Src) do
+    begin
+      List.Add(Pointer(Src[i]));
+    end;
+    List.Sort(SortIntProc);
+    for i := 0 to List.Count-1 do
+    begin
+      Dst[i] := Integer(List[i]);
+    end;
+  finally
+    List.Free;
+  end;
+end;
+
+function ArrayToString(const Src: array of Integer): string;
+var
+  i: Integer;
+  Dst: array of Integer;
 begin
   Result := '';
-  for i := Low(Items) to High(Items) do
+
+  SetLength(Dst, Length(Src));
+  SortArray(Src, Dst);
+  for i := Low(Dst) to High(Dst) do
   begin
     if Result <> '' then
       Result := Result + ',';
 
-    Result := Result + IntToStr(Items[i]);
+    Result := Result + IntToStr(Dst[i]);
   end;
 end;
 
@@ -804,6 +816,35 @@ begin
   end;
 end;
 
+function TextCPToPrinterCP(TextCP: Integer): Integer;
+begin
+  case TextCP of
+    437: Result := CODEPAGE_CP437;
+    737: Result := CODEPAGE_PC737_GREEK;
+    850: Result := CODEPAGE_CP850;
+    852: Result := CODEPAGE_PC852;
+    855: Result := CODEPAGE_PC855_BULGARIAN;
+    857: Result := CODEPAGE_PC857_TURKEY;
+    858: Result := CODEPAGE_PC858;
+    860: Result := CODEPAGE_CP860;
+    862: Result := CODEPAGE_PC862_HEBREW;
+    863: Result := CODEPAGE_CP863;
+    864: Result := CODEPAGE_PC864;
+    865: Result := CODEPAGE_CP865;
+    866: Result := CODEPAGE_CP866;
+    874: Result := CODEPAGE_PC874_THAI;
+
+    1250: Result := CODEPAGE_WCP1250;
+    1251: Result := CODEPAGE_WCP1251;
+    1252: Result := CODEPAGE_WCP1252;
+    1255: Result := CODEPAGE_WCP1255;
+    1257: Result := CODEPAGE_WCP1257;
+  else
+    raise Exception.Create('Code page not supported');
+  end;
+end;
+
+
 { TPosPrinterOA48 }
 
 constructor TPosPrinterOA48.Create2(AOwner: TComponent; APort: IPrinterPort;
@@ -815,8 +856,18 @@ begin
   FLogger := ALogger;
   FDevice := TOposServiceDevice19.Create(FLogger);
   FDevice.ErrorEventEnabled := False;
-  Utf8Enabled := True;
   Initialize;
+
+  Utf8Enabled := False;
+  if Utf8Enabled then
+  begin
+    // Only codepage 1251 must be used
+    FPrinterCodePage := 1251;
+  end else
+  begin
+    // Font B russian chars are only in 866 code page
+    FPrinterCodePage := 866;
+  end;
 end;
 
 destructor TPosPrinterOA48.Destroy;
@@ -909,8 +960,8 @@ begin
   FCapSlpUnderline := False;
   FCapTransaction := True;
   FCartridgeNotify := 0;
-  FCharacterSet := 1251;
-  FCharacterSetList := ArrayToString(SupportedCodePages);
+  FCharacterSet := PTR_CS_UNICODE;
+  FCharacterSetList := ArrayToString(SupportedCodePagesB);
   FControlObjectDescription := 'OPOS Windows Printer';
   FControlObjectVersion := 1014001;
   FCoverOpened := False;
@@ -2293,6 +2344,18 @@ begin
   FCartridgeNotify := pCartridgeNotify;
 end;
 
+function TPosPrinterOA48.CharSetToPrinterCP(CharacterSet: Integer): Integer;
+begin
+  case CharacterSet of
+    PTR_CS_ASCII,
+    PTR_CS_UNICODE,
+    PTR_CS_WINDOWS:
+      Result := TextCPToPrinterCP(FPrinterCodePage);
+  else
+    Result := TextCPToPrinterCP(CharacterSet);
+  end;
+end;
+
 procedure TPosPrinterOA48.Set_CharacterSet(pCharacterSet: Integer);
 var
   CodePage: Integer;
@@ -2301,7 +2364,7 @@ begin
   begin
     FCharacterSet := pCharacterSet;
 
-    CodePage := CharacterSetToPrinterCodePage(CharacterSet);
+    CodePage := CharSetToPrinterCP(CharacterSet);
     FPrinter.SetCodePage(CodePage);
   end;
 end;
@@ -2477,12 +2540,15 @@ begin
   if Utf8Enabled then
   begin
     FPrinter.UTF8Enable(True);
+    FPrinter.SelectCodePage(CODEPAGE_WCP1251);
   end else
   begin
     FPrinter.UTF8Enable(False);
+    FPrinter.WriteKazakhCharacters;
+    FPrinter.DisableUserCharacters;
+    FPrinter.SelectCodePage(CODEPAGE_CP866);
   end;
-  FPrinter.SelectCodePage(51);
-  //FPrinter.SetCharacterFont(FONT_TYPE_A);
+  FPrinter.SetCharacterFont(FONT_TYPE_A);
   if FontName = FontNameB then
   begin
     FLastPrintMode := [pmFontB];
@@ -2927,12 +2993,12 @@ var
   i: Integer;
 begin
   if TestCodePage(C, CodePage) then Exit;
-  for i := Low(SupportedCodePages) to High(SupportedCodePages) do
+  for i := Low(SupportedCodePagesB) to High(SupportedCodePagesB) do
   begin
-    CodePage := SupportedCodePages[i];
+    CodePage := SupportedCodePagesB[i];
     if TestCodePage(C, CodePage) then Exit;
   end;
-  CodePage := 1251;
+  CodePage := 866;
 end;
 
 procedure TPosPrinterOA48.PrintUnicode(const AText: WideString);
@@ -2941,11 +3007,12 @@ var
   C: WideChar;
   CodePage: Integer;
 begin
-  CodePage := 1251;
+  Logger.Debug(WideFormat('TPosPrinterOA48.PrintUnicode(%s)', [AText]));
+  CodePage := FPrinterCodePage;
   if TestCodePage(AText, CodePage) then
   begin
     Logger.Debug(WideFormat('TPosPrinterOA48.PrintText(''%s'')', [AText]));
-    Printer.SetCodePage(CharacterSetToPrinterCodePage(CodePage));
+    Printer.SetCodePage(CharSetToPrinterCP(CodePage));
     Printer.PrintText(WideStringToAnsiString(CodePage, AText));
   end else
   begin
@@ -2960,12 +3027,13 @@ begin
       begin
         Printer.DisableUserCharacters;
         CharacterToCodePage(C, CodePage);
-        Printer.SetCodePage(CharacterSetToPrinterCodePage(CodePage));
+        Printer.SetCodePage(CharSetToPrinterCP(CodePage));
         Printer.PrintText(WideStringToAnsiString(CodePage, C));
       end;
     end;
   end;
   Printer.DisableUserCharacters;
+  Logger.Debug('TPosPrinterOA48.PrintUnicode: OK');
 end;
 
 

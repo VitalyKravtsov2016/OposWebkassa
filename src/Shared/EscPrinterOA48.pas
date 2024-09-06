@@ -220,8 +220,8 @@ const
     1241, // cyrillic small letter schwa
     1256, // cyrillic capital letter barred o
     1257, // cyrillic small letter barred o
-    64488, // arabic letter uighur kazakh kirghiz alef maksura initial form
-    64489 // arabic letter uighur kazakh kirghiz alef maksura medial form
+    1030,  // cyrillic capital letter byelorussian-ukrainian
+    1110 // cyrillic small letter byelorussian-ukrainian
   );
 
 type
@@ -362,16 +362,14 @@ type
 
     procedure EnableUserCharacters;
     procedure DisableUserCharacters;
-    procedure WriteKazakhCharacters2;
     procedure WriteKazakhCharactersToBitmap;
     function GetImageData(Image: TGraphic): AnsiString;
-    function GetBitmapData(Bitmap: TBitmap): AnsiString;
+    function GetBitmapData(Bitmap: TBitmap; FontHeight: Integer): AnsiString;
     function GetRasterBitmapData(Bitmap: TBitmap): AnsiString;
     function GetRasterImageData(Image: TGraphic): AnsiString;
     function GetImageData2(Image: TGraphic): AnsiString;
     procedure DrawImage(Image: TGraphic; Bitmap: TBitmap);
     procedure DrawWideChar(AChar: WideChar; AFont: Byte; Bitmap: TBitmap; X, Y: Integer);
-    function GetFontData(Bitmap: TBitmap): AnsiString;
   public
     constructor Create(APort: IPrinterPort; ALogger: ILogFile);
     destructor Destroy; override;
@@ -813,7 +811,7 @@ begin
     UserChar.c1 := ACode;
     UserChar.c2 := ACode;
     UserChar.Font := AFont;
-    UserChar.Data := GetBitmapData(Bitmap);
+    UserChar.Data := GetBitmapData(Bitmap, Bitmap.Height);
     UserChar.Width := Bitmap.Width;
     DefineUserCharacter(UserChar);
   finally
@@ -852,7 +850,7 @@ begin
     UserChar.c1 := ACode;
     UserChar.c2 := ACode;
     UserChar.Font := AFont;
-    UserChar.Data := GetBitmapData(Bitmap);
+    UserChar.Data := GetBitmapData(Bitmap, Bitmap.Height);
     UserChar.Width := Bitmap.Width;
     DefineUserCharacter(UserChar);
   finally
@@ -876,7 +874,8 @@ begin
   Send(#$1B#$26#$03 + Chr(C.c1) + Chr(C.c2) + Chr(C.Width) + C.Data);
 end;
 
-function TEscPrinterOA48.GetBitmapData(Bitmap: TBitmap): AnsiString;
+function TEscPrinterOA48.GetBitmapData(Bitmap: TBitmap;
+  FontHeight: Integer): AnsiString;
 var
   B: Byte;
   Bit: Byte;
@@ -884,8 +883,12 @@ var
   mx, my: Integer;
 begin
   Result := '';
+  if Bitmap.Height < FontHeight then
+    raise Exception.CreateFmt('Bitmap height < Font height, %d < %d', [
+    Bitmap.Height, FontHeight]);
+
   mx := (Bitmap.Width + 7) div 8;
-  my := (Bitmap.Height + 7) div 8;
+  my := (FontHeight + 7) div 8;
   for x := 1 to mx*8 do
   begin
     y := 1;
@@ -895,9 +898,9 @@ begin
       for Bit := 0 to 7 do
       begin
         if x > Bitmap.Width then Break;
-        if y > Bitmap.Height then Break;
+        if y > FontHeight then Break;
 
-        if Bitmap.Canvas.Pixels[x, y] = clBlack then
+        if Bitmap.Canvas.Pixels[x-1, y-1] = clBlack then
         begin
           SetBit(B, 7-Bit);
         end;
@@ -907,54 +910,6 @@ begin
     end;
   end;
 end;
-
-function TEscPrinterOA48.GetFontData(Bitmap: TBitmap): AnsiString;
-var
-  B: Byte;
-  Bit: Byte;
-  x, y: Integer;
-begin
-  Result := '';
-  for x := 1 to Bitmap.Width do
-  begin
-    B := 0;
-    for y := 1 to Bitmap.Height do
-    begin
-      Bit := (y-1) mod 8;
-      if Bitmap.Canvas.Pixels[x, y] = clBlack then
-      begin
-        SetBit(B, 7-Bit);
-      end;
-      if (y mod 8) = 0 then
-      begin
-        Result := Result + Chr(B);
-        B := 0;
-      end;
-    end;
-    if (Bitmap.Height mod 8) <> 0 then
-    begin
-      Result := Result + Chr(B);
-    end;
-  end;
-end;
-
-(*
-function TEscPrinterOA48.GetRasterBitmapData(Bitmap: TBitmap): AnsiString;
-var
-  B: Byte;
-  x, y: Integer;
-  mx: Integer;
-begin
-  Result := '';
-  mx := (Bitmap.Width + 7) div 8;
-  for y := 1 to Bitmap.Height do
-  for x := 1 to mx do
-  begin
-    B := PByteArray(Bitmap.ScanLine[y-1])[x-1] xor $FF;
-    Result := Result + Chr(B);
-  end;
-end;
-*)
 
 function TEscPrinterOA48.GetRasterBitmapData(Bitmap: TBitmap): AnsiString;
 var
@@ -970,7 +925,7 @@ begin
   begin
     if (x <= Bitmap.Width)and(y <= Bitmap.Height) then
     begin
-      if Bitmap.Canvas.Pixels[x, y] = clBlack then
+      if Bitmap.Canvas.Pixels[x-1, y-1] = clBlack then
       begin
         Index := (y-1)*mx + ((x-1) div 8) + 1;
         B := Ord(Result[Index]);
@@ -994,7 +949,7 @@ begin
   Bitmap := TBitmap.Create;
   try
     DrawImage(Image, Bitmap);
-    Result := GetBitmapData(Bitmap);
+    Result := GetBitmapData(Bitmap, Bitmap.Height);
   finally
     Bitmap.Free;
   end;
@@ -1049,7 +1004,6 @@ begin
   Logger.Debug('TEscPrinterOA48.SetDefaultLineSpacing');
   Send(#$1B#$32);
 end;
-
 
 procedure TEscPrinterOA48.SetLineSpacing(n: Byte);
 begin
@@ -1198,7 +1152,7 @@ begin
     x := (Bitmap.Width + 7) div 8;
     y := (Bitmap.Height + 7) div 8;
     Send(#$1C#$71 + Chr(Number) + Chr(Lo(x)) + Chr(Hi(x)) +
-      Chr(Lo(y)) + Chr(Hi(y)) + GetBitmapData(Bitmap));
+      Chr(Lo(y)) + Chr(Hi(y)) + GetBitmapData(Bitmap, Bitmap.Height));
   finally
     Bitmap.Free;
   end;
@@ -1222,7 +1176,7 @@ begin
 
     x := (Bitmap.Width + 7) div 8;
     y := (Bitmap.Height + 7) div 8;
-    Send(#$1D#$2A + Chr(x) + Chr(y) + GetBitmapData(Bitmap));
+    Send(#$1D#$2A + Chr(x) + Chr(y) + GetBitmapData(Bitmap, Bitmap.Height));
   finally
     Bitmap.Free;
   end;
@@ -1654,7 +1608,7 @@ begin
         BitmapData := '';
         Count := Bitmap.Width div FontWidth;
         Code := FUserCharCode;
-        Data := GetFontData(Bitmap);
+        Data := GetBitmapData(Bitmap, 24);
         for i := 0 to Count-1 do
         begin
           FUserChars.Add(Code + i, WideChar(KazakhUnicodeChars[i]), FONT_TYPE_A);
@@ -1673,7 +1627,7 @@ begin
         Count := Bitmap.Width div FontWidth;
         Code := FUserCharCode;
         Inc(FUserCharCode, Count);
-        Data := GetBitmapData(Bitmap);
+        Data := GetBitmapData(Bitmap, 17);
         for i := 0 to Count-1 do
         begin
           FUserChars.Add(Code + i, WideChar(KazakhUnicodeChars[i]), FONT_TYPE_B);
@@ -1690,51 +1644,6 @@ begin
     begin
       FLogger.Error('Failed to load Kazakh fonts ' + E.Message);
     end;
-  end;
-end;
-
-procedure TEscPrinterOA48.WriteKazakhCharacters2;
-var
-  i: Integer;
-  Count: Integer;
-  Bitmap: TBitmap;
-  Data: AnsiString;
-  FontWidth: Integer;
-  BitmapData: AnsiString;
-begin
-  Bitmap := TBitmap.Create;
-  try
-    // FONT_TYPE_A
-    Bitmap.LoadFromFile(GetModulePath + 'Fonts\KazakhFontA.bmp');
-    FontWidth := 12;
-    BitmapData := '';
-    Count := Bitmap.Width div FontWidth;
-    Data := GetBitmapData(Bitmap);
-    for i := 0 to Count-1 do
-    begin
-      FUserChars.Add(FUserCharCode, WideChar(KazakhUnicodeChars[i]), FONT_TYPE_A);
-      BitmapData := Copy(Data, i*FontWidth + 1, FontWidth*3);
-      Send(#$1B#$26#$03 + Chr(FUserCharCode) + Chr(FUserCharCode) + Chr(FontWidth) + BitmapData);
-      Inc(FUserCharCode);
-    end;
-(*
-    // FONT_TYPE_B
-    Bitmap.LoadFromFile(GetModulePath + 'Fonts\KazakhFontB.bmp');
-    FontWidth := 9;
-    BitmapData := '';
-    Count := Bitmap.Width div FontWidth;
-    Code := FUserCharCode;
-    Inc(FUserCharCode, Count);
-    Data := GetBitmapData(Bitmap);
-    for i := 0 to Count-1 do
-    begin
-      FUserChars.Add(Code + i, WideChar(KazakhUnicodeChars[i]), FONT_TYPE_B);
-      BitmapData := BitmapData + Chr(FontWidth) + Copy(Data, i*FontWidth + 1, FontWidth*3);
-    end;
-    Send(#$1B#$26#$03 + Chr(Code) + Chr(Code + Count -1) + BitmapData);
-*)
-  finally
-    Bitmap.Free;
   end;
 end;
 
