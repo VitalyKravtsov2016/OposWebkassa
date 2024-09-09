@@ -332,6 +332,9 @@ const
 begin
   OpenClaimEnable;
 
+  Printer.FontName := FontNameB;
+  Printer.RecLineSpacing := 100;
+
   if Printer.CapTransaction then
   begin
     PtrCheck(Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_TRANSACTION));

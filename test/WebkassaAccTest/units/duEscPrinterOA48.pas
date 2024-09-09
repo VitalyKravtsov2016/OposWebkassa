@@ -114,6 +114,7 @@ end;
 function TPrinterOA48Test.CreateRawPort: TRawPrinterPort;
 begin
   Result := TRawPrinterPort.Create(FLogger, 'POS-80C');
+  //Result := TRawPrinterPort.Create(FLogger, 'RONGTA 80mm Series Printer');
 end;
 
 function TPrinterOA48Test.CreateSerialPort: TSerialPort;
@@ -777,22 +778,25 @@ begin
 end;
 
 procedure TPrinterOA48Test.TestLineSpacing;
+var
+  i: Integer;
 begin
   FPrinter.Initialize;
-  FPrinter.SetCharacterFont(1);
-  FPrinter.PrintText('Default line spacing 1' + CRLF);
-  FPrinter.PrintText('Default line spacing 2' + CRLF);
+  FPrinter.SetCharacterFont(FONT_TYPE_A);
+  for i := 1 to 10 do
+  begin
+    FPrinter.PrintText('Default line spacing ' + IntToStr(i) + CRLF);
+  end;
   FPrinter.SetLineSpacing(0);
-  FPrinter.PrintText('Zero line spacing 1' + CRLF);
-  FPrinter.PrintText('Zero line spacing 2' + CRLF);
-  FPrinter.PrintText(CRLF + CRLF);
-  FPrinter.PrintText('Zero line spacing 3' + CRLF);
-  FPrinter.PrintText('Zero line spacing 4' + CRLF);
-(*
+  for i := 1 to 10 do
+  begin
+    FPrinter.PrintText('Zero line spacing ' + IntToStr(i) + CRLF);
+  end;
   FPrinter.SetLineSpacing(100);
-  FPrinter.PrintText('100 line spacing 1' + CRLF);
-  FPrinter.PrintText('100 line spacing 2' + CRLF);
-*)
+  for i := 1 to 10 do
+  begin
+    FPrinter.PrintText('100 line spacing ' + IntToStr(i) + CRLF);
+  end;
 end;
 
 procedure TPrinterOA48Test.TestCutDistanceFontA;
