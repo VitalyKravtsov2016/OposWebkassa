@@ -1730,6 +1730,8 @@ end;
 
 function TWebkassaImpl.GetData(DataItem: Integer; out OptArgs: Integer;
   out Data: WideString): Integer;
+var
+  ZReportNumber: Integer;
 begin
   try
     case DataItem of
@@ -1743,7 +1745,13 @@ begin
       FPTR_GD_RECEIPT_NUMBER: Data := Params.CheckNumber;
       FPTR_GD_REFUND: Data := AmountToStr(ReadRefundTotal);
       FPTR_GD_REFUND_VOID: Data := AmountToStr(0);
-      FPTR_GD_Z_REPORT: Data := IntToStr(Params.ShiftNumber);
+      FPTR_GD_Z_REPORT:
+      begin
+        ZReportNumber := Params.ShiftNumber;
+        if ZReportNumber > 0 then
+          ZReportNumber := ZReportNumber - 1;
+        Data := IntToStr(ZReportNumber);
+      end;
       FPTR_GD_FISCAL_REC: Data := AmountToStr(ReadSellTotal);
       FPTR_GD_FISCAL_DOC,
       FPTR_GD_FISCAL_DOC_VOID,
