@@ -69,6 +69,8 @@ type
     procedure TestPrintBarcode;
     procedure TestPrint2DBarcode;
     procedure TestFontB;
+
+    procedure TestCutterError;
   end;
 
 implementation
@@ -132,7 +134,6 @@ begin
     Params.LogFileEnabled := True;
     Params.LogMaxCount := 10;
     Params.LogFilePath := GetModulePath + 'Logs';
-    Params.PrintBarcode := PrintBarcodeGraphics;
     Params.TemplateEnabled := True;
     Params.Template.LoadFromFile('Receipt.xml');
 
@@ -928,6 +929,28 @@ procedure TWebkassaImplTest.TestPrintReceiptDuplicate2;
 begin
   OpenClaimEnable;
   FptrCheck(Driver.PrintDuplicateReceipt);
+end;
+
+procedure TWebkassaImplTest.TestCutterError;
+begin
+  OpenClaimEnable;
+  Params.PrintBarcode := PrintBarcodeESCCommands;
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, 4);
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+  FptrCheck(Driver.DirectIO2(30, 72, '4'));
+  FptrCheck(Driver.DirectIO2(30, 73, '1'));
+  FptrCheck(Driver.PrintRecItem('ТРК 2:АИ-92-К4/К5', 2001, 10370, 4, 193, 'л'));
+  FptrCheck(Driver.PrintRecItemAdjustment(1, 'Округление', 1, 4));
+  FptrCheck(Driver.PrintRecTotal(2000, 0, '2'));
+  FptrCheck(Driver.PrintRecMessage('VLife Клуб        №**************cLpN'));
+  FptrCheck(Driver.PrintRecTotal(2000, 2000, '1'));
+  FptrCheck(Driver.PrintRecMessage('Kaspi QR          №8032963073      '));
+  FptrCheck(Driver.PrintRecMessage('Оператор: Айдынгалиева Гульбану'));
+  FptrCheck(Driver.PrintRecMessage('Транз.:    1439291 '));
+  FptrCheck(Driver.DirectIO2(30, 302, '1'));
+  FptrCheck(Driver.DirectIO2(30, 300, '{EB51E167-20AB-4E95-AAA2-E1C8531048F1}'));
+  FptrCheck(Driver.PrintRecMessage('Транз. продажи: 1439286 (2000,00 тг)'));
+  FptrCheck(Driver.EndFiscalReceipt(False));
 end;
 
 initialization

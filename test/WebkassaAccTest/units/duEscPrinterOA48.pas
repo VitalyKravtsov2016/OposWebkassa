@@ -82,6 +82,7 @@ type
     procedure TestPrintRussianFontB;
     procedure TestPrintFontBMode;
     procedure TestPrintFontBMode2;
+    procedure TestCutterError;
   end;
 
 implementation
@@ -1464,6 +1465,40 @@ begin
   FPrinter.SelectCodePage(CODEPAGE_WCP1251);
   FPrinter.PrintText(UTF8Encode('UTF mode, font A, CODEPAGE_WCP1251' + CRLF));
   FPrinter.PrintText(UTF8Encode('Казахский текст: ' + KazakhText + CRLF));
+end;
+
+procedure TPrinterOA48Test.TestCutterError;
+var
+  i: Integer;
+  P: Integer;
+  Line: string;
+  Lines: TTntStrings;
+begin
+  FPrinter.Initialize;
+  FPrinter.UTF8Enable(False);
+  FPrinter.WriteKazakhCharacters;
+  FPrinter.DisableUserCharacters;
+  FPrinter.SelectCodePage(CODEPAGE_CP866);
+  FPrinter.SetCharacterFont(FONT_TYPE_A);
+
+  FPrinter.BeginDocument;
+  Lines := TTntStringList.Create;
+  try
+    Lines.LoadFromFile('Receipt.txt');
+    for i := 0 to Lines.Count-1 do
+    begin
+      Line := Lines[i];
+      P := Pos('->', Line);
+      if P <> 0 then
+      begin
+        Line := Copy(Line, P + 3, Length(Line));
+        FPrinter.Send(HexToStr(Line));
+      end;
+    end;
+  finally
+    Lines.Free;
+    FPrinter.EndDocument;
+  end;
 end;
 
 initialization
