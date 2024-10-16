@@ -344,7 +344,7 @@ begin
   Result.Name := '';
   Result.Amount := FCharges.GetTotal;
   if FCharges.Count = 1 then
-    Result.Name := FDiscounts[0].Description;
+    Result.Name := FCharges[0].Description;
 end;
 
 function TSalesReceiptItem.GetDiscount: TAdjustmentRec;

@@ -71,6 +71,7 @@ type
     procedure TestFontB;
 
     procedure TestCutterError;
+    procedure TestListIndexError;
   end;
 
 implementation
@@ -126,7 +127,7 @@ begin
   if Driver = nil then
   begin
     Driver := ToleFiscalPrinter.Create;
-    //Driver.Driver.Printer := Printer;
+    Driver.Driver.Printer := Printer;
     Driver.Driver.LoadParamsEnabled := False;
 
     Params.PrintBarcode := PrintBarcodeESCCommands;
@@ -948,8 +949,39 @@ begin
   FptrCheck(Driver.PrintRecMessage('Оператор: Айдынгалиева Гульбану'));
   FptrCheck(Driver.PrintRecMessage('Транз.:    1439291 '));
   FptrCheck(Driver.DirectIO2(30, 302, '1'));
-  FptrCheck(Driver.DirectIO2(30, 300, '{EB51E167-20AB-4E95-AAA2-E1C8531048F1}'));
+  //FptrCheck(Driver.DirectIO2(30, 300, '{EB51E167-20AB-4E95-AAA2-E1C8531048F1}'));
   FptrCheck(Driver.PrintRecMessage('Транз. продажи: 1439286 (2000,00 тг)'));
+  FptrCheck(Driver.EndFiscalReceipt(False));
+end;
+
+procedure TWebkassaImplTest.TestListIndexError;
+begin
+  OpenClaimEnable;
+  Params.PrintBarcode := PrintBarcodeESCCommands;
+
+  FptrCheck(Driver.ResetPrinter);
+  FptrCheck(Driver.ClearError);
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, 4);
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+  FptrCheck(Driver.DirectIO2(30, 72, '4'));
+  FptrCheck(Driver.DirectIO2(30, 73, '1'));
+  FptrCheck(Driver.PrintRecItem('S ГРИЛЬ-ДОГ КУРИНЫЙ Q-CAFE', 1490, 1000, 4, 1490, 'шт'));
+  FptrCheck(Driver.DirectIO2(120, 0, '1905903000'));
+  FptrCheck(Driver.DirectIO2(30, 72, '4'));
+  FptrCheck(Driver.DirectIO2(30, 73, '1'));
+  FptrCheck(Driver.PrintRecItem('S ГРИЛЬ-ДОГ ГОВЯЖИЙ Q-CAFE', 1490, 1000, 4, 1490, 'шт'));
+  FptrCheck(Driver.DirectIO2(120, 0, '1905903000'));
+  FptrCheck(Driver.DirectIO2(30, 72, '4'));
+  FptrCheck(Driver.DirectIO2(30, 73, '1'));
+  FptrCheck(Driver.PrintRecItem('НАПИТОК ЭНЕРГЕТИЧЕСКИЙ TULPAR 450 МЛ Ж/Б', 1000, 2000, 4, 500, 'шт'));
+  FptrCheck(Driver.DirectIO2(120, 0, '2202100000'));
+  FptrCheck(Driver.PrintRecItemAdjustment(2, 'Акция трасса сент 24', 700, 4));
+  FptrCheck(Driver.PrintRecTotal(4680, 4680, '1'));
+  FptrCheck(Driver.PrintRecMessage('Halyk QR          №                '));
+  FptrCheck(Driver.PrintRecMessage('Оператор: Ерпейсова Жадыра'));
+  FptrCheck(Driver.PrintRecMessage('Транз.:     466000 '));
+  FptrCheck(Driver.DirectIO2(30, 302, '1'));
+  //FptrCheck(Driver.DirectIO2(30, 300, '{3DDDECA5-2DAD-4D14-81D6-0B2609680A0C}'));
   FptrCheck(Driver.EndFiscalReceipt(False));
 end;
 
