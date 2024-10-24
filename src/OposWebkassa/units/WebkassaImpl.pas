@@ -27,6 +27,7 @@ uses
   JsonUtils, EscPrinterRongta;
 
 const
+  PrinterClaimTimeout = 100;
   FPTR_DEVICE_DESCRIPTION = 'WebKassa OPOS driver';
 
   // VatID values
@@ -111,7 +112,8 @@ type
       Command: TSendReceiptCommand);
     function ReadINN: WideString;
     function ReadCasboxStatusAnswerJson: WideString;
-    procedure EnablePosPrinter;
+    procedure DisablePosPrinter;
+    procedure EnablePosPrinter(ClaimTimeout: Integer);
   public
     procedure PrintDocumentSafe(Document: TTextDocument);
     procedure CheckCanPrint;
@@ -679,7 +681,6 @@ begin
   try
     SetDeviceEnabled(False);
     OposDevice.ReleaseDevice;
-    Printer.ReleaseDevice;
     Result := ClearResult;
   except
     on E: Exception do
@@ -925,7 +926,6 @@ begin
   try
     FParams.CheckPrameters;
     FOposDevice.ClaimDevice(Timeout);
-    CheckPtr(Printer.ClaimDevice(Timeout));
     Result := ClearResult;
   except
     on E: Exception do
@@ -1264,12 +1264,11 @@ var
 begin
   Lines := TStringList.Create;
   try
-    CheckPtr(Printer.ClaimDevice(0));
+    EnablePosPrinter(PrinterClaimTimeout);
     try
-      EnablePosPrinter;
       AddProps;
     finally
-      Printer.ReleaseDevice;
+      DisablePosPrinter;
     end;
     Result := Lines.Text;
   finally
@@ -1294,8 +1293,7 @@ var
   Receipt: TSalesREceipt;
   Command: TSendReceiptCommand;
 begin
-  CheckPtr(Printer.ClaimDevice(0));
-  EnablePosPrinter;
+  EnablePosPrinter(PrinterClaimTimeout);
   FExternalCheckNumber := CreateGUIDStr;
   BeginDocument;
 
@@ -1321,7 +1319,7 @@ begin
   finally
     Command.Free;
     Receipt.Free;
-    Printer.ReleaseDevice;
+    DisablePosPrinter;
   end;
 end;
 
@@ -3185,10 +3183,16 @@ begin
   end;
 end;
 
-procedure TWebkassaImpl.EnablePosPrinter;
+procedure TWebkassaImpl.DisablePosPrinter;
+begin
+  Printer.ReleaseDevice;
+end;
+
+procedure TWebkassaImpl.EnablePosPrinter(ClaimTimeout: Integer);
 var
   CharacterSetList: WideString;
 begin
+  CheckPtr(Printer.ClaimDevice(ClaimTimeout));
   Printer.DeviceEnabled := True;
   CheckPtr(Printer.ResultCode);
 
@@ -3222,34 +3226,18 @@ begin
 end;
 
 procedure TWebkassaImpl.SetDeviceEnabled(Value: Boolean);
-
-  procedure DisableDevice;
-  begin
-    FClient.Disconnect;
-    Printer.DeviceEnabled := False;
-    FOposDevice.DeviceEnabled := False;
-  end;
-
 begin
   if Value <> FOposDevice.DeviceEnabled then
   begin
     if Value then
     begin
-      try
-        FClient.Connect;
-        EnablePosPrinter;
-      except
-        on E: Exception do
-        begin
-          DisableDevice;
-          raise;
-        end;
-      end;
+      FClient.Connect;
     end else
     begin
-      DisableDevice;
+      FClient.Disconnect;
     end;
   end;
+  FOposDevice.DeviceEnabled := Value;
 end;
 
 function TWebkassaImpl.HandleDriverError(E: EDriverError): TOPOSError;
@@ -4241,31 +4229,36 @@ begin
   Logger.Debug('PrintDocument');
   TickCount := GetTickCount;
 
-  CheckPtr(Printer.CheckHealth(OPOS_CH_INTERNAL));
-  CheckCanPrint;
+  EnablePosPrinter(PrinterClaimTimeout);
+  try
+    CheckPtr(Printer.CheckHealth(OPOS_CH_INTERNAL));
+    CheckCanPrint;
 
-  FCapRecBold := Printer.CapRecBold;
-  FCapRecDwideDhigh := Printer.CapRecDwideDhigh;
+    FCapRecBold := Printer.CapRecBold;
+    FCapRecDwideDhigh := Printer.CapRecDwideDhigh;
 
-  FLineChars := Printer.RecLineChars;
-  FLineHeight := Printer.RecLineHeight;
-  FLineSpacing := Printer.RecLineSpacing;
+    FLineChars := Printer.RecLineChars;
+    FLineHeight := Printer.RecLineHeight;
+    FLineSpacing := Printer.RecLineSpacing;
 
-  if Printer.CapTransaction then
-  begin
-    CheckPtr(Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_TRANSACTION));
+    if Printer.CapTransaction then
+    begin
+      CheckPtr(Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_TRANSACTION));
+    end;
+    for i := 0 to Document.Items.Count-1 do
+    begin
+      PrintDocItem(Document.Items[i]);
+    end;
+
+    CutPaper;
+    if Printer.CapTransaction then
+    begin
+      CheckPtr(Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_NORMAL));
+    end;
+    CheckPtr(Printer.CheckHealth(OPOS_CH_INTERNAL));
+  finally
+    DisablePosPrinter;
   end;
-  for i := 0 to Document.Items.Count-1 do
-  begin
-    PrintDocItem(Document.Items[i]);
-  end;
-
-  CutPaper;
-  if Printer.CapTransaction then
-  begin
-    CheckPtr(Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_NORMAL));
-  end;
-  CheckPtr(Printer.CheckHealth(OPOS_CH_INTERNAL));
   Logger.Debug(Tnt_WideFormat('PrintDocument, time=%d ms', [GetTickCount-TickCount]));
 end;
 

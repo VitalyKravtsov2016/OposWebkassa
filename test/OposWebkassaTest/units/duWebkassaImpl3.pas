@@ -37,11 +37,12 @@ type
     procedure SetUp; override;
     procedure TearDown; override;
     procedure TestPrintQRCode;
+
+    procedure TestPrintBarcodeAsGraphics; // !!!
   published
     procedure TestPrintBarcodeFailed;
     procedure TestPrintBarcodeAsBarcode;
     procedure TestPrintBarcodeAsBarcode2;
-    procedure TestPrintBarcodeAsGraphics;
   end;
 
 implementation

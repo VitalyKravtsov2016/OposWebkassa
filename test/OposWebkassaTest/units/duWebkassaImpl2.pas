@@ -278,14 +278,12 @@ end;
 procedure TWebkassaImplTest2.ClaimDevice;
 begin
   OpenService;
-  FPrinter.Expects('ClaimDevice').WithParams([1000]).Returns(0);
 
   CheckEquals(0, Driver.GetPropertyNumber(PIDX_Claimed),
     'Driver.GetPropertyNumber(PIDX_Claimed)');
   FptrCheck(Driver.ClaimDevice(1000));
   CheckEquals(1, Driver.GetPropertyNumber(PIDX_Claimed),
     'Driver.GetPropertyNumber(PIDX_Claimed)');
-  FPrinter.Verify('ClaimDevice');
 end;
 
 procedure TWebkassaImplTest2.EnableDevice;
@@ -294,24 +292,10 @@ var
 begin
   ClaimDevice;
 
-  FPrinter.Expects('Set_DeviceEnabled').WithParams([True]);
-  FPrinter.Expects('Get_ResultCode').Returns(0);
-
-  FPrinter.Expects('Get_CharacterSetList').Returns('997,998,999');
-  FPrinter.Expects('Set_CharacterSet').WithParams([997]);
-  FPrinter.Expects('Get_CapMapCharacterSet').Returns(True);
-  FPrinter.Expects('Set_MapCharacterSet').WithParams([True]);
-
-  FPrinter.Expects('Set_RecLineChars').WithParams([42]);
-  FPrinter.Expects('Set_RecLineSpacing').WithParams([0]);
-  FPrinter.Expects('Set_RecLineHeight').WithParams([24]);
-
   Driver.SetPropertyNumber(PIDX_DeviceEnabled, 1);
   ResultCode := Driver.GetPropertyNumber(PIDX_ResultCode);
   CheckEquals(OPOS_SUCCESS, ResultCode, 'OPOS_SUCCESS');
   CheckEquals(1, Driver.GetPropertyNumber(PIDX_DeviceEnabled), 'DeviceEnabled');
-
-  FPrinter.Verify('EnableDevice');
 end;
 
 procedure TWebkassaImplTest2.OpenClaimEnable;
@@ -691,6 +675,24 @@ begin
   end;
 end;
 
+(*
+  FPrinter.Expects('Set_DeviceEnabled').WithParams([True]);
+  FPrinter.Expects('Get_ResultCode').Returns(0);
+
+  FPrinter.Expects('Get_CharacterSetList').Returns('997,998,999');
+  FPrinter.Expects('Set_CharacterSet').WithParams([997]);
+  FPrinter.Expects('Get_CapMapCharacterSet').Returns(True);
+  FPrinter.Expects('Set_MapCharacterSet').WithParams([True]);
+
+  FPrinter.Expects('Set_RecLineChars').WithParams([42]);
+  FPrinter.Expects('Set_RecLineSpacing').WithParams([0]);
+  FPrinter.Expects('Set_RecLineHeight').WithParams([24]);
+
+
+
+  FPrinter.Verify('EnableDevice');
+
+*)
 
 initialization
   RegisterTest('', TWebkassaImplTest2.Suite);
