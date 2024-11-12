@@ -82,6 +82,7 @@ begin
   FParams.Units.Clear;
   FParams.Units.AddItem(1, '123', '234', '345');
   FParams.Units.AddItem(2, '876', '547', '875');
+  FParams.ReplaceDataMatrixWithQRCode := True;
 end;
 
 procedure TPrinterParametersTest.CheckNonDefaultParams;
@@ -126,6 +127,7 @@ begin
   CheckEquals('876', FParams.Units[1].NameRu, 'Units[1].NameRu');
   CheckEquals('547', FParams.Units[1].NameKz, 'Units[1].NameKz');
   CheckEquals('875', FParams.Units[1].NameEn, 'Units[1].NameEn');
+  CheckEquals(True, FParams.ReplaceDataMatrixWithQRCode, 'ReplaceDataMatrixWithQRCode');
 end;
 
 
@@ -157,6 +159,7 @@ begin
   CheckEquals(False, FParams.TranslationEnabled, 'TranslationEnabled');
   CheckEquals(DefOfflineText, FParams.OfflineText, 'OfflineText');
   CheckEquals(0, FParams.Units.Count, 'Units.Count');
+  CheckEquals(False, FParams.ReplaceDataMatrixWithQRCode, 'ReplaceDataMatrixWithQRCode');
 end;
 
 procedure TPrinterParametersTest.CheckSetDefaults;

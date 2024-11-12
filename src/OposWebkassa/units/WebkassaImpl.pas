@@ -997,6 +997,12 @@ procedure TWebkassaImpl.DioPrintBarcode(var pData: Integer; var pString: WideStr
 var
   Barcode: TBarcodeRec;
 begin
+  if Params.ReplaceDataMatrixWithQRCode then
+  begin
+    if pData = DIO_BARCODE_DATAMATRIX then
+      pData := DIO_BARCODE_QRCODE;
+  end;
+
   if Pos(';', pString) = 0 then
   begin
     Barcode.BarcodeType := pData;
@@ -1034,6 +1040,12 @@ procedure TWebkassaImpl.DioPrintBarcodeHex(var pData: Integer;
 var
   Barcode: TBarcodeRec;
 begin
+  if Params.ReplaceDataMatrixWithQRCode then
+  begin
+    if pData = DIO_BARCODE_DATAMATRIX then
+      pData := DIO_BARCODE_QRCODE;
+  end;
+
   if Pos(';', pString) = 0 then
   begin
     Barcode.BarcodeType := pData;

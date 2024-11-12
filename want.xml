@@ -25,7 +25,7 @@ See http://www.suigeneris.org/want/ for details.
 -->
 <project name="OposWebkassa"
          basedir="."
-         default="release" >
+         default="buildns" >
 
   <property name="old.version"    value="?{release.ini:releases:current}" />
   <regexp   property="old.build"  text="${old.version}" pattern="^.*\.([0-9]+)$" subst ="\1" />

@@ -295,6 +295,10 @@ begin
       if Reg.ValueExists('HeaderPrinted') then
         Parameters.HeaderPrinted := Reg.ReadBool('HeaderPrinted');
 
+      if Reg.ValueExists('ReplaceDataMatrixWithQRCode') then
+        Parameters.ReplaceDataMatrixWithQRCode := Reg.ReadBool('ReplaceDataMatrixWithQRCode');
+
+
       Reg.CloseKey;
     end;
     // VatRates
@@ -391,6 +395,7 @@ begin
     Reg.WriteInteger('RecLineChars', FParameters.RecLineChars);
     Reg.WriteInteger('RecLineHeight', FParameters.RecLineHeight);
     Reg.WriteBool('HeaderPrinted', FParameters.HeaderPrinted);
+    Reg.WriteBool('ReplaceDataMatrixWithQRCode', FParameters.ReplaceDataMatrixWithQRCode);
 
     Reg.CloseKey;
     // VatRates

@@ -4,8 +4,8 @@ object fmFptrBarcode: TfmFptrBarcode
   AutoScroll = False
   BorderIcons = [biSystemMenu]
   Caption = #1064#1090#1088#1080#1093'-'#1082#1086#1076
-  ClientHeight = 239
-  ClientWidth = 408
+  ClientHeight = 330
+  ClientWidth = 588
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,7 +20,7 @@ object fmFptrBarcode: TfmFptrBarcode
     Left = 8
     Top = 8
     Width = 393
-    Height = 209
+    Height = 161
     Caption = #1055#1077#1095#1072#1090#1100' '#1096#1090#1088#1080#1093#1082#1086#1076#1086#1074
     TabOrder = 0
   end
@@ -59,5 +59,13 @@ object fmFptrBarcode: TfmFptrBarcode
     Caption = #1053#1077' '#1087#1077#1095#1072#1090#1072#1090#1100
     TabOrder = 4
     OnClick = ModifiedClick
+  end
+  object chbReplaceDataMatrixWithQRCode: TCheckBox
+    Left = 8
+    Top = 176
+    Width = 393
+    Height = 16
+    Caption = #1055#1077#1095#1072#1090#1072#1090#1100' QR '#1082#1086#1076' '#1074#1084#1077#1089#1090#1086' DataMatrix'
+    TabOrder = 5
   end
 end

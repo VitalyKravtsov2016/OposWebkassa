@@ -216,6 +216,7 @@ type
     DailyTotal: Currency;
     SellTotal: Currency;
     RefundTotal: Currency;
+    ReplaceDataMatrixWithQRCode: Boolean;
 
     constructor Create(ALogger: ILogFile);
     destructor Destroy; override;
@@ -398,6 +399,7 @@ begin
   SellTotal := 0;
   RefundTotal := 0;
   Units.Clear;
+  ReplaceDataMatrixWithQRCode := False;
 end;
 
 procedure TPrinterParameters.LogText(const Caption, Text: WideString);
@@ -467,6 +469,7 @@ begin
   Logger.Debug('RecLineChars: ' + IntToStr(RecLineChars));
   Logger.Debug('RecLineHeight: ' + IntToStr(RecLineHeight));
   Logger.Debug('Utf8Enabled: ' + BoolToStr(Utf8Enabled));
+  Logger.Debug('ReplaceDataMatrixWithQRCode: ' + BoolToStr(ReplaceDataMatrixWithQRCode));
 
   // VatRates
   for i := 0 to VatRates.Count-1 do
@@ -667,6 +670,7 @@ begin
     RecLineChars := Src.RecLineChars;
     RecLineHeight := Src.RecLineHeight;
     Utf8Enabled := Src.Utf8Enabled;
+    ReplaceDataMatrixWithQRCode := Src.ReplaceDataMatrixWithQRCode;
   end else
     inherited Assign(Source);
 end;

@@ -4,7 +4,7 @@ interface
 
 uses
   // VCL
-  StdCtrls, Controls, Classes, ComObj, SysUtils, ExtCtrls, 
+  StdCtrls, Controls, Classes, ComObj, SysUtils, ExtCtrls,
   // 3'd
   SynMemo, SynEdit,
   // Tnt
@@ -21,6 +21,7 @@ type
     rbBarcodeGraphics: TTntRadioButton;
     rbBarcodeText: TTntRadioButton;
     rbBarcodeNone: TTntRadioButton;
+    chbReplaceDataMatrixWithQRCode: TCheckBox;
     procedure ModifiedClick(Sender: TObject);
   public
     procedure UpdatePage; override;
@@ -44,6 +45,7 @@ begin
   rbBarcodeGraphics.Checked := Parameters.PrintBarcode = PrintBarcodeGraphics;
   rbBarcodeText.Checked := Parameters.PrintBarcode = PrintBarcodeText;
   rbBarcodeNone.Checked := Parameters.PrintBarcode = PrintBarcodeNone;
+  chbReplaceDataMatrixWithQRCode.Checked := Parameters.ReplaceDataMatrixWithQRCode;
 end;
 
 procedure TfmFptrBarcode.UpdateObject;
@@ -56,6 +58,7 @@ begin
     Parameters.PrintBarcode := PrintBarcodeText;
   if rbBarcodeNone.Checked then
     Parameters.PrintBarcode := PrintBarcodeNone;
+  Parameters.ReplaceDataMatrixWithQRCode := chbReplaceDataMatrixWithQRCode.Checked;
 end;
 
 end.

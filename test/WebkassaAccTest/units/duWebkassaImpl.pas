@@ -52,6 +52,7 @@ type
     procedure TestXReport;
     procedure TestNonFiscal;
     procedure TestNonFiscal2;
+    procedure TestNonFiscal3;
     procedure TestFiscalReceipt;
     procedure TestPrintReceiptDuplicate;
     procedure TestPrintReceiptDuplicate2;
@@ -127,7 +128,7 @@ begin
   if Driver = nil then
   begin
     Driver := ToleFiscalPrinter.Create;
-    Driver.Driver.Printer := Printer;
+    //Driver.Driver.Printer := Printer;
     Driver.Driver.LoadParamsEnabled := False;
 
     Params.PrintBarcode := PrintBarcodeESCCommands;
@@ -381,6 +382,12 @@ begin
   FptrCheck(DirectIO2(7, 51, '3850201740002066;DATAMATRIX;100;8;0;'));
   FptrCheck(Driver.PrintNormal(2, ''));
   FptrCheck(Driver.EndNonFiscal);
+end;
+
+procedure TWebkassaImplTest.TestNonFiscal3;
+begin
+  Params.ReplaceDataMatrixWithQRCode := True;
+  TestNonFiscal2;
 end;
 
 procedure TWebkassaImplTest.TestFiscalReceipt;

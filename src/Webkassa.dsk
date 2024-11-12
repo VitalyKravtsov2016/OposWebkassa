@@ -1,25 +1,21 @@
 [Closed Files]
-File_0=SourceModule,'D:\Projects\OposWebkassa\test\WebkassaAccTest\units\duWebkassaImpl.pas',0,1,967,7,978,0,0
-File_1=SourceModule,'D:\Projects\OposWebkassa\src\Opos\OposFptr.pas',0,1,327,28,339,0,0
-File_2=SourceModule,'D:\Projects\OposWebkassa\src\Shared\DriverError.pas',0,1,24,1,42,0,0
-File_3=SourceModule,'D:\Projects\OposWebkassa\src\OposWebkassa\units\ReceiptItem.pas',0,1,329,109,348,0,0
-File_4=SourceModule,'D:\Projects\OposWebkassa\src\OposWebkassa\Units\WebkassaImpl.pas',0,1,2372,1,2345,0,0
-File_5=SourceModule,'D:\Projects\OposWebkassa\src\OposWebkassa\units\SalesReceipt.pas',0,1,106,15,106,0,0
-File_6=SourceModule,'D:\Projects\OposWebkassa\src\Shared\PrinterParameters.pas',0,1,194,16,212,0,0
-File_7=SourceModule,'D:\Projects\OposWebkassa\test\WebkassaAccTest\units\duEscPrinterOA48.pas',0,1,1474,44,1485,0,0
-File_8=SourceModule,'D:\Projects\OposWebkassa\src\Shared\EscPrinterOA48.pas',0,1,1519,2,1535,0,0
-File_9=SourceModule,'D:\Projects\OposWebkassa\src\Shared\PosPrinterOA48.pas',0,1,2534,1,2552,0,0
+File_0=SourceModule,'D:\Projects\OposWebkassa\src\OposWebkassa\units\WebkassaImpl.pas',0,1,996,1,1000,0,0
+File_1=SourceModule,'D:\Projects\OposWebkassa\test\WebkassaAccTest\units\duWebkassaImpl.pas',0,1,373,37,389,0,0
+File_2=SourceModule,'D:\Projects\OposWebkassa\src\Shared\PrinterTypes.pas',0,1,1,1,1,0,0
+File_3=SourceModule,'D:\Projects\OposWebkassa\src\OposTest\Fmu\fmuFptrTest.pas',0,1,1,1,1,1,1
+File_4=SourceModule,'D:\Projects\OposWebkassa\src\OposTest\Fmu\fmuFptrTest2.pas',0,1,1,18,18,1,1
+File_5=SourceModule,'D:\Projects\OposWebkassa\test\OposWebkassaTest\units\duPrinterParameters.pas',0,1,137,1,162,0,0
+File_6=SourceModule,'D:\Projects\OposWebkassa\src\OposConfig\Fmu\fmuFptrBarcode.pas',0,1,1,5,13,1,1
+File_7=SourceModule,'D:\Projects\OposWebkassa\src\OposWebkassa\units\DirectIOAPI.pas',0,1,184,25,210,0,0
+File_8=SourceModule,'D:\Projects\OposWebkassa\src\Shared\PrinterParameters.pas',0,1,760,1,760,0,0
+File_9=SourceModule,'D:\Projects\OposWebkassa\src\Shared\PrinterParametersReg.pas',0,1,382,129,394,0,0
 
 [Modules]
 Count=0
 EditWindowCount=0
 TypeLibWindowCount=1
 
-[D:\Projects\OposWebkassa\test\WebkassaAccTest\WebkassaAccTest.dpr]
-FormState=0
-FormOnTop=0
-
-[D:\Projects\OposWebkassa\src\Webkassa.bpg]
+[D:\Projects\OposWebkassa\src\OposTest\OposTest.dpr]
 FormState=0
 FormOnTop=0
 
@@ -27,7 +23,7 @@ FormOnTop=0
 FormState=0
 FormOnTop=0
 
-[D:\Projects\OposWebkassa\src\OposTest\OposTest.dpr]
+[D:\Projects\OposWebkassa\src\Webkassa.bpg]
 FormState=0
 FormOnTop=0
 
@@ -44,6 +40,10 @@ FormState=0
 FormOnTop=0
 
 [D:\Projects\OposWebkassa\test\OposWebkassaTest\OposWebkassaTestLib.dpr]
+FormState=0
+FormOnTop=0
+
+[D:\Projects\OposWebkassa\test\WebkassaAccTest\WebkassaAccTest.dpr]
 FormState=0
 FormOnTop=0
 
@@ -92,7 +92,7 @@ Dockable=1
 Count=3
 Breakpoint0='D:\Projects\OposWebkassa\src\Shared\PosPrinterOA48.pas',2345,'',0,1,'',1,0,0,'',1,'','',''
 Breakpoint1='D:\Projects\OposWebkassa\src\Shared\PosPrinterOA48.pas',849,'',0,1,'',1,0,0,'',1,'','',''
-Breakpoint2='D:\Projects\OposWebkassa\src\OposWebkassa\Units\WebkassaImpl.pas',830,'',0,1,'',1,0,0,'',1,'','',''
+Breakpoint2='D:\Projects\OposWebkassa\src\OposWebkassa\Units\WebkassaImpl.pas',831,'',0,1,'',1,0,0,'',1,'','',''
 
 [AddressBreakpoints]
 Count=0
