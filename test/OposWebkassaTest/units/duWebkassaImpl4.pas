@@ -185,9 +185,12 @@ begin
 
   FptrCheck(Driver.ResetPrinter);
   FptrCheck(Driver.DirectIO2(DIO_PRINT_RECEIPT_DUPLICATE, 0, '{29FA3A2F-5A60-47E4-872B-6AE8C3893CC7}'));
-  //WriteFileData('ReceiptDuplicate.bin', Port.Buffer);
   Buffer := ReadFileData('ReceiptDuplicate.bin');
-  CheckEquals(StrToHexText(Buffer), StrToHexText(Port.Buffer), 'Port.Buffer');
+  if Buffer <> Port.Buffer then
+  begin
+    WriteFileData('ReceiptDuplicateErr.bin', Port.Buffer);
+    CheckEquals(StrToHexText(Buffer), StrToHexText(Port.Buffer), 'Port.Buffer');
+  end;
 end;
 
 initialization

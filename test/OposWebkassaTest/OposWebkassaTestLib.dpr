@@ -1,6 +1,7 @@
 Library OposWebkassaTestLib;
 
 uses
+  FastMM4,
   SysUtils,
   TestFramework,
   GUITestRunner,
@@ -89,9 +90,12 @@ uses
   duPosEscPrinter in 'units\duPosEscPrinter.pas',
   PrinterTypes in '..\..\src\Shared\PrinterTypes.pas',
   BarcodeUtils in '..\..\src\Shared\BarcodeUtils.pas',
+  duEscPrinter in 'units\duEscPrinter.pas',
+  duLogFile in 'units\duLogFile.pas',
   PosPrinterRongta in '..\..\src\Shared\PosPrinterRongta.pas',
   EscPrinterRongta in '..\..\src\Shared\EscPrinterRongta.pas',
-  OposDevice in '..\..\src\Opos\OposDevice.pas';
+  OposDevice in '..\..\src\Opos\OposDevice.pas',
+  duWebkassaImpl in 'units\duWebkassaImpl.pas';
 
 {$R *.RES}
 

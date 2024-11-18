@@ -4308,6 +4308,7 @@ begin
     begin
       Barcode.Data := Item.Text;
       Barcode.Text := Item.Text;
+      Barcode.Width := 0;
       Barcode.Height := 0;
       Barcode.BarcodeType := DIO_BARCODE_QRCODE;
       Barcode.ModuleWidth := 4;
