@@ -217,6 +217,7 @@ type
     SellTotal: Currency;
     RefundTotal: Currency;
     ReplaceDataMatrixWithQRCode: Boolean;
+    AcceptLanguage: string;
 
     constructor Create(ALogger: ILogFile);
     destructor Destroy; override;
@@ -400,6 +401,7 @@ begin
   RefundTotal := 0;
   Units.Clear;
   ReplaceDataMatrixWithQRCode := False;
+  AcceptLanguage := 'kk-KZ';
 end;
 
 procedure TPrinterParameters.LogText(const Caption, Text: WideString);
@@ -470,6 +472,7 @@ begin
   Logger.Debug('RecLineHeight: ' + IntToStr(RecLineHeight));
   Logger.Debug('Utf8Enabled: ' + BoolToStr(Utf8Enabled));
   Logger.Debug('ReplaceDataMatrixWithQRCode: ' + BoolToStr(ReplaceDataMatrixWithQRCode));
+  Logger.Debug('AcceptLanguage: ' + AcceptLanguage);
 
   // VatRates
   for i := 0 to VatRates.Count-1 do

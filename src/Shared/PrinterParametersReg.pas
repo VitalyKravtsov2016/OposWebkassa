@@ -396,6 +396,7 @@ begin
     Reg.WriteInteger('RecLineHeight', FParameters.RecLineHeight);
     Reg.WriteBool('HeaderPrinted', FParameters.HeaderPrinted);
     Reg.WriteBool('ReplaceDataMatrixWithQRCode', FParameters.ReplaceDataMatrixWithQRCode);
+    Reg.WriteString('AcceptLanguage', FParameters.AcceptLanguage);
 
     Reg.CloseKey;
     // VatRates
@@ -468,6 +469,9 @@ begin
 
       if Reg.ValueExists('RefundTotal') then
         Parameters.RefundTotal := Reg.ReadCurrency('RefundTotal');
+
+      if Reg.ValueExists('AcceptLanguage') then
+        Parameters.AcceptLanguage := Reg.ReadString('AcceptLanguage');
 
       Parameters.Units.Clear;
       if Reg.OpenKey(REGSTR_KEY_UNITITEMS, False) then

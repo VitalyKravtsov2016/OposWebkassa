@@ -42,8 +42,8 @@ type
     procedure TestJournalReport;
     procedure TestSendReceipt;
     procedure TestReadReceipt;
-    procedure TestReadReceiptText;
     procedure TestSendReceipt2;
+    procedure TestReadReceiptText;
   end;
 
 implementation
@@ -80,7 +80,9 @@ begin
     //  асса не имеет активного активационного номера
     FClient.Login := 'apykhtin@ibtsmail.ru';
     FClient.Password := 'Kassa123!';
-    FClient.CashboxNumber := 'SWK00033444';
+    FClient.CashboxNumber := 'SWK00032878';
+    FClient.AcceptLanguage := 'kk-KZ';
+
   (*
     FClient.Login := 'webkassa4@softit.kz';
     FClient.Password := 'Kassa123';
@@ -420,7 +422,6 @@ begin
   Command := TReceiptTextCommand.Create;
   try
     FClient.Connect;
-
     Command.Request.Token := FClient.Token;
     Command.Request.CashboxUniqueNumber := FClient.CashboxNumber;
     Command.Request.externalCheckNumber := FReceipt.Request.ExternalCheckNumber;
@@ -430,6 +431,7 @@ begin
     FClient.ReadReceiptText(Command);
     WriteFileData(GetModulePath + 'ReadReceiptText.txt', FClient.AnswerJson);
     WriteFileDataW(GetModulePath + 'ReadReceiptText2.txt', FClient.AnswerJson);
+
 
     Strings := TTntStringList.Create;
     try

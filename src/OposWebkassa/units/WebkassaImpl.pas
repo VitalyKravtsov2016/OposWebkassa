@@ -2990,6 +2990,8 @@ begin
     FClient.Address := FParams.WebkassaAddress;
     FClient.CashboxNumber := FParams.CashboxNumber;
     FClient.RegKeyName := TPrinterParametersReg.GetUsrKeyName(DeviceName);
+    FClient.AcceptLanguage := FParams.AcceptLanguage;
+
     if FLoadParamsEnabled then
     begin
       FClient.LoadParams;

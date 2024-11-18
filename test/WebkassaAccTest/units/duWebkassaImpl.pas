@@ -209,6 +209,7 @@ begin
     Params.RecLineChars := 48;
     Params.RecLineHeight := 10;
     Params.Utf8Enabled := True;
+    Params.AcceptLanguage := 'kk-KZ';
   end;
 end;                            
 

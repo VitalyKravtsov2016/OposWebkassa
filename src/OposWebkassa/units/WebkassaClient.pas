@@ -1395,6 +1395,7 @@ type
     FTestErrorResult: TErrorResult;
     FRegKeyName: WideString;
     FSendReceiptCommand: TSendReceiptCommand;
+    FAcceptLanguage: string;
 
     function GetTransport: TIdHTTP;
     function CheckLastError: Boolean;
@@ -1446,6 +1447,7 @@ type
     property SendReceiptCommand: TSendReceiptCommand read FSendReceiptCommand;
     property CashboxNumber: WideString read FCashboxNumber write FCashboxNumber;
     property TestErrorResult: TErrorResult read FTestErrorResult write FTestErrorResult;
+    property AcceptLanguage: string read FAcceptLanguage write FAcceptLanguage;
   end;
 
 function GetPaymentName(PaymentType: Integer): WideString;
@@ -1709,6 +1711,7 @@ begin
     FTransport.Request.Accept := 'application/json, */*; q=0.01';
     FTransport.Request.ContentType := 'application/json; charset=UTF-8';
     FTransport.Request.CharSet := 'utf-8';
+    FTransport.Request.AcceptLanguage := AcceptLanguage;
     //FTransport.OnHeadersAvailable := HTTPHeadersAvailable;
 
     HandlerSocket := TIdSSLIOHandlerSocketOpenSSL.Create(FTransport);

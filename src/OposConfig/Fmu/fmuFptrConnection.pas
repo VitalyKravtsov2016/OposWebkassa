@@ -31,6 +31,8 @@ type
     btnUpdateCashBoxNumbers: TTntButton;
     edtResultCode: TTntEdit;
     lblResultCode: TTntLabel;
+    lblAcceptLanguage: TTntLabel;
+    edtAcceptLanguage: TTntEdit;
     procedure btnTestConnectionClick(Sender: TObject);
     procedure btnUpdateCashBoxNumbersClick(Sender: TObject);
     procedure ModifiedClick(Sender: TObject);
@@ -54,6 +56,7 @@ begin
   edtLogin.Text := Parameters.Login;
   edtPassword.Text := Parameters.Password;
   cbCashboxNumber.Text := Parameters.CashboxNumber;
+  edtAcceptLanguage.Text := Parameters.AcceptLanguage;
 end;
 
 procedure TfmFptrConnection.UpdateObject;
@@ -63,6 +66,7 @@ begin
   Parameters.Login := edtLogin.Text;
   Parameters.Password := edtPassword.Text;
   Parameters.CashboxNumber := cbCashboxNumber.Text;
+  Parameters.AcceptLanguage := edtAcceptLanguage.Text;
 end;
 
 function TfmFptrConnection.CreateDriver: TWebkassaClient;
