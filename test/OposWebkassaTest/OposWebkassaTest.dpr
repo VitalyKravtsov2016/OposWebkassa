@@ -84,7 +84,7 @@ uses
   duTextDocument in 'units\duTextDocument.pas',
   xmlParser in '..\..\src\Shared\XMLParser.pas',
   MockPosPrinter in 'units\MockPosPrinter.pas',
-  duWebkassaImpl in 'units\duWebkassaImpl.pas',
+  duWebkassaImpl4 in 'units\duWebkassaImpl4.pas',
   duOposUtils in 'units\duOposUtils.pas',
   duWebkassaImpl2 in 'units\duWebkassaImpl2.pas',
   duPosEscPrinter in 'units\duPosEscPrinter.pas',
@@ -94,7 +94,8 @@ uses
   duLogFile in 'units\duLogFile.pas',
   PosPrinterRongta in '..\..\src\Shared\PosPrinterRongta.pas',
   EscPrinterRongta in '..\..\src\Shared\EscPrinterRongta.pas',
-  OposDevice in '..\..\src\Opos\OposDevice.pas';
+  OposDevice in '..\..\src\Opos\OposDevice.pas',
+  duWebkassaImpl in 'units\duWebkassaImpl.pas';
 
 {$R *.RES}
 

@@ -23,7 +23,7 @@ type
     constructor Create(ALogger: ILogFile; const APrinterName: string);
     destructor Destroy; override;
 
-    procedure Flush;
+    procedure Flush; virtual;
     procedure Purge;
     procedure Close;
     procedure Open;
@@ -33,6 +33,8 @@ type
     function Read(Count: DWORD): AnsiString;
     function CapRead: Boolean;
     function GetDescription: WideString;
+
+    property Buffer: AnsiString read FBuffer;
   end;
 
 implementation

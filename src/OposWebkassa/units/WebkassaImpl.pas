@@ -52,6 +52,7 @@ type
 
   TWebkassaImpl = class(TComponent, IFiscalPrinterService_1_12)
   private
+    FPort: IPrinterPort;
     FLines: TTntStrings;
     FCashboxStatus: TlkJSONbase;
     FCashboxStatusAnswerJson: WideString;
@@ -388,6 +389,7 @@ type
     property Logger: ILogFile read FLogger;
     property Client: TWebkassaClient read FClient;
     property Params: TPrinterParameters read FParams;
+    property Port: IPrinterPort read FPort write FPort;
     property TestMode: Boolean read FTestMode write FTestMode;
     property OposDevice: TOposServiceDevice19 read FOposDevice;
     property ReceiptJson: WideString read FReceiptJson write FReceiptJson;
@@ -3064,10 +3066,10 @@ function TWebkassaImpl.CreatePrinter: IOPOSPOSPrinter;
 var
   POSPrinter: TOPOSPOSPrinter;
   PosWinPrinter: TPosWinPrinter;
-  PrinterPort: IPrinterPort;
   SocketParams: TSocketParams;
 begin
   FPrinterObj.Free;
+
   case Params.PrinterType of
     PrinterTypePosPrinter:
     begin
@@ -3089,22 +3091,27 @@ begin
     end;
     PrinterTypeEscPrinterSerial:
     begin
-      PrinterPort := CreateSerialPort;
-      Result := CreatePosEscPrinter(PrinterPort);
+      if FPort = nil then
+        FPort := CreateSerialPort;
+      Result := CreatePosEscPrinter(FPort);
     end;
     PrinterTypeEscPrinterNetwork:
     begin
-      SocketParams.RemoteHost := Params.RemoteHost;
-      SocketParams.RemotePort := Params.RemotePort;
-      SocketParams.ByteTimeout := Params.ByteTimeout;
-      SocketParams.MaxRetryCount := 1;
-      PrinterPort := TSocketPort.Create(SocketParams, Logger);
-      Result := CreatePosEscPrinter(PrinterPort);
+      if FPort = nil then
+      begin
+        SocketParams.RemoteHost := Params.RemoteHost;
+        SocketParams.RemotePort := Params.RemotePort;
+        SocketParams.ByteTimeout := Params.ByteTimeout;
+        SocketParams.MaxRetryCount := 1;
+        FPort := TSocketPort.Create(SocketParams, Logger);
+      end;
+      Result := CreatePosEscPrinter(FPort);
     end;
     PrinterTypeEscPrinterWindows:
     begin
-      PrinterPort := TRawPrinterPort.Create(Logger, Params.PrinterName);
-      Result := CreatePosEscPrinter(PrinterPort);
+      if FPort = nil then
+        FPort := TRawPrinterPort.Create(Logger, Params.PrinterName);
+      Result := CreatePosEscPrinter(FPort);
     end;
   end;
 end;
@@ -4849,7 +4856,7 @@ begin
             Document.AddLine(Item.Value, STYLE_BOLD);
         end;
         ItemTypePicture: Document.Add(Item.Value, STYLE_IMAGE);
-        ItemTypeQRCode: Document.Add(Item.Value, STYLE_QR_CODE);
+        ItemTypeQRCode: Document.AddItem(Item.Value, STYLE_QR_CODE);
       end;
     end;
     // Print

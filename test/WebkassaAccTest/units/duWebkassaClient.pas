@@ -15,6 +15,9 @@ type
   { TWebkassaClientTest }
 
   TWebkassaClientTest = class(TTestCase)
+  private
+    function TestCashIn2(const CashboxNumber: WideString): Boolean;
+    function SendReceipt2(const CashboxNumber: WideString): Boolean;
   protected
     procedure SetUp; override;
     procedure TearDown; override;
@@ -26,6 +29,7 @@ type
     procedure TestAuthenticate;
     procedure TestAuthenticateError;
   published
+    procedure TestSelectCashbox;
     procedure TestReadCashboxes;
     procedure TestCashIn;
     procedure TestCashOut;
@@ -150,6 +154,34 @@ begin
   end;
 end;
 
+procedure TWebkassaClientTest.TestSelectCashbox;
+var
+  i: Integer;
+  CashBox: TCashBox;
+  IsValidCashBox: Boolean;
+  Command: TCashboxesCommand;
+begin
+  IsValidCashBox := False;
+  Command := TCashboxesCommand.Create;
+  try
+    FClient.Connect;
+    Command.Request.Token := FClient.Token;
+    Check(FClient.ReadCashboxes(Command), 'ReadCashboxes');
+    for i := 0 to Command.Data.List.Count-1 do
+    begin
+      CashBox := Command.Data.List[i];
+      if (not CashBox.IsOffline)and(CashBox.CurrentStatus = CashboxStatusActive) then
+      begin
+        IsValidCashBox := SendReceipt2(CashBox.UniqueNumber);
+        if IsValidCashBox then Break;
+      end;
+    end;
+    CheckEquals(True, IsValidCashBox, 'IsValidCashBox');
+  finally
+    Command.Free;
+  end;
+end;
+
 procedure TWebkassaClientTest.TestChangeToken;
 var
   Command: TChangeTokenCommand;
@@ -252,68 +284,68 @@ begin
 end;
 
 procedure TWebkassaClientTest.TestSendReceipt;
+begin
+(*
+  FShiftNumber := FReceipt.Data.ShiftNumber;
+  WriteFileData(GetModulePath + 'SendReceipt.txt', FClient.AnswerJson);
+*)
+end;
+
+function TWebkassaClientTest.SendReceipt2(const CashboxNumber: WideString): Boolean;
 var
   Payment: TPayment;
   Item: TTicketItem;
-  ItemText: WideString;
-  Strings: TTntStringList;
 begin
-  Strings := TTntStringList.Create;
+  FClient.RaiseErrors := False;
   try
-    Strings.LoadFromFile('KazakhText.txt');
-    ItemText := Strings[0];
-    //ItemText := 'Позиция 1';
+    FClient.Connect;
+    FReceipt.Request.Token := FClient.Token;
+    FReceipt.Request.CashboxUniqueNumber := CashboxNumber;
+    FReceipt.Request.ExternalCheckNumber := CreateGUIDStr;
+    FReceipt.Request.OperationType := OperationTypeSell;
+    // Item 1
+    Item := FReceipt.Request.Positions.Add as TTicketItem;
+    Item.Count := 123.456;
+    Item.Price := 123.45;
+    Item.TaxPercent := 12;
+    Item.Tax := 1633.03;
+    Item.TaxType := TaxTypeVAT;
+    Item.PositionName := 'ItemText'; //'Позиция чека 1';
+    Item.PositionCode := '1';
+    Item.DisplayName := 'ItemText'; //'Товар номер 1';
+    Item.UnitCode := 796;
+    Item.Discount := 12;
+    Item.Markup := 13;
+    Item.WarehouseType := 0;
+    // Item 2
+    Item := FReceipt.Request.Positions.Add as TTicketItem;
+    Item.Count := 12.456;
+    Item.Price := 12.45;
+    Item.TaxPercent := 12;
+    Item.Tax := 16.72;
+    Item.TaxType := TaxTypeVAT;
+    Item.PositionName := 'Позиция чека 2';
+    Item.PositionCode := '1';
+    Item.DisplayName := 'Товар номер 2';
+    Item.UnitCode := 796;
+    Item.Discount := 12;
+    Item.Markup := 13;
+    Item.WarehouseType := 0;
+
+    FReceipt.Request.Change := 0;
+    FReceipt.Request.RoundType := 0;
+    Payment := FReceipt.Request.Payments.Add as TPayment;
+    Payment.Sum := 800;
+    Payment.PaymentType := PaymentTypeCash;
+
+    Payment := FReceipt.Request.Payments.Add as TPayment;
+    Payment.Sum := 14597.72;
+    Payment.PaymentType := PaymentTypeCard;
+
+    Result := FClient.SendReceipt(FReceipt);
   finally
-    Strings.Free;
+    FClient.RaiseErrors := True;
   end;
-
-  FClient.Connect;
-  FReceipt.Request.Token := FClient.Token;
-  FReceipt.Request.CashboxUniqueNumber := FClient.CashboxNumber;
-  FReceipt.Request.ExternalCheckNumber := CreateGUIDStr;
-  FReceipt.Request.OperationType := OperationTypeSell;
-  // Item 1
-  Item := FReceipt.Request.Positions.Add as TTicketItem;
-  Item.Count := 123.456;
-  Item.Price := 123.45;
-  Item.TaxPercent := 12;
-  Item.Tax := 1633.03;
-  Item.TaxType := TaxTypeVAT;
-  Item.PositionName := ItemText; //'Позиция чека 1';
-  Item.PositionCode := '1';
-  Item.DisplayName := ItemText; //'Товар номер 1';
-  Item.UnitCode := 796;
-  Item.Discount := 12;
-  Item.Markup := 13;
-  Item.WarehouseType := 0;
-  // Item 2
-  Item := FReceipt.Request.Positions.Add as TTicketItem;
-  Item.Count := 12.456;
-  Item.Price := 12.45;
-  Item.TaxPercent := 12;
-  Item.Tax := 16.72;
-  Item.TaxType := TaxTypeVAT;
-  Item.PositionName := 'Позиция чека 2';
-  Item.PositionCode := '1';
-  Item.DisplayName := 'Товар номер 2';
-  Item.UnitCode := 796;
-  Item.Discount := 12;
-  Item.Markup := 13;
-  Item.WarehouseType := 0;
-
-  FReceipt.Request.Change := 0;
-  FReceipt.Request.RoundType := 0;
-  Payment := FReceipt.Request.Payments.Add as TPayment;
-  Payment.Sum := 800;
-  Payment.PaymentType := PaymentTypeCash;
-
-  Payment := FReceipt.Request.Payments.Add as TPayment;
-  Payment.Sum := 14597.72;
-  Payment.PaymentType := PaymentTypeCard;
-
-  FClient.SendReceipt(FReceipt);
-  FShiftNumber := FReceipt.Data.ShiftNumber;
-  WriteFileData(GetModulePath + 'SendReceipt.txt', FClient.AnswerJson);
 end;
 
 procedure TWebkassaClientTest.TestSendReceipt2;
@@ -450,6 +482,28 @@ begin
     WriteFileData(GetModulePath + 'CashIn.txt', FClient.AnswerJson);
   finally
     Command.Free;
+  end;
+end;
+
+function TWebkassaClientTest.TestCashIn2(const CashboxNumber: WideString): Boolean;
+var
+  Command: TMoneyOperationCommand;
+begin
+  FClient.RaiseErrors := False;
+  Command := TMoneyOperationCommand.Create;
+  try
+    FClient.Connect;
+
+    Command.Request.token := FClient.Token;
+	  Command.Request.CashboxUniqueNumber := CashboxNumber;
+	  Command.Request.OperationType := OperationTypeCashIn;
+	  Command.Request.Sum := 12345.67;
+	  Command.Request.ExternalCheckNumber := CreateGUIDStr;
+
+    Result := FClient.MoneyOperation(Command);
+  finally
+    Command.Free;
+    FClient.RaiseErrors := True;
   end;
 end;
 

@@ -83,7 +83,7 @@ uses
   duTextDocument in 'units\duTextDocument.pas',
   xmlParser in '..\..\src\Shared\XMLParser.pas',
   MockPosPrinter in 'units\MockPosPrinter.pas',
-  duWebkassaImpl in 'units\duWebkassaImpl.pas',
+  duWebkassaImpl4 in 'units\duWebkassaImpl4.pas',
   duOposUtils in 'units\duOposUtils.pas',
   duWebkassaImpl2 in 'units\duWebkassaImpl2.pas',
   duPosEscPrinter in 'units\duPosEscPrinter.pas',

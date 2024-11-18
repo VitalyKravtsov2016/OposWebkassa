@@ -15,7 +15,7 @@ uses
   // This
   LogFile, WebkassaImpl, WebkassaClient, MockPosPrinter, FileUtils,
   CustomReceipt, uLkJSON, ReceiptTemplate, SalesReceipt, DirectIOAPI,
-  DebugUtils, StringUtils, PrinterTypes;
+  DebugUtils, StringUtils, PrinterTypes, PrinterParameters;
 
 const
   CRLF = #13#10;
@@ -94,6 +94,8 @@ type
     procedure TestFiscalreceiptType;
     procedure TestFiscalreceiptType2;
     procedure TestZeroFiscalReceipt;
+    procedure TestPrintDuplicate;
+    procedure TestPrintDuplicate2;
   end;
 
 implementation
@@ -1294,14 +1296,15 @@ var
   Count: Integer;
 begin
   ShowLines;
-  (*
+
+(*
   if FLines.Text <> FPrinter.Lines.Text then
   begin
     FLines.SaveToFile('CheckLines1.txt');
     FPrinter.Lines.SaveToFile('CheckLines2.txt');
   end;
   CheckEquals(FLines.Count, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
-  *)
+*)
   Count := Math.Min(FLines.Count, FPrinter.Lines.Count);
   for i := 0 to Count-1 do
   begin
@@ -1448,6 +1451,33 @@ begin
     WriteFileData(GetModulePath + 'JsonText1.json', JsonText);
   end;
   CheckEquals(ExpectedText, JsonText, 'Driver.Client.CommandJson');
+end;
+
+procedure TWebkassaImplTest.TestPrintDuplicate;
+begin
+  OpenClaimEnable;
+  FDriver.Client.TestMode := True;
+  FDriver.Client.AnswerJson := ReadFileData(GetModulePath + 'ReadReceiptTextAnswer2.txt');
+
+  FptrCheck(Driver.ResetPrinter);
+  CheckEquals(0, FPrinter.Lines.Count, 'Lines.Count.0');
+  FptrCheck(Driver.DirectIO2(DIO_PRINT_RECEIPT_DUPLICATE, 0, '{29FA3A2F-5A60-47E4-872B-6AE8C3893CC7}'));
+  CheckEquals(42, FPrinter.Lines.Count, 'Lines.Count.1');
+  FLines.LoadFromFile('DuplicateReceipt.txt');
+  CheckLines;
+end;
+
+procedure TWebkassaImplTest.TestPrintDuplicate2;
+begin
+  OpenClaimEnable;
+  FDriver.Client.TestMode := True;
+  FDriver.Client.AnswerJson := ReadFileData(GetModulePath + 'ReadReceiptTextAnswer2.txt');
+
+  FptrCheck(Driver.ResetPrinter);
+  CheckEquals(0, FPrinter.Lines.Count, 'Lines.Count.0');
+  FptrCheck(Driver.DirectIO2(DIO_SET_DRIVER_PARAMETER, DriverParameterPrintEnabled, '0'));
+  FptrCheck(Driver.DirectIO2(DIO_PRINT_RECEIPT_DUPLICATE, 0, '{29FA3A2F-5A60-47E4-872B-6AE8C3893CC7}'));
+  CheckEquals(0, FPrinter.Lines.Count, 'Lines.Count.1');
 end;
 
 initialization

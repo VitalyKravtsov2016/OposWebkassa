@@ -47,6 +47,7 @@ type
     procedure TestReadCahiers;
     procedure TestReadReceipt;
     procedure TestReadReceiptText;
+    procedure TestReadReceiptText2;
     procedure TestReadUnits;
     procedure TestUploadOrder;
     procedure TestMoneyOperation;
@@ -455,6 +456,40 @@ begin
     CheckEquals('          ƒ”¡À» ¿“           ', Item.Value, 'Item.Value');
     CheckEquals(1, Item.Style, 'Item.Style');
 
+  finally
+    Command.Free;
+  end;
+end;
+
+procedure TWebkassaClientTest.TestReadReceiptText2;
+var
+  Item: TReceiptTextItem;
+  Command: TReceiptTextCommand;
+begin
+  Command := TReceiptTextCommand.Create;
+  try
+    FClient.AnswerJson := ReadFileData(GetModulePath + 'ReadReceiptTextAnswer2.txt');
+    CheckEquals(True, FClient.ReadReceiptText(Command), 'FClient.ReadReceiptText');
+
+    CheckEquals(34, Command.Data.Lines.Count, 'Command.Data.Lines.Count');
+
+    Item := Command.Data.Lines.Items[0] as TReceiptTextItem;
+    CheckEquals(1, Item.Order, 'Item.Order');
+    CheckEquals(0, Item._Type, 'Item._Type');
+    CheckEquals('           PetroRetail “ŒŒ          ', Item.Value, 'Item.Value');
+    CheckEquals(0, Item.Style, 'Item.Style');
+
+    Item := Command.Data.Lines.Items[1] as TReceiptTextItem;
+    CheckEquals(2, Item.Order, 'Item.Order');
+    CheckEquals(0, Item._Type, 'Item._Type');
+    CheckEquals('          ¡»Õ 181040037076          ', Item.Value, 'Item.Value');
+    CheckEquals(0, Item.Style, 'Item.Style');
+
+    Item := Command.Data.Lines.Items[33] as TReceiptTextItem;
+    CheckEquals(34, Item.Order, 'Item.Order');
+    CheckEquals(0, Item._Type, 'Item._Type');
+    CheckEquals('             WEBKASSA.KZ            ', Item.Value, 'Item.Value');
+    CheckEquals(0, Item.Style, 'Item.Style');
   finally
     Command.Free;
   end;

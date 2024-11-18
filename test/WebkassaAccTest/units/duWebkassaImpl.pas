@@ -146,7 +146,9 @@ begin
 *)
     Params.Login := 'apykhtin@ibtsmail.ru';
     Params.Password := 'Kassa123!';
-    Params.CashboxNumber := 'SWK00033444';
+    //Params.CashboxNumber := 'SWK00033444';
+    Params.CashboxNumber := 'SWK00032878';
+
 
     Params.ConnectTimeout := 10;
     Params.WebkassaAddress := 'https://devkkm.webkassa.kz';
