@@ -201,11 +201,13 @@ begin
     Params.ReconnectPort := False;
   *)
     Params.PrinterType := PrinterTypeEscPrinterWindows;
+    (*
     Params.PrinterName := 'RONGTA 80mm Series Printer';
     Params.EscPrinterType := EscPrinterTypeRongta;
+    *)
 
-    //Params.PrinterName := 'POS-80C';
-    //Params.EscPrinterType := EscPrinterTypeOA48;
+    Params.PrinterName := 'POS-80C';
+    Params.EscPrinterType := EscPrinterTypeOA48;
 
     Params.FontName := FontNameA;
     Params.LineSpacing := 0;

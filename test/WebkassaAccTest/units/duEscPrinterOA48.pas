@@ -52,6 +52,7 @@ type
     procedure TestPDF417;
     procedure TestQRCode;
     procedure TestQRCodeECL;
+    procedure TestQRCodeECL2;
     procedure TestQRCodeModuleSize;
     procedure TestQRCodeJustification;
     procedure PrintTestPage;
@@ -114,8 +115,7 @@ end;
 
 function TPrinterOA48Test.CreateRawPort: TRawPrinterPort;
 begin
-  //Result := TRawPrinterPort.Create(FLogger, 'POS-80C');
-  Result := TRawPrinterPort.Create(FLogger, 'RONGTA 80mm Series Printer');
+  Result := TRawPrinterPort.Create(FLogger, 'POS-80C');
 end;
 
 function TPrinterOA48Test.CreateSerialPort: TSerialPort;
@@ -422,22 +422,27 @@ procedure TPrinterOA48Test.TestQRCodeECL;
 var
   QRCode: TQRCode;
 begin
-  QRCode.ModuleSize := 3;
+  QRCode.ModuleSize := 4;
+  QRCode.ECLevel := 0;
   QRCode.data := 'http://dev.kofd.kz/consumer?i=1320526842876&f=555697470167&s=2000.00&t=20240327T093611';
 
   FPrinter.Initialize;
+  FPrinter.PrintText(CRLF);
   FPrinter.PrintText('ECL 7%' + CRLF);
   QRCode.ECLevel := OA48_QRCODE_ECL_7;
   FPrinter.printQRCode(QRCode);
 
+  FPrinter.PrintText(CRLF);
   FPrinter.PrintText('ECL 15%' + CRLF);
   QRCode.ECLevel := OA48_QRCODE_ECL_15;
   FPrinter.printQRCode(QRCode);
 
+  FPrinter.PrintText(CRLF);
   FPrinter.PrintText('ECL 25%' + CRLF);
   QRCode.ECLevel := OA48_QRCODE_ECL_25;
   FPrinter.printQRCode(QRCode);
 
+  FPrinter.PrintText(CRLF);
   FPrinter.PrintText('ECL 30%' + CRLF);
   QRCode.ECLevel := OA48_QRCODE_ECL_30;
   FPrinter.printQRCode(QRCode);

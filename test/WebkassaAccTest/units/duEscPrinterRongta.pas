@@ -111,7 +111,6 @@ end;
 
 function TPrinterRongtaTest.CreateRawPort: TRawPrinterPort;
 begin
-  //Result := TRawPrinterPort.Create(FLogger, 'POS-80C');
   Result := TRawPrinterPort.Create(FLogger, 'RONGTA 80mm Series Printer');
 end;
 
