@@ -612,7 +612,6 @@ begin
   Document.Clear;
   Document.LineChars := Printer.RecLineChars;
   Document.LineHeight := Printer.RecLineHeight;
-  Document.LineSpacing := Printer.RecLineSpacing;
 end;
 
 function TWebkassaImpl.AmountToStr(Value: Currency): AnsiString;
@@ -1517,7 +1516,7 @@ begin
       Item.Style := STYLE_DWIDTH_HEIGHT;
       Item.LineChars := Document.LineChars;
       Item.LineHeight := Document.LineHeight;
-      Item.LineSpacing := Document.LineSpacing;
+      Item.LineSpacing := Params.LineSpacing;
     end;
     ClearCashboxStatus;
 
@@ -4129,10 +4128,6 @@ begin
   begin
     Item.LineChars := Document.LineChars;
   end;
-  if Item.LineSpacing = 0 then
-  begin
-    Item.LineSpacing := Document.LineSpacing;
-  end;
 end;
 
 procedure TWebkassaImpl.AddItems(Items: TList);
@@ -4146,7 +4141,6 @@ procedure TWebkassaImpl.AddItems(Items: TList);
     begin
       Item := TTemplateItem(Items[i]);
       Document.LineChars := Item.LineChars;
-      Document.LineSpacing := Item.LineSpacing;
       case Item.TextStyle of
         STYLE_QR_CODE: Document.AddItem(Item.Value, Item.TextStyle);
       else
@@ -4283,7 +4277,7 @@ begin
   Logger.Debug(Tnt_WideFormat('PrintDocument, time=%d ms', [GetTickCount-TickCount]));
 end;
 
-procedure TWebkassaImpl.PrinTDocItem(Item: TDocItem);
+procedure TWebkassaImpl.PrintDocItem(Item: TDocItem);
 var
   Text: WideString;
   Barcode: TBarcodeRec;
@@ -4298,7 +4292,7 @@ begin
     Printer.RecLineHeight := Item.LineHeight;
     FLineHeight := Item.LineHeight;
   end;
-  if (Item.LineSpacing <> 0)and(Item.LineSpacing <> FLineSpacing) then
+  if (Item.LineSpacing >= 0)and(Item.LineSpacing <> FLineSpacing) then
   begin
     Printer.RecLineSpacing := Item.LineSpacing;
     FLineSpacing := Item.LineSpacing;

@@ -1,4 +1,4 @@
-unit duEscPrinterOA48;
+unit duEscPrinterRongta;
 
 interface
 
@@ -10,16 +10,16 @@ uses
   // Tnt
   TntClasses, TntSysUtils,
   // This
-  DebugUtils, StringUtils, EscPrinterOA48, PrinterPort, SerialPort, LogFile,
+  DebugUtils, StringUtils, EscPrinterRongta, PrinterPort, SerialPort, LogFile,
   FileUtils, SocketPort, RawPrinterPort;
 
 type
-  { TPrinterOA48Test }
+  { TPrinterRongtaTest }
 
-  TPrinterOA48Test = class(TTestCase)
+  TPrinterRongtaTest = class(TTestCase)
   private
     FLogger: ILogFile;
-    FPrinter: TEscPrinterOA48;
+    FPrinter: TEscPrinterRongta;
     FPrinterPort: IPrinterPort;
     function GetKazakhChars2: AnsiString;
   protected
@@ -37,7 +37,7 @@ type
     function GetKazakhText: WideString;
     function GetKazakhChars: AnsiString;
 
-    property Printer: TEscPrinterOA48 read FPrinter;
+    property Printer: TEscPrinterRongta read FPrinter;
   published
     procedure TestBitmap;
     procedure TestPrintRasterBMP;
@@ -77,19 +77,16 @@ type
     procedure TestPageMode;
     procedure TestPageModeA;
     procedure TestPageModeB;
-    procedure TestPrintMaxiCode;
-    procedure TestPrintUTF;
     procedure TestPrintRussianFontB;
     procedure TestPrintFontBMode;
-    procedure TestPrintFontBMode2;
     procedure TestCutterError;
   end;
 
 implementation
 
-{ TPrinterOA48Test }
+{ TPrinterRongtaTest }
 
-procedure TPrinterOA48Test.SetUp;
+procedure TPrinterRongtaTest.SetUp;
 begin
   inherited SetUp;
   FLogger := TLogFile.Create;
@@ -102,23 +99,23 @@ begin
   //FPrinterPort := CreateSerialPort;
   FPrinterPort := CreateRawPort;
   FPrinterPort.Open;
-  FPrinter := TEscPrinterOA48.Create(FPrinterPort, FLogger);
+  FPrinter := TEscPrinterRongta.Create(FPrinterPort, FLogger);
 end;
 
-procedure TPrinterOA48Test.TearDown;
+procedure TPrinterRongtaTest.TearDown;
 begin
   FPrinter.Free;
   FPrinterPort := nil;
   inherited TearDown;
 end;
 
-function TPrinterOA48Test.CreateRawPort: TRawPrinterPort;
+function TPrinterRongtaTest.CreateRawPort: TRawPrinterPort;
 begin
   //Result := TRawPrinterPort.Create(FLogger, 'POS-80C');
   Result := TRawPrinterPort.Create(FLogger, 'RONGTA 80mm Series Printer');
 end;
 
-function TPrinterOA48Test.CreateSerialPort: TSerialPort;
+function TPrinterRongtaTest.CreateSerialPort: TSerialPort;
 var
   SerialParams: TSerialParams;
 begin
@@ -133,7 +130,7 @@ begin
   Result := TSerialPort.Create(SerialParams, FLogger);
 end;
 
-function TPrinterOA48Test.CreateSocketPort: TSocketPort;
+function TPrinterRongtaTest.CreateSocketPort: TSocketPort;
 var
   SocketParams: TSocketParams;
 begin
@@ -144,20 +141,20 @@ begin
   Result := TSocketPort.Create(SocketParams, FLogger);
 end;
 
-procedure TPrinterOA48Test.TestPrintText;
+procedure TPrinterRongtaTest.TestPrintText;
 begin
   FPrinter.PrintText('Печать строки 1' + CRLF);
   FPrinter.PrintText('Печать строки 2' + CRLF);
   FPrinter.PrintText('Печать строки 3' + CRLF);
 end;
 
-procedure TPrinterOA48Test.TestInitialize;
+procedure TPrinterRongtaTest.TestInitialize;
 begin
   FPrinter.Initialize;
   FPrinter.SetCodePage(CODEPAGE_WCP1251);
 end;
 
-procedure TPrinterOA48Test.TestReadStatus;
+procedure TPrinterRongtaTest.TestReadStatus;
 var
   ErrorStatus: TErrorStatus;
   OfflineStatus: TOfflineStatus;
@@ -186,7 +183,7 @@ begin
   CheckEquals(False, RollStatus.PaperNearEnd, 'PaperNearEnd');
 end;
 
-procedure TPrinterOA48Test.TestPrintMode;
+procedure TPrinterRongtaTest.TestPrintMode;
 var
   PrintMode: TPrintMode;
 begin
@@ -283,7 +280,7 @@ begin
   FPrinter.PartialCut;
 end;
 
-procedure TPrinterOA48Test.TestPrintModeInLine;
+procedure TPrinterRongtaTest.TestPrintModeInLine;
 var
   PrintMode: TPrintMode;
 begin
@@ -332,7 +329,7 @@ begin
   FPrinter.PrintText(' Double height & width' + CRLF);
 end;
 
-procedure TPrinterOA48Test.TestBarcode;
+procedure TPrinterRongtaTest.TestBarcode;
 begin
   FPrinter.SetNormalPrintMode;
   FPrinter.SetBarcodeLeft(50);
@@ -356,7 +353,7 @@ begin
   FPrinter.PrintBarcode(BARCODE_CODABAR, '837465873');
 end;
 
-procedure TPrinterOA48Test.TestBarcode2;
+procedure TPrinterRongtaTest.TestBarcode2;
 begin
   FPrinter.SetNormalPrintMode;
   FPrinter.SetBarcodeLeft(50);
@@ -385,7 +382,7 @@ begin
   FPrinter.PrintText(CRLF);
 end;
 
-procedure TPrinterOA48Test.TestPDF417;
+procedure TPrinterRongtaTest.TestPDF417;
 var
   Barcode: TPDF417;
 const
@@ -393,22 +390,19 @@ const
 begin
   FPrinter.Initialize;
   FPrinter.PrintText('PDF417 test' + CRLF);
-  Barcode.RowNumber := 1;
   Barcode.ColumnNumber := 4; // 1..30
-  Barcode.ModuleWidth := 2;
-  Barcode.ModuleHeight := 4;
-  Barcode.ErrorCorrectionLevel := 0;
-  Barcode.Options := 0;
+  Barcode.SecurityLevel := 0;
+  Barcode.HVRatio := 2;
   Barcode.data := BarcodeData;
   FPrinter.printPDF417(Barcode);
 end;
 
-procedure TPrinterOA48Test.TestQRCode;
+procedure TPrinterRongtaTest.TestQRCode;
 var
   QRCode: TQRCode;
 begin
   QRCode.ModuleSize := 3;
-  QRCode.ECLevel := OA48_QRCODE_ECL_7;
+  QRCode.ECLevel := REP_QRCODE_ECL_7;
   QRCode.data := 'http://dev.kofd.kz/consumer?i=1320526842876&f=555697470167&s=2000.00&t=20240327T093611';
 
   FPrinter.Initialize;
@@ -418,36 +412,41 @@ end;
 ///////////////////////////////////////////////////////////////////////////////
 // ECL - Error correction level
 
-procedure TPrinterOA48Test.TestQRCodeECL;
+procedure TPrinterRongtaTest.TestQRCodeECL;
 var
   QRCode: TQRCode;
 begin
-  QRCode.ModuleSize := 3;
+  QRCode.SymbolVersion := 0;
+  QRCode.ModuleSize := 4;
   QRCode.data := 'http://dev.kofd.kz/consumer?i=1320526842876&f=555697470167&s=2000.00&t=20240327T093611';
 
   FPrinter.Initialize;
+  FPrinter.PrintText(CRLF);
   FPrinter.PrintText('ECL 7%' + CRLF);
-  QRCode.ECLevel := OA48_QRCODE_ECL_7;
+  QRCode.ECLevel := REP_QRCODE_ECL_7;
   FPrinter.printQRCode(QRCode);
 
+  FPrinter.PrintText(CRLF);
   FPrinter.PrintText('ECL 15%' + CRLF);
-  QRCode.ECLevel := OA48_QRCODE_ECL_15;
+  QRCode.ECLevel := REP_QRCODE_ECL_15;
   FPrinter.printQRCode(QRCode);
 
+  FPrinter.PrintText(CRLF);
   FPrinter.PrintText('ECL 25%' + CRLF);
-  QRCode.ECLevel := OA48_QRCODE_ECL_25;
+  QRCode.ECLevel := REP_QRCODE_ECL_25;
   FPrinter.printQRCode(QRCode);
 
+  FPrinter.PrintText(CRLF);
   FPrinter.PrintText('ECL 30%' + CRLF);
-  QRCode.ECLevel := OA48_QRCODE_ECL_30;
+  QRCode.ECLevel := REP_QRCODE_ECL_30;
   FPrinter.printQRCode(QRCode);
 end;
 
-procedure TPrinterOA48Test.TestQRCodeModuleSize;
+procedure TPrinterRongtaTest.TestQRCodeModuleSize;
 var
   QRCode: TQRCode;
 begin
-  QRCode.ECLevel := OA48_QRCODE_ECL_7;
+  QRCode.ECLevel := REP_QRCODE_ECL_7;
   QRCode.data := 'http://dev.kofd.kz/consumer?i=1320526842876&f=555697470167&s=2000.00&t=20240327T093611';
 
   FPrinter.Initialize;
@@ -464,7 +463,7 @@ begin
   FPrinter.printQRCode(QRCode);
 end;
 
-procedure TPrinterOA48Test.TestQRCodeJustification;
+procedure TPrinterRongtaTest.TestQRCodeJustification;
 var
   QRCode: TQRCode;
 begin
@@ -482,7 +481,7 @@ begin
   FPrinter.printQRCode(QRCode);
 end;
 
-procedure TPrinterOA48Test.TestBitmap;
+procedure TPrinterRongtaTest.TestBitmap;
 var
   Bitmap: TBitmap;
   FileName: string;
@@ -505,7 +504,7 @@ begin
   end;
 end;
 
-procedure TPrinterOA48Test.TestPrintRasterBMP;
+procedure TPrinterRongtaTest.TestPrintRasterBMP;
 var
   Bitmap: TBitmap;
 begin
@@ -527,7 +526,7 @@ _2013-01-05
 _RONGTA
 *)
 
-procedure TPrinterOA48Test.TestReadPrinterID;
+procedure TPrinterRongtaTest.TestReadPrinterID;
 begin
   CheckEquals('7.03 ESC/POS', FPrinter.ReadPrinterID(65), 'Firmware version');
 
@@ -540,13 +539,13 @@ begin
   CheckEquals('D6KG074561', FPrinter.ReadSerialNumber, 'Serial number');
 end;
 
-procedure TPrinterOA48Test.PrintTestPage;
+procedure TPrinterRongtaTest.PrintTestPage;
 begin
   FPrinter.Initialize;
   FPrinter.PrintTestPage;
 end;
 
-procedure TPrinterOA48Test.TestJustification;
+procedure TPrinterRongtaTest.TestJustification;
 var
   QRCode: TQRCode;
 begin
@@ -561,7 +560,7 @@ begin
   FPrinter.SetJustification(JUSTIFICATION_LEFT);
 end;
 
-procedure TPrinterOA48Test.TestJustification2;
+procedure TPrinterRongtaTest.TestJustification2;
 begin
   FPrinter.Initialize;
   FPrinter.PrintText('Default justification' + CRLF);
@@ -573,7 +572,7 @@ begin
   FPrinter.PrintText('Right justification' + CRLF);
 end;
 
-procedure TPrinterOA48Test.TestUnderlined;
+procedure TPrinterRongtaTest.TestUnderlined;
 var
   PrintMode: TPrintMode;
 begin
@@ -599,13 +598,13 @@ begin
   FPrinter.PrintText('Underlined mode, font A' + CRLF);
 end;
 
-procedure TPrinterOA48Test.TestBeepParams;
+procedure TPrinterRongtaTest.TestBeepParams;
 begin
   FPrinter.Initialize;
   FPrinter.SetBeepParams(3, 1);
 end;
 
-procedure TPrinterOA48Test.TestEmphasized;
+procedure TPrinterRongtaTest.TestEmphasized;
 begin
   FPrinter.Initialize;
   FPrinter.PrintText('Emphasized mode OFF ');
@@ -615,7 +614,7 @@ begin
   FPrinter.SetEmphasizedMode(False);
 end;
 
-procedure TPrinterOA48Test.TestDoubleStrikeMode;
+procedure TPrinterRongtaTest.TestDoubleStrikeMode;
 begin
   FPrinter.Initialize;
   FPrinter.PrintText('Double-strike mode OFF ');
@@ -625,7 +624,7 @@ begin
   FPrinter.SetDoubleStrikeMode(False);
 end;
 
-procedure TPrinterOA48Test.TestCharacterFont;
+procedure TPrinterRongtaTest.TestCharacterFont;
 begin
   FPrinter.Initialize;
   FPrinter.PrintText('Character font A' + CRLF);
@@ -636,7 +635,7 @@ begin
   FPrinter.SetCharacterFont(0);
 end;
 
-procedure TPrinterOA48Test.TestCodePage;
+procedure TPrinterRongtaTest.TestCodePage;
 const
   TextCodePage1251: WideString = 'Кодовая страница 1251';
   TextCodePage866: WideString = 'Кодовая страница 866';
@@ -669,7 +668,7 @@ begin
   end;
 end;
 
-procedure TPrinterOA48Test.TestCodePage2;
+procedure TPrinterRongtaTest.TestCodePage2;
 const
   TextCodePage1251: WideString = 'Кодовая страница 1251';
   TextCodePage866: WideString = 'Кодовая страница 866';
@@ -701,7 +700,7 @@ begin
   end;
 end;
 
-procedure TPrinterOA48Test.TestCodePages;
+procedure TPrinterRongtaTest.TestCodePages;
 var
   i: Integer;
   Text: AnsiString;
@@ -720,7 +719,7 @@ begin
   end;
 end;
 
-procedure TPrinterOA48Test.TestNVBitImage;
+procedure TPrinterRongtaTest.TestNVBitImage;
 var
   Bitmap: TBitmap;
   FileName: string;
@@ -739,7 +738,7 @@ begin
   end;
 end;
 
-procedure TPrinterOA48Test.TestCoverOpen;
+procedure TPrinterRongtaTest.TestCoverOpen;
 var
   i: Integer;
 begin
@@ -767,7 +766,7 @@ begin
 *)
 end;
 
-procedure TPrinterOA48Test.TestRecoverError;
+procedure TPrinterRongtaTest.TestRecoverError;
 var
   ErrorStatus: TErrorStatus;
 begin
@@ -778,7 +777,7 @@ begin
   end;
 end;
 
-procedure TPrinterOA48Test.TestLineSpacing;
+procedure TPrinterRongtaTest.TestLineSpacing;
 var
   i: Integer;
 begin
@@ -800,7 +799,7 @@ begin
   end;
 end;
 
-procedure TPrinterOA48Test.TestCutDistanceFontA;
+procedure TPrinterRongtaTest.TestCutDistanceFontA;
 begin
   FPrinter.Initialize;
   FPrinter.SetLineSpacing(0);
@@ -818,7 +817,7 @@ begin
   FPrinter.PartialCut;
 end;
 
-procedure TPrinterOA48Test.TestCutDistanceFontB;
+procedure TPrinterRongtaTest.TestCutDistanceFontB;
 begin
   FPrinter.Initialize;
   FPrinter.SetLineSpacing(0);
@@ -880,7 +879,7 @@ arabic letter uighur kazakh kirghiz alef maksura medial form
 kazakhstan flag
 *)
 
-function TPrinterOA48Test.GetKazakhChars: AnsiString;
+function TPrinterRongtaTest.GetKazakhChars: AnsiString;
 var
   i: Integer;
   Code: Byte;
@@ -894,7 +893,7 @@ begin
   end;
 end;
 
-function TPrinterOA48Test.GetKazakhChars2: AnsiString;
+function TPrinterRongtaTest.GetKazakhChars2: AnsiString;
 var
   i: Integer;
   Code: Byte;
@@ -908,10 +907,9 @@ begin
   end;
 end;
 
-procedure TPrinterOA48Test.TestUserCharacter;
+procedure TPrinterRongtaTest.TestUserCharacter;
 begin
   FPrinter.Initialize;
-  FPrinter.UTF8Enable(False);
   FPrinter.WriteKazakhCharacters;
   // FONT A
   FPrinter.SetCharacterFont(FONT_TYPE_A);
@@ -953,7 +951,7 @@ begin
 *)
 end;
 
-procedure TPrinterOA48Test.TestUserCharacter2;
+procedure TPrinterRongtaTest.TestUserCharacter2;
 var
   Bitmap: TBitmap;
   UserChar: TUserChar;
@@ -977,7 +975,7 @@ begin
   end;
 end;
 
-procedure TPrinterOA48Test.TestBitmap2;
+procedure TPrinterRongtaTest.TestBitmap2;
 const
   DownloadBMPCommand =
   '1D 2A 0A 0A FF F9 E6 61 E6 7E 06 1F FF 80 80 19 9F 9F F9 E6 18 18 01 80 80 19 9F 9F F9 E6' + CRLF +
@@ -1021,7 +1019,7 @@ begin
   end;
 end;
 
-procedure TPrinterOA48Test.TestPageMode;
+procedure TPrinterRongtaTest.TestPageMode;
 const
   Barcode = 't=20240719T1314&s=460.00&fn=7380440700076549&i=41110&fp=2026476352&n=1';
 var
@@ -1092,7 +1090,7 @@ end;
   ПРИХОД 19.07.24 13:14
   *)
 
-procedure TPrinterOA48Test.TestPageModeA;
+procedure TPrinterRongtaTest.TestPageModeA;
 const
   Separator = '------------------------------------------------';
   Barcode = 't=20240719T1314&s=460.00&fn=7380440700076549&i=41110&fp=2026476352&n=1';
@@ -1189,7 +1187,7 @@ begin
   FPrinter.EndDocument;
 end;
 
-procedure TPrinterOA48Test.TestPageModeB;
+procedure TPrinterRongtaTest.TestPageModeB;
 const
   Separator = '----------------------------------------------------------------';
   Barcode = 't=20240719T1314&s=460.00&fn=7380440700076549&i=41110&fp=2026476352&n=1';
@@ -1284,17 +1282,7 @@ begin
   FPrinter.EndDocument;
 end;
 
-procedure TPrinterOA48Test.TestPrintMaxiCode;
-const
-  Data = 'http://dev.kofd.kz/consumer?i=1320526842876&f=555697470167&s=2000.00&t=20240327T093611';
-begin
-  FPrinter.Initialize;
-  FPrinter.MaxiCodeWriteData(Data);
-  FPrinter.MaxiCodeSetMode(0);
-  FPrinter.MaxiCodePrint;
-end;
-
-function TPrinterOA48Test.GetKazakhText: WideString;
+function TPrinterRongtaTest.GetKazakhText: WideString;
 var
   Strings: TTntStringList;
 begin
@@ -1308,44 +1296,7 @@ begin
   end;
 end;
 
-procedure TPrinterOA48Test.TestPrintUTF;
-var
-  Text: WideString;
-begin
-  Text := GetKazakhText;
-  // Font A
-  FPrinter.Initialize;
-  FPrinter.UTF8Enable(True);
-  FPrinter.SelectCodePage(CODEPAGE_WCP1251);
-  FPrinter.SetCharacterFont(FONT_TYPE_A);
-  FPrinter.PrintText(UTF8Encode('Printing in UTF mode, font A' + CRLF));
-  FPrinter.PrintText(UTF8Encode(Text + CRLF));
-  // Font B
-  FPrinter.Initialize;
-  FPrinter.UTF8Enable(True);
-  FPrinter.SelectCodePage(CODEPAGE_WCP1251);
-  FPrinter.SetCharacterFont(FONT_TYPE_B);
-  FPrinter.PrintText(UTF8Encode('Printing in UTF mode, font B' + CRLF));
-  FPrinter.PrintText(UTF8Encode(Text + CRLF));
-
-  // ASCII mode
-  // Font A
-  FPrinter.Initialize;
-  FPrinter.UTF8Enable(False);
-  FPrinter.SelectCodePage(51);
-  FPrinter.SetCharacterFont(FONT_TYPE_A);
-  FPrinter.PrintText('Printing in normal mode, font A' + CRLF);
-  FPrinter.PrintText(Text + CRLF);
-  // Font B
-  FPrinter.Initialize;
-  FPrinter.UTF8Enable(False);
-  FPrinter.SelectCodePage(CODEPAGE_WCP1251);
-  FPrinter.SetCharacterFont(FONT_TYPE_B);
-  FPrinter.PrintText('Printing in normal mode, font B' + CRLF);
-  FPrinter.PrintText(Text + CRLF);
-end;
-
-procedure TPrinterOA48Test.PrintCodePage;
+procedure TPrinterRongtaTest.PrintCodePage;
 var
   i: Integer;
   S: AnsiString;
@@ -1362,7 +1313,7 @@ begin
   end;
 end;
 
-procedure TPrinterOA48Test.PrintCodePageUTF8;
+procedure TPrinterRongtaTest.PrintCodePageUTF8;
 var
   i: Integer;
   S: AnsiString;
@@ -1379,7 +1330,7 @@ begin
   end;
 end;
 
-procedure TPrinterOA48Test.PrintCodePage2;
+procedure TPrinterRongtaTest.PrintCodePage2;
 var
   i: Integer;
   S: AnsiString;
@@ -1396,7 +1347,7 @@ begin
   end;
 end;
 
-procedure TPrinterOA48Test.PrintCodePages(const CodePageName: string);
+procedure TPrinterRongtaTest.PrintCodePages(const CodePageName: string);
 begin
   FPrinter.PrintText('-----------------------------------------' + CRLF);
   FPrinter.PrintText(CodePageName + CRLF);
@@ -1408,17 +1359,16 @@ begin
   PrintCodePage;
 end;
 
-procedure TPrinterOA48Test.TestPrintRussianFontB;
+procedure TPrinterRongtaTest.TestPrintRussianFontB;
 var
   CodePage: Integer;
 begin
   FPrinter.Initialize;
-  FPrinter.UTF8Enable(False);
   FPrinter.SetCharacterFont(FONT_TYPE_B);
 
   for CodePage := 0 to 20 do
   begin
-    FPrinter.SelectCodePage(CodePage);
+    FPrinter.SetCodePage(CodePage);
     FPrinter.PrintText('---------------------------------------------' + CRLF);
     FPrinter.PrintText('Normal mode, font B, CodePage: ' + IntToStr(CodePage) + CRLF);
     FPrinter.PrintText('---------------------------------------------' + CRLF);
@@ -1426,7 +1376,7 @@ begin
   end;
 end;
 
-procedure TPrinterOA48Test.TestPrintFontBMode;
+procedure TPrinterRongtaTest.TestPrintFontBMode;
 var
   Text: AnsiString;
   KazakhText: WideString;
@@ -1435,39 +1385,15 @@ begin
 
   FPrinter.Initialize;
   FPrinter.SetCharacterFont(FONT_TYPE_B);
-  FPrinter.SelectCodePage(CODEPAGE_CP866);
+  FPrinter.SetCodePage(CODEPAGE_CP866);
 
-  FPrinter.UTF8Enable(False);
   Text := WideStringToAnsiString(866, 'Normal mode, font B, CODEPAGE_CP866' + CRLF);
   FPrinter.PrintText(Text);
   Text := WideStringToAnsiString(866, 'Казахский текст: ' + KazakhText + CRLF);
   FPrinter.PrintText(Text);
-
-  FPrinter.UTF8Enable(True);
-  FPrinter.PrintText(UTF8Encode('UTF mode, font B, CODEPAGE_CP866' + CRLF));
-  FPrinter.PrintText(UTF8Encode('Казахский текст: ' + KazakhText + CRLF));
 end;
 
-procedure TPrinterOA48Test.TestPrintFontBMode2;
-var
-  KazakhText: WideString;
-begin
-  KazakhText := GetKazakhText;
-
-  FPrinter.Initialize;
-  FPrinter.SetCharacterFont(FONT_TYPE_A);
-  FPrinter.UTF8Enable(True);
-
-  FPrinter.SelectCodePage(CODEPAGE_CP866);
-  FPrinter.PrintText(UTF8Encode('UTF mode, font A, CODEPAGE_CP866' + CRLF));
-  FPrinter.PrintText(UTF8Encode('Казахский текст: ' + KazakhText + CRLF));
-
-  FPrinter.SelectCodePage(CODEPAGE_WCP1251);
-  FPrinter.PrintText(UTF8Encode('UTF mode, font A, CODEPAGE_WCP1251' + CRLF));
-  FPrinter.PrintText(UTF8Encode('Казахский текст: ' + KazakhText + CRLF));
-end;
-
-procedure TPrinterOA48Test.TestCutterError;
+procedure TPrinterRongtaTest.TestCutterError;
 var
   i: Integer;
   P: Integer;
@@ -1475,10 +1401,9 @@ var
   Lines: TTntStrings;
 begin
   FPrinter.Initialize;
-  FPrinter.UTF8Enable(False);
   FPrinter.WriteKazakhCharacters;
   FPrinter.DisableUserCharacters;
-  FPrinter.SelectCodePage(CODEPAGE_CP866);
+  FPrinter.SetCodePage(CODEPAGE_CP866);
   FPrinter.SetCharacterFont(FONT_TYPE_A);
 
   FPrinter.BeginDocument;
@@ -1502,6 +1427,6 @@ begin
 end;
 
 initialization
-  RegisterTest('', TPrinterOA48Test.Suite);
+  RegisterTest('', TPrinterRongtaTest.Suite);
 
 end.

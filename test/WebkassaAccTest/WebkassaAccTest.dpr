@@ -42,7 +42,7 @@ uses
   StringUtils in '..\..\src\Shared\StringUtils.pas',
   RegExpr in '..\..\src\Shared\RegExpr.pas',
   MathUtils in '..\..\src\OposWebkassa\units\MathUtils.pas',
-  duEscPrinterOA48 in 'units\duEscPrinterOA48.pas',
+  duEscPrinterRongta in 'units\duEscPrinterRongta.pas',
   WebkassaImpl in '..\..\src\OposWebkassa\units\WebkassaImpl.pas',
   SalesReceipt in '..\..\src\OposWebkassa\units\SalesReceipt.pas',
   ReceiptItem in '..\..\src\OposWebkassa\units\ReceiptItem.pas',
@@ -88,7 +88,8 @@ uses
   EscPrinterRongta in '..\..\src\Shared\EscPrinterRongta.pas',
   PosPrinterRongta in '..\..\src\Shared\PosPrinterRongta.pas',
   OposDevice in '..\..\src\Opos\OposDevice.pas',
-  duPosPrinterRongta in 'units\duPosPrinterRongta.pas';
+  duPosPrinterRongta in 'units\duPosPrinterRongta.pas',
+  duEscPrinterOA48 in 'units\duEscPrinterOA48.pas';
 
 {$R *.RES}
 {$R ..\..\src\OposWebkassa\OposWebkassa.tlb}

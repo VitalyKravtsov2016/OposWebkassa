@@ -68,7 +68,6 @@ end;
 
 procedure TRawPrinterPort.Flush;
 begin
-  FLogger.Debug('TRawPrinterPort.Flush.Begin');
   try
     DirectPrint(FPrinterName, FBuffer);
   except
@@ -79,7 +78,6 @@ begin
     end;
   end;
   FBuffer := '';
-  FLogger.Debug('TRawPrinterPort.Flush: OK');
 end;
 
 procedure TRawPrinterPort.Lock;

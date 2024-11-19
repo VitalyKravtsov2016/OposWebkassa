@@ -74,13 +74,11 @@ begin
 
   FDocument.LineChars := 23;
   FDocument.LineHeight := 15;
-  FDocument.LineSpacing := 10;
   Item := FDocument.AddItem('Test', STYLE_DHEIGHT);
   CheckEquals('Test', Item.Text, 'Item.Text');
   CheckEquals(STYLE_DHEIGHT, Item.Style, 'Item.Style');
   CheckEquals(FDocument.LineChars, Item.LineChars, 'Item.LineChars');
   CheckEquals(FDocument.LineHeight, Item.LineHeight, 'Item.LineHeight');
-  CheckEquals(FDocument.LineSpacing, Item.LineSpacing, 'Item.LineSpacing');
 end;
 
 

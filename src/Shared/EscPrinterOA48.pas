@@ -380,7 +380,6 @@ type
     function ReadAnsiString: AnsiString;
     procedure Send(const Data: AnsiString);
 
-    procedure PortFlush;
     procedure HorizontalTab;
     procedure LineFeed;
     procedure CarriageReturn;
@@ -591,7 +590,6 @@ begin
   FPort.Lock;
   try
     FLogger.Debug('-> ' + StrToHex(Data));
-    //FPort.Purge; !!!
     FPort.Write(Data);
     if not FInTransaction then
     begin
@@ -1540,11 +1538,6 @@ end;
 procedure TEscPrinterOA48.EndDocument;
 begin
   FInTransaction := False;
-  Port.Flush;
-end;
-
-procedure TEscPrinterOA48.PortFlush;
-begin
   Port.Flush;
 end;
 

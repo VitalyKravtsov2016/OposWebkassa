@@ -2025,7 +2025,7 @@ begin
           begin
             FPrinter.Select2DBarcode(BARCODE_QR_CODE);
             QRCode.SymbolVersion := 0;
-            QRCode.ECLevel := 1;
+            QRCode.ECLevel := REP_QRCODE_ECL_30;
             QRCode.ModuleSize := 4;
             QRCode.data := Data;
             FPrinter.printQRCode(QRCode);

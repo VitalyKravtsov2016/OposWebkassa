@@ -5,12 +5,20 @@ interface
 uses
   // VCL
   Windows, Types, SysUtils, Graphics, Classes,
-  // Tnt
+  // Tnt              
   TntGraphics,
   // This
   ByteUtils, PrinterPort, RegExpr, StringUtils, LogFile, FileUtils;
 
 const
+  /////////////////////////////////////////////////////////////////////////////
+  // QRCode error correction level
+
+  REP_QRCODE_ECL_7   = 0;
+  REP_QRCODE_ECL_15  = 1;
+  REP_QRCODE_ECL_25  = 2;
+  REP_QRCODE_ECL_30  = 3;
+
   SupportedCodePages: array [0..36] of Integer = (
     437,720,737,755,775,850,852,855,856,857,858,860,862,863,864,865,866,874,
     1250,1251,1252,1253,1254,1255,1256,1257,1258,
@@ -325,7 +333,7 @@ type
     procedure WriteKazakhCharacters2;
     procedure WriteKazakhCharactersToBitmap;
     function GetImageData(Image: TGraphic): AnsiString;
-    function GetBitmapData(Bitmap: TBitmap): AnsiString;
+    function GetBitmapData(Bitmap: TBitmap; FontHeight: Integer): AnsiString;
     function GetRasterBitmapData(Bitmap: TBitmap): AnsiString;
     function GetRasterImageData(Image: TGraphic): AnsiString;
     function GetImageData2(Image: TGraphic): AnsiString;
@@ -342,7 +350,6 @@ type
     function ReadAnsiString: AnsiString;
     procedure Send(const Data: AnsiString);
 
-    procedure PortFlush;
     procedure HorizontalTab;
     procedure LineFeed;
     procedure CarriageReturn;
@@ -598,7 +605,6 @@ begin
   FPort.Lock;
   try
     FLogger.Debug('-> ' + StrToHex(Data));
-    //FPort.Purge; !!!
     FPort.Write(Data);
     if not FInTransaction then
     begin
@@ -818,7 +824,7 @@ begin
     UserChar.c1 := ACode;
     UserChar.c2 := ACode;
     UserChar.Font := AFont;
-    UserChar.Data := GetBitmapData(Bitmap);
+    UserChar.Data := GetBitmapData(Bitmap, Bitmap.Height);
     UserChar.Width := Bitmap.Width;
     DefineUserCharacter(UserChar);
   finally
@@ -857,7 +863,7 @@ begin
     UserChar.c1 := ACode;
     UserChar.c2 := ACode;
     UserChar.Font := AFont;
-    UserChar.Data := GetBitmapData(Bitmap);
+    UserChar.Data := GetBitmapData(Bitmap, Bitmap.Height);
     UserChar.Width := Bitmap.Width;
     DefineUserCharacter(UserChar);
   finally
@@ -881,7 +887,8 @@ begin
   Send(#$1B#$26#$03 + Chr(C.c1) + Chr(C.c2) + Chr(C.Width) + C.Data);
 end;
 
-function TEscPrinterRongta.GetBitmapData(Bitmap: TBitmap): AnsiString;
+function TEscPrinterRongta.GetBitmapData(Bitmap: TBitmap;
+  FontHeight: Integer): AnsiString;
 var
   B: Byte;
   Bit: Byte;
@@ -889,8 +896,12 @@ var
   mx, my: Integer;
 begin
   Result := '';
+  if Bitmap.Height < FontHeight then
+    raise Exception.CreateFmt('Bitmap height < Font height, %d < %d', [
+    Bitmap.Height, FontHeight]);
+
   mx := (Bitmap.Width + 7) div 8;
-  my := (Bitmap.Height + 7) div 8;
+  my := (FontHeight + 7) div 8;
   for x := 1 to mx*8 do
   begin
     y := 1;
@@ -900,9 +911,9 @@ begin
       for Bit := 0 to 7 do
       begin
         if x > Bitmap.Width then Break;
-        if y > Bitmap.Height then Break;
+        if y > FontHeight then Break;
 
-        if Bitmap.Canvas.Pixels[x, y] = clBlack then
+        if Bitmap.Canvas.Pixels[x-1, y-1] = clBlack then
         begin
           SetBit(B, 7-Bit);
         end;
@@ -999,7 +1010,7 @@ begin
   Bitmap := TBitmap.Create;
   try
     DrawImage(Image, Bitmap);
-    Result := GetBitmapData(Bitmap);
+    Result := GetBitmapData(Bitmap, Bitmap.Height);
   finally
     Bitmap.Free;
   end;
@@ -1203,7 +1214,7 @@ begin
     x := (Bitmap.Width + 7) div 8;
     y := (Bitmap.Height + 7) div 8;
     Send(#$1C#$71 + Chr(Number) + Chr(Lo(x)) + Chr(Hi(x)) +
-      Chr(Lo(y)) + Chr(Hi(y)) + GetBitmapData(Bitmap));
+      Chr(Lo(y)) + Chr(Hi(y)) + GetBitmapData(Bitmap, Bitmap.Height));
   finally
     Bitmap.Free;
   end;
@@ -1227,7 +1238,7 @@ begin
 
     x := (Bitmap.Width + 7) div 8;
     y := (Bitmap.Height + 7) div 8;
-    Send(#$1D#$2A + Chr(x) + Chr(y) + GetBitmapData(Bitmap));
+    Send(#$1D#$2A + Chr(x) + Chr(y) + GetBitmapData(Bitmap, Bitmap.Height));
   finally
     Bitmap.Free;
   end;
@@ -1628,11 +1639,6 @@ begin
   Port.Flush;
 end;
 
-procedure TEscPrinterRongta.PortFlush;
-begin
-  Port.Flush;
-end;
-
 procedure TEscPrinterRongta.WriteKazakhCharactersToBitmap;
 var
   i: Integer;
@@ -1693,7 +1699,7 @@ begin
         BitmapData := '';
         Count := Bitmap.Width div FontWidth;
         Code := FUserCharCode;
-        Data := GetFontData(Bitmap);
+        Data := GetBitmapData(Bitmap, 24);
         for i := 0 to Count-1 do
         begin
           FUserChars.Add(Code + i, WideChar(KazakhUnicodeChars[i]), FONT_TYPE_A);
@@ -1712,7 +1718,7 @@ begin
         Count := Bitmap.Width div FontWidth;
         Code := FUserCharCode;
         Inc(FUserCharCode, Count);
-        Data := GetBitmapData(Bitmap);
+        Data := GetBitmapData(Bitmap, 17);
         for i := 0 to Count-1 do
         begin
           FUserChars.Add(Code + i, WideChar(KazakhUnicodeChars[i]), FONT_TYPE_B);
@@ -1748,7 +1754,7 @@ begin
     FontWidth := 12;
     BitmapData := '';
     Count := Bitmap.Width div FontWidth;
-    Data := GetBitmapData(Bitmap);
+    Data := GetBitmapData(Bitmap, 24);
     for i := 0 to Count-1 do
     begin
       FUserChars.Add(FUserCharCode, WideChar(KazakhUnicodeChars[i]), FONT_TYPE_A);
@@ -1764,7 +1770,7 @@ begin
     Count := Bitmap.Width div FontWidth;
     Code := FUserCharCode;
     Inc(FUserCharCode, Count);
-    Data := GetBitmapData(Bitmap);
+    Data := GetBitmapData(Bitmap, 17);
     for i := 0 to Count-1 do
     begin
       FUserChars.Add(Code + i, WideChar(KazakhUnicodeChars[i]), FONT_TYPE_B);

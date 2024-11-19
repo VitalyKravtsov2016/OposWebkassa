@@ -2047,7 +2047,7 @@ begin
         case Symbology of
           PTR_BCS_QRCODE:
           begin
-            QRCode.ECLevel := OA48_QRCODE_ECL_7;
+            QRCode.ECLevel := OA48_QRCODE_ECL_30;
             QRCode.ModuleSize := 4;
             QRCode.Data := Data;
             FPrinter.printQRCode(QRCode);

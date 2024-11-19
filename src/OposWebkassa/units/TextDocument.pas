@@ -23,7 +23,6 @@ type
     FItems: TDocItems;
     FLineChars: Integer;
     FLineHeight: Integer;
-    FLineSpacing: Integer;
     procedure Add(Index: Integer; const Line: WideString); overload;
     procedure Add2(const ALine: WideString; Style: Integer);
   public
@@ -51,7 +50,6 @@ type
     property Items: TDocItems read FItems;
     property LineChars: Integer read FLineChars write FLineChars;
     property LineHeight: Integer read FLineHeight write FLineHeight;
-    property LineSpacing: Integer read FLineSpacing write FLineSpacing;
   end;
 
   { TDocItems }
@@ -107,7 +105,6 @@ begin
   FItems := TDocItems.Create(TDocItem);
   LineChars := 48;
   LineHeight := 24;
-  LineSpacing := 0;
 end;
 
 destructor TTextDocument.Destroy;
@@ -183,22 +180,6 @@ begin
   until Length(Text) = 0;
 end;
 
-(*
-function TTextDocument.InsertItem(Index: Integer; const Line: WideString; Style: Integer): TDocItem;
-var
-  Item: TDocItem;
-begin
-  Item := TDocItem.Create(nil);
-  Item.FText := Line;
-  Item.FStyle := Style;
-  Item.FLineChars := LineChars;
-  Item.FLineHeight := LineHeight;
-  Item.FLineSpacing := LineSpacing;
-  Result := Item;
-  Items.Insert(Index);
-end;
-*)
-
 function TTextDocument.AddItem(const Line: WideString; Style: Integer): TDocItem;
 var
   Item: TDocItem;
@@ -208,7 +189,7 @@ begin
   Item.FStyle := Style;
   Item.FLineChars := LineChars;
   Item.FLineHeight := LineHeight;
-  Item.FLineSpacing := LineSpacing;
+  Item.FLineSpacing := -1;
   Result := Item;
 end;
 
