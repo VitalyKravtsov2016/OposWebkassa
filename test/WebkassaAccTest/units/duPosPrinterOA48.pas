@@ -12,7 +12,8 @@ uses
   OposPOSPrinter_CCO_TLB, OposEvents,
   // Tnt
   TntClasses, TntSysUtils, DebugUtils, StringUtils, SocketPort, LogFile,
-  PrinterPort, PosPrinterOA48, SerialPort, RawPrinterPort, EscPrinterOA48;
+  PrinterPort, PosPrinterOA48, SerialPort, RawPrinterPort, EscPrinterOA48,
+  EscPrinterUtils;
 
 type
   { TPosPrinterOA48Test }

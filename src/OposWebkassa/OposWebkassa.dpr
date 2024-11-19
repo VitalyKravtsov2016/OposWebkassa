@@ -75,7 +75,8 @@ uses
   PrinterTypes in '..\Shared\PrinterTypes.pas',
   BarcodeUtils in '..\Shared\BarcodeUtils.pas',
   PosPrinterRongta in '..\Shared\PosPrinterRongta.pas',
-  EscPrinterRongta in '..\Shared\EscPrinterRongta.pas';
+  EscPrinterRongta in '..\Shared\EscPrinterRongta.pas',
+  EscPrinterUtils in '..\Shared\EscPrinterUtils.pas';
 
 exports
   DllGetClassObject,

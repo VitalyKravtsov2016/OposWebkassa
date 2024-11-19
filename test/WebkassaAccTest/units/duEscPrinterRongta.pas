@@ -11,7 +11,7 @@ uses
   TntClasses, TntSysUtils,
   // This
   DebugUtils, StringUtils, EscPrinterRongta, PrinterPort, SerialPort, LogFile,
-  FileUtils, SocketPort, RawPrinterPort;
+  FileUtils, SocketPort, RawPrinterPort, EscPrinterUtils;
 
 type
   { TPrinterRongtaTest }
@@ -963,7 +963,7 @@ begin
     UserChar.c1 := $7E;
     UserChar.c2 := $7E;
     UserChar.Font := FONT_TYPE_A;
-    UserChar.Data := FPrinter.GetBitmapData(Bitmap, Bitmap.Height);
+    UserChar.Data := GetBitmapData(Bitmap, Bitmap.Height);
     UserChar.Width := Bitmap.Width;
 
     FPrinter.SelectUserCharacter(1);

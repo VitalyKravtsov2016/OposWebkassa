@@ -89,7 +89,8 @@ uses
   PosPrinterRongta in '..\..\src\Shared\PosPrinterRongta.pas',
   OposDevice in '..\..\src\Opos\OposDevice.pas',
   duPosPrinterRongta in 'units\duPosPrinterRongta.pas',
-  duEscPrinterOA48 in 'units\duEscPrinterOA48.pas';
+  duEscPrinterOA48 in 'units\duEscPrinterOA48.pas',
+  EscPrinterUtils in '..\..\src\Shared\EscPrinterUtils.pas';
 
 {$R *.RES}
 {$R ..\..\src\OposWebkassa\OposWebkassa.tlb}

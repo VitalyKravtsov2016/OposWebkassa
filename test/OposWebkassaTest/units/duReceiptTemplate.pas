@@ -13,7 +13,7 @@ uses
   // Tnt
   TntClasses, TntSysUtils,
   // This
-  ReceiptTemplate, LogFile, FileUtils, EscPrinterRongta;
+  ReceiptTemplate, LogFile, FileUtils, EscPrinterUtils;
 
 type
   { TReceiptTemplateTest }
@@ -163,7 +163,7 @@ begin
   UnicodeText := '';
   for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
     UnicodeText := UnicodeText + WideChar(KazakhUnicodeChars[i]);
-  CheckEquals('0492 0493 049A 049B 04A2 04A3 04AE 04AF 04B0 04B1 04BA 04BB 04D8 04D9 04E8 04E9 FBE8 FBE9', WideStringToHex(UnicodeText));
+  CheckEquals('0492 0493 049A 049B 04A2 04A3 04AE 04AF 04B0 04B1 04BA 04BB 04D8 04D9 04E8 04E9 0406 0456', WideStringToHex(UnicodeText));
 
   UnicodeText := '';
   UnicodeText := UnicodeText + WideChar($0492) + WideChar($0493) + WideChar($049A) + WideChar($049B) + WideChar($04A2) + WideChar($04A3);

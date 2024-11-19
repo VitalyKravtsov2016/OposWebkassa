@@ -5,12 +5,22 @@ interface
 uses
   // VCL
   Windows, Types, SysUtils, Graphics, Classes,
-  // Tnt              
+  // Tnt
   TntGraphics,
   // This
-  ByteUtils, PrinterPort, RegExpr, StringUtils, LogFile, FileUtils;
+  ByteUtils, PrinterPort, RegExpr, StringUtils, LogFile, FileUtils,
+  EscPrinterUtils;
 
 const
+  /////////////////////////////////////////////////////////////////////////////
+  // Font type
+
+  FONT_TYPE_A = 0; // 12x24
+  FONT_TYPE_B = 1; // 9x17
+
+  FONT_TYPE_MIN = FONT_TYPE_A;
+  FONT_TYPE_MAX = FONT_TYPE_B;
+
   /////////////////////////////////////////////////////////////////////////////
   // QRCode error correction level
 
@@ -33,15 +43,6 @@ const
 
   USER_CHAR_CODE_MIN = $20;
   USER_CHAR_CODE_MAX = $7E;
-
-  /////////////////////////////////////////////////////////////////////////////
-  // Font type
-
-  FONT_TYPE_A = 0; // 12x24
-  FONT_TYPE_B = 1; // 9x17
-
-  FONT_TYPE_MIN = FONT_TYPE_A;
-  FONT_TYPE_MAX = FONT_TYPE_B;
 
   /////////////////////////////////////////////////////////////////////////////
   // Charset constants
@@ -188,27 +189,6 @@ const
   UNDERLINE_MODE_1DOT         = 1;
   UNDERLINE_MODE_2DOT         = 2;
 
-  KazakhUnicodeChars: array [0..17] of Integer = (
-    1170, // cyrillic capital letter ghe stroke
-    1171, // cyrillic small letter ghe stroke
-    1178, // cyrillic capital letter ka descender
-    1179, // cyrillic small letter ka descender
-    1186, // cyrillic capital letter en descender
-    1187, // cyrillic small letter en descender
-    1198, // cyrillic capital letter straight u
-    1199, // cyrillic small letter straight u
-    1200, // cyrillic capital letter straight u stroke
-    1201, // cyrillic small letter straight u stroke
-    1210, // cyrillic capital letter shha
-    1211, // cyrillic small letter shha
-    1240, // cyrillic capital letter schwa
-    1241, // cyrillic small letter schwa
-    1256, // cyrillic capital letter barred o
-    1257, // cyrillic small letter barred o
-    64488, // arabic letter uighur kazakh kirghiz alef maksura initial form
-    64489 // arabic letter uighur kazakh kirghiz alef maksura medial form
-  );
-
 type
   { TDeviceMetrics }
 
@@ -331,13 +311,6 @@ type
     procedure EnableUserCharacters;
     procedure DisableUserCharacters;
     procedure WriteKazakhCharacters2;
-    procedure WriteKazakhCharactersToBitmap;
-    function GetImageData(Image: TGraphic): AnsiString;
-    function GetBitmapData(Bitmap: TBitmap; FontHeight: Integer): AnsiString;
-    function GetRasterBitmapData(Bitmap: TBitmap): AnsiString;
-    function GetRasterImageData(Image: TGraphic): AnsiString;
-    function GetImageData2(Image: TGraphic): AnsiString;
-    procedure DrawImage(Image: TGraphic; Bitmap: TBitmap);
     procedure DrawWideChar(AChar: WideChar; AFont: Byte; Bitmap: TBitmap; X, Y: Integer);
     function GetFontData(Bitmap: TBitmap): AnsiString;
   public
@@ -461,7 +434,6 @@ type
     property DeviceMetrics: TDeviceMetrics read FDeviceMetrics write FDeviceMetrics;
   end;
 
-function IsKazakhUnicodeChar(Char: WideChar): Boolean;
 function CharacterSetToPrinterCodePage(CharacterSet: Integer): Integer;
 
 implementation
@@ -518,19 +490,6 @@ begin
     28605: Result := CODEPAGE_ISO_8859_15;
   else
     raise Exception.Create('Character set not supported');
-  end;
-end;
-
-function IsKazakhUnicodeChar(Char: WideChar): Boolean;
-var
-  i: Integer;
-  Code: Word;
-begin
-  for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
-  begin
-    Code := Word(Char);
-    Result := Code = KazakhUnicodeChars[i];
-    if Result then Break;
   end;
 end;
 
@@ -887,43 +846,6 @@ begin
   Send(#$1B#$26#$03 + Chr(C.c1) + Chr(C.c2) + Chr(C.Width) + C.Data);
 end;
 
-function TEscPrinterRongta.GetBitmapData(Bitmap: TBitmap;
-  FontHeight: Integer): AnsiString;
-var
-  B: Byte;
-  Bit: Byte;
-  x, y, k: Integer;
-  mx, my: Integer;
-begin
-  Result := '';
-  if Bitmap.Height < FontHeight then
-    raise Exception.CreateFmt('Bitmap height < Font height, %d < %d', [
-    Bitmap.Height, FontHeight]);
-
-  mx := (Bitmap.Width + 7) div 8;
-  my := (FontHeight + 7) div 8;
-  for x := 1 to mx*8 do
-  begin
-    y := 1;
-    for k := 1 to my do
-    begin
-      B := 0;
-      for Bit := 0 to 7 do
-      begin
-        if x > Bitmap.Width then Break;
-        if y > FontHeight then Break;
-
-        if Bitmap.Canvas.Pixels[x-1, y-1] = clBlack then
-        begin
-          SetBit(B, 7-Bit);
-        end;
-        Inc(y);
-      end;
-      Result := Result + Chr(B);
-    end;
-  end;
-end;
-
 function TEscPrinterRongta.GetFontData(Bitmap: TBitmap): AnsiString;
 var
   B: Byte;
@@ -954,94 +876,6 @@ begin
   end;
 end;
 
-(*
-function TEscPrinterRongta.GetRasterBitmapData(Bitmap: TBitmap): AnsiString;
-var
-  B: Byte;
-  x, y: Integer;
-  mx: Integer;
-begin
-  Result := '';
-  mx := (Bitmap.Width + 7) div 8;
-  for y := 1 to Bitmap.Height do
-  for x := 1 to mx do
-  begin
-    B := PByteArray(Bitmap.ScanLine[y-1])[x-1] xor $FF;
-    Result := Result + Chr(B);
-  end;
-end;
-*)
-
-function TEscPrinterRongta.GetRasterBitmapData(Bitmap: TBitmap): AnsiString;
-var
-  B: Byte;
-  x, y: Integer;
-  mx: Integer;
-  Index: Integer;
-begin
-  mx := (Bitmap.Width + 7) div 8;
-  Result := StringOfChar(#0, mx * Bitmap.Height);
-  for y := 1 to Bitmap.Height do
-  for x := 1 to mx*8 do
-  begin
-    if (x <= Bitmap.Width)and(y <= Bitmap.Height) then
-    begin
-      if Bitmap.Canvas.Pixels[x, y] = clBlack then
-      begin
-        Index := (y-1)*mx + ((x-1) div 8) + 1;
-        B := Ord(Result[Index]);
-        SetBit(B, (x-1) mod 8);
-        Result[Index] := Chr(B);
-      end;
-    end;
-  end;
-  Result := SwapBytes(Result);
-end;
-
-function TEscPrinterRongta.GetImageData(Image: TGraphic): AnsiString;
-begin
-  Result := GetImageData2(Image);
-end;
-
-function TEscPrinterRongta.GetImageData2(Image: TGraphic): AnsiString;
-var
-  Bitmap: TBitmap;
-begin
-  Bitmap := TBitmap.Create;
-  try
-    DrawImage(Image, Bitmap);
-    Result := GetBitmapData(Bitmap, Bitmap.Height);
-  finally
-    Bitmap.Free;
-  end;
-end;
-
-procedure TEscPrinterRongta.DrawImage(Image: TGraphic; Bitmap: TBitmap);
-begin
-  Bitmap.Monochrome := True;
-  Bitmap.PixelFormat := pf1Bit;
-  Bitmap.Width := Image.Width;
-  Bitmap.Height := Image.Height;
-  Bitmap.Canvas.Draw(0, 0, Image);
-end;
-
-function TEscPrinterRongta.GetRasterImageData(Image: TGraphic): AnsiString;
-var
-  Bitmap: TBitmap;
-begin
-  Bitmap := TBitmap.Create;
-  try
-    Bitmap.Monochrome := True;
-    Bitmap.PixelFormat := pf1Bit;
-    Bitmap.Width := Image.Width;
-    Bitmap.Height := Image.Height;
-    Bitmap.Canvas.Draw(0, 0, Image);
-    Result := GetRasterBitmapData(Bitmap);
-  finally
-    Bitmap.Free;
-  end;
-end;
-
 procedure TEscPrinterRongta.SelectBitImageMode(mode: Integer; Image: TGraphic);
 var
   n: Word;
@@ -1050,7 +884,7 @@ begin
   Logger.Debug('TEscPrinterRongta.SelectBitImageMode');
 
   n := Image.Width;
-  data := GetImageData(Image);
+  data := GetImageData2(Image);
   Send(#$1B#$2A + Chr(Mode) + Chr(Lo(n)) + Chr(Hi(n)) + data);
 end;
 
@@ -1637,41 +1471,6 @@ procedure TEscPrinterRongta.EndDocument;
 begin
   FInTransaction := False;
   Port.Flush;
-end;
-
-procedure TEscPrinterRongta.WriteKazakhCharactersToBitmap;
-var
-  i: Integer;
-  C: WideChar;
-  Bitmap: TBitmap;
-begin
-  Bitmap := TBitmap.Create;
-  try
-    Bitmap.Monochrome := True;
-    Bitmap.PixelFormat := pf1Bit;
-
-    // FONT_TYPE_A
-    Bitmap.Width := 12 * Length(KazakhUnicodeChars);
-    Bitmap.Height := 24;
-    for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
-    begin
-      C := WideChar(KazakhUnicodeChars[i]);
-      DrawWideChar(C, FONT_TYPE_A, Bitmap, i*12, 0);
-    end;
-    Bitmap.SaveToFile('KazakhFontA.bmp');
-
-    // FONT_TYPE_B
-    Bitmap.Width := 9 * Length(KazakhUnicodeChars);
-    Bitmap.Height := 17;
-    for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
-    begin
-      C := WideChar(KazakhUnicodeChars[i]);
-      DrawWideChar(C, FONT_TYPE_B, Bitmap, i*12, 0);
-    end;
-    Bitmap.SaveToFile('KazakhFontB.bmp');
-  finally
-    Bitmap.Free;
-  end;
 end;
 
 procedure TEscPrinterRongta.WriteKazakhCharacters;

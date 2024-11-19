@@ -95,7 +95,8 @@ uses
   PosPrinterRongta in '..\..\src\Shared\PosPrinterRongta.pas',
   EscPrinterRongta in '..\..\src\Shared\EscPrinterRongta.pas',
   OposDevice in '..\..\src\Opos\OposDevice.pas',
-  duWebkassaImpl in 'units\duWebkassaImpl.pas';
+  duWebkassaImpl in 'units\duWebkassaImpl.pas',
+  EscPrinterUtils in '..\..\src\Shared\EscPrinterUtils.pas';
 
 {$R *.RES}
 

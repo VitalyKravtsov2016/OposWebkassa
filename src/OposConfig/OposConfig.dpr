@@ -97,7 +97,8 @@ uses
   BarcodeUtils in '..\Shared\BarcodeUtils.pas',
   PosPrinterRongta in '..\Shared\PosPrinterRongta.pas',
   EscPrinterRongta in '..\Shared\EscPrinterRongta.pas',
-  OposFiscalPrinter_1_13_Lib_TLB in '..\Opos\OposFiscalPrinter_1_13_Lib_TLB.pas';
+  OposFiscalPrinter_1_13_Lib_TLB in '..\Opos\OposFiscalPrinter_1_13_Lib_TLB.pas',
+  EscPrinterUtils in '..\Shared\EscPrinterUtils.pas';
 
 {$R *.RES}
 {$R WindowsXP.RES}
