@@ -25,6 +25,8 @@ type
     procedure SaveUsrParameters(const DeviceName: WideString);
 
     property Parameters: TPrinterParameters read FParameters;
+    procedure SaveIBTParameters(const DeviceName: WideString);
+    procedure LoadIBTParameters(const DeviceName: WideString);
   public
     constructor Create(AParameters: TPrinterParameters; ALogger: ILogFile);
 
@@ -107,6 +109,7 @@ begin
   Writer := TPrinterParametersReg.Create(Parameters, Logger);
   try
     Writer.SaveUsrParameters(DeviceName);
+    Writer.SaveIBTParameters(DeviceName);
   finally
     Writer.Free;
   end;
@@ -131,12 +134,14 @@ procedure TPrinterParametersReg.Load(const DeviceName: WideString);
 begin
   LoadSysParameters(DeviceName);
   LoadUsrParameters(DeviceName);
+  LoadIBTParameters(DeviceName);
   Parameters.Load(DeviceName);
 end;
 
 procedure TPrinterParametersReg.Save(const DeviceName: WideString);
 begin
   SaveUsrParameters(DeviceName);
+  SaveIBTParameters(DeviceName);
   SaveSysParameters(DeviceName);
   Parameters.Save(DeviceName);
 end;
@@ -426,6 +431,29 @@ begin
   Result := Tnt_WideFormat('%s\%s\%s', [OPOS_ROOTKEY, OPOS_CLASSKEY_FPTR, DeviceName]);
 end;
 
+procedure TPrinterParametersReg.LoadIBTParameters(const DeviceName: WideString);
+var
+  Reg: TTntRegistry;
+begin
+  Logger.Debug('TPrinterParametersReg.LoadIBTParameters', [DeviceName]);
+
+  Reg := TTntRegistry.Create;
+  try
+    Reg.Access := KEY_READ;
+    Reg.RootKey := HKEY_LOCAL_MACHINE;
+    if Reg.OpenKey(REGSTR_KEY_IBT, False) then
+    begin
+      if Reg.ValueExists('IBTHeader') then
+        Parameters.HeaderText := Reg.ReadString('IBTHeader');
+
+      if Reg.ValueExists('IBTTrailer') then
+        Parameters.TrailerText := Reg.ReadString('IBTTrailer');
+    end;
+  finally
+    Reg.Free;
+  end;
+end;
+
 procedure TPrinterParametersReg.LoadUsrParameters(const DeviceName: WideString);
 var
   i: Integer;
@@ -441,14 +469,9 @@ begin
   try
     Reg.Access := KEY_READ;
     Reg.RootKey := HKEY_LOCAL_MACHINE;
-    if Reg.OpenKey(REGSTR_KEY_IBT, False) then
+    KeyName := GetUsrKeyName(DeviceName);
+    if Reg.OpenKey(KeyName, False) then
     begin
-      if Reg.ValueExists('IBTHeader') then
-        Parameters.HeaderText := Reg.ReadString('IBTHeader');
-
-      if Reg.ValueExists('IBTTrailer') then
-        Parameters.TrailerText := Reg.ReadString('IBTTrailer');
-
       if Reg.ValueExists('ShiftNumber') then
         Parameters.ShiftNumber := Reg.ReadInteger('ShiftNumber');
 
@@ -481,7 +504,7 @@ begin
 
         for i := 0 to KeyNames.Count-1 do
         begin
-          KeyName := REGSTR_KEY_IBT + '\' + REGSTR_KEY_UNITITEMS + '\' + KeyNames[i];
+          KeyName := GetUsrKeyName(DeviceName) + '\' + REGSTR_KEY_UNITITEMS + '\' + KeyNames[i];
           if Reg.OpenKey(KeyName, False) then
           begin
             Item := Parameters.Units.Add as TUnitItem;
@@ -500,14 +523,12 @@ begin
   end;
 end;
 
-procedure TPrinterParametersReg.SaveUsrParameters(const DeviceName: WideString);
+procedure TPrinterParametersReg.SaveIBTParameters(const DeviceName: WideString);
 var
-  i: Integer;
-  Item: TUnitItem;
   Reg: TTntRegistry;
-  KeyName: WideString;
 begin
-  Logger.Debug('TPrinterParametersReg.SaveUsrParameters', [DeviceName]);
+  Logger.Debug('TPrinterParametersReg.SaveIBTParameters', [DeviceName]);
+
   Reg := TTntRegistry.Create;
   try
     Reg.Access := KEY_ALL_ACCESS;
@@ -516,6 +537,28 @@ begin
     begin
       Reg.WriteString('IBTHeader', Parameters.HeaderText);
       Reg.WriteString('IBTTrailer', Parameters.TrailerText);
+    end;
+  finally
+    Reg.Free;
+  end;
+end;
+
+procedure TPrinterParametersReg.SaveUsrParameters(const DeviceName: WideString);
+var
+  i: Integer;
+  Item: TUnitItem;
+  Reg: TTntRegistry;
+  KeyName: WideString;
+  RootKeyName: WideString;
+begin
+  Logger.Debug('TPrinterParametersReg.SaveUsrParameters', [DeviceName]);
+  Reg := TTntRegistry.Create;
+  try
+    Reg.Access := KEY_ALL_ACCESS;
+    Reg.RootKey := HKEY_LOCAL_MACHINE;
+    RootKeyName := GetUsrKeyName(DeviceName);
+    if Reg.OpenKey(RootKeyName, True) then
+    begin
       Reg.WriteInteger('ShiftNumber', Parameters.ShiftNumber);
       Reg.WriteString('CheckNumber', Parameters.CheckNumber);
       Reg.WriteCurrency('SumInCashbox', Parameters.SumInCashbox);
@@ -525,11 +568,11 @@ begin
       Reg.WriteCurrency('RefundTotal', Parameters.RefundTotal);
       Reg.CloseKey;
 
-      Reg.DeleteKey(REGSTR_KEY_IBT + '\' + REGSTR_KEY_UNITITEMS);
+      Reg.DeleteKey(KeyName + '\' + REGSTR_KEY_UNITITEMS);
       for i := 0 to Parameters.Units.Count-1 do
       begin
         Item := Parameters.Units[i];
-        KeyName := REGSTR_KEY_IBT + '\' + REGSTR_KEY_UNITITEMS + '\' + IntToStr(Item.Code);
+        KeyName := RootKeyName + '\' + REGSTR_KEY_UNITITEMS + '\' + IntToStr(Item.Code);
         if Reg.OpenKey(KeyName, True) then
         begin
           Reg.WriteInteger('Code', Item.Code);

@@ -52,7 +52,6 @@ type
     procedure TestPDF417;
     procedure TestQRCode;
     procedure TestQRCodeECL;
-    procedure TestQRCodeECL2;
     procedure TestQRCodeModuleSize;
     procedure TestQRCodeJustification;
     procedure PrintTestPage;
