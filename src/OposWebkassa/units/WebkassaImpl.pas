@@ -2709,14 +2709,11 @@ begin
   try
     CheckEnabled;
 
-    if (LineNumber <= 0)or(LineNumber > Params.NumHeaderLines) then
-      raiseIllegalError('Invalid line number');
-
     LineText := Text;
     if DoubleWidth then
       LineText := ESC_DoubleWide + LineText;
 
-    FParams.Header[LineNumber-1] := LineText;
+    FParams.SetHeaderLine(LineNumber, LineText);
     SaveUsrParams;
 
     Result := ClearResult;
@@ -2836,14 +2833,12 @@ var
 begin
   try
     CheckEnabled;
-    if (LineNumber <= 0)or(LineNumber > Params.NumTrailerLines) then
-      raiseIllegalError('Invalid line number');
 
     LineText := Text;
     if DoubleWidth then
       LineText := ESC_DoubleWide + LineText;
 
-    Params.Trailer[LineNumber-1] := LineText;
+    Params.SetTrailerLine(LineNumber, LineText);
     SaveUsrParams;
 
     Result := ClearResult;
@@ -4415,7 +4410,7 @@ begin
       if FParams.NumHeaderLines <= RecLinesToPaperCut then
       begin
         PrintLine('');
-        for i := 0 to Params.Header.Count-1 do
+        for i := Low(Params.Header) to High(Params.Header) do
         begin
           Text := TrimRight(Params.Header[i]);
           PrintLine(Text);
@@ -4433,7 +4428,7 @@ begin
           PrintLine(CRLF);
         end;
         Printer.CutPaper(90);
-        for i := 0 to Params.Header.Count-1 do
+        for i := Low(Params.Header) to High(Params.Header) do
         begin
           Text := TrimRight(Params.Header[i]);
           PrintLine(Text);

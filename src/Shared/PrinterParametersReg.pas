@@ -21,12 +21,12 @@ type
 
     procedure LoadSysParameters(const DeviceName: WideString);
     procedure LoadUsrParameters(const DeviceName: WideString);
+    procedure LoadIBTParameters(const DeviceName: WideString);
     procedure SaveSysParameters(const DeviceName: WideString);
     procedure SaveUsrParameters(const DeviceName: WideString);
+    procedure SaveIBTParameters(const DeviceName: WideString);
 
     property Parameters: TPrinterParameters read FParameters;
-    procedure SaveIBTParameters(const DeviceName: WideString);
-    procedure LoadIBTParameters(const DeviceName: WideString);
   public
     constructor Create(AParameters: TPrinterParameters; ALogger: ILogFile);
 
@@ -156,7 +156,7 @@ var
   VatRate: Double;
   VatName: WideString;
 begin
-  Logger.Debug('TPrinterParametersReg.Load', [DeviceName]);
+  Logger.Debug('TPrinterParametersReg.LoadSysParameters', [DeviceName]);
 
   Reg := TTntRegistry.Create;
   try
@@ -333,9 +333,11 @@ begin
         Names.Free;
       end;
     end;
-  finally
-    Reg.Free;
+  except
+    on E: Exception do
+      Logger.Error('TPrinterParametersReg.LoadSysParameters', E);
   end;
+  Reg.Free;
 end;
 
 procedure TPrinterParametersReg.SaveSysParameters(const DeviceName: WideString);
@@ -345,6 +347,8 @@ var
   Reg: TTntRegistry;
   KeyName: WideString;
 begin
+  Logger.Debug('TPrinterParametersReg.SaveSysParameters', [DeviceName]);
+
   Reg := TTntRegistry.Create;
   try
     Reg.Access := KEY_ALL_ACCESS;
@@ -421,9 +425,11 @@ begin
         Reg.CloseKey;
       end;
     end;
-  finally
-    Reg.Free;
+  except
+    on E: Exception do
+      Logger.Error('TPrinterParametersReg.SaveSysParameters', E);
   end;
+  Reg.Free;
 end;
 
 class function TPrinterParametersReg.GetUsrKeyName(const DeviceName: WideString): WideString;
@@ -449,9 +455,11 @@ begin
       if Reg.ValueExists('IBTTrailer') then
         Parameters.TrailerText := Reg.ReadString('IBTTrailer');
     end;
-  finally
-    Reg.Free;
+  except
+    on E: Exception do
+      Logger.Error('TPrinterParametersReg.LoadIBTParameters', E);
   end;
+  Reg.Free;
 end;
 
 procedure TPrinterParametersReg.LoadUsrParameters(const DeviceName: WideString);
@@ -517,10 +525,12 @@ begin
         end;
       end;
     end;
-  finally
-    Reg.Free;
-    KeyNames.Free;
+  except
+    on E: Exception do
+      Logger.Error('TPrinterParametersReg.LoadUsrParameters', E);
   end;
+  Reg.Free;
+  KeyNames.Free;
 end;
 
 procedure TPrinterParametersReg.SaveIBTParameters(const DeviceName: WideString);
@@ -538,9 +548,11 @@ begin
       Reg.WriteString('IBTHeader', Parameters.HeaderText);
       Reg.WriteString('IBTTrailer', Parameters.TrailerText);
     end;
-  finally
-    Reg.Free;
+  except
+    on E: Exception do
+      Logger.Error('TPrinterParametersReg.SaveIBTParameters', E);
   end;
+  Reg.Free;
 end;
 
 procedure TPrinterParametersReg.SaveUsrParameters(const DeviceName: WideString);
@@ -552,6 +564,7 @@ var
   RootKeyName: WideString;
 begin
   Logger.Debug('TPrinterParametersReg.SaveUsrParameters', [DeviceName]);
+
   Reg := TTntRegistry.Create;
   try
     Reg.Access := KEY_ALL_ACCESS;
@@ -582,13 +595,12 @@ begin
         end;
         Reg.CloseKey;
       end;
-    end else
-    begin
-      raiseException(_('Registry key open error'));
     end;
-  finally
-    Reg.Free;
+  except
+    on E: Exception do
+      Logger.Error('TPrinterParametersReg.SaveUsrParameters', E);
   end;
+  Reg.Free;
 end;
 
 end.

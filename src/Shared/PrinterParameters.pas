@@ -136,13 +136,17 @@ const
   TranslationNameKaz = 'KAZ';
 
 type
+  { TWideStringArray }
+
+  TWideStringArray = array of WideString;
+
   { TPrinterParameters }
 
   TPrinterParameters = class(TPersistent)
   private
     FLogger: ILogFile;
-    FHeader: TTntStringList;
-    FTrailer: TTntStringList;
+    FHeader: TWideStringArray;
+    FTrailer: TWideStringArray;
     FTranslations: TTranslations;
     FTranslationName: WideString;
     FTranslation: TTranslation;
@@ -234,11 +238,13 @@ type
     function ItemByText(const ParamName: WideString): WideString;
     function GetTemplateXml: WideString;
     procedure SetTemplateXml(const Value: WideString);
+    procedure SetHeaderLine(LineNumber: Integer; const Text: WideString);
+    procedure SetTrailerLine(LineNumber: Integer; const Text: WideString);
 
     property Units: TUnitItems read FUnits;
     property Logger: ILogFile read FLogger;
-    property Header: TTntStringList read FHeader;
-    property Trailer: TTntStringList read FTrailer;
+    property Header: TWideStringArray read FHeader;
+    property Trailer: TWideStringArray read FTrailer;
     property Login: WideString read FLogin write FLogin;
     property Password: WideString read FPassword write FPassword;
     property ConnectTimeout: Integer read FConnectTimeout write FConnectTimeout;
@@ -286,6 +292,21 @@ function QRSizeToWidth(QRSize: Integer): Integer;
 
 implementation
 
+function ArrayToText(A: array of WideString): WideString;
+var
+  i: Integer;
+  Lines: TTntStrings;
+begin
+  Lines := TTntStringList.Create;
+  try
+    for i := Low(A) to High(A) do
+      Lines.Add(A[i]);
+    Result := Lines.Text;
+  finally
+    Lines.Free;
+  end;
+end;
+
 function QRSizeToWidth(QRSize: Integer): Integer;
 begin
   Result := 0;
@@ -305,8 +326,6 @@ begin
   inherited Create;
   FLogger := ALogger;
   FVatRates := TVatRates.Create;
-  FHeader := TTntStringList.Create;
-  FTrailer := TTntStringList.Create;
   FTranslations := TTranslations.Create;
   FTemplate := TReceiptTemplate.Create(ALogger);
   FUnits := TUnitItems.Create(TUnitItem);
@@ -318,8 +337,6 @@ end;
 destructor TPrinterParameters.Destroy;
 begin
   FUnits.Free;
-  FHeader.Free;
-  FTrailer.Free;
   FVatRates.Free;
   FTemplate.Free;
   FTranslations.Free;
@@ -447,8 +464,8 @@ begin
   Logger.Debug('CashboxNumber: ' + CashboxNumber);
   Logger.Debug('NumHeaderLines: ' + IntToStr(NumHeaderLines));
   Logger.Debug('NumTrailerLines: ' + IntToStr(NumTrailerLines));
-  LogText('Header', Header.Text);
-  LogText('Trailer', Trailer.Text);
+  LogText('Header', HeaderText);
+  LogText('Trailer', TrailerText);
   Logger.Debug('PaymentType2: ' + IntToStr(PaymentType2));
   Logger.Debug('PaymentType3: ' + IntToStr(PaymentType3));
   Logger.Debug('PaymentType4: ' + IntToStr(PaymentType4));
@@ -484,43 +501,43 @@ begin
   Logger.Debug(Logger.Separator);
 end;
 
-procedure TPrinterParameters.SetNumHeaderLines(const Value: Integer);
-var
-  i: Integer;
-  Text: WideString;
+procedure TPrinterParameters.SetHeaderLine(LineNumber: Integer;
+  const Text: WideString);
 begin
-  if Value = NumHeaderLines then Exit;
+  if (LineNumber <= 0)or(LineNumber > NumHeaderLines) then
+    raiseIllegalError('Invalid line number');
+  FHeader[LineNumber-1] := Text;
+end;
 
-  if Value in [MinHeaderLines..MaxHeaderLines] then
+procedure TPrinterParameters.SetTrailerLine(LineNumber: Integer;
+  const Text: WideString);
+begin
+  if (LineNumber <= 0)or(LineNumber > NumTrailerLines) then
+    raiseIllegalError('Invalid line number');
+  FTrailer[LineNumber-1] := Text;
+end;
+
+procedure TPrinterParameters.SetNumHeaderLines(const Value: Integer);
+begin
+  if Value <> NumHeaderLines then
   begin
-    Text := HeaderText;
-    FNumHeaderLines := Value;
-
-    FHeader.Clear;
-    for i := 0 to Value-1 do
+    if Value in [MinHeaderLines..MaxHeaderLines] then
     begin
-      FHeader.Add('');
+      FNumHeaderLines := Value;
+      SetLength(FHeader, Value);
     end;
-    SetHeaderText(Text);
   end;
 end;
 
 procedure TPrinterParameters.SetNumTrailerLines(const Value: Integer);
-var
-  i: Integer;
-  Text: WideString;
 begin
-  if Value = NumTrailerLines then Exit;
-
-  if Value in [MinTrailerLines..MaxTrailerLines] then
+  if Value <> NumTrailerLines then
   begin
-    Text := TrailerText;
-    FNumTrailerLines := Value;
-
-    FTrailer.Clear;
-    for i := 0 to Value-1 do
-      FTrailer.Add('');
-    SetTrailerText(Text);
+    if Value in [MinTrailerLines..MaxTrailerLines] then
+    begin
+      FNumTrailerLines := Value;
+      SetLength(FTrailer, Value);
+    end;
   end;
 end;
 
@@ -580,12 +597,12 @@ end;
 
 function TPrinterParameters.GetHeaderText: WideString;
 begin
-  Result := Header.Text;
+  Result := ArrayToText(FHeader);
 end;
 
 function TPrinterParameters.GetTrailerText: WideString;
 begin
-  Result := Trailer.Text;
+  Result := ArrayToText(FTrailer);
 end;
 
 procedure TPrinterParameters.SetAmountDecimalPlaces(const Value: Integer);
@@ -629,8 +646,8 @@ begin
   if Source is TPrinterParameters then
   begin
     Src := Source as TPrinterParameters;
-    Header.Assign(Src.Header);
-    Trailer.Assign(Src.Trailer);
+    FHeader := Src.FHeader;
+    FTrailer := Src.FTrailer;
     LogMaxCount := Src.LogMaxCount;
     LogFileEnabled := Src.LogFileEnabled;
     LogFilePath := Src.LogFilePath;

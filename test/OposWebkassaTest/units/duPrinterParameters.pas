@@ -33,6 +33,7 @@ type
     procedure CheckSetDefaults;
     procedure CheckDefaultParams;
     procedure CheckGetTranslationText;
+    procedure CheckArrayOfString;
   end;
 
 implementation
@@ -89,8 +90,8 @@ procedure TPrinterParametersTest.CheckNonDefaultParams;
 begin
   CheckEquals(2, FParams.NumHeaderLines, 'NumHeaderLines');
   CheckEquals(3, FParams.NumTrailerLines, 'NumTrailerLines');
-  CheckEquals(2, FParams.Header.Count, 'FParams.Header.Count');
-  CheckEquals(3, FParams.Trailer.Count, 'FParams.Trailer.Count');
+  CheckEquals(2, Length(FParams.Header), 'Length(FParams.Header)');
+  CheckEquals(3, Length(FParams.Trailer), 'Length(FParams.Trailer)');
   CheckEquals('HLine 1', FParams.Header[0], 'FParams.Header[0]');
   CheckEquals('HLine 2', FParams.Header[1], 'FParams.Header[1]');
   CheckEquals('TLine 1', FParams.Trailer[0], 'FParams.Trailer[0]');
@@ -215,6 +216,24 @@ begin
     LinesRus.Free;
     LinesKaz.Free;
   end;
+end;
+
+procedure TPrinterParametersTest.CheckArrayOfString;
+var
+  Lines: array of WideString;
+begin
+  CheckEquals(0, Length(Lines), 'Length(Lines) <> 0');
+  SetLength(Lines, 2);
+  Lines[0] := 'Line 0';
+  Lines[1] := 'Line 1';
+  CheckEquals('Line 0', Lines[0], 'Lines[0]');
+  CheckEquals('Line 1', Lines[1], 'Lines[1]');
+  SetLength(Lines, 1);
+  CheckEquals('Line 0', Lines[0], 'Lines[0]');
+  SetLength(Lines, 3);
+  CheckEquals('Line 0', Lines[0], 'Lines[0]');
+  CheckEquals('', Lines[1], 'Lines[1]');
+  CheckEquals('', Lines[2], 'Lines[2]');
 end;
 
 initialization
