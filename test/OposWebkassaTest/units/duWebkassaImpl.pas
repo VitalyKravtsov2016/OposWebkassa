@@ -96,6 +96,7 @@ type
     procedure TestZeroFiscalReceipt;
     procedure TestPrintDuplicate;
     procedure TestPrintDuplicate2;
+    procedure TestRecLineChars;
   end;
 
 implementation
@@ -1478,6 +1479,13 @@ begin
   FptrCheck(Driver.DirectIO2(DIO_SET_DRIVER_PARAMETER, DriverParameterPrintEnabled, '0'));
   FptrCheck(Driver.DirectIO2(DIO_PRINT_RECEIPT_DUPLICATE, 0, '{29FA3A2F-5A60-47E4-872B-6AE8C3893CC7}'));
   CheckEquals(0, FPrinter.Lines.Count, 'Lines.Count.1');
+end;
+
+procedure TWebkassaImplTest.TestRecLineChars;
+begin
+  FPrinter.RecLineChars := 20;
+  OpenClaimEnable;
+  CheckEquals(20, Driver.GetPropertyNumber(PIDXFptr_DescriptionLength), 'DescriptionLength');
 end;
 
 initialization

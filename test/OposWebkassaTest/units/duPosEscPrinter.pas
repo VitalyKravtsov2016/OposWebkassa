@@ -32,6 +32,7 @@ type
     procedure TearDown; override;
   published
     procedure TestPrintNormal;
+    procedure TestRecLineChars;
   end;
 
 implementation
@@ -103,6 +104,13 @@ begin
   CheckEquals(StrToHex(Text), StrToHex(FPort.Buffer), 'Port.Buffer');
 end;
 
+procedure TPosEscPrinterTest.TestRecLineChars;
+begin
+  OpenClaimEnable;
+  CheckEquals(48, Printer.RecLineChars, 'Printer.RecLineChars.0');
+  Printer.RecLineChars := 42;
+  CheckEquals(42, Printer.RecLineChars, 'Printer.RecLineChars.0');
+end;
 
 initialization
   RegisterTest('', TPosEscPrinterTest.Suite);

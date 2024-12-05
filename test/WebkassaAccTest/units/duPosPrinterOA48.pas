@@ -58,6 +58,7 @@ type
     procedure TestPrintNormal2;
     procedure TestCharacterToCodePage;
     procedure TestArrayToString;
+
   end;
 
 implementation

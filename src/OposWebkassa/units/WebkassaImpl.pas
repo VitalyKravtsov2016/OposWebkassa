@@ -3535,7 +3535,6 @@ begin
     PrintReceipt(Receipt, Command);
   end;
   PrintDocumentSafe(Document);
-  Printer.RecLineChars := Params.RecLineChars;
 end;
 
 function GetPaperKind(WidthInDots: Integer): Integer;
@@ -4217,18 +4216,20 @@ end;
 
 procedure TWebkassaImpl.PrintDocumentSafe(Document: TTextDocument);
 begin
-  if not Params.PrintEnabled then Exit;
-
-  try
-    Document.AddText(Params.TrailerText);
-    PrintDocument(Document);
-  except
-    on E: Exception do
-    begin
-      Document.Save;
-      Logger.Error('Failed to print document, ' + E.Message);
+  if Params.PrintEnabled then
+  begin
+    try
+      Document.AddText(Params.TrailerText);
+      PrintDocument(Document);
+    except
+      on E: Exception do
+      begin
+        Document.Save;
+        Logger.Error('Failed to print document, ' + E.Message);
+      end;
     end;
   end;
+  Printer.RecLineChars := Params.RecLineChars;
 end;
 
 procedure TWebkassaImpl.PrintDocument(Document: TTextDocument);
