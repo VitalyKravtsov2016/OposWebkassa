@@ -136,6 +136,24 @@ const
   TranslationNameKaz = 'KAZ';
 
 type
+  { TUnitName }
+
+  TUnitName = class(TCollectionItem)
+  public
+    AppUnitName: WideString;
+    SrvUnitName: WideString;
+  end;
+
+  { TUnitNames }
+
+  TUnitNames = class(TCollection)
+  private
+    function GetItem(Index: Integer): TUnitName;
+  public
+    constructor Create;
+    property Items[Index: Integer]: TUnitName read GetItem; default;
+  end;
+
   { TWideStringArray }
 
   TWideStringArray = array of WideString;
@@ -166,6 +184,7 @@ type
     FEscPrinterType: Integer;
     FFontName: WideString;
     FVatRates: TVatRates;
+    FUnitNames: TUnitNames;
     FVatRateEnabled: Boolean;
     FPaymentType2: Integer;
     FPaymentType3: Integer;
@@ -240,6 +259,7 @@ type
     procedure SetTemplateXml(const Value: WideString);
     procedure SetHeaderLine(LineNumber: Integer; const Text: WideString);
     procedure SetTrailerLine(LineNumber: Integer; const Text: WideString);
+    procedure AddUnitName(const AppUnitName, SrvUnitName: string);
 
     property Units: TUnitItems read FUnits;
     property Logger: ILogFile read FLogger;
@@ -286,6 +306,7 @@ type
     property OfflineText: WideString read FOfflineText write FOfflineText;
     property LineSpacing: Integer read FLineSpacing write FLineSpacing;
     property PrintEnabled: Boolean read FPrintEnabled write FPrintEnabled;
+    property UnitNames: TUnitNames read FUnitNames;
   end;
 
 function QRSizeToWidth(QRSize: Integer): Integer;
@@ -326,6 +347,8 @@ begin
   inherited Create;
   FLogger := ALogger;
   FVatRates := TVatRates.Create;
+  FUnitNames := TUnitNames.Create;
+
   FTranslations := TTranslations.Create;
   FTemplate := TReceiptTemplate.Create(ALogger);
   FUnits := TUnitItems.Create(TUnitItem);
@@ -338,6 +361,7 @@ destructor TPrinterParameters.Destroy;
 begin
   FUnits.Free;
   FVatRates.Free;
+  FUnitNames.Free;
   FTemplate.Free;
   FTranslations.Free;
   inherited Destroy;
@@ -419,6 +443,7 @@ begin
   Units.Clear;
   ReplaceDataMatrixWithQRCode := False;
   AcceptLanguage := 'kk-KZ';
+  UnitNames.Clear;
 end;
 
 procedure TPrinterParameters.LogText(const Caption, Text: WideString);
@@ -775,6 +800,27 @@ begin
     Result := CurrencyName;
     Exit;
   end;
+end;
+
+procedure TPrinterParameters.AddUnitName(const AppUnitName, SrvUnitName: string);
+var
+  Item: TUnitName;
+begin
+  Item := TUnitName.Create(FUnitNames);
+  Item.AppUnitName := AppUnitName;
+  Item.SrvUnitName := SrvUnitName;
+end;
+
+{ TUnitNames }
+
+constructor TUnitNames.Create;
+begin
+  inherited Create(TUnitName);
+end;
+
+function TUnitNames.GetItem(Index: Integer): TUnitName;
+begin
+  Result := inherited Items[Index] as TUnitName;
 end;
 
 end.

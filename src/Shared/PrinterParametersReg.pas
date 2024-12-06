@@ -51,10 +51,11 @@ procedure SaveUsrParametersReg(Parameters: TPrinterParameters;
 implementation
 
 const
-  REG_KEY_VATRATES  = 'VatRates';
-  REG_KEY_PAYTYPES  = 'PaymentTypes';
+  REGSTR_KEY_VATRATES  = 'VatRates';
+  REGSTR_KEY_PAYTYPES  = 'PaymentTypes';
   REGSTR_KEY_UNITITEMS = 'UnitItems';
-  REGSTR_KEY_IBT = 'SOFTWARE\POSITIVE\POSITIVE32\Terminal';
+  REGSTR_KEY_UNITNAMES = 'UnitNames';
+  REGSTR_KEY_IBT       = 'SOFTWARE\POSITIVE\POSITIVE32\Terminal';
 
 procedure DeleteParametersReg(const DeviceName: WideString; Logger: ILogFile);
 var
@@ -155,6 +156,8 @@ var
   VatID: Integer;
   VatRate: Double;
   VatName: WideString;
+  AppName: WideString;
+  SrvName: WideString;
 begin
   Logger.Debug('TPrinterParametersReg.LoadSysParameters', [DeviceName]);
 
@@ -307,7 +310,7 @@ begin
       Reg.CloseKey;
     end;
     // VatRates
-    if Reg.OpenKey(KeyName + '\' + REG_KEY_VATRATES, False) then
+    if Reg.OpenKey(KeyName + '\' + REGSTR_KEY_VATRATES, False) then
     begin
       Parameters.VatRates.Clear;
       Names := TTntStringList.Create;
@@ -317,7 +320,7 @@ begin
 
         for i := 0 to Names.Count-1 do
         begin
-          if Reg.OpenKey(KeyName + '\' + REG_KEY_VATRATES, False) then
+          if Reg.OpenKey(KeyName + '\' + REGSTR_KEY_VATRATES, False) then
           begin
             if Reg.OpenKey(Names[i], False) then
             begin
@@ -325,6 +328,32 @@ begin
               VatRate := Reg.ReadFloat('Rate');
               VatName := Reg.ReadString('Name');
               Parameters.VatRates.Add(VatID, VatRate, VatName);
+              Reg.CloseKey;
+            end;
+          end;
+        end;
+      finally
+        Names.Free;
+      end;
+    end;
+    // UnitNames
+    if Reg.OpenKey(KeyName + '\' + REGSTR_KEY_UNITNAMES, False) then
+    begin
+      Parameters.UnitNames.Clear;
+      Names := TTntStringList.Create;
+      try
+        Reg.GetKeyNames(Names);
+        Reg.CloseKey;
+
+        for i := 0 to Names.Count-1 do
+        begin
+          if Reg.OpenKey(KeyName + '\' + REGSTR_KEY_UNITNAMES, False) then
+          begin
+            if Reg.OpenKey(Names[i], False) then
+            begin
+              AppName := Reg.ReadString('AppName');
+              SrvName := Reg.ReadString('SrvName');
+              Parameters.AddUnitName(AppName, SrvName);
               Reg.CloseKey;
             end;
           end;
@@ -346,6 +375,8 @@ var
   Item: TVatRate;
   Reg: TTntRegistry;
   KeyName: WideString;
+  UnitName: TUnitName;
+  RootKeyName: WideString;
 begin
   Logger.Debug('TPrinterParametersReg.SaveSysParameters', [DeviceName]);
 
@@ -353,9 +384,9 @@ begin
   try
     Reg.Access := KEY_ALL_ACCESS;
     Reg.RootKey := HKEY_LOCAL_MACHINE;
-    KeyName := GetSysKeyName(DeviceName);
-    if not Reg.OpenKey(KeyName, True) then
-      raiseOpenKeyError(KeyName);
+    RootKeyName := GetSysKeyName(DeviceName);
+    if not Reg.OpenKey(RootKeyName, True) then
+      raiseOpenKeyError(RootKeyName);
 
     Reg.WriteString('', FiscalPrinterProgID);
     Reg.WriteBool('LogFileEnabled', Parameters.LogFileEnabled);
@@ -409,10 +440,10 @@ begin
 
     Reg.CloseKey;
     // VatRates
-    Reg.DeleteKey(KeyName + '\' + REG_KEY_VATRATES);
+    Reg.DeleteKey(KeyName + '\' + REGSTR_KEY_VATRATES);
     for i := 0 to Parameters.VatRates.Count-1 do
     begin
-      if Reg.OpenKey(KeyName + '\' + REG_KEY_VATRATES, True) then
+      if Reg.OpenKey(RootKeyName + '\' + REGSTR_KEY_VATRATES, True) then
       begin
         Item := Parameters.VatRates[i];
         if Reg.OpenKey(IntToStr(i), True) then
@@ -424,6 +455,19 @@ begin
         end;
         Reg.CloseKey;
       end;
+    end;
+    // UnitNames
+    Reg.DeleteKey(KeyName + '\' + REGSTR_KEY_UNITNAMES);
+    for i := 0 to Parameters.UnitNames.Count-1 do
+    begin
+      UnitName := Parameters.UnitNames[i];
+      KeyName := RootKeyName + '\' + REGSTR_KEY_UNITNAMES + '\' + IntToStr(i);
+      if Reg.OpenKey(KeyName, True) then
+      begin
+        Reg.WriteString('AppName', UnitName.AppUnitName);
+        Reg.WriteString('SrvName', UnitName.SrvUnitName);
+      end;
+      Reg.CloseKey;
     end;
   except
     on E: Exception do

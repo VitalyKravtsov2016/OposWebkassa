@@ -55,7 +55,7 @@ implementation
 uses
   fmuFptrConnection, fmuPrinter, fmuFptrLog, fmuFptrHeader, fmuFptrTrailer,
   fmuFptrVatRate, fmuFptrPayType, fmuFptrMiscParams, fmuTranslation,
-  fmuFptrBarcode, fmuFptrReceipt;
+  fmuFptrBarcode, fmuFptrReceipt, fmuFptrUnitName;
 
 { TFiscalPrinterDevice }
 
@@ -113,6 +113,7 @@ begin
     AddPage(fm, TfmFptrTrailer);
     AddPage(fm, TfmFptrPayType);
     AddPage(fm, TfmFptrVatRate);
+    AddPage(fm, TfmFptrUnitName);
     AddPage(fm, TfmTranslation);
     AddPage(fm, TfmFptrBarcode);
     AddPage(fm, TfmFptrReceipt);

@@ -50,7 +50,7 @@ uses
   OposSemaphore in '..\Opos\OposSemaphore.pas',
   PrinterParametersReg in '..\Shared\PrinterParametersReg.pas',
   fmuFptrMiscParams in 'Fmu\fmuFptrMiscParams.pas' {fmFptrMiscParams},
-  fmuFptrVatRate in 'Fmu\fmuFptrVatRate.pas' {fmFptrVatRate},
+  fmuFptrUnitName in 'Fmu\fmuFptrUnitName.pas' {fmFptrUnitName},
   VatRate in '..\Shared\VatRate.pas',
   uLkJSON in '..\Shared\uLkJSON.pas',
   fmuFptrPayType in 'Fmu\fmuFptrPayType.pas' {fmFptrPayType},
@@ -98,7 +98,8 @@ uses
   PosPrinterRongta in '..\Shared\PosPrinterRongta.pas',
   EscPrinterRongta in '..\Shared\EscPrinterRongta.pas',
   OposFiscalPrinter_1_13_Lib_TLB in '..\Opos\OposFiscalPrinter_1_13_Lib_TLB.pas',
-  EscPrinterUtils in '..\Shared\EscPrinterUtils.pas';
+  EscPrinterUtils in '..\Shared\EscPrinterUtils.pas',
+  fmuFptrVatRate in 'Fmu\fmuFptrVatRate.pas' {fmFptrVatRate};
 
 {$R *.RES}
 {$R WindowsXP.RES}
