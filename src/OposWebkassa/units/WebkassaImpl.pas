@@ -610,8 +610,8 @@ end;
 procedure TWebkassaImpl.BeginDocument;
 begin
   Document.Clear;
-  Document.LineChars := Printer.RecLineChars;
-  Document.LineHeight := Printer.RecLineHeight;
+  Document.LineChars := Params.RecLineChars;
+  Document.LineHeight := Params.RecLineHeight;
 end;
 
 function TWebkassaImpl.AmountToStr(Value: Currency): AnsiString;
@@ -829,8 +829,8 @@ begin
   try
     CheckEnabled;
     CheckState(FPTR_PS_MONITOR);
-    Document.LineChars := Printer.RecLineChars;
-    
+    Document.LineChars := Params.RecLineChars;
+
     SetPrinterState(FPTR_PS_FISCAL_DOCUMENT);
     Result := ClearResult;
   except
@@ -1845,7 +1845,7 @@ begin
       PIDXFptr_CountryCode            : Result := FCountryCode;
       PIDXFptr_CoverOpen              : Result := BoolToInt[Printer.CoverOpen];
       PIDXFptr_DayOpened              : Result := BoolToInt[FDayOpened];
-      PIDXFptr_DescriptionLength      : Result := Printer.RecLineChars;
+      PIDXFptr_DescriptionLength      : Result := Params.RecLineChars;
       PIDXFptr_DuplicateReceipt       : Result := BoolToInt[FDuplicateReceipt];
       PIDXFptr_ErrorLevel             : Result := FErrorLevel;
       PIDXFptr_ErrorOutID             : Result := FErrorOutID;
@@ -1854,7 +1854,7 @@ begin
       PIDXFptr_FlagWhenIdle           : Result := BoolToInt[FFlagWhenIdle];
       PIDXFptr_JrnEmpty               : Result := BoolToInt[Printer.JrnEmpty];
       PIDXFptr_JrnNearEnd             : Result := BoolToInt[Printer.JrnNearEnd];
-      PIDXFptr_MessageLength          : Result := Printer.RecLineChars;
+      PIDXFptr_MessageLength          : Result := Params.RecLineChars;
       PIDXFptr_NumHeaderLines         : Result := FParams.NumHeaderLines;
       PIDXFptr_NumTrailerLines        : Result := FParams.NumTrailerLines;
       PIDXFptr_NumVatRates            : Result := FParams.VatRates.Count;
@@ -3762,11 +3762,10 @@ begin
   begin
     Receipt.FiscalSign := Command.Data.CheckNumber;
   end;
-  Document.AddLine('Фискальный признак: ' + Receipt.FiscalSign);
+  Document.AddLine('ФП: ' + Receipt.FiscalSign);
   Document.AddLine('Время: ' + Command.Data.DateTime);
-  Document.AddLine('Оператор фискальных данных:');
-  Document.AddLine(Command.Data.Cashbox.Ofd.Name);
-  Document.AddLine('Для проверки чека зайдите на сайт:');
+  Document.AddLine('ОФД: ' + Command.Data.Cashbox.Ofd.Name);
+  Document.AddLine('Для проверки чека:');
   Document.AddLine(Command.Data.Cashbox.Ofd.Host);
   Document.AddSeparator;
   Document.AddLine(Document.AlignCenter('ФИСКАЛЬНЫЙ ЧЕK'));
@@ -4248,9 +4247,9 @@ begin
     FCapRecBold := Printer.CapRecBold;
     FCapRecDwideDhigh := Printer.CapRecDwideDhigh;
 
-    FLineChars := Printer.RecLineChars;
-    FLineHeight := Printer.RecLineHeight;
-    FLineSpacing := Printer.RecLineSpacing;
+    FLineChars := Params.RecLineChars;
+    FLineHeight := Params.RecLineHeight;
+    FLineSpacing := Params.LineSpacing;
 
     if Printer.CapTransaction then
     begin
@@ -4397,26 +4396,24 @@ var
   i: Integer;
   Count: Integer;
   Text: WideString;
-  RecLinesToPaperCut: Integer;
 const
   PrintHeader = True;
 begin
-  PrintLine(''); 
-  PrintLine(''); 
+  PrintLine('');
+  PrintLine('');
   if Printer.CapRecPapercut then
   begin
-    RecLinesToPaperCut := Printer.RecLinesToPaperCut;
     if PrintHeader then
     begin
-      if FParams.NumHeaderLines <= RecLinesToPaperCut then
+      if FParams.NumHeaderLines <= Printer.RecLinesToPaperCut then
       begin
-        PrintLine('');
+        //PrintLine('');
         for i := Low(Params.Header) to High(Params.Header) do
         begin
           Text := TrimRight(Params.Header[i]);
           PrintLine(Text);
         end;
-        Count := RecLinesToPaperCut - FParams.NumHeaderLines;
+        Count := Printer.RecLinesToPaperCut - FParams.NumHeaderLines;
         for i := 0 to Count-1 do
         begin
           PrintLine('');
@@ -4424,7 +4421,7 @@ begin
         Printer.CutPaper(90);
       end else
       begin
-        for i := 1 to RecLinesToPaperCut do
+        for i := 1 to Printer.RecLinesToPaperCut do
         begin
           PrintLine(CRLF);
         end;
@@ -4437,7 +4434,7 @@ begin
       end;
     end else
     begin
-      for i := 1 to RecLinesToPaperCut do
+      for i := 1 to Printer.RecLinesToPaperCut do
       begin
         PrintLine('');
       end;

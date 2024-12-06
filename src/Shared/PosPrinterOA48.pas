@@ -1833,7 +1833,7 @@ function TPosPrinterOA48.Get_RecLinesToPaperCut: Integer;
 const
   DistanceToCutterInDots = 128;
 begin
-  Result := DistanceToCutterInDots div (RecLineSpacing + RecLineHeight + 10);
+  Result := (DistanceToCutterInDots div (RecLineSpacing + RecLineHeight + 10))-1;
 end;
 
 function TPosPrinterOA48.Get_RecLineWidth: Integer;

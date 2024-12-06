@@ -49,7 +49,6 @@ type
     procedure TestPrintBarCode;
     procedure TestPrintBarCode2;
     procedure TestPrintBarCodeEsc;
-
     procedure TestStatusUpdateEvent;
     procedure TestCoverStateEvent;
     procedure TestPowerStateEvent;
@@ -174,6 +173,7 @@ begin
   Printer.DeviceEnabled := True;
   PtrCheck(Printer.ResultCode);
   CheckEquals(True, Printer.DeviceEnabled, 'DeviceEnabled <> True');
+  Printer.RecLineChars := 26;
 end;
 
 procedure TPosPrinterOA48Test.OpenClaimEnable;

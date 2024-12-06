@@ -145,6 +145,8 @@ end;
 
 procedure TPrinterOA48Test.TestPrintText;
 begin
+  FPrinter.PrintText('12345678901234567890123456789012345678901234567890' + CRLF);
+
   FPrinter.PrintText('Печать строки 1' + CRLF);
   FPrinter.PrintText('Печать строки 2' + CRLF);
   FPrinter.PrintText('Печать строки 3' + CRLF);

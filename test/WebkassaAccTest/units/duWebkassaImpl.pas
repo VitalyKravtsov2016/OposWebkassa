@@ -128,31 +128,19 @@ begin
   if Driver = nil then
   begin
     Driver := ToleFiscalPrinter.Create;
-    //Driver.Driver.Printer := Printer;
     Driver.Driver.LoadParamsEnabled := False;
-
     Params.PrintBarcode := PrintBarcodeESCCommands;
-    //Params.PrintBarcode := PrintBarcodeGraphics;
     Params.LogFileEnabled := True;
     Params.LogMaxCount := 10;
     Params.LogFilePath := GetModulePath + 'Logs';
-    Params.TemplateEnabled := True;
+    Params.TemplateEnabled := False;
     Params.Template.LoadFromFile('Receipt.xml');
 
-(*
-    Params.Login := 'webkassa4@softit.kz';
-    Params.Password := 'Kassa123';
-    Params.CashboxNumber := 'SWK00033059';
-*)
     Params.Login := 'apykhtin@ibtsmail.ru';
     Params.Password := 'Kassa123!';
-    //Params.CashboxNumber := 'SWK00033444';
-    Params.CashboxNumber := 'SWK00032878';
-
-
+    Params.CashboxNumber := 'SWK00032944';
     Params.ConnectTimeout := 10;
     Params.WebkassaAddress := 'https://devkkm.webkassa.kz';
-    //Params.WebkassaAddress := 'http://localhost:1332';
 
     Params.NumHeaderLines := 4;
     Params.NumTrailerLines := 3;
@@ -211,12 +199,12 @@ begin
 
     Params.FontName := FontNameA;
     Params.LineSpacing := 0;
-    Params.RecLineChars := 48;
+    Params.RecLineChars := 32;
     Params.RecLineHeight := 10;
     Params.Utf8Enabled := True;
     Params.AcceptLanguage := 'kk-KZ';
   end;
-end;                            
+end;
 
 procedure TWebkassaImplTest.TearDown;
 begin
@@ -563,6 +551,19 @@ end;
 
 procedure TWebkassaImplTest.TestFiscalReceipt2;
 begin
+  Params.FontName := FontNameB;
+  Params.NumHeaderLines := 3;
+  Params.NumTrailerLines := 3;
+  Params.HeaderText :=
+    '           ÒÎÎ PetroRetail      ' + CRLF +
+    '        ÁÈÍ 181040037076        ' + CRLF +
+    '    ÍÄÑ Ñåğèÿ 60001 ¹ 1204525   ' + CRLF +
+    '       ÀÇÑ ¹Z-5555 (Êàññà 1)    ';
+
+  Params.TrailerText :=
+    '    Callöåíòğ 039458039850      ' + CRLF +
+    '   Ãîğÿ÷àÿ ëèíèÿ 20948802934    ' + CRLF +
+    '      ÑÏÀÑÈÁÎ ÇÀ ÏÎÊÓÏÊÓ        ';
   Params.RoundType := RoundTypeItems;
 
   OpenClaimEnable;
