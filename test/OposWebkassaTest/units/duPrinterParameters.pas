@@ -85,8 +85,8 @@ begin
   FParams.Units.AddItem(2, '876', '547', '875');
   FParams.ReplaceDataMatrixWithQRCode := True;
   FParams.UnitNames.Clear;
-  FParams.AddUnitName('л.', 'литр');
-  FParams.AddUnitName('Л', 'литр');
+  FParams.AddUnitName('л.', 'литр', 1);
+  FParams.AddUnitName('Л', 'литр', 2);
 end;
 
 procedure TPrinterParametersTest.CheckNonDefaultParams;
@@ -133,10 +133,14 @@ begin
   CheckEquals('875', FParams.Units[1].NameEn, 'Units[1].NameEn');
   CheckEquals(True, FParams.ReplaceDataMatrixWithQRCode, 'ReplaceDataMatrixWithQRCode');
   CheckEquals(2, FParams.UnitNames.Count, 'UnitNames.Count');
-  CheckEquals('л.', FParams.UnitNames[0].AppUnitName, 'UnitNames[0].AppUnitName');
-  CheckEquals('литр', FParams.UnitNames[0].SrvUnitName, 'UnitNames[0].SrvUnitName');
-  CheckEquals('Л', FParams.UnitNames[1].AppUnitName, 'UnitNames[1].AppUnitName');
-  CheckEquals('литр', FParams.UnitNames[1].SrvUnitName, 'UnitNames[1].SrvUnitName');
+
+  CheckEquals('л.', FParams.UnitNames[0].AppName, 'UnitNames[0].AppName');
+  CheckEquals('литр', FParams.UnitNames[0].SrvName, 'UnitNames[0].SrvName');
+  CheckEquals(1, FParams.UnitNames[0].SrvCode, 'UnitNames[0].SrvCode');
+
+  CheckEquals('Л', FParams.UnitNames[1].AppName, 'UnitNames[1].AppName');
+  CheckEquals('литр', FParams.UnitNames[1].SrvName, 'UnitNames[1].SrvName');
+  CheckEquals(2, FParams.UnitNames[1].SrvCode, 'UnitNames[1].SrvCode');
 end;
 
 

@@ -159,7 +159,7 @@ type
     procedure CheckPtr(AResultCode: Integer);
     function CreateReceipt(FiscalReceiptType: Integer): TCustomReceipt;
     function GetPrinter: IOPOSPOSPrinter;
-    function GetUnitCode(const UnitName: WideString): Integer;
+    function GetUnitCode(const AppUnitName: WideString): Integer;
     procedure PrinterErrorEvent(ASender: TObject; ResultCode,
       ResultCodeExtended, ErrorLocus: Integer;
       var pErrorResponse: Integer);
@@ -3332,32 +3332,15 @@ begin
   end;
 end;
 
-function TWebkassaImpl.GetUnitCode(const UnitName: WideString): Integer;
+function TWebkassaImpl.GetUnitCode(const AppUnitName: WideString): Integer;
 var
-  i: Integer;
-  Item: TUnitItem;
+  UnitName: TUnitName;
 begin
-  UpdateUnits;
-
   Result := 0;
-  for i := 0 to Params.Units.Count-1 do
+  UnitName := Params.UnitNames.ItemByAppName(AppUnitName);
+  if UnitName <> nil then
   begin
-    Item := Params.Units.Items[i] as TUnitItem;
-    if AnsiCompareText(UnitName, Item.NameRu) = 0 then
-    begin
-      Result := Item.Code;
-      Break;
-    end;
-    if AnsiCompareText(UnitName, Item.NameKz) = 0 then
-    begin
-      Result := Item.Code;
-      Break;
-    end;
-    if AnsiCompareText(UnitName, Item.NameEn) = 0 then
-    begin
-      Result := Item.Code;
-      Break;
-    end;
+    Result := UnitName.SrvCode;
   end;
 end;
 
@@ -4768,11 +4751,10 @@ begin
           AmountToStrEq(Command.Data.Tax));
     end;
     Document.AddSeparator;
-    Document.AddLine('Фискальный признак: ' + CheckNumber);
+    Document.AddLine('ФП: ' + CheckNumber);
     Document.AddLine('Время: ' + Command.Data.RegistratedOn);
-    Document.AddLine('Оператор фискальных данных:');
-    Document.AddLine(Command.Data.Ofd.Name);
-    Document.AddLine('Для проверки чека зайдите на сайт:');
+    Document.AddLine('ОФД: ' + Command.Data.Ofd.Name);
+    Document.AddLine('Для проверки чека:');
     Document.AddLine(Command.Data.Ofd.Host);
     Document.AddSeparator;
     Document.AddLine(Document.AlignCenter('ФИСКАЛЬНЫЙ ЧЕK'));

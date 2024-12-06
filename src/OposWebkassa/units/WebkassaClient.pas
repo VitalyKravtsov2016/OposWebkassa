@@ -1305,6 +1305,7 @@ type
     function GetItem(Index: Integer): TUnitItem;
   public
     function ItemByCode(Code: Integer): TUnitItem;
+    function ItemByName(const AName: WideString): TUnitItem;
     function AddItem(Code: Integer; const NameRu, NameKz, NameEn: WideString): TUnitItem;
     property Items[Index: Integer]: TUnitItem read GetItem; default;
   end;
@@ -3338,6 +3339,19 @@ begin
   end;
   Result := nil;
 end;
+
+function TUnitItems.ItemByName(const AName: WideString): TUnitItem;
+var
+  i: Integer;
+begin
+  for i := 0 to Count-1 do
+  begin
+    Result := Items[i];
+    if AnsiCompareText(Result.NameRu, AName) = 0 then Exit;
+  end;
+  Result := nil;
+end;
+
 
 { TUnitItem }
 

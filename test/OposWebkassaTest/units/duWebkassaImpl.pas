@@ -510,11 +510,10 @@ const
     '  СДАЧА                             =15.18' + CRLF +
     'в т.ч. VAT 12%                      =12.14' + CRLF +
     '------------------------------------------' + CRLF +
-    'Фискальный признак: 923956785162          ' + CRLF +
+    'ФП: 923956785162                          ' + CRLF +
     'Время: 04.08.2022 17:09:35                ' + CRLF +
-    'Оператор фискальных данных:               ' + CRLF +
-    'АО "КазТранском"                          ' + CRLF +
-    'Для проверки чека зайдите на сайт:        ' + CRLF +
+    'ОФД: АО "КазТранском"                     ' + CRLF +
+    'Для проверки чека:                        ' + CRLF +
     'dev.kofd.kz/consumer                      ' + CRLF +
     '------------------------------------------' + CRLF +
     '              ФИСКАЛЬНЫЙ ЧЕK              ' + CRLF +
@@ -1064,7 +1063,7 @@ begin
   // Separator
   Driver.Params.Template.Trailer.AddSeparator;
   // Fiscal sign
-  Driver.Params.Template.Trailer.AddText('Фискальный признак: ');
+  Driver.Params.Template.Trailer.AddText('ФП: ');
   Item := Driver.Params.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
   Item.TextStyle := STYLE_NORMAL;
@@ -1084,8 +1083,7 @@ begin
   Item.Enabled := TEMPLATE_ITEM_ENABLED;
   Driver.Params.Template.Trailer.NewLine;
   // Fiscal data operator
-  Driver.Params.Template.Trailer.AddText('Оператор фискальных данных:');
-  Driver.Params.Template.Trailer.NewLine;
+  Driver.Params.Template.Trailer.AddText('ОФД: ');
   Item := Driver.Params.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
   Item.TextStyle := STYLE_NORMAL;
@@ -1095,7 +1093,7 @@ begin
   Item.Enabled := TEMPLATE_ITEM_ENABLED;
   Driver.Params.Template.Trailer.NewLine;
   // Ticket URL
-  Driver.Params.Template.Trailer.AddText('Для проверки чека зайдите на сайт:');
+  Driver.Params.Template.Trailer.AddText('Для проверки чека:');
   Driver.Params.Template.Trailer.NewLine;
   Item := Driver.Params.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
@@ -1242,11 +1240,10 @@ const
     'Наличные:                         =2000.00' + CRLF +
     '  СДАЧА                            =647.00' + CRLF +
     '------------------------------------------' + CRLF +
-    'Фискальный признак:                       ' + CRLF +
+    'ФП:                                       ' + CRLF +
     'Время:                                    ' + CRLF +
-    'Оператор фискальных данных:               ' + CRLF +
-    '                                          ' + CRLF +
-    'Для проверки чека зайдите на сайт:        ' + CRLF +
+    'ОФД:                                      ' + CRLF +
+    'Для проверки чека:                        ' + CRLF +
     '                                          ' + CRLF +
     '------------------------------------------' + CRLF +
     '              ФИСКАЛЬНЫЙ ЧЕK              ' + CRLF +
@@ -1483,7 +1480,7 @@ end;
 
 procedure TWebkassaImplTest.TestRecLineChars;
 begin
-  FPrinter.RecLineChars := 20;
+  Driver.Params.RecLineChars := 20;
   OpenClaimEnable;
   CheckEquals(20, Driver.GetPropertyNumber(PIDXFptr_DescriptionLength), 'DescriptionLength');
 end;

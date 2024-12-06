@@ -28,7 +28,9 @@ type
     reReceipt: TTntRichEdit;
     seTemplate: TSynEdit;
     chbTemplateEnabled: TTntCheckBox;
+    btnUpdate: TButton;
     procedure ReceiptChange(Sender: TObject);
+    procedure btnUpdateClick(Sender: TObject);
   public
     procedure UpdatePage; override;
     procedure UpdateObject; override;
@@ -159,7 +161,6 @@ procedure TfmFptrReceipt.UpdatePage;
 begin
   chbTemplateEnabled.Checked := Parameters.TemplateEnabled;
   seTemplate.Lines.Text := Parameters.Template.AsXML;
-  UpdateReceiptText2(Parameters.Template.AsXML);
 end;
 
 procedure TfmFptrReceipt.UpdateObject;
@@ -176,6 +177,11 @@ begin
   except
     // !!!
   end;
+end;
+
+procedure TfmFptrReceipt.btnUpdateClick(Sender: TObject);
+begin
+  UpdateReceiptText2(Parameters.Template.AsXML);
 end;
 
 end.

@@ -512,7 +512,7 @@ begin
   // Separator
   Trailer.AddSeparator;
   // Fiscal sign
-  Trailer.AddText('Фискальный признак: ');
+  Trailer.AddText('ФП: ');
   Item := Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
   Item.TextStyle := STYLE_NORMAL;
@@ -532,8 +532,7 @@ begin
   Item.Enabled := TEMPLATE_ITEM_ENABLED;
   Trailer.NewLine;
   // Fiscal data operator
-  Trailer.AddText('Оператор фискальных данных:');
-  Trailer.NewLine;
+  Trailer.AddText('ОФД: ');
   Item := Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
   Item.TextStyle := STYLE_NORMAL;
@@ -543,7 +542,7 @@ begin
   Item.Enabled := TEMPLATE_ITEM_ENABLED;
   Trailer.NewLine;
   // Ticket URL
-  Trailer.AddText('Для проверки чека зайдите на сайт:');
+  Trailer.AddText('Для проверки чека:');
   Trailer.NewLine;
   Item := Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;

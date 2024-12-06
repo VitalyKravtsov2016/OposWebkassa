@@ -158,6 +158,7 @@ var
   VatName: WideString;
   AppName: WideString;
   SrvName: WideString;
+  SrvCode: Integer;
 begin
   Logger.Debug('TPrinterParametersReg.LoadSysParameters', [DeviceName]);
 
@@ -353,7 +354,8 @@ begin
             begin
               AppName := Reg.ReadString('AppName');
               SrvName := Reg.ReadString('SrvName');
-              Parameters.AddUnitName(AppName, SrvName);
+              SrvCode := Reg.ReadInteger('SrvCode');
+              Parameters.AddUnitName(AppName, SrvName, SrvCode);
               Reg.CloseKey;
             end;
           end;
@@ -440,7 +442,7 @@ begin
 
     Reg.CloseKey;
     // VatRates
-    Reg.DeleteKey(KeyName + '\' + REGSTR_KEY_VATRATES);
+    Reg.DeleteKey(RootKeyName + '\' + REGSTR_KEY_VATRATES);
     for i := 0 to Parameters.VatRates.Count-1 do
     begin
       if Reg.OpenKey(RootKeyName + '\' + REGSTR_KEY_VATRATES, True) then
@@ -457,15 +459,16 @@ begin
       end;
     end;
     // UnitNames
-    Reg.DeleteKey(KeyName + '\' + REGSTR_KEY_UNITNAMES);
+    Reg.DeleteKey(RootKeyName + '\' + REGSTR_KEY_UNITNAMES);
     for i := 0 to Parameters.UnitNames.Count-1 do
     begin
       UnitName := Parameters.UnitNames[i];
       KeyName := RootKeyName + '\' + REGSTR_KEY_UNITNAMES + '\' + IntToStr(i);
       if Reg.OpenKey(KeyName, True) then
       begin
-        Reg.WriteString('AppName', UnitName.AppUnitName);
-        Reg.WriteString('SrvName', UnitName.SrvUnitName);
+        Reg.WriteString('AppName', UnitName.AppName);
+        Reg.WriteString('SrvName', UnitName.SrvName);
+        Reg.WriteInteger('SrvCode', UnitName.SrvCode);
       end;
       Reg.CloseKey;
     end;
@@ -625,7 +628,7 @@ begin
       Reg.WriteCurrency('RefundTotal', Parameters.RefundTotal);
       Reg.CloseKey;
 
-      Reg.DeleteKey(KeyName + '\' + REGSTR_KEY_UNITITEMS);
+      Reg.DeleteKey(RootKeyName + '\' + REGSTR_KEY_UNITITEMS);
       for i := 0 to Parameters.Units.Count-1 do
       begin
         Item := Parameters.Units[i];

@@ -140,8 +140,9 @@ type
 
   TUnitName = class(TCollectionItem)
   public
-    AppUnitName: WideString;
-    SrvUnitName: WideString;
+    AppName: WideString;
+    SrvName: WideString;
+    SrvCode: Integer;
   end;
 
   { TUnitNames }
@@ -151,6 +152,7 @@ type
     function GetItem(Index: Integer): TUnitName;
   public
     constructor Create;
+    function ItemByAppName(const AppName: string): TUnitName;
     property Items[Index: Integer]: TUnitName read GetItem; default;
   end;
 
@@ -259,7 +261,7 @@ type
     procedure SetTemplateXml(const Value: WideString);
     procedure SetHeaderLine(LineNumber: Integer; const Text: WideString);
     procedure SetTrailerLine(LineNumber: Integer; const Text: WideString);
-    procedure AddUnitName(const AppUnitName, SrvUnitName: string);
+    procedure AddUnitName(const AppName, SrvName: string; SrvCode: Integer);
 
     property Units: TUnitItems read FUnits;
     property Logger: ILogFile read FLogger;
@@ -802,13 +804,22 @@ begin
   end;
 end;
 
-procedure TPrinterParameters.AddUnitName(const AppUnitName, SrvUnitName: string);
+procedure TPrinterParameters.AddUnitName(const AppName, SrvName: string;
+  SrvCode: Integer);
 var
   Item: TUnitName;
 begin
+  if AppName = '' then
+    raise Exception.Create('Ќазвание единицы приложени€ не может быть пустым');
+
+  if FUnitNames.
+  ItemByAppName(AppName) <> nil then
+    raise Exception.CreateFmt('—оответствие дл€ единицы "%s" уже задано', [AppName]);
+
   Item := TUnitName.Create(FUnitNames);
-  Item.AppUnitName := AppUnitName;
-  Item.SrvUnitName := SrvUnitName;
+  Item.AppName := AppName;
+  Item.SrvName := SrvName;
+  Item.SrvCode := SrvCode;
 end;
 
 { TUnitNames }
@@ -821,6 +832,18 @@ end;
 function TUnitNames.GetItem(Index: Integer): TUnitName;
 begin
   Result := inherited Items[Index] as TUnitName;
+end;
+
+function TUnitNames.ItemByAppName(const AppName: string): TUnitName;
+var
+  i: Integer;
+begin
+  for i := 0 to Count-1 do
+  begin
+    Result := Items[i];
+    if Result.AppName = AppName then Exit;
+  end;
+  Result := nil;
 end;
 
 end.

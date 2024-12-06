@@ -1,10 +1,10 @@
 object fmFptrUnitName: TfmFptrUnitName
-  Left = 663
-  Top = 186
+  Left = 1079
+  Top = 200
   AutoScroll = False
   BorderIcons = [biSystemMenu]
   Caption = #1045#1076#1080#1085#1080#1094#1099' '#1080#1079#1084#1077#1088#1077#1085#1080#1103
-  ClientHeight = 250
+  ClientHeight = 216
   ClientWidth = 387
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -16,7 +16,7 @@ object fmFptrUnitName: TfmFptrUnitName
   Position = poScreenCenter
   DesignSize = (
     387
-    250)
+    216)
   PixelsPerInch = 96
   TextHeight = 13
   object lblAppUnitName: TTntLabel
@@ -35,9 +35,9 @@ object fmFptrUnitName: TfmFptrUnitName
   end
   object lvUnitNames: TTntListView
     Left = 8
-    Top = 112
-    Width = 372
-    Height = 131
+    Top = 72
+    Width = 273
+    Height = 137
     Anchors = [akLeft, akTop, akRight, akBottom]
     Columns = <
       item
@@ -53,34 +53,35 @@ object fmFptrUnitName: TfmFptrUnitName
     HideSelection = False
     ReadOnly = True
     RowSelect = True
-    TabOrder = 3
+    TabOrder = 2
     ViewStyle = vsReport
+    OnSelectItem = lvUnitNamesSelectItem
   end
   object btnDelete: TTntButton
-    Left = 272
-    Top = 40
-    Width = 105
+    Left = 288
+    Top = 72
+    Width = 89
     Height = 25
     Anchors = [akTop, akRight]
     Caption = #1059#1076#1072#1083#1080#1090#1100
     Enabled = False
-    TabOrder = 2
+    TabOrder = 5
     OnClick = btnDeleteClick
   end
   object btnAdd: TTntButton
-    Left = 272
+    Left = 288
     Top = 8
-    Width = 105
+    Width = 89
     Height = 25
     Anchors = [akTop, akRight]
     Caption = #1044#1086#1073#1072#1074#1080#1090#1100
-    TabOrder = 1
+    TabOrder = 3
     OnClick = btnAddClick
   end
   object edtAppUnitName: TTntEdit
     Left = 128
     Top = 8
-    Width = 129
+    Width = 153
     Height = 21
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 0
@@ -89,11 +90,21 @@ object fmFptrUnitName: TfmFptrUnitName
   object cbSrvUnitName: TComboBox
     Left = 128
     Top = 40
-    Width = 129
+    Width = 153
     Height = 21
+    Style = csDropDownList
     Anchors = [akLeft, akTop, akRight]
     ItemHeight = 13
+    TabOrder = 1
+  end
+  object btnUpdateSrvUnits: TTntButton
+    Left = 288
+    Top = 40
+    Width = 89
+    Height = 25
+    Anchors = [akTop, akRight]
+    Caption = #1054#1073#1085#1086#1074#1080#1090#1100
     TabOrder = 4
-    Text = 'cbSrvUnitName'
+    OnClick = btnUpdateSrvUnitsClick
   end
 end

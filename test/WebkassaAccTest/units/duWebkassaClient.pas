@@ -15,9 +15,6 @@ type
   { TWebkassaClientTest }
 
   TWebkassaClientTest = class(TTestCase)
-  private
-    function TestCashIn2(const CashboxNumber: WideString): Boolean;
-    function SendReceipt2(const CashboxNumber: WideString): Boolean;
   protected
     procedure SetUp; override;
     procedure TearDown; override;
@@ -28,6 +25,8 @@ type
     procedure TestSumInCashbox;
     procedure TestAuthenticate;
     procedure TestAuthenticateError;
+    function TestCashIn2(const CashboxNumber: WideString): Boolean;
+    function SendReceipt2(const CashboxNumber: WideString): Boolean;
   published
     procedure TestSelectCashbox;
     procedure TestReadCashboxes;
