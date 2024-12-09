@@ -810,7 +810,7 @@ begin
   FCapRecItalic := False;
   FCapRecLeft90 := True;
   FCapRecMarkFeed := 0;
-  FCapRecPageMode := True;
+  FCapRecPageMode := False;
   FCapRecPapercut := True;
   FCapRecPresent := True;
   FCapRecRight90 := True;

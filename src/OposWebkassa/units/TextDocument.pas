@@ -46,6 +46,8 @@ type
     procedure Assign(Source: TTextDocument);
     procedure Add(const ALine: WideString; Style: Integer); overload;
     procedure AddBarcode(const Barcode: string);
+    procedure StartPageMode;
+    procedure EndPageMode;
 
     property Items: TDocItems read FItems;
     property LineChars: Integer read FLineChars write FLineChars;
@@ -287,6 +289,16 @@ begin
   Item := TDocItem.Create(Items);
   Item.FStyle := STYLE_BARCODE;
   Item.FText := Barcode;
+end;
+
+procedure TTextDocument.StartPageMode;
+begin
+  AddItem('', STYLE_START_PM);
+end;
+
+procedure TTextDocument.EndPageMode;
+begin
+  AddItem('', STYLE_END_PM);
 end;
 
 { TDocItems }

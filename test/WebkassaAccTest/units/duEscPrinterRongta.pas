@@ -76,6 +76,7 @@ type
     procedure TestBitmap2;
     procedure TestPageMode;
     procedure TestPageModeA;
+    procedure TestPageModeA2;
     procedure TestPageModeB;
     procedure TestPrintRussianFontB;
     procedure TestPrintFontBMode;
@@ -388,6 +389,7 @@ const
   BarcodeData = 'http://dev.kofd.kz/consumer?i=925871425876&f=211030200207&s=15443.72&t=20220826T210014';
 begin
   FPrinter.Initialize;
+  FPrinter.Select2DBarcode(BARCODE_PDF417);
   FPrinter.PrintText('PDF417 test' + CRLF);
   Barcode.ColumnNumber := 4; // 1..30
   Barcode.SecurityLevel := 0;
@@ -400,11 +402,13 @@ procedure TPrinterRongtaTest.TestQRCode;
 var
   QRCode: TQRCode;
 begin
+  QRCode.SymbolVersion := 0; // Auto
   QRCode.ModuleSize := 3;
   QRCode.ECLevel := REP_QRCODE_ECL_7;
   QRCode.data := 'http://dev.kofd.kz/consumer?i=1320526842876&f=555697470167&s=2000.00&t=20240327T093611';
 
   FPrinter.Initialize;
+  FPrinter.Select2DBarcode(BARCODE_QR_CODE);
   FPrinter.printQRCode(QRCode);
 end;
 
@@ -420,6 +424,7 @@ begin
   QRCode.data := 'http://dev.kofd.kz/consumer?i=1320526842876&f=555697470167&s=2000.00&t=20240327T093611';
 
   FPrinter.Initialize;
+  FPrinter.Select2DBarcode(BARCODE_QR_CODE);
   FPrinter.PrintText(CRLF);
   FPrinter.PrintText('ECL 7%' + CRLF);
   QRCode.ECLevel := REP_QRCODE_ECL_7;
@@ -445,10 +450,13 @@ procedure TPrinterRongtaTest.TestQRCodeModuleSize;
 var
   QRCode: TQRCode;
 begin
+  FPrinter.Initialize;
+  FPrinter.Select2DBarcode(BARCODE_QR_CODE);
+
+  QRCode.SymbolVersion := 0;
   QRCode.ECLevel := REP_QRCODE_ECL_7;
   QRCode.data := 'http://dev.kofd.kz/consumer?i=1320526842876&f=555697470167&s=2000.00&t=20240327T093611';
 
-  FPrinter.Initialize;
   FPrinter.PrintText('Module size 3' + CRLF);
   QRCode.ModuleSize := 3;
   FPrinter.printQRCode(QRCode);
@@ -466,11 +474,14 @@ procedure TPrinterRongtaTest.TestQRCodeJustification;
 var
   QRCode: TQRCode;
 begin
+  FPrinter.Initialize;
+  FPrinter.Select2DBarcode(BARCODE_QR_CODE);
+
+  QRCode.SymbolVersion := 0;
   QRCode.ECLevel := 1;
   QRCode.ModuleSize := 4;
   QRCode.data := 'http://dev.kofd.kz/consumer?i=1320526842876&f=555697470167&s=2000.00&t=20240327T093611';
 
-  FPrinter.Initialize;
   FPrinter.PrintText('Print QRCode as command test' + CRLF);
   FPrinter.SetJustification(JUSTIFICATION_LEFT);
   FPrinter.printQRCode(QRCode);
@@ -1026,6 +1037,8 @@ var
   PageSize: TRect;
 begin
   FPrinter.Initialize;
+  FPrinter.Select2DBarcode(BARCODE_QR_CODE);
+
   //FPrinter.SetLineSpacing(0);
   FPrinter.BeginDocument;
   // Page mode
@@ -1160,24 +1173,81 @@ begin
   PageSize.Bottom := 550;
   FPrinter.SetPageModeArea(PageSize);
 
-  // QR code on the right
-  FPrinter.SetJustification(JUSTIFICATION_RIGHT);
-  QRCode.ECLevel := 0;
-  QRCode.ModuleSize := 6;
-  QRCode.data := Barcode;
-  FPrinter.printQRCode(QRCode);
   // Text on the left
-  FPrinter.SetPMRelativeVerticalPosition(0);
-  //FPrinter.SetPMAbsoluteVerticalPosition(0);
-  FPrinter.SetJustification(JUSTIFICATION_LEFT);
   FPrinter.PrintText('«Õ   “ 00106304241645' + CRLF);
   FPrinter.PrintText('–Õ   “ 0000373856050035' + CRLF);
   FPrinter.PrintText('»ÕÕ 7725699008' + CRLF);
   FPrinter.PrintText('‘Õ 7380440700076549' + CRLF);
   FPrinter.PrintText('‘ƒ 41110' + CRLF);
   FPrinter.PrintText('‘œ 2026476352' + CRLF);
-  FPrinter.PrintText('œ–»’Œƒ 19.07.24 13:14' + CRLF);
+  FPrinter.PrintText('œ–»’Œƒ 19.07.24 13:14        ');
+
+  //FPrinter.SetPMRelativeVerticalPosition(0);
+  FPrinter.SetPMAbsoluteVerticalPosition(0);
+  FPrinter.PrintText(CRLF);
+  // QR code on the right
+  FPrinter.PrintText('                             ');
+  FPrinter.Select2DBarcode(BARCODE_QR_CODE);
+  QRCode.SymbolVersion := 0;
+  QRCode.ECLevel := REP_QRCODE_ECL_7;
+  QRCode.ModuleSize := 4;
+  QRCode.data := Barcode;
+  FPrinter.printQRCode(QRCode);
+  FPrinter.PrintText(CRLF);
   FPrinter.PrintAndReturnStandardMode;
+
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText(CRLF);
+  FPrinter.PartialCut;
+  FPrinter.EndDocument;
+end;
+
+procedure TPrinterRongtaTest.TestPageModeA2;
+const
+  Separator = '------------------------------------------------';
+  Barcode = 't=20240719T1314&s=460.00&fn=7380440700076549&i=41110&fp=2026476352&n=1';
+var
+  QRCode: TQRCode;
+  PageSize: TRect;
+begin
+  FPrinter.Initialize;
+  FPrinter.BeginDocument;
+  FPrinter.SetLineSpacing(0);
+  FPrinter.SetPrintMode(0);
+
+  FPrinter.SetPageMode;
+  // Page mode area for text
+  PageSize.Left := 0;
+  PageSize.Top := 0;
+  PageSize.Right := 400;
+  PageSize.Bottom := 550;
+  FPrinter.SetPageModeArea(PageSize);
+  // Text on the left
+  FPrinter.PrintText('«Õ   “ 0010630424164528736482764827634872683476287346' + CRLF);
+  FPrinter.PrintText('–Õ   “ 0000373856050035' + CRLF);
+  FPrinter.PrintText('»ÕÕ 7725699008' + CRLF);
+  FPrinter.PrintText('‘Õ 7380440700076549' + CRLF);
+  FPrinter.PrintText('‘ƒ 41110' + CRLF);
+  FPrinter.PrintText('‘œ 2026476352' + CRLF);
+  FPrinter.PrintText('œ–»’Œƒ 19.07.24 13:14        ');
+  // Page mode area for QR code
+  PageSize.Left := 400;
+  PageSize.Top := 0;
+  PageSize.Right := 652;
+  PageSize.Bottom := 550;
+  FPrinter.SetPageModeArea(PageSize);
+  // QR code on the right
+  FPrinter.PrintText(CRLF);
+  FPrinter.Select2DBarcode(BARCODE_QR_CODE);
+  QRCode.SymbolVersion := 0;
+  QRCode.ECLevel := REP_QRCODE_ECL_7;
+  QRCode.ModuleSize := 4;
+  QRCode.data := Barcode;
+  FPrinter.printQRCode(QRCode);
+  FPrinter.PrintAndReturnStandardMode;
+
   FPrinter.PrintText(CRLF);
   FPrinter.PrintText(CRLF);
   FPrinter.PrintText(CRLF);
@@ -1260,9 +1330,11 @@ begin
   // QR code on the right
   FPrinter.PrintText('                                         ');
   FPrinter.SetPMRelativeVerticalPosition(70);
+  QRCode.SymbolVersion := 0;
   QRCode.ECLevel := 0;
-  QRCode.ModuleSize := 6;
+  QRCode.ModuleSize := 5;
   QRCode.data := Barcode;
+  FPrinter.Select2DBarcode(BARCODE_QR_CODE);
   FPrinter.printQRCode(QRCode);
   FPrinter.PrintText(CRLF);
   // Text on the left

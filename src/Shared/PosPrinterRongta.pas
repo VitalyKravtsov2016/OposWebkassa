@@ -832,7 +832,7 @@ begin
   FMapCharacterSet := False;
   FMapMode := PTR_MM_DOTS;
   FPageModeArea := '512,832';
-  FPageModeDescriptor := PTR_PM_BARCODE + PTR_PM_BC_ROTATE;
+  FPageModeDescriptor := PTR_PM_BARCODE + PTR_PM_BC_ROTATE + PTR_PM_OPAQUE;
   FPageModeHorizontalPosition := 0;
   FPageModePrintArea := '0,0,0,0';
   FPageModePrintDirection := 0;
@@ -1840,7 +1840,23 @@ end;
 
 function TPosPrinterRongta.PageModePrint(Control: Integer): Integer;
 begin
-  Result := ClearResult;
+  try
+    case Control of
+      // Enter Page Mode
+      PTR_PM_PAGE_MODE:
+        FPrinter.SetPageMode;
+
+      // Print the print area and destroy the canvas and exit PageMode.
+      PTR_PM_NORMAL: FPrinter.PrintAndReturnStandardMode;
+
+      // Clear the page and exit the Page Mode without any printing of any print area.
+      //PTR_PM_CANCEL: FPrinter.CancelPageMode; !!!
+    end;
+    Result := ClearResult;
+  except
+    on E: Exception do
+      Result := HandleException(E);
+  end;
 end;
 
 function TPosPrinterRongta.PrintBarCode(Station: Integer;

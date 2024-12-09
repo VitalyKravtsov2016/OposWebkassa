@@ -80,6 +80,7 @@ type
     FCapRecDwideDhigh: Boolean;
     FExternalCheckNumber: WideString;
     FCodePage: Integer;
+    FPageMode: Boolean;
 
     procedure PrintLine(Text: WideString);
     function GetReceiptItemText(ReceiptItem: TSalesReceiptItem;
@@ -3616,6 +3617,9 @@ begin
   end;
 end;
 
+const
+  CapRecPageMode = true;
+
 procedure TWebkassaImpl.PrintReceipt(Receipt: TSalesReceipt;
   Command: TSendReceiptCommand);
 var
@@ -3745,18 +3749,23 @@ begin
   begin
     Receipt.FiscalSign := Command.Data.CheckNumber;
   end;
+  if CapRecPageMode then
+  begin
+    Document.AddItem(Command.Data.TicketUrl, STYLE_QR_CODE);
+  end;
   Document.AddLine('ÔÏ: ' + Receipt.FiscalSign);
   Document.AddLine('Âğåìÿ: ' + Command.Data.DateTime);
   Document.AddLine('ÎÔÄ: ' + Command.Data.Cashbox.Ofd.Name);
   Document.AddLine('Äëÿ ïğîâåğêè ÷åêà:');
   Document.AddLine(Command.Data.Cashbox.Ofd.Host);
+  if not CapRecPageMode then
+  begin
+    Document.AddItem(Command.Data.TicketUrl, STYLE_QR_CODE);
+  end;
+  Document.AddLine('ÈÍÊ ÎÔÄ: ' + Command.Data.Cashbox.IdentityNumber);
+  Document.AddLine('Êîä ÊÊÌ ÊÃÄ (ĞÍÌ): ' + Command.Data.Cashbox.RegistrationNumber);
+  Document.AddLine('ÇÍÌ: ' + Command.Data.Cashbox.UniqueNumber);
   Document.AddSeparator;
-  Document.AddLine(Document.AlignCenter('ÔÈÑÊÀËÜÍÛÉ ×ÅK'));
-  Document.AddItem(Command.Data.TicketUrl, STYLE_QR_CODE);
-  Document.AddLine('');
-  Document.AddLine(Document.AlignCenter('ÈÍÊ ÎÔÄ: ' + Command.Data.Cashbox.IdentityNumber));
-  Document.AddLine(Document.AlignCenter('Êîä ÊÊÌ ÊÃÄ (ĞÍÌ): ' + Command.Data.Cashbox.RegistrationNumber));
-  Document.AddLine(Document.AlignCenter('ÇÍÌ: ' + Command.Data.Cashbox.UniqueNumber));
   Document.AddText(Receipt.Trailer.Text);
 end;
 
@@ -4280,6 +4289,10 @@ begin
   case Item.Style of
     STYLE_QR_CODE:
     begin
+      if FPageMode then
+      begin
+        Printer.PageModePrintArea := '400,0,652,550';
+      end;
       Barcode.Data := Item.Text;
       Barcode.Text := Item.Text;
       Barcode.Width := 0;
@@ -4298,6 +4311,16 @@ begin
     begin
       Barcode := StrToBarcode(Item.Text);
       PrintBarcode2(Barcode);
+    end;
+    STYLE_START_PM:
+    begin
+      FPageMode := True;
+      Printer.PageModePrint(PTR_PM_PAGE_MODE);
+    end;
+    STYLE_END_PM:
+    begin
+      FPageMode := False;
+      Printer.PageModePrint(PTR_PM_NORMAL);
     end;
   else
     Text := Item.Text;
