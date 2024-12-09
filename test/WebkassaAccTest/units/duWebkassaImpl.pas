@@ -73,6 +73,7 @@ type
 
     procedure TestCutterError;
     procedure TestListIndexError;
+    procedure TestCutLongHeader;
   end;
 
 implementation
@@ -129,7 +130,7 @@ begin
   begin
     Driver := ToleFiscalPrinter.Create;
     Driver.Driver.LoadParamsEnabled := False;
-    Params.PrintBarcode := PrintBarcodeESCCommands;
+    Params.PrintBarcode := PrintBarcodeGraphics;
     Params.LogFileEnabled := True;
     Params.LogMaxCount := 10;
     Params.LogFilePath := GetModulePath + 'Logs';
@@ -551,7 +552,7 @@ end;
 
 procedure TWebkassaImplTest.TestFiscalReceipt2;
 begin
-  Params.FontName := FontNameB;
+  Params.FontName := FontNameA;
   Params.NumHeaderLines := 3;
   Params.NumTrailerLines := 3;
   Params.HeaderText :=
@@ -964,17 +965,33 @@ end;
 
 procedure TWebkassaImplTest.TestCutterError;
 begin
-  OpenClaimEnable;
+  Params.NumHeaderLines := 5;
+  Params.NumTrailerLines := 3;
+  Params.RoundType := RoundTypeNone;
+  Params.HeaderText :=
+    ' Header line 1' + CRLF +
+    ' Header line 2' + CRLF +
+    ' Header line 3' + CRLF +
+    ' Header line 4' + CRLF +
+    ' Header line 5';
+
+  Params.TrailerText :=
+    ' Trailer line 1' + CRLF +
+    ' Trailer line 2' + CRLF +
+    ' Trailer line 3';
   Params.PrintBarcode := PrintBarcodeESCCommands;
+
+  OpenClaimEnable;
+  Driver.SetPropertyNumber(PIDXFptr_CheckTotal, 1);
   Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, 4);
   FptrCheck(Driver.BeginFiscalReceipt(True));
   FptrCheck(Driver.DirectIO2(30, 72, '4'));
   FptrCheck(Driver.DirectIO2(30, 73, '1'));
   FptrCheck(Driver.PrintRecItem('ТРК 2:АИ-92-К4/К5', 2001, 10370, 4, 193, 'л'));
-  FptrCheck(Driver.PrintRecItemAdjustment(1, 'Округление', 1, 4));
-  FptrCheck(Driver.PrintRecTotal(2000, 0, '2'));
+  FptrCheck(Driver.PrintRecItemAdjustment(1, 'Округление', 1.41, 4));
+  FptrCheck(Driver.PrintRecTotal(2000, 2000, '2'));
+  //FptrCheck(Driver.PrintRecTotal(2000, 2000, ''));
   FptrCheck(Driver.PrintRecMessage('VLife Клуб        №**************cLpN'));
-  FptrCheck(Driver.PrintRecTotal(2000, 2000, '1'));
   FptrCheck(Driver.PrintRecMessage('Kaspi QR          №8032963073      '));
   FptrCheck(Driver.PrintRecMessage('Оператор: Айдынгалиева Гульбану'));
   FptrCheck(Driver.PrintRecMessage('Транз.:    1439291 '));
@@ -1013,6 +1030,38 @@ begin
   FptrCheck(Driver.DirectIO2(30, 302, '1'));
   //FptrCheck(Driver.DirectIO2(30, 300, '{3DDDECA5-2DAD-4D14-81D6-0B2609680A0C}'));
   FptrCheck(Driver.EndFiscalReceipt(False));
+end;
+
+procedure TWebkassaImplTest.TestCutLongHeader;
+begin
+  Params.NumHeaderLines := 5;
+  Params.NumTrailerLines := 3;
+  Params.RoundType := RoundTypeNone;
+  Params.HeaderText :=
+    ' Header line 1' + CRLF +
+    ' Header line 2' + CRLF +
+    ' Header line 3' + CRLF +
+    ' Header line 4' + CRLF +
+    ' Header line 5';
+
+  Params.TrailerText :=
+    ' Trailer line 1' + CRLF +
+    ' Trailer line 2' + CRLF +
+    ' Trailer line 3';
+  Params.PrintBarcode := PrintBarcodeESCCommands;
+
+  OpenClaimEnable;
+  FptrCheck(Driver.BeginNonFiscal, 'BeginNonFiscal');
+  FptrCheck(Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 1'));
+  FptrCheck(Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 2'));
+  FptrCheck(Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 3'));
+  FptrCheck(Driver.EndNonFiscal, 'EndNonFiscal');
+
+  FptrCheck(Driver.BeginNonFiscal, 'BeginNonFiscal');
+  FptrCheck(Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 1'));
+  FptrCheck(Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 2'));
+  FptrCheck(Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 3'));
+  FptrCheck(Driver.EndNonFiscal, 'EndNonFiscal');
 end;
 
 initialization

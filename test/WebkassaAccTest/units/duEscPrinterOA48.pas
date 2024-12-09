@@ -820,8 +820,10 @@ begin
   FPrinter.PrintText('Header line 1' + CRLF);
   FPrinter.PrintText('Header line 2' + CRLF);
   FPrinter.PrintText('Header line 3' + CRLF);
-  FPrinter.PrintText('Header line 4' + CRLF);
   FPrinter.PartialCut;
+  FPrinter.PrintText('Header line 4' + CRLF);
+  FPrinter.PrintText('Header line 5' + CRLF);
+  FPrinter.PrintText('Header line 6' + CRLF);
 end;
 
 procedure TPrinterOA48Test.TestCutDistanceFontB;

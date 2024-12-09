@@ -559,8 +559,8 @@ begin
     Stream.Position := 0;
     Graphic.LoadFromStream(Stream);
 
-    CheckEquals(106, Graphic.Width, 'Graphic.Width');   // 74
-    CheckEquals(106, Graphic.Height, 'Graphic.Height'); // 74
+    CheckEquals(74, Graphic.Width, 'Graphic.Width');
+    CheckEquals(74, Graphic.Height, 'Graphic.Height');
     Graphic.SaveToFile(GetModulePath + 'QRCodeBitmap.bmp');
   finally
     Stream.Free;

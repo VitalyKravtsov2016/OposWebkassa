@@ -4379,49 +4379,26 @@ var
   i: Integer;
   Count: Integer;
   Text: WideString;
-const
-  PrintHeader = True;
 begin
   PrintLine('');
   PrintLine('');
   if Printer.CapRecPapercut then
   begin
-    if PrintHeader then
+    Count := Min(FParams.NumHeaderLines, Printer.RecLinesToPaperCut);
+    for i := 0 to Count-1 do
     begin
-      if FParams.NumHeaderLines <= Printer.RecLinesToPaperCut then
-      begin
-        //PrintLine('');
-        for i := Low(Params.Header) to High(Params.Header) do
-        begin
-          Text := TrimRight(Params.Header[i]);
-          PrintLine(Text);
-        end;
-        Count := Printer.RecLinesToPaperCut - FParams.NumHeaderLines;
-        for i := 0 to Count-1 do
-        begin
-          PrintLine('');
-        end;
-        Printer.CutPaper(90);
-      end else
-      begin
-        for i := 1 to Printer.RecLinesToPaperCut do
-        begin
-          PrintLine(CRLF);
-        end;
-        Printer.CutPaper(90);
-        for i := Low(Params.Header) to High(Params.Header) do
-        begin
-          Text := TrimRight(Params.Header[i]);
-          PrintLine(Text);
-        end;
-      end;
-    end else
+      Text := TrimRight(Params.Header[i]);
+      PrintLine(Text);
+    end;
+    if Count < Printer.RecLinesToPaperCut then
     begin
-      for i := 1 to Printer.RecLinesToPaperCut do
-      begin
-        PrintLine('');
-      end;
-      Printer.CutPaper(90);
+      PrintLine(CRLF);
+    end;
+    Printer.CutPaper(90);
+    for i := Count to FParams.NumHeaderLines-1 do
+    begin
+      Text := TrimRight(Params.Header[i]);
+      PrintLine(Text);
     end;
   end;
 end;
@@ -4468,8 +4445,11 @@ begin
     Render.BarcodeType := tBARCODE_QRCODE;
     Render.Data := BarcodeData;
     Render.ShowHumanReadableText := False;
+    Render.Option1 := 0;
+    (*
     if Render.BarcodeType = tBARCODE_QRCODE then
       Render.Option1 := 4;
+    *)
     Render.EncodeNow;
     RenderBarcode(Bitmap, Render.Symbol, False);
     ScaleGraphic(Bitmap, 2);
@@ -4538,8 +4518,11 @@ begin
     Render.BarcodeType := BTypeToZBType(Barcode.BarcodeType);
     Render.Data := Barcode.Data;
     Render.ShowHumanReadableText := False;
+    Render.Option1 := 0;
+    (*
     if Render.BarcodeType = tBARCODE_QRCODE then
       Render.Option1 := 4;
+    *)
     Render.EncodeNow;
     RenderBarcode(Bitmap, Render.Symbol, False);
 

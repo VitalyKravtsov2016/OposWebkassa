@@ -4,10 +4,30 @@ interface
 
 uses
   // VCL
-  Types, Graphics, uZintInterface;
+  Types, Classes, SysUtils, Graphics,
+  // Opos
+  OposPtr,
+  // This
+  uZintBarcode, uZintInterface;
+
+type
+  { TPosBarcode }
+
+  TPosBarcode = record
+    Data: AnsiString;
+    Symbology: Integer;
+    Height: Integer;
+    Width: Integer;
+    Alignment: Integer;
+    TextPosition: Integer;
+  end;
+
 
 procedure ScaleGraphic(Graphic: TGraphic; Scale: Integer);
 procedure RenderBarcode(Bitmap: TBitmap; Symbol: PZSymbol; Is1D: Boolean);
+procedure RenderBarcodeToBitmap(var Barcode: TPosBarcode; Bitmap: TBitmap);
+function RenderBarcodeRec(var Barcode: TPosBarcode): AnsiString;
+function BitmapToStr(Bitmap: TBitmap): AnsiString;
 
 implementation
 
@@ -59,5 +79,117 @@ begin
       Bitmap.Canvas.Pixels[X, Y] := clBlack;
   end;
 end;
+
+function BTypeToZBType(BarcodeType: Integer): TZBType;
+begin
+  case BarcodeType of
+    PTR_BCS_UPCA: Result := tBARCODE_UPCA;
+    PTR_BCS_UPCE: Result := tBARCODE_UPCE;
+    PTR_BCS_EAN8: Result := tBARCODE_EANX;
+    PTR_BCS_EAN13: Result := tBARCODE_EANX;
+    PTR_BCS_TF: Result := tBARCODE_C25INTER;
+    PTR_BCS_ITF: Result := tBARCODE_C25INTER;
+    PTR_BCS_Codabar: Result := tBARCODE_CODABAR;
+    PTR_BCS_Code39: Result := tBARCODE_CODE39;
+    PTR_BCS_Code93: Result := tBARCODE_CODE93;
+    PTR_BCS_Code128: Result := tBARCODE_CODE128;
+    PTR_BCS_UPCA_S: Result := tBARCODE_UPCA_CC;
+    PTR_BCS_UPCE_S: Result := tBARCODE_UPCE_CC;
+    PTR_BCS_EAN8_S: Result := tBARCODE_EANX;
+    PTR_BCS_EAN13_S: Result := tBARCODE_EANX;
+    PTR_BCS_EAN128: Result := tBARCODE_EANX;
+    PTR_BCS_RSS14: Result := tBARCODE_RSS14;
+    PTR_BCS_RSS_EXPANDED: Result := tBARCODE_RSS_EXP;
+    PTR_BCS_PDF417: Result := tBARCODE_PDF417;
+    PTR_BCS_MAXICODE: Result := tBARCODE_MAXICODE;
+    PTR_BCS_DATAMATRIX: Result := tBARCODE_DATAMATRIX;
+    PTR_BCS_QRCODE: Result := tBARCODE_QRCODE;
+    PTR_BCS_UQRCODE: Result := tBARCODE_MICROQR;
+    PTR_BCS_AZTEC: Result := tBARCODE_AZTEC;
+    PTR_BCS_UPDF417: Result := tBARCODE_MICROPDF417;
+  else
+    raise Exception.CreateFmt('Barcode type not supported, %d', [BarcodeType]);
+  end;
+end;
+
+procedure RenderBarcodeToBitmap(var Barcode: TPosBarcode; Bitmap: TBitmap);
+var
+  Scale: Integer;
+  Render: TZintBarcode;
+begin
+  if Barcode.Height = 0 then
+  begin
+    Barcode.Height := 150;
+  end;
+  if Barcode.Width = 0 then
+  begin
+    Barcode.Width := Barcode.Height;
+  end;
+
+  Render := TZintBarcode.Create;
+  try
+    Render.BorderWidth := 10;
+    Render.FGColor := clBlack;
+    Render.BGColor := clWhite;
+    Render.Scale := 1;
+    Render.Height := Barcode.Height;
+    Render.BarcodeType := BTypeToZBType(Barcode.Symbology);
+    Render.Data := Barcode.Data;
+    Render.ShowHumanReadableText := False;
+    Render.Option1 := 0;
+    (*
+    if Render.BarcodeType = tBARCODE_QRCODE then
+      Render.Option1 := 4;
+    *)
+
+    Render.EncodeNow;
+    RenderBarcode(Bitmap, Render.Symbol, False);
+
+    Scale := Barcode.Width div (Bitmap.Width * 2);
+    if not (Scale in [1..10]) then Scale := 1;
+    ScaleGraphic(Bitmap, Scale);
+    Barcode.Width  := Bitmap.Width * 2;
+    Barcode.Height  := Bitmap.Height * 2;
+
+  finally
+    Render.Free;
+  end;
+end;
+
+function BitmapToStr(Bitmap: TBitmap): AnsiString;
+var
+  Stream: TMemoryStream;
+begin
+  Result := '';
+  Stream := TMemoryStream.Create;
+  try
+    Bitmap.SaveToStream(Stream);
+    if Stream.Size > 0 then
+    begin
+      Stream.Position := 0;
+      SetLength(Result, Stream.Size);
+      Stream.ReadBuffer(Result[1], Stream.Size);
+    end;
+  finally
+    Stream.Free;
+  end;
+end;
+
+
+function RenderBarcodeRec(var Barcode: TPosBarcode): AnsiString;
+var
+  Bitmap: TBitmap;
+begin
+  Result := '';
+  Bitmap := TBitmap.Create;
+  try
+    RenderBarcodeToBitmap(Barcode, Bitmap);
+    Result := BitmapToStr(Bitmap);
+  finally
+    Bitmap.Free;
+  end;
+end;
+
+
 
 end.

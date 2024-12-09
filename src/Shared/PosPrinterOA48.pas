@@ -12,7 +12,7 @@ uses
   OposPOSPrinter_CCO_TLB, WException, OposPtrUtils,
   // This
   LogFile, DriverError, EscPrinterOA48, PrinterPort, NotifyThread,
-  RegExpr, SerialPort, Jpeg, GifImage, uZintBarcode, BarcodeUtils,
+  RegExpr, SerialPort, Jpeg, GifImage, BarcodeUtils,
   StringUtils, DebugUtils;
 
 const
@@ -28,17 +28,6 @@ type
   TEscToken = record
     IsEsc: Boolean;
     Text: WideString;
-  end;
-
-  { TPosBarcode }
-
-  TPosBarcode = record
-    Data: AnsiString;
-    Symbology: Integer;
-    Height: Integer;
-    Width: Integer;
-    Alignment: Integer;
-    TextPosition: Integer;
   end;
 
   { TPosPrinterOA48 }
@@ -191,6 +180,7 @@ type
     FPrintRasterGraphics: Boolean;
     FUtf8Enabled: Boolean;
     FPrinterCodePage: Integer;
+    FInitialized: Boolean;
 
     property Device: TOposServiceDevice19 read FDevice;
     function CharSetToPrinterCP(CharacterSet: Integer): Integer;
@@ -620,10 +610,7 @@ type
     property OnStatusUpdateEvent: TOPOSPOSPrinterStatusUpdateEvent read FOnStatusUpdateEvent write FOnStatusUpdateEvent;
   end;
 
-function BitmapToStr(Bitmap: TBitmap): AnsiString;
-function RenderBarcodeRec(var Barcode: TPosBarcode): AnsiString;
 procedure CharacterToCodePage(C: WideChar; var CodePage: Integer);
-procedure RenderBarcodeToBitmap(var Barcode: TPosBarcode; Bitmap: TBitmap);
 function ArrayToString(const Src: array of Integer): string;
 
 implementation
@@ -708,111 +695,6 @@ begin
     PTR_CS_ASCII: Result := 20127;    // us-ascii	US-ASCII (7-bit)
   else
     Result := CharacterSet;
-  end;
-end;
-
-function BTypeToZBType(BarcodeType: Integer): TZBType;
-begin
-  case BarcodeType of
-    PTR_BCS_UPCA: Result := tBARCODE_UPCA;
-    PTR_BCS_UPCE: Result := tBARCODE_UPCE;
-    PTR_BCS_EAN8: Result := tBARCODE_EANX;
-    PTR_BCS_EAN13: Result := tBARCODE_EANX;
-    PTR_BCS_TF: Result := tBARCODE_C25INTER;
-    PTR_BCS_ITF: Result := tBARCODE_C25INTER;
-    PTR_BCS_Codabar: Result := tBARCODE_CODABAR;
-    PTR_BCS_Code39: Result := tBARCODE_CODE39;
-    PTR_BCS_Code93: Result := tBARCODE_CODE93;
-    PTR_BCS_Code128: Result := tBARCODE_CODE128;
-    PTR_BCS_UPCA_S: Result := tBARCODE_UPCA_CC;
-    PTR_BCS_UPCE_S: Result := tBARCODE_UPCE_CC;
-    PTR_BCS_EAN8_S: Result := tBARCODE_EANX;
-    PTR_BCS_EAN13_S: Result := tBARCODE_EANX;
-    PTR_BCS_EAN128: Result := tBARCODE_EANX;
-    PTR_BCS_RSS14: Result := tBARCODE_RSS14;
-    PTR_BCS_RSS_EXPANDED: Result := tBARCODE_RSS_EXP;
-    PTR_BCS_PDF417: Result := tBARCODE_PDF417;
-    PTR_BCS_MAXICODE: Result := tBARCODE_MAXICODE;
-    PTR_BCS_DATAMATRIX: Result := tBARCODE_DATAMATRIX;
-    PTR_BCS_QRCODE: Result := tBARCODE_QRCODE;
-    PTR_BCS_UQRCODE: Result := tBARCODE_MICROQR;
-    PTR_BCS_AZTEC: Result := tBARCODE_AZTEC;
-    PTR_BCS_UPDF417: Result := tBARCODE_MICROPDF417;
-  else
-    raise Exception.CreateFmt('Barcode type not supported, %d', [BarcodeType]);
-  end;
-end;
-
-procedure RenderBarcodeToBitmap(var Barcode: TPosBarcode; Bitmap: TBitmap);
-var
-  Scale: Integer;
-  Render: TZintBarcode;
-begin
-  if Barcode.Height = 0 then
-  begin
-    Barcode.Height := 150;
-  end;
-  if Barcode.Width = 0 then
-  begin
-    Barcode.Width := Barcode.Height;
-  end;
-
-  Render := TZintBarcode.Create;
-  try
-    Render.BorderWidth := 10;
-    Render.FGColor := clBlack;
-    Render.BGColor := clWhite;
-    Render.Scale := 1;
-    Render.Height := Barcode.Height;
-    Render.BarcodeType := BTypeToZBType(Barcode.Symbology);
-    Render.Data := Barcode.Data;
-    Render.ShowHumanReadableText := False;
-    if Render.BarcodeType = tBARCODE_QRCODE then
-      Render.Option1 := 4;
-    Render.EncodeNow;
-    RenderBarcode(Bitmap, Render.Symbol, False);
-
-    Scale := Barcode.Width div (Bitmap.Width * 2);
-    if not (Scale in [1..10]) then Scale := 1;
-    ScaleGraphic(Bitmap, Scale);
-    Barcode.Width  := Bitmap.Width * 2;
-    Barcode.Height  := Bitmap.Height * 2;
-
-  finally
-    Render.Free;
-  end;
-end;
-
-function BitmapToStr(Bitmap: TBitmap): AnsiString;
-var
-  Stream: TMemoryStream;
-begin
-  Result := '';
-  Stream := TMemoryStream.Create;
-  try
-    Bitmap.SaveToStream(Stream);
-    if Stream.Size > 0 then
-    begin
-      Stream.Position := 0;
-      SetLength(Result, Stream.Size);
-      Stream.ReadBuffer(Result[1], Stream.Size);
-    end;
-  finally
-    Stream.Free;
-  end;
-end;
-
-function RenderBarcodeRec(var Barcode: TPosBarcode): AnsiString;
-var
-  Bitmap: TBitmap;
-begin
-  Result := '';
-  Bitmap := TBitmap.Create;
-  try
-    RenderBarcodeToBitmap(Barcode, Bitmap);
-    Result := BitmapToStr(Bitmap);
-  finally
-    Bitmap.Free;
   end;
 end;
 
@@ -2536,6 +2418,8 @@ end;
 
 procedure TPosPrinterOA48.InitializeDevice;
 begin
+  if FInitialized then Exit;
+
   FPrinter.Initialize;
   if Utf8Enabled then
   begin
@@ -2554,6 +2438,7 @@ begin
     FLastPrintMode := [pmFontB];
     FPrinter.SetCharacterFont(FONT_TYPE_B);
   end;
+  FInitialized := True;
 end;
 
 procedure TPosPrinterOA48.DeviceProc(Sender: TObject);
