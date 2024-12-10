@@ -3618,7 +3618,7 @@ begin
 end;
 
 const
-  CapRecPageMode = true;
+  CapRecPageMode = False;
 
 procedure TWebkassaImpl.PrintReceipt(Receipt: TSalesReceipt;
   Command: TSendReceiptCommand);

@@ -372,6 +372,13 @@ begin
   Item.Text := 'CurrencyName';
   Item.FormatText := '';
   Item.Alignment := ALIGN_LEFT;
+  // Total
+  Item := RecItem.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'Price';
+  Item.FormatText := '=%s';
+  Item.Alignment := ALIGN_RIGHT;
   RecItem.NewLine;
   // Discount
   RecItem.AddText('   Скидка');
@@ -392,15 +399,6 @@ begin
   Item.FormatText := '+%s';
   Item.Alignment := ALIGN_RIGHT;
   Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
-  RecItem.NewLine;
-  // Total
-  RecItem.AddText('   Стоимость');
-  Item := RecItem.Add;
-  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
-  Item.TextStyle := STYLE_NORMAL;
-  Item.Text := 'Total';
-  Item.FormatText := '';
-  Item.Alignment := ALIGN_RIGHT;
   RecItem.NewLine;
   // Separator
   Trailer.AddSeparator;

@@ -88,6 +88,7 @@ object fmFptrReceipt: TfmFptrReceipt
     Top = 408
     Width = 99
     Height = 25
+    Anchors = [akRight, akBottom]
     Caption = #1054#1073#1085#1086#1074#1080#1090#1100
     TabOrder = 2
     OnClick = btnUpdateClick

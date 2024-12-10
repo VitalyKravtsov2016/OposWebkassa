@@ -20,6 +20,15 @@ const
   FontNameB = 'Font B (9x17)';
 
 type
+  { TPageMode }
+
+  TPageMode = record
+    PrintArea: string;
+    PrintDirection: Integer;
+    VerticalPosition: Integer;
+    HorizontalPosition: Integer;
+  end;
+
   TPrintMode = (pmFontB, pmBold, pmDoubleWide, pmDoubleHigh, pmUnderlined);
   TPrintModes = set of TPrintMode;
 
@@ -179,8 +188,10 @@ type
     FBarcodeInGraphics: Boolean;
     FPrintRasterGraphics: Boolean;
     FInitialized: Boolean;
+    FPageMode: TPageMode;
 
     property Device: TOposServiceDevice19 read FDevice;
+    procedure UpdatePageMode;
   public
     procedure PrintMemoryGraphic(const Data: WideString;
       BMPType, Width, Alignment: Integer);
@@ -1843,14 +1854,13 @@ begin
   try
     case Control of
       // Enter Page Mode
-      PTR_PM_PAGE_MODE:
-        FPrinter.SetPageMode;
+      PTR_PM_PAGE_MODE: FPrinter.SetPageMode;
 
       // Print the print area and destroy the canvas and exit PageMode.
       PTR_PM_NORMAL: FPrinter.PrintAndReturnStandardMode;
 
       // Clear the page and exit the Page Mode without any printing of any print area.
-      //PTR_PM_CANCEL: FPrinter.CancelPageMode; !!!
+      PTR_PM_CANCEL: FPrinter.SetStandardMode;
     end;
     Result := ClearResult;
   except
@@ -2154,6 +2164,44 @@ begin
     raiseIllegalError('Station not supported');
 end;
 
+procedure TPosPrinterRongta.UpdatePageMode;
+
+  // '0,0,0,0';
+  function AreaToRect(const Area: string): TRect;
+  begin
+    Result.Left := GetInteger(Area, 0, [',']);
+    Result.Top := GetInteger(Area, 1, [',']);
+    Result.Right := GetInteger(Area, 2, [',']);
+    Result.Bottom := GetInteger(Area, 3, [',']);
+  end;
+
+begin
+  if PageModePrintArea <> FPageMode.PrintArea then
+  begin
+    Printer.SetPageModeArea(AreaToRect(PageModePrintArea));
+    FPageMode.PrintArea := PageModePrintArea;
+  end;
+  if PageModePrintDirection <> FPageMode.PrintDirection then
+  begin
+    Printer.SetPageModeDirection(PageModePrintDirection-1);
+    FPageMode.PrintDirection := PageModePrintDirection;
+  end;
+  if PageModeVerticalPosition <> FPageMode.VerticalPosition then
+  begin
+    (*
+    MapDistanseToSteps()
+    // This command sets the absolute print position to [(nL + nH 256) ¬ 0.125 mm].
+    PTR_MM_DOTS The printer’s dot width. This width may be different for
+    each printer station.1
+    PTR_MM_TWIPS 1/1440 of an inch.
+    PTR_MM_ENGLISH 0.001 inch.
+    PTR_MM_METRIC 0.01 millimeter.
+    *)
+    FPrinter.SetPMAbsoluteVerticalPosition(PageModeVerticalPosition);
+    FPageMode.VerticalPosition := PageModeVerticalPosition;
+  end;
+end;
+
 function TPosPrinterRongta.PrintNormal(Station: Integer;
   const Data: WideString): Integer;
 begin
@@ -2161,6 +2209,7 @@ begin
     CheckEnabled;
     CheckRecStation(Station);
     CheckPaperPresent;
+    UpdatePageMode;
     PrintText(Data);
     Result := ClearResult;
   except
@@ -2886,6 +2935,5 @@ begin
   end;
   Printer.DisableUserCharacters;
 end;
-
 
 end.

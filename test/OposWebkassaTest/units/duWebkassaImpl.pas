@@ -1,3 +1,4 @@
+
 unit duWebkassaImpl;
 
 interface
@@ -69,6 +70,7 @@ type
     procedure PrintReceipt3;
     procedure PrintHeaderAndCut;
     procedure TestClaim;
+    procedure TestFiscalReceipt3;
   published
     procedure TestZReport;
     procedure TestXReport;
@@ -83,7 +85,6 @@ type
     procedure TestDuplicateReceipt;
     procedure TestSetHeaderLines;
     procedure TestSetTrailerLines;
-    procedure TestFiscalReceipt3;
     procedure TestReceiptTemplate;
     procedure TestReceiptTemplate2;
     procedure TestReceiptTemplate3;
@@ -488,15 +489,13 @@ const
     'Message 1                                 ' + CRLF +
     'Сер. № 5                                  ' + CRLF +
     'ШОКОЛАДНАЯ ПЛИТКА MILKA BUBBLES МОЛОЧНЫЙ  ' + CRLF +
-    '   1.000 шт x 123.45 руб                  ' + CRLF +
+    '   1.000 шт x 123.45 руб           =123.45' + CRLF +
     '   Скидка                           -22.35' + CRLF +
     '   Наценка                          +11.17' + CRLF +
-    '   Стоимость                        112.27' + CRLF +
     'Message 2                                 ' + CRLF +
     'Item 2                                    ' + CRLF +
-    '   1.000 кг x 1.45 руб                    ' + CRLF +
+    '   1.000 кг x 1.45 руб               =1.45' + CRLF +
     '   Скидка                            -0.45' + CRLF +
-    '   Стоимость                          1.00' + CRLF +
     'Message 3                                 ' + CRLF +
     '------------------------------------------' + CRLF +
     'Скидка:                              10.00' + CRLF +
@@ -1233,12 +1232,12 @@ const
     'ПРОДАЖА                                   ' + CRLF +
     '------------------------------------------' + CRLF +
     'ТРК 1:АИ-92-К4/К5                         ' + CRLF +
-    '   6.700 л x 202.00 руб                   ' + CRLF +
-    '   Стоимость                       1353.00' + CRLF +
+    '   6.700 л x 202.00 руб           =1353.00' + CRLF +
+    '   Скидка                           -10.00' + CRLF +
     '------------------------------------------' + CRLF +
-    'ИТОГ         =1353.00                     ' + CRLF +
+    'ИТОГ         =1343.00                     ' + CRLF +
     'Наличные:                         =2000.00' + CRLF +
-    '  СДАЧА                            =647.00' + CRLF +
+    '  СДАЧА                            =657.00' + CRLF +
     '------------------------------------------' + CRLF +
     'ФП:                                       ' + CRLF +
     'Время:                                    ' + CRLF +
@@ -1269,7 +1268,8 @@ begin
   Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
   FptrCheck(Driver.BeginFiscalReceipt(True));
   FptrCheck(Driver.PrintRecItem('ТРК 1:АИ-92-К4/К5', 1353, 6700, 4, 202, 'л'));
-  FptrCheck(Driver.PrintRecTotal(1353, 2000, '0'));
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка 10', 10, 1));
+  FptrCheck(Driver.PrintRecTotal(1343, 2000, '0'));
   FptrCheck(Driver.PrintRecMessage('Оператор: Кассир1'));
   FptrCheck(Driver.PrintRecMessage('Транз.:      16868 '));
   FptrCheck(Driver.EndFiscalReceipt(False));
