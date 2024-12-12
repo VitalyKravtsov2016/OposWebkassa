@@ -4,11 +4,11 @@ interface
 
 uses
   // VCL
-  Classes, SysUtils,
+  Classes, SysUtils, Types,
   // OPOS
   Opos, Oposhi, OposException,
   // This
-  GNUGetText;
+  GNUGetText, StringUtils;
 
 type
   { TOposDate }
@@ -20,6 +20,13 @@ type
     Hour: Integer;
     Min: Integer;
   end;
+
+function StrToRect(const S: string): TRect;
+function StrToPoint(const S: string): TPoint;
+function RectToStr(const R: TRect): string;
+function PointToStr(const P: TPoint): string;
+function IsEqual(const P1, P2: TPoint): Boolean; overload;
+function IsEqual(const R1, R2: TRect): Boolean; overload;
 
 function GetErrorLocusText(Value: Integer): WideString;
 function GetResultCodeText(Value: Integer): WideString;
@@ -40,6 +47,41 @@ const
   CRLF = #13#10;
 
 implementation
+
+function StrToRect(const S: string): TRect;
+begin
+  Result.Left := GetInteger(S, 1, [',']);
+  Result.Top := GetInteger(S, 2, [',']);
+  Result.Right := GetInteger(S, 3, [',']);
+  Result.Bottom := GetInteger(S, 4, [',']);
+end;
+
+function StrToPoint(const S: string): TPoint;
+begin
+  Result.X := GetInteger(S, 1, [',']);
+  Result.Y := GetInteger(S, 2, [',']);
+end;
+
+function RectToStr(const R: TRect): string;
+begin
+  Result := Format('%d,%d,%d,%d', [R.Left, R.Top, R.Right, R.Bottom]);
+end;
+
+function PointToStr(const P: TPoint): string;
+begin
+  Result := Format('%d,%d', [P.X, P.Y]);
+end;
+
+function IsEqual(const P1, P2: TPoint): Boolean; overload;
+begin
+  Result := (P1.X = P2.X) and (P1.Y = P2.Y);
+end;
+
+function IsEqual(const R1, R2: TRect): Boolean; overload;
+begin
+  Result := IsEqual(R1.TopLeft, R2.TopLeft) and IsEqual(R1.BottomRight, R2.BottomRight);
+end;
+
 
 function GetCommonPropertyName(const ID: Integer): WideString;
 begin

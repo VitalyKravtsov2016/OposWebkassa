@@ -76,6 +76,7 @@ type
     procedure TestBitmap2;
     procedure TestPageMode;
     procedure TestPageModeA;
+    procedure TestPageModeA2;
     procedure TestPageModeB;
     procedure TestPrintMaxiCode;
     procedure TestPrintUTF;
@@ -1189,6 +1190,59 @@ begin
   FPrinter.PrintText('‘œ 2026476352' + CRLF);
   FPrinter.PrintText('œ–»’Œƒ 19.07.24 13:14' + CRLF);
   FPrinter.PrintAndReturnStandardMode;
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText(CRLF);
+  FPrinter.PartialCut;
+  FPrinter.EndDocument;
+end;
+
+procedure TPrinterOA48Test.TestPageModeA2;
+const
+  Separator = '------------------------------------------------';
+  Barcode = 'http://dev.kofd.kz/consumer?i=1556041617048&f=768814097419&s=3098.00&t=20241211T151839';
+var
+  QRCode: TQRCode;
+  PageSize: TRect;
+begin
+  FPrinter.BeginDocument;
+  FPrinter.Initialize;
+  FPrinter.SetCodePage(CODEPAGE_WCP1251);
+  FPrinter.SetLineSpacing(0);
+  FPrinter.SetPrintMode(0);
+
+  FPrinter.SetPageMode;
+  // Page mode area for text
+  PageSize.Left := 0;
+  PageSize.Top := 0;
+  PageSize.Right := 576-150;
+  PageSize.Bottom := 450;
+  FPrinter.SetPageModeArea(PageSize);
+  // Text on the left
+  FPrinter.PrintText('«Õ   “ 0010630424164528736482764827634872683476287346' + CRLF);
+  FPrinter.PrintText('–Õ   “ 0000373856050035' + CRLF);
+  FPrinter.PrintText('»ÕÕ 7725699008' + CRLF);
+  FPrinter.PrintText('‘Õ 7380440700076549' + CRLF);
+  FPrinter.PrintText('‘ƒ 41110' + CRLF);
+  FPrinter.PrintText('‘œ 2026476352' + CRLF);
+  FPrinter.PrintText('œ–»’Œƒ 19.07.24 13:14        ');
+  // Page mode area for QR code
+  PageSize.Left := 576-150 + 1;
+  PageSize.Top := 0;
+  PageSize.Right := 576;
+  PageSize.Bottom := 450;
+  FPrinter.SetPageModeArea(PageSize);
+  // QR code on the right
+  FPrinter.PrintText(CRLF);
+  QRCode.ECLevel := 0;
+  QRCode.ModuleSize := 4;
+  QRCode.data := Barcode;
+  FPrinter.printQRCode(QRCode);
+  FPrinter.PrintAndReturnStandardMode;
+
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText(CRLF);
   FPrinter.PrintText(CRLF);
   FPrinter.PrintText(CRLF);
   FPrinter.PrintText(CRLF);

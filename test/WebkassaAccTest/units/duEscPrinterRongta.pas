@@ -1207,7 +1207,7 @@ end;
 procedure TPrinterRongtaTest.TestPageModeA2;
 const
   Separator = '------------------------------------------------';
-  Barcode = 't=20240719T1314&s=460.00&fn=7380440700076549&i=41110&fp=2026476352&n=1';
+  Barcode = 'http://dev.kofd.kz/consumer?i=1556041617048&f=768814097419&s=3098.00&t=20241211T151839';
 var
   QRCode: TQRCode;
   PageSize: TRect;
@@ -1221,8 +1221,8 @@ begin
   // Page mode area for text
   PageSize.Left := 0;
   PageSize.Top := 0;
-  PageSize.Right := 400;
-  PageSize.Bottom := 550;
+  PageSize.Right := 576-150;
+  PageSize.Bottom := 450;
   FPrinter.SetPageModeArea(PageSize);
   // Text on the left
   FPrinter.PrintText('«Õ   “ 0010630424164528736482764827634872683476287346' + CRLF);
@@ -1233,10 +1233,10 @@ begin
   FPrinter.PrintText('‘œ 2026476352' + CRLF);
   FPrinter.PrintText('œ–»’Œƒ 19.07.24 13:14        ');
   // Page mode area for QR code
-  PageSize.Left := 400;
+  PageSize.Left := 576-150 + 1;
   PageSize.Top := 0;
-  PageSize.Right := 652;
-  PageSize.Bottom := 550;
+  PageSize.Right := 576;
+  PageSize.Bottom := 450;
   FPrinter.SetPageModeArea(PageSize);
   // QR code on the right
   FPrinter.PrintText(CRLF);
@@ -1248,6 +1248,8 @@ begin
   FPrinter.printQRCode(QRCode);
   FPrinter.PrintAndReturnStandardMode;
 
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText(CRLF);
   FPrinter.PrintText(CRLF);
   FPrinter.PrintText(CRLF);
   FPrinter.PrintText(CRLF);

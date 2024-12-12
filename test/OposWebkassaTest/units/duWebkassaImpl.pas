@@ -71,6 +71,9 @@ type
     procedure PrintHeaderAndCut;
     procedure TestClaim;
     procedure TestFiscalReceipt3;
+    // !!!
+    procedure TestReceiptTemplate2;
+    procedure TestReceiptTemplate4;
   published
     procedure TestZReport;
     procedure TestXReport;
@@ -86,9 +89,7 @@ type
     procedure TestSetHeaderLines;
     procedure TestSetTrailerLines;
     procedure TestReceiptTemplate;
-    procedure TestReceiptTemplate2;
     procedure TestReceiptTemplate3;
-    procedure TestReceiptTemplate4;
     procedure TestGetJsonField;
     procedure TestEncoding;
     procedure TestBarcode;

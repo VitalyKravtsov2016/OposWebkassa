@@ -9,11 +9,11 @@ uses
   TntClasses,
   // Opos
   Opos, OposEsc, OposPtr, OposException, OposServiceDevice19, OposEvents,
-  OposPOSPrinter_CCO_TLB, WException, OposPtrUtils,
+  OposPOSPrinter_CCO_TLB, WException, OposPtrUtils, OposUtils,
   // This
   LogFile, DriverError, EscPrinterRongta, PrinterPort, NotifyThread,
   RegExpr, SerialPort, Jpeg, GifImage, BarcodeUtils,
-  StringUtils, DebugUtils;
+  StringUtils, DebugUtils, PtrDirectIO;
 
 const
   FontNameA = 'Font A (12x24)';
@@ -23,7 +23,7 @@ type
   { TPageMode }
 
   TPageMode = record
-    PrintArea: string;
+    PrintArea: TRect;
     PrintDirection: Integer;
     VerticalPosition: Integer;
     HorizontalPosition: Integer;
@@ -140,10 +140,10 @@ type
     FJrnNearEnd: Boolean;
     FMapCharacterSet: Boolean;
     FMapMode: Integer;
-    FPageModeArea: WideString;
+    FPageModeArea: TPoint;
     FPageModeDescriptor: Integer;
     FPageModeHorizontalPosition: Integer;
-    FPageModePrintArea: WideString;
+    FPageModePrintArea: TRect;
     FPageModePrintDirection: Integer;
     FPageModeStation: Integer;
     FPageModeVerticalPosition: Integer;
@@ -743,6 +743,9 @@ begin
 end;
 
 procedure TPosPrinterRongta.Initialize;
+const
+  DefPageModeArea: TPoint = (X: 576; Y: 832);
+  DefPageModePrintArea: TRect = (Left: 0; Top: 0; Right: 0; Bottom: 0);
 begin
   FAsyncMode := False;
   FCapCharacterSet := PTR_CCS_UNICODE;
@@ -842,10 +845,10 @@ begin
   FJrnNearEnd := False;
   FMapCharacterSet := False;
   FMapMode := PTR_MM_DOTS;
-  FPageModeArea := '512,832';
+  FPageModeArea := DefPageModeArea;
   FPageModeDescriptor := PTR_PM_BARCODE + PTR_PM_BC_ROTATE + PTR_PM_OPAQUE;
   FPageModeHorizontalPosition := 0;
-  FPageModePrintArea := '0,0,0,0';
+  FPageModePrintArea := DefPageModePrintArea;
   FPageModePrintDirection := 0;
   FPageModeStation := 0;
   FPageModeVerticalPosition := 0;
@@ -859,7 +862,7 @@ begin
   FRecLineCharsList := '48,64';
   FRecLineHeight := 24;
   FRecLineSpacing := 30;
-  FRecLineWidth := 512;
+  FRecLineWidth := 576;
   FRecNearEnd := False;
   FRecSidewaysMaxChars := 69;
   FRecSidewaysMaxLines := 17;
@@ -1068,7 +1071,33 @@ end;
 function TPosPrinterRongta.DirectIO(Command: Integer; var pData: Integer;
   var pString: WideString): Integer;
 begin
-  Result := ClearResult;
+  try
+    Device.CheckOpened;
+    case Command of
+      DIO_PTR_CHECK_BARCODE:
+      begin
+        case pData of
+          PTR_BCS_UPCA,
+          PTR_BCS_UPCE,
+          PTR_BCS_EAN8,
+          PTR_BCS_EAN13,
+          PTR_BCS_ITF,
+          PTR_BCS_Codabar,
+          PTR_BCS_Code39,
+          PTR_BCS_Code93,
+          PTR_BCS_Code128,
+          PTR_BCS_QRCODE,
+          PTR_BCS_PDF417: pString := '1';
+        else
+          pString := '0';
+        end;
+      end;
+    end;
+    Result := ClearResult;
+  except
+    on E: Exception do
+      Result := HandleException(E);
+  end;
 end;
 
 function TPosPrinterRongta.DrawRuledLine(Station: Integer;
@@ -1595,7 +1624,7 @@ end;
 
 function TPosPrinterRongta.Get_PageModeArea: WideString;
 begin
-  Result := FPageModeArea;
+  Result := PointToStr(MapFromDots(FPageModeArea, MapMode));
 end;
 
 function TPosPrinterRongta.Get_PageModeDescriptor: Integer;
@@ -1605,12 +1634,12 @@ end;
 
 function TPosPrinterRongta.Get_PageModeHorizontalPosition: Integer;
 begin
-  Result := FPageModeHorizontalPosition;
+  Result := MapFromDots(FPageModeHorizontalPosition, MapMode);
 end;
 
 function TPosPrinterRongta.Get_PageModePrintArea: WideString;
 begin
-  Result := FPageModePrintArea;
+  Result := RectToStr(MapFromDots(FPageModePrintArea, MapMode));
 end;
 
 function TPosPrinterRongta.Get_PageModePrintDirection: Integer;
@@ -1625,7 +1654,7 @@ end;
 
 function TPosPrinterRongta.Get_PageModeVerticalPosition: Integer;
 begin
-  Result := FPageModeVerticalPosition;
+  Result := MapFromDots(FPageModeVerticalPosition, MapMode);
 end;
 
 function TPosPrinterRongta.Get_PowerNotify: Integer;
@@ -1680,12 +1709,12 @@ end;
 
 function TPosPrinterRongta.Get_RecLineHeight: Integer;
 begin
-  Result := FRecLineHeight;
+  Result := MapFromDots(FRecLineHeight, MapMode);
 end;
 
 function TPosPrinterRongta.Get_RecLineSpacing: Integer;
 begin
-  Result := FRecLineSpacing;
+  Result := MapFromDots(FRecLineSpacing, MapMode);
 end;
 
 function TPosPrinterRongta.Get_RecLinesToPaperCut: Integer;
@@ -1697,7 +1726,7 @@ end;
 
 function TPosPrinterRongta.Get_RecLineWidth: Integer;
 begin
-  Result := FRecLineWidth;
+  Result := MapFromDots(FRecLineWidth, MapMode);
 end;
 
 function TPosPrinterRongta.Get_RecNearEnd: WordBool;
@@ -1933,7 +1962,7 @@ begin
           begin
             FPrinter.Select2DBarcode(BARCODE_QR_CODE);
             QRCode.SymbolVersion := 0;
-            QRCode.ECLevel := REP_QRCODE_ECL_30;
+            QRCode.ECLevel := REP_QRCODE_ECL_7;
             QRCode.ModuleSize := 4;
             QRCode.data := Data;
             FPrinter.printQRCode(QRCode);
@@ -2165,40 +2194,29 @@ begin
 end;
 
 procedure TPosPrinterRongta.UpdatePageMode;
-
-  // '0,0,0,0';
-  function AreaToRect(const Area: string): TRect;
-  begin
-    Result.Left := GetInteger(Area, 0, [',']);
-    Result.Top := GetInteger(Area, 1, [',']);
-    Result.Right := GetInteger(Area, 2, [',']);
-    Result.Bottom := GetInteger(Area, 3, [',']);
-  end;
-
+var
+  Count: Integer;
 begin
-  if PageModePrintArea <> FPageMode.PrintArea then
+  if not IsEqual(FPageModePrintArea, FPageMode.PrintArea) then
   begin
-    Printer.SetPageModeArea(AreaToRect(PageModePrintArea));
-    FPageMode.PrintArea := PageModePrintArea;
+    Printer.SetPageModeArea(FPageModePrintArea);
+    FPageMode.PrintArea := FPageModePrintArea;
   end;
-  if PageModePrintDirection <> FPageMode.PrintDirection then
+  if FPageModePrintDirection <> FPageMode.PrintDirection then
   begin
-    Printer.SetPageModeDirection(PageModePrintDirection-1);
-    FPageMode.PrintDirection := PageModePrintDirection;
+    Printer.SetPageModeDirection(FPageModePrintDirection-1);
+    FPageMode.PrintDirection := FPageModePrintDirection;
   end;
-  if PageModeVerticalPosition <> FPageMode.VerticalPosition then
+  if FPageModeVerticalPosition <> FPageMode.VerticalPosition then
   begin
-    (*
-    MapDistanseToSteps()
-    // This command sets the absolute print position to [(nL + nH 256) ¬ 0.125 mm].
-    PTR_MM_DOTS The printer’s dot width. This width may be different for
-    each printer station.1
-    PTR_MM_TWIPS 1/1440 of an inch.
-    PTR_MM_ENGLISH 0.001 inch.
-    PTR_MM_METRIC 0.01 millimeter.
-    *)
-    FPrinter.SetPMAbsoluteVerticalPosition(PageModeVerticalPosition);
-    FPageMode.VerticalPosition := PageModeVerticalPosition;
+    FPrinter.SetPMAbsoluteVerticalPosition(FPageModeVerticalPosition);
+    FPageMode.VerticalPosition := FPageModeVerticalPosition;
+  end;
+  if FPageModeHorizontalPosition <> FPageMode.HorizontalPosition then
+  begin
+    Count := FPageModeHorizontalPosition div 12;
+    FPrinter.PrintText(StringOfChar(' ', Count));
+    FPageMode.HorizontalPosition := FPageModeHorizontalPosition;
   end;
 end;
 
@@ -2543,13 +2561,13 @@ end;
 procedure TPosPrinterRongta.Set_PageModeHorizontalPosition(
   pPageModeHorizontalPosition: Integer);
 begin
-  FPageModeHorizontalPosition := pPageModeHorizontalPosition;
+  FPageModeHorizontalPosition := MapToDots(pPageModeHorizontalPosition, MapMode);
 end;
 
 procedure TPosPrinterRongta.Set_PageModePrintArea(
   const pPageModePrintArea: WideString);
 begin
-  FPageModePrintArea := pPageModePrintArea;
+  FPageModePrintArea := MapToDots(StrToRect(pPageModePrintArea), MapMode);
 end;
 
 procedure TPosPrinterRongta.Set_PageModePrintDirection(
@@ -2566,7 +2584,7 @@ end;
 procedure TPosPrinterRongta.Set_PageModeVerticalPosition(
   pPageModeVerticalPosition: Integer);
 begin
-  FPageModeVerticalPosition := pPageModeVerticalPosition;
+  FPageModeVerticalPosition := MapToDots(pPageModeVerticalPosition, MapMode);
 end;
 
 procedure TPosPrinterRongta.Set_PowerNotify(pPowerNotify: Integer);
@@ -2587,12 +2605,20 @@ end;
 
 procedure TPosPrinterRongta.Set_RecLineChars(pRecLineChars: Integer);
 begin
-  FRecLineChars := pRecLineChars;
+  if pRecLineChars in [20..48] then
+  begin
+    FRecLineChars := pRecLineChars;
+    FRecLineWidth := FRecLineChars * 12;
+    FPageModeArea.X := RecLineWidth;
+  end;
 end;
 
 procedure TPosPrinterRongta.Set_RecLineHeight(pRecLineHeight: Integer);
+var
+  RecLineHeightInDots: Integer;
 begin
-  if (pRecLineHeight >= 24) then
+  RecLineHeightInDots := MapToDots(pRecLineHeight, MapMode);
+  if (RecLineHeightInDots >= 24) then
   begin
     FRecLineHeight := 24
   end else
@@ -2602,14 +2628,17 @@ begin
 end;
 
 procedure TPosPrinterRongta.Set_RecLineSpacing(pRecLineSpacing: Integer);
+var
+  RecLineSpacingInDots: Integer;
 begin
-  if pRecLineSpacing <> FRecLineSpacing then
+  RecLineSpacingInDots := MapToDots(pRecLineSpacing, MapMode);
+  if RecLineSpacingInDots <> FRecLineSpacing then
   begin
-    if (pRecLineSpacing >= 0)and(pRecLineSpacing <= $FF) then
+    if (RecLineSpacingInDots >= 0)and(RecLineSpacingInDots <= $FF) then
     begin
-      FPrinter.SetLineSpacing(pRecLineSpacing);
+      FPrinter.SetLineSpacing(RecLineSpacingInDots);
     end;
-    FRecLineSpacing := pRecLineSpacing;
+    FRecLineSpacing := RecLineSpacingInDots;
   end;
 end;
 

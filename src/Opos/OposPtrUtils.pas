@@ -4,7 +4,7 @@ interface
 
 uses
   // VCL
-  SysUtils,
+  Types, SysUtils,
   // Opos
   OposUtils, OposPtr, OposPtrhi;
 
@@ -12,6 +12,13 @@ function PtrPropertyName(const ID: Integer): WideString;
 function PtrResultCodeExtendedText(Value: Integer): WideString;
 function PtrStatusUpdateEventText(Value: Integer): WideString;
 function Is2DBarcode(Symbology: Integer): Boolean;
+
+function MapToDots(Value, MapMode: Integer): Integer; overload;
+function MapFromDots(Value, MapMode: Integer): Integer; overload;
+function MapToDots(const R: TRect; MapMode: Integer): TRect; overload;
+function MapToDots(const R: TPoint; MapMode: Integer): TPoint; overload;
+function MapFromDots(const R: TRect; MapMode: Integer): TRect; overload;
+function MapFromDots(const R: TPoint; MapMode: Integer): TPoint; overload;
 
 implementation
 
@@ -222,5 +229,57 @@ begin
     PTR_BCS_UPDF417: Result := True;
   end;
 end;
+
+function MapToDots(Value, MapMode: Integer): Integer;
+begin
+  Result := Value;
+  case MapMode of
+    PTR_MM_DOTS: Result := Value;
+    PTR_MM_TWIPS: Result := Value*7;
+    PTR_MM_ENGLISH: Result := Value*5;
+    PTR_MM_METRIC: Result := Value*13;
+  end;
+end;
+
+function MapFromDots(Value, MapMode: Integer): Integer;
+begin
+  Result := Value;
+  case MapMode of
+    PTR_MM_DOTS: Result := Value;
+    PTR_MM_TWIPS: Result := Value div 7;
+    PTR_MM_ENGLISH: Result := Value div 5;
+    PTR_MM_METRIC: Result := Value div 13;
+  end;
+end;
+
+function MapFromDots(const R: TRect; MapMode: Integer): TRect;
+begin
+  Result.Left := MapFromDots(R.Left, MapMode);
+  Result.Top := MapFromDots(R.Top, MapMode);
+  Result.Right := MapFromDots(R.Right, MapMode);
+  Result.Bottom := MapFromDots(R.Bottom, MapMode);
+end;
+
+function MapToDots(const R: TRect; MapMode: Integer): TRect;
+begin
+  Result.Left := MapToDots(R.Left, MapMode);
+  Result.Top := MapToDots(R.Top, MapMode);
+  Result.Right := MapToDots(R.Right, MapMode);
+  Result.Bottom := MapToDots(R.Bottom, MapMode);
+end;
+
+function MapToDots(const R: TPoint; MapMode: Integer): TPoint;
+begin
+  Result.X := MapToDots(R.X, MapMode);
+  Result.Y := MapToDots(R.Y, MapMode);
+end;
+
+function MapFromDots(const R: TPoint; MapMode: Integer): TPoint;
+begin
+  Result.X := MapFromDots(R.X, MapMode);
+  Result.Y := MapFromDots(R.Y, MapMode);
+end;
+
+
 
 end.

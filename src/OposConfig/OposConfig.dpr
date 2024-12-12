@@ -99,7 +99,8 @@ uses
   EscPrinterRongta in '..\Shared\EscPrinterRongta.pas',
   OposFiscalPrinter_1_13_Lib_TLB in '..\Opos\OposFiscalPrinter_1_13_Lib_TLB.pas',
   EscPrinterUtils in '..\Shared\EscPrinterUtils.pas',
-  fmuFptrVatRate in 'Fmu\fmuFptrVatRate.pas' {fmFptrVatRate};
+  fmuFptrVatRate in 'Fmu\fmuFptrVatRate.pas' {fmFptrVatRate},
+  PtrDirectIO in '..\OposWebkassa\units\PtrDirectIO.pas';
 
 {$R *.RES}
 {$R WindowsXP.RES}

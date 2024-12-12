@@ -90,7 +90,8 @@ uses
   OposDevice in '..\..\src\Opos\OposDevice.pas',
   duPosPrinterRongta in 'units\duPosPrinterRongta.pas',
   duEscPrinterOA48 in 'units\duEscPrinterOA48.pas',
-  EscPrinterUtils in '..\..\src\Shared\EscPrinterUtils.pas';
+  EscPrinterUtils in '..\..\src\Shared\EscPrinterUtils.pas',
+  PtrDirectIO in '..\..\src\OposWebkassa\units\PtrDirectIO.pas';
 
 {$R *.RES}
 {$R ..\..\src\OposWebkassa\OposWebkassa.tlb}

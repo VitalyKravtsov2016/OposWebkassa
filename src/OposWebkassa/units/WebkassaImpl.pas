@@ -24,7 +24,7 @@ uses
   uZintBarcode, uZintInterface, FileUtils, PosWinPrinter, PosPrinterRongta,
   PosPrinterOA48, SerialPort, PrinterPort, SocketPort, ReceiptTemplate,
   RawPrinterPort, PrinterTypes, DirectIOAPI, BarcodeUtils, PrinterParametersReg,
-  JsonUtils, EscPrinterRongta;
+  JsonUtils, EscPrinterRongta, PtrDirectIO;
 
 const
   PrinterClaimTimeout = 100;
@@ -95,7 +95,7 @@ type
     procedure PrintBarcodeAsGraphics(Barcode: TBarcodeRec);
     procedure PrintDocItem(Item: TDocItem);
     procedure PtrPrintNormal(Station: Integer; const Data: WideString);
-    function RenderBarcodeRec(var Barcode: TBarcodeRec): AnsiString;
+    procedure RenderBarcodeRec(var Barcode: TBarcodeRec; Bitmap: TBitmap);
     procedure DioPrintBarcode(var pData: Integer; var pString: WideString);
     procedure DioPrintBarcodeHex(var pData: Integer;
       var pString: WideString);
@@ -116,6 +116,10 @@ type
     function ReadCasboxStatusAnswerJson: WideString;
     procedure DisablePosPrinter;
     procedure EnablePosPrinter(ClaimTimeout: Integer);
+    function RenderBarcodeStr(var Barcode: TBarcodeRec): AnsiString;
+    procedure PrintBarcodeEsc(Barcode: TBarcodeRec);
+    function GetCapBarcodeInPageMode: Boolean;
+    function GetCapQRCodeInPageMode: Boolean;
   public
     procedure PrintDocumentSafe(Document: TTextDocument);
     procedure CheckCanPrint;
@@ -3617,8 +3621,32 @@ begin
   end;
 end;
 
-const
-  CapRecPageMode = False;
+/////////////////////////////////////////////////////////////////////////////
+// Check that page mode and barcode supported and
+// barcode in page mode supported
+
+function TWebkassaImpl.GetCapBarcodeInPageMode: Boolean;
+begin
+  Result := Printer.CapRecPageMode and Printer.CapRecBarCode and
+  ((Printer.PageModeDescriptor and PTR_PM_BARCODE) <> 0);
+end;
+
+function TWebkassaImpl.GetCapQRCodeInPageMode: Boolean;
+var
+  pData: Integer;
+  pString: WideString;
+begin
+  Result := GetCapBarcodeInPageMode;
+  if Result then
+  begin
+    pData := PTR_BCS_QRCODE;
+    pstring := '';
+    if Printer.DirectIO(DIO_PTR_CHECK_BARCODE, pData, pString) = 0 then
+    begin
+      Result := pString = '1';
+    end;
+  end;
+end;
 
 procedure TWebkassaImpl.PrintReceipt(Receipt: TSalesReceipt;
   Command: TSendReceiptCommand);
@@ -3635,6 +3663,7 @@ var
   UnitPrice: Currency;
   Adjustment: TAdjustmentRec;
   BarcodeItem: TBarcodeItem;
+  CapQRCodeInPageMode: Boolean;
 begin
   Document.AddLine('ÁÑÍ/ÁÈÍ: ' + ReadINN);
 
@@ -3749,8 +3778,10 @@ begin
   begin
     Receipt.FiscalSign := Command.Data.CheckNumber;
   end;
-  if CapRecPageMode then
+  CapQRCodeInPageMode := GetCapQRCodeInPageMode;
+  if CapQRCodeInPageMode then
   begin
+    Document.StartPageMode;
     Document.AddItem(Command.Data.TicketUrl, STYLE_QR_CODE);
   end;
   Document.AddLine('ÔÏ: ' + Receipt.FiscalSign);
@@ -3758,7 +3789,10 @@ begin
   Document.AddLine('ÎÔÄ: ' + Command.Data.Cashbox.Ofd.Name);
   Document.AddLine('Äëÿ ïðîâåðêè ÷åêà:');
   Document.AddLine(Command.Data.Cashbox.Ofd.Host);
-  if not CapRecPageMode then
+  if CapQRCodeInPageMode then
+  begin
+    Document.EndPageMode;
+  end else
   begin
     Document.AddItem(Command.Data.TicketUrl, STYLE_QR_CODE);
   end;
@@ -4265,9 +4299,27 @@ begin
 end;
 
 procedure TWebkassaImpl.PrintDocItem(Item: TDocItem);
+
+  function GetBarcodeSize(Barcode: TBarcodeRec): TPoint;
+  var
+    Bitmap: TBitmap;
+  begin
+    Bitmap := TBitmap.Create;
+    try
+      RenderBarcodeRec(Barcode, Bitmap);
+      Result.X := Bitmap.Width * 2;
+      Result.Y := Bitmap.Height * 2;
+    finally
+      Bitmap.Free;
+    end;
+  end;
+
 var
+  R: TRect;
   Text: WideString;
   Barcode: TBarcodeRec;
+  BarcodeSize: TPoint;
+  PageModeArea: TPoint;
 begin
   if (Item.LineChars <> 0)and(Item.LineChars <> FLineChars) then
   begin
@@ -4289,10 +4341,6 @@ begin
   case Item.Style of
     STYLE_QR_CODE:
     begin
-      if FPageMode then
-      begin
-        Printer.PageModePrintArea := '400,0,652,550';
-      end;
       Barcode.Data := Item.Text;
       Barcode.Text := Item.Text;
       Barcode.Width := 0;
@@ -4305,7 +4353,26 @@ begin
       Barcode.Parameter3 := 0;
       Barcode.Parameter4 := 0;
       Barcode.Parameter5 := 0;
-      PrintBarcode2(Barcode);
+      if FPageMode then
+      begin
+        PageModeArea := StrToPoint(Printer.PageModeArea);
+        BarcodeSize := GetBarcodeSize(Barcode);
+        R.Left := PageModeArea.X - BarcodeSize.X;
+        R.Right := PageModeArea.X;
+        R.Top := 0;
+        R.Bottom := BarcodeSize.Y*2;
+        Printer.PageModePrintArea := RectToStr(R);
+        Printer.PrintNormal(PTR_S_RECEIPT, CRLF);
+      end;
+      PrintBarcodeEsc(Barcode);
+      if FPageMode then
+      begin
+        R.Left := 0;
+        R.Right := R.Right - BarcodeSize.X;
+        R.Top := 0;
+        R.Bottom := BarcodeSize.Y*2;
+        Printer.PageModePrintArea := RectToStr(R);
+      end;
     end;
     STYLE_BARCODE:
     begin
@@ -4413,9 +4480,9 @@ begin
       Text := TrimRight(Params.Header[i]);
       PrintLine(Text);
     end;
-    if Count < Printer.RecLinesToPaperCut then
+    for i := Count to Printer.RecLinesToPaperCut-1 do
     begin
-      PrintLine(CRLF);
+      PrintLine('');
     end;
     Printer.CutPaper(90);
     for i := Count to FParams.NumHeaderLines-1 do
@@ -4509,7 +4576,7 @@ begin
 
   Printer.BinaryConversion := OPOS_BC_NIBBLE;
   try
-    Data := RenderBarcodeRec(Barcode);
+    Data := RenderBarcodeStr(Barcode);
     Data := OposStrToNibble(Data);
     BMPAlignment := BarcodeAlignmentToBMPAlignment(Barcode.Alignment);
     CheckPtr(Printer.PrintMemoryBitmap(PTR_S_RECEIPT, Data,
@@ -4519,18 +4586,28 @@ begin
   end;
 end;
 
-function TWebkassaImpl.RenderBarcodeRec(var Barcode: TBarcodeRec): AnsiString;
+function TWebkassaImpl.RenderBarcodeStr(var Barcode: TBarcodeRec): AnsiString;
+var
+  Bitmap: TBitmap;
+begin
+  Bitmap := TBitmap.Create;
+  try
+    RenderBarcodeRec(Barcode, Bitmap);
+    Result := BitmapToStr(Bitmap);
+  finally
+    Bitmap.Free;
+  end;
+end;
+
+procedure TWebkassaImpl.RenderBarcodeRec(var Barcode: TBarcodeRec;
+  Bitmap: TBitmap);
 var
   SCale: Integer;
-  Bitmap: TBitmap;
   Render: TZintBarcode;
 begin
-  Result := '';
-
   if Barcode.ModuleWidth in [0..1] then
     Barcode.ModuleWidth := 4;
 
-  Bitmap := TBitmap.Create;
   Render := TZintBarcode.Create;
   try
     Render.BorderWidth := 10;
@@ -4561,10 +4638,8 @@ begin
       Barcode.Height := Bitmap.Height * Scale;
     end;
     ScaleGraphic(Bitmap, Scale);
-    Result := BitmapToStr(Bitmap);
   finally
     Render.Free;
-    Bitmap.Free;
   end;
 end;
 
@@ -4580,6 +4655,15 @@ begin
 end;
 
 procedure TWebkassaImpl.PrintBarcode2(Barcode: TBarcodeRec);
+begin
+  case Params.PrintBarcode of
+    PrintBarcodeEscCommands: PrintBarcodeEsc(Barcode);
+    PrintBarcodeGraphics: PrintBarcodeAsGraphics(Barcode);
+    PrintBarcodeText: PtrPrintNormal(PTR_S_RECEIPT, Barcode.Data);
+  end;
+end;
+
+procedure TWebkassaImpl.PrintBarcodeEsc(Barcode: TBarcodeRec);
 
   function BarcodeTypeToSymbology(BarcodeType: Integer): Integer;
   begin
@@ -4632,28 +4716,15 @@ var
   Symbology: Integer;
   Alignment: Integer;
 begin
-  case Params.PrintBarcode of
-    PrintBarcodeEscCommands:
-    if Printer.CapRecBarcode then
-    begin
-      Symbology := BarcodeTypeToSymbology(Barcode.BarcodeType);
-      Alignment := BarcodeAlignmentToBCAlignment(Barcode.Alignment);
-      CheckPtr(Printer.PrintBarCode(FPTR_S_RECEIPT, Barcode.Data, Symbology,
-        Barcode.Height, Barcode.Width, Alignment, PTR_BC_TEXT_NONE));
-    end else
-    begin
-      PrintBarcodeAsGraphics(Barcode);
-    end;
-
-    PrintBarcodeGraphics:
-    begin
-      PrintBarcodeAsGraphics(Barcode);
-    end;
-
-    PrintBarcodeText:
-    begin
-      PtrPrintNormal(PTR_S_RECEIPT, Barcode.Data);
-    end;
+  if Printer.CapRecBarcode then
+  begin
+    Symbology := BarcodeTypeToSymbology(Barcode.BarcodeType);
+    Alignment := BarcodeAlignmentToBCAlignment(Barcode.Alignment);
+    CheckPtr(Printer.PrintBarCode(FPTR_S_RECEIPT, Barcode.Data, Symbology,
+      Barcode.Height, Barcode.Width, Alignment, PTR_BC_TEXT_NONE));
+  end else
+  begin
+    PrintBarcodeAsGraphics(Barcode);
   end;
 end;
 

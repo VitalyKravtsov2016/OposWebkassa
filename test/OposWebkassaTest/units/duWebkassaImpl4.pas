@@ -47,8 +47,8 @@ type
   protected
     procedure SetUp; override;
     procedure TearDown; override;
-  published
     procedure TestPrintDuplicate;
+  published
   end;
 
 implementation

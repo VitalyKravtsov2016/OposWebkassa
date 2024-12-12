@@ -96,7 +96,8 @@ uses
   EscPrinterRongta in '..\..\src\Shared\EscPrinterRongta.pas',
   OposDevice in '..\..\src\Opos\OposDevice.pas',
   duWebkassaImpl in 'units\duWebkassaImpl.pas',
-  EscPrinterUtils in '..\..\src\Shared\EscPrinterUtils.pas';
+  EscPrinterUtils in '..\..\src\Shared\EscPrinterUtils.pas',
+  PtrDirectIO in '..\..\src\OposWebkassa\units\PtrDirectIO.pas';
 
 {$R *.RES}
 

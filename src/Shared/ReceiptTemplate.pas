@@ -509,6 +509,15 @@ begin
   Trailer.NewLine;
   // Separator
   Trailer.AddSeparator;
+  // Start pagemode
+  Item := Trailer.Add;
+  Item.TextStyle := STYLE_START_PM;
+  // QR code
+  Item := Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
+  Item.TextStyle := STYLE_QR_CODE;
+  Item.Text := 'Data.TicketUrl';
+  Item.Alignment := ALIGN_CENTER;
   // Fiscal sign
   Trailer.AddText('‘œ: ');
   Item := Trailer.Add;
@@ -550,22 +559,11 @@ begin
   Item.Alignment := ALIGN_LEFT;
   Item.Enabled := TEMPLATE_ITEM_ENABLED;
   Trailer.NewLine;
+  // End pagemode
+  Item := Trailer.Add;
+  Item.TextStyle := STYLE_END_PM;
   // Separator
   Trailer.AddSeparator;
-  // Fiscal receipt
-  Item := Trailer.Add;
-  Item.ItemType := TEMPLATE_TYPE_TEXT;
-  Item.TextStyle := STYLE_NORMAL;
-  Item.Text := '‘»— ¿À‹Õ€… ◊≈K';
-  Item.Alignment := ALIGN_CENTER;
-  Trailer.NewLine;
-  // QR code
-  Item := Trailer.Add;
-  Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
-  Item.TextStyle := STYLE_QR_CODE;
-  Item.Text := 'Data.TicketUrl';
-  Item.Alignment := ALIGN_CENTER;
-  Trailer.NewLine;
   // Fiscal receipt
   Item := Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;

@@ -134,8 +134,9 @@ begin
     Params.LogFileEnabled := True;
     Params.LogMaxCount := 10;
     Params.LogFilePath := GetModulePath + 'Logs';
-    Params.TemplateEnabled := False;
-    Params.Template.LoadFromFile('Receipt.xml');
+    Params.TemplateEnabled := True;
+    Params.Template.SetDefaults;
+    //Params.Template.LoadFromFile('Receipt.xml');
 
     Params.Login := 'apykhtin@ibtsmail.ru';
     Params.Password := 'Kassa123!';
@@ -190,18 +191,18 @@ begin
     Params.ReconnectPort := False;
   *)
     Params.PrinterType := PrinterTypeEscPrinterWindows;
-    (*
     Params.PrinterName := 'RONGTA 80mm Series Printer';
     Params.EscPrinterType := EscPrinterTypeRongta;
-    *)
-
+    (*
     Params.PrinterName := 'POS-80C';
     Params.EscPrinterType := EscPrinterTypeOA48;
+    *)
 
     Params.FontName := FontNameA;
     Params.LineSpacing := 0;
-    Params.RecLineChars := 32;
-    Params.RecLineHeight := 10;
+    //Params.RecLineChars := 40;
+    Params.RecLineChars := 48;
+    Params.RecLineHeight := 24;
     Params.Utf8Enabled := True;
     Params.AcceptLanguage := 'kk-KZ';
   end;
