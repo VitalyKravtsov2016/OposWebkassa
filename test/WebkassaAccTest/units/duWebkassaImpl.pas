@@ -134,7 +134,7 @@ begin
     Params.LogFileEnabled := True;
     Params.LogMaxCount := 10;
     Params.LogFilePath := GetModulePath + 'Logs';
-    Params.TemplateEnabled := True;
+    Params.TemplateEnabled := False;
     Params.Template.SetDefaults;
     //Params.Template.LoadFromFile('Receipt.xml');
 
@@ -200,7 +200,6 @@ begin
 
     Params.FontName := FontNameA;
     Params.LineSpacing := 0;
-    //Params.RecLineChars := 40;
     Params.RecLineChars := 48;
     Params.RecLineHeight := 24;
     Params.Utf8Enabled := True;

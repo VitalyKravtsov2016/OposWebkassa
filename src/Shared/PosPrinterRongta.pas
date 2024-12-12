@@ -23,6 +23,7 @@ type
   { TPageMode }
 
   TPageMode = record
+    IsActive: Boolean;
     PrintArea: TRect;
     PrintDirection: Integer;
     VerticalPosition: Integer;
@@ -726,6 +727,8 @@ begin
   FLogger := ALogger;
   FDevice := TOposServiceDevice19.Create(FLogger);
   FDevice.ErrorEventEnabled := False;
+  FPageMode.IsActive := False;
+
   Initialize;
 end;
 
@@ -1883,13 +1886,25 @@ begin
   try
     case Control of
       // Enter Page Mode
-      PTR_PM_PAGE_MODE: FPrinter.SetPageMode;
+      PTR_PM_PAGE_MODE:
+      begin
+        FPageMode.IsActive := True;
+        FPrinter.SetPageMode;
+      end;
 
       // Print the print area and destroy the canvas and exit PageMode.
-      PTR_PM_NORMAL: FPrinter.PrintAndReturnStandardMode;
+      PTR_PM_NORMAL:
+      begin
+        FPageMode.IsActive := False;
+        FPrinter.PrintAndReturnStandardMode;
+      end;
 
       // Clear the page and exit the Page Mode without any printing of any print area.
-      PTR_PM_CANCEL: FPrinter.SetStandardMode;
+      PTR_PM_CANCEL:
+      begin
+        FPageMode.IsActive := False;
+        FPrinter.SetStandardMode;
+      end;
     end;
     Result := ClearResult;
   except
@@ -1910,6 +1925,7 @@ var
 begin
   try
     CheckRecStation(Station);
+    UpdatePageMode;
 
     if BarcodeInGraphics then
     begin
@@ -2177,8 +2193,10 @@ end;
 function TPosPrinterRongta.PrintMemoryBitmap(Station: Integer;
   const Data: WideString; Type_, Width, Alignment: Integer): Integer;
 begin
-  CheckRecStation(Station);
   try
+    CheckRecStation(Station);
+    UpdatePageMode;
+
     PrintMemoryGraphic(Data, Type_, Width, Alignment);
     Result := ClearResult;
   except
@@ -2197,6 +2215,7 @@ procedure TPosPrinterRongta.UpdatePageMode;
 var
   Count: Integer;
 begin
+  if not FPageMode.IsActive then Exit;
   if not IsEqual(FPageModePrintArea, FPageMode.PrintArea) then
   begin
     Printer.SetPageModeArea(FPageModePrintArea);

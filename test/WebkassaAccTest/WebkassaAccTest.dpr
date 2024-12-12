@@ -91,7 +91,8 @@ uses
   duPosPrinterRongta in 'units\duPosPrinterRongta.pas',
   duEscPrinterOA48 in 'units\duEscPrinterOA48.pas',
   EscPrinterUtils in '..\..\src\Shared\EscPrinterUtils.pas',
-  PtrDirectIO in '..\..\src\OposWebkassa\units\PtrDirectIO.pas';
+  PtrDirectIO in '..\..\src\OposWebkassa\units\PtrDirectIO.pas',
+  PageBuffer in '..\..\src\OposWebkassa\units\PageBuffer.pas';
 
 {$R *.RES}
 {$R ..\..\src\OposWebkassa\OposWebkassa.tlb}

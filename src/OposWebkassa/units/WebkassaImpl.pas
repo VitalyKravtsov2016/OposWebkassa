@@ -24,7 +24,7 @@ uses
   uZintBarcode, uZintInterface, FileUtils, PosWinPrinter, PosPrinterRongta,
   PosPrinterOA48, SerialPort, PrinterPort, SocketPort, ReceiptTemplate,
   RawPrinterPort, PrinterTypes, DirectIOAPI, BarcodeUtils, PrinterParametersReg,
-  JsonUtils, EscPrinterRongta, PtrDirectIO;
+  JsonUtils, EscPrinterRongta, PtrDirectIO, PageBuffer;
 
 const
   PrinterClaimTimeout = 100;
@@ -64,6 +64,7 @@ type
     FClient: TWebkassaClient;
     FDocument: TTextDocument;
     FDuplicate: TTextDocument;
+    FPageBuffer: TPageBuffer;
     FReceipt: TCustomReceipt;
     FPrinterObj: TObject;
     FPrinter: IOPOSPOSPrinter;
@@ -81,6 +82,7 @@ type
     FExternalCheckNumber: WideString;
     FCodePage: Integer;
     FPageMode: Boolean;
+    FPrintArea: TRect;
 
     procedure PrintLine(Text: WideString);
     function GetReceiptItemText(ReceiptItem: TSalesReceiptItem;
@@ -120,6 +122,13 @@ type
     procedure PrintBarcodeEsc(Barcode: TBarcodeRec);
     function GetCapBarcodeInPageMode: Boolean;
     function GetCapQRCodeInPageMode: Boolean;
+    procedure EndPageMode;
+    function IsFontB: Boolean;
+    procedure PrintDocItemQR(Item: TDocItem);
+    procedure PrintDocItemQRPM(Item: TDocItem);
+    procedure PrintDocItemText(Item: TDocItem);
+    function GetBarcodeSize(Barcode: TBarcodeRec): TPoint;
+    procedure PrintDocItemBarcode(Item: TDocItem);
   public
     procedure PrintDocumentSafe(Document: TTextDocument);
     procedure CheckCanPrint;
@@ -578,6 +587,7 @@ begin
   FOposDevice := TOposServiceDevice19.Create(FLogger);
   FOposDevice.ErrorEventEnabled := False;
   FPrinterState := TFiscalPrinterState.Create;
+  FPageBuffer := TPageBuffer.Create;
   FClient.RaiseErrors := True;
   FLines := TTntStringList.Create;
   FLoadParamsEnabled := True;
@@ -599,6 +609,7 @@ begin
   FReceipt.Free;
   FPrinterLog.Free;
   FCashboxStatus.Free;
+  FPageBuffer.Free;
   inherited Destroy;
 end;
 
@@ -3781,18 +3792,14 @@ begin
   CapQRCodeInPageMode := GetCapQRCodeInPageMode;
   if CapQRCodeInPageMode then
   begin
-    Document.StartPageMode;
-    Document.AddItem(Command.Data.TicketUrl, STYLE_QR_CODE);
+    Document.AddItem(Command.Data.TicketUrl, STYLE_QR_CODE_PM);
   end;
   Document.AddLine('ФП: ' + Receipt.FiscalSign);
   Document.AddLine('Время: ' + Command.Data.DateTime);
   Document.AddLine('ОФД: ' + Command.Data.Cashbox.Ofd.Name);
   Document.AddLine('Для проверки чека:');
   Document.AddLine(Command.Data.Cashbox.Ofd.Host);
-  if CapQRCodeInPageMode then
-  begin
-    Document.EndPageMode;
-  end else
+  if not CapQRCodeInPageMode then
   begin
     Document.AddItem(Command.Data.TicketUrl, STYLE_QR_CODE);
   end;
@@ -4161,7 +4168,8 @@ procedure TWebkassaImpl.AddItems(Items: TList);
       Item := TTemplateItem(Items[i]);
       Document.LineChars := Item.LineChars;
       case Item.TextStyle of
-        STYLE_QR_CODE: Document.AddItem(Item.Value, Item.TextStyle);
+        STYLE_QR_CODE,
+        STYLE_QR_CODE_PM: Document.AddItem(Item.Value, Item.TextStyle);
       else
         Document.Add(Item.Value, Item.TextStyle);
       end;
@@ -4285,7 +4293,7 @@ begin
     begin
       PrintDocItem(Document.Items[i]);
     end;
-
+    EndPageMode;
     CutPaper;
     if Printer.CapTransaction then
     begin
@@ -4298,28 +4306,12 @@ begin
   Logger.Debug(Tnt_WideFormat('PrintDocument, time=%d ms', [GetTickCount-TickCount]));
 end;
 
+function TWebkassaImpl.IsFontB: Boolean;
+begin
+  Result := Params.FontName = FontNameB;
+end;
+
 procedure TWebkassaImpl.PrintDocItem(Item: TDocItem);
-
-  function GetBarcodeSize(Barcode: TBarcodeRec): TPoint;
-  var
-    Bitmap: TBitmap;
-  begin
-    Bitmap := TBitmap.Create;
-    try
-      RenderBarcodeRec(Barcode, Bitmap);
-      Result.X := Bitmap.Width * 2;
-      Result.Y := Bitmap.Height * 2;
-    finally
-      Bitmap.Free;
-    end;
-  end;
-
-var
-  R: TRect;
-  Text: WideString;
-  Barcode: TBarcodeRec;
-  BarcodeSize: TPoint;
-  PageModeArea: TPoint;
 begin
   if (Item.LineChars <> 0)and(Item.LineChars <> FLineChars) then
   begin
@@ -4339,74 +4331,148 @@ begin
 
 
   case Item.Style of
-    STYLE_QR_CODE:
-    begin
-      Barcode.Data := Item.Text;
-      Barcode.Text := Item.Text;
-      Barcode.Width := 0;
-      Barcode.Height := 0;
-      Barcode.BarcodeType := DIO_BARCODE_QRCODE;
-      Barcode.ModuleWidth := 4;
-      Barcode.Alignment := BARCODE_ALIGNMENT_CENTER;
-      Barcode.Parameter1 := 0;
-      Barcode.Parameter2 := 0;
-      Barcode.Parameter3 := 0;
-      Barcode.Parameter4 := 0;
-      Barcode.Parameter5 := 0;
-      if FPageMode then
-      begin
-        PageModeArea := StrToPoint(Printer.PageModeArea);
-        BarcodeSize := GetBarcodeSize(Barcode);
-        R.Left := PageModeArea.X - BarcodeSize.X;
-        R.Right := PageModeArea.X;
-        R.Top := 0;
-        R.Bottom := BarcodeSize.Y*2;
-        Printer.PageModePrintArea := RectToStr(R);
-        Printer.PrintNormal(PTR_S_RECEIPT, CRLF);
-      end;
-      PrintBarcodeEsc(Barcode);
-      if FPageMode then
-      begin
-        R.Left := 0;
-        R.Right := R.Right - BarcodeSize.X;
-        R.Top := 0;
-        R.Bottom := BarcodeSize.Y*2;
-        Printer.PageModePrintArea := RectToStr(R);
-      end;
-    end;
-    STYLE_BARCODE:
-    begin
-      Barcode := StrToBarcode(Item.Text);
-      PrintBarcode2(Barcode);
-    end;
-    STYLE_START_PM:
-    begin
-      FPageMode := True;
-      Printer.PageModePrint(PTR_PM_PAGE_MODE);
-    end;
-    STYLE_END_PM:
-    begin
-      FPageMode := False;
-      Printer.PageModePrint(PTR_PM_NORMAL);
-    end;
+    STYLE_QR_CODE: PrintDocItemQR(Item);
+    STYLE_QR_CODE_PM: PrintDocItemQRPM(Item);
+    STYLE_BARCODE: PrintDocItemBarcode(Item);
   else
-    Text := Item.Text;
-    FPrefix := '';
-    // DWDH
-    if Item.Style = STYLE_DWIDTH_HEIGHT then
-    begin
-      if FCapRecDwideDhigh then
-        FPrefix := ESC_DoubleHighWide;
-    end;
-    // BOLD
-    if Item.Style = STYLE_BOLD then
+    PrintDocItemText(Item);
+  end;
+end;
+
+function TWebkassaImpl.GetBarcodeSize(Barcode: TBarcodeRec): TPoint;
+var
+  Bitmap: TBitmap;
+begin
+  Bitmap := TBitmap.Create;
+  try
+    RenderBarcodeRec(Barcode, Bitmap);
+    Result.X := Bitmap.Width * 2;
+    Result.Y := Bitmap.Height * 2;
+  finally
+    Bitmap.Free;
+  end;
+end;
+
+procedure TWebkassaImpl.PrintDocItemBarcode(Item: TDocItem);
+begin
+  EndPageMode;
+  PrintBarcode2(StrToBarcode(Item.Text));
+end;
+
+procedure TWebkassaImpl.PrintDocItemText(Item: TDocItem);
+var
+  Text: WideString;
+  LineStyles: TLineStyles;
+begin
+  Text := Item.Text;
+
+  FPrefix := '';
+  LineStyles := [];
+  if IsFontB then
+    LineStyles := [lsFontB];
+  case Item.Style of
+    STYLE_BOLD:
     begin
       if FCapRecBold then
+      begin
         FPrefix := ESC_Bold;
+        LineStyles := LineStyles + [lsBold];
+      end;
     end;
-
-    Text := Params.GetTranslationText(Text);
+    STYLE_DWIDTH_HEIGHT:
+    begin
+      if FCapRecDwideDhigh then
+      begin
+        FPrefix := ESC_DoubleHighWide;
+        LineStyles := LineStyles + [lsDoubleWidth, lsDoubleHeight];
+      end;
+    end;
+  end;
+  Text := Params.GetTranslationText(Text);
+  if FPageMode then
+  begin
     PtrPrintNormal(PTR_S_RECEIPT, FPrefix + Text);
+    FPageBuffer.LineWidth := FPrinter.RecLineWidth;
+    FPageBuffer.LineSpacing := 5;// FPrinter.RecLineSpacing;
+    FPageBuffer.Print(Text, LineStyles);
+    if FPageBuffer.GetHeight >= (FPrintArea.Bottom div 2) then
+    begin
+      EndPageMode;
+    end;
+  end else
+  begin
+    PtrPrintNormal(PTR_S_RECEIPT, Text);
+  end;
+end;
+
+procedure TWebkassaImpl.PrintDocItemQRPM(Item: TDocItem);
+var
+  LineHeight: Integer;
+  Barcode: TBarcodeRec;
+  BarcodeSize: TPoint;
+  PageModeArea: TPoint;
+begin
+  Barcode.Data := Item.Text;
+  Barcode.Text := Item.Text;
+  Barcode.Width := 0;
+  Barcode.Height := 0;
+  Barcode.BarcodeType := DIO_BARCODE_QRCODE;
+  Barcode.ModuleWidth := 4;
+  Barcode.Alignment := BARCODE_ALIGNMENT_CENTER;
+  Barcode.Parameter1 := 0;
+  Barcode.Parameter2 := 0;
+  Barcode.Parameter3 := 0;
+  Barcode.Parameter4 := 0;
+  Barcode.Parameter5 := 0;
+  // Start page mode
+  FPageMode := True;
+  Printer.PageModePrint(PTR_PM_PAGE_MODE);
+  // PageModePrintArea for barcode
+  PageModeArea := StrToPoint(Printer.PageModeArea);
+  BarcodeSize := GetBarcodeSize(Barcode);
+  LineHeight := FPrinter.RecLineHeight + FPrinter.RecLineSpacing;
+  BarcodeSize.Y := ((BarcodeSize.Y + LineHeight-1) div LineHeight)*LineHeight;
+  FPrintArea.Left := PageModeArea.X - BarcodeSize.X;
+  FPrintArea.Right := PageModeArea.X;
+  FPrintArea.Top := 0;
+  FPrintArea.Bottom := BarcodeSize.Y*2;
+  Printer.PageModePrintArea := RectToStr(FPrintArea);
+  Printer.PrintNormal(PTR_S_RECEIPT, CRLF);
+  // Print barcode
+  PrintBarcodeEsc(Barcode);
+  // PageModePrintArea for text
+  FPrintArea.Left := 0;
+  FPrintArea.Right := FPrintArea.Right - BarcodeSize.X;
+  FPrintArea.Top := 0;
+  FPrintArea.Bottom := BarcodeSize.Y*2;
+  Printer.PageModePrintArea := RectToStr(FPrintArea);
+end;
+
+procedure TWebkassaImpl.PrintDocItemQR(Item: TDocItem);
+var
+  Barcode: TBarcodeRec;
+begin
+  Barcode.Data := Item.Text;
+  Barcode.Text := Item.Text;
+  Barcode.Width := 0;
+  Barcode.Height := 0;
+  Barcode.BarcodeType := DIO_BARCODE_QRCODE;
+  Barcode.ModuleWidth := 4;
+  Barcode.Alignment := BARCODE_ALIGNMENT_CENTER;
+  Barcode.Parameter1 := 0;
+  Barcode.Parameter2 := 0;
+  Barcode.Parameter3 := 0;
+  Barcode.Parameter4 := 0;
+  Barcode.Parameter5 := 0;
+  PrintBarcode2(Barcode);
+end;
+
+procedure TWebkassaImpl.EndPageMode;
+begin
+  if FPageMode then
+  begin
+    FPageMode := False;
+    Printer.PageModePrint(PTR_PM_NORMAL);
   end;
 end;
 

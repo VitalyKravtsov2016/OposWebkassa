@@ -97,7 +97,8 @@ uses
   OposDevice in '..\..\src\Opos\OposDevice.pas',
   duWebkassaImpl in 'units\duWebkassaImpl.pas',
   EscPrinterUtils in '..\..\src\Shared\EscPrinterUtils.pas',
-  PtrDirectIO in '..\..\src\OposWebkassa\units\PtrDirectIO.pas';
+  PtrDirectIO in '..\..\src\OposWebkassa\units\PtrDirectIO.pas',
+  PageBuffer in '..\..\src\OposWebkassa\units\PageBuffer.pas';
 
 {$R *.RES}
 

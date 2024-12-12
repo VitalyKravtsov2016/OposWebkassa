@@ -100,7 +100,8 @@ uses
   OposFiscalPrinter_1_13_Lib_TLB in '..\Opos\OposFiscalPrinter_1_13_Lib_TLB.pas',
   EscPrinterUtils in '..\Shared\EscPrinterUtils.pas',
   fmuFptrVatRate in 'Fmu\fmuFptrVatRate.pas' {fmFptrVatRate},
-  PtrDirectIO in '..\OposWebkassa\units\PtrDirectIO.pas';
+  PtrDirectIO in '..\OposWebkassa\units\PtrDirectIO.pas',
+  PageBuffer in '..\OposWebkassa\units\PageBuffer.pas';
 
 {$R *.RES}
 {$R WindowsXP.RES}

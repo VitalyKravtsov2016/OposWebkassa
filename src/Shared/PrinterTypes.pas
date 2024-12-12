@@ -43,8 +43,7 @@ const
   STYLE_QR_CODE       = 6;
   STYLE_IMAGE         = 7;
   STYLE_BARCODE       = 8;
-  STYLE_START_PM      = 9;
-  STYLE_END_PM        = 10;
+  STYLE_QR_CODE_PM    = 9;
 
   /////////////////////////////////////////////////////////////////////////////
   // Template item types

@@ -77,7 +77,8 @@ uses
   PosPrinterRongta in '..\Shared\PosPrinterRongta.pas',
   EscPrinterRongta in '..\Shared\EscPrinterRongta.pas',
   EscPrinterUtils in '..\Shared\EscPrinterUtils.pas',
-  PtrDirectIO in 'units\PtrDirectIO.pas';
+  PtrDirectIO in 'units\PtrDirectIO.pas',
+  PageBuffer in 'units\PageBuffer.pas';
 
 exports
   DllGetClassObject,
