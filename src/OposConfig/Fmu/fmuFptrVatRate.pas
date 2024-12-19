@@ -8,7 +8,7 @@ uses
   // Tnt
   TntClasses, TntRegistry, TntStdCtrls, TntComCtrls,
   // This
-  FiscalPrinterDevice, PrinterParameters, FptrTypes;
+  FiscalPrinterDevice, PrinterParameters, FptrTypes, VatRate;
 
 type
   { TfmFptrVatCode }
@@ -24,11 +24,14 @@ type
     TntLabel1: TTntLabel;
     chbVatCodeEnabled: TTntCheckBox;
     edtVatRate: TTntEdit;
+    lblTaxType: TTntLabel;
+    cbVatType: TTntComboBox;
     procedure btnAddClick(Sender: TObject);
     procedure btnDeleteClick(Sender: TObject);
     procedure ModifiedClick(Sender: TObject);
   private
     procedure UpdateItems;
+    procedure UpdateVatRate;
   public
     procedure UpdatePage; override;
     procedure UpdateObject; override;
@@ -54,6 +57,7 @@ begin
       begin
         Item := Items.Add;
         Item.Caption := IntToStr(Parameters.VatRates[i].ID);
+        Item.SubItems.Add(Parameters.VatRates[i].VatTypeText);
         Item.SubItems.Add(Format('%.2f', [Parameters.VatRates[i].Rate]));
         Item.SubItems.Add(Parameters.VatRates[i].Name);
         if i = 0 then
@@ -71,7 +75,9 @@ end;
 
 procedure TfmFptrVatRate.UpdatePage;
 begin
+  cbVatType.ItemIndex := VAT_TYPE_ZERO_TAX;
   UpdateItems;
+  UpdateVatRate;
   chbVatCodeEnabled.Checked := Parameters.VatRateEnabled;
 end;
 
@@ -83,18 +89,24 @@ end;
 procedure TfmFptrVatRate.btnAddClick(Sender: TObject);
 var
   Item: TListItem;
+  VatRate: TVatRateRec;
 begin
-  Parameters.VatRates.Add(seVatCode.Value, StrToFloat(edtVatRate.Text),
-    edtVatName.Text);
+  VatRate.ID := seVatCode.Value;
+  VatRate.VatType := cbVatType.ItemIndex;
+  VatRate.Rate := StrToFloat(edtVatRate.Text);
+  VatRate.Name := edtVatName.Text;
+  Parameters.VatRates.Add(VatRate);
 
   Item := lvVatCodes.Items.Add;
   Item.Caption := IntToStr(seVatCode.Value);
+  Item.SubItems.Add(cbVatType.Text);
   Item.SubItems.Add(edtVatRate.Text);
   Item.SubItems.Add(edtVatName.Text);
 
   Item.Focused := True;
   Item.Selected := True;
   btnDelete.Enabled := True;
+  seVatCode.Value := seVatCode.Value + 1;
   Modified;
 end;
 
@@ -124,7 +136,15 @@ end;
 
 procedure TfmFptrVatRate.ModifiedClick(Sender: TObject);
 begin
+  UpdateVatRate;
   Modified;
+end;
+
+procedure TfmFptrVatRate.UpdateVatRate;
+begin
+  edtVatRate.Enabled := cbVatType.ItemIndex = VAT_TYPE_NORMAL;
+  if cbVatType.ItemIndex <> VAT_TYPE_NORMAL then
+    edtVatRate.Text := '0';
 end;
 
 end.

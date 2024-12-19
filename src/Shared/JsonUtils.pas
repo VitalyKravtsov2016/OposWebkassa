@@ -18,6 +18,15 @@ type
     function IsRequiredField(const Field: WideString): Boolean; virtual;
   end;
 
+  { TDouble }
+
+  TDouble = class
+  public
+    Value: Double;
+    constructor Create(AValue: Double);
+  end;
+
+
   TJsonCollection = class;
 
   TJsonCollectionItem = class(TJsonPersistent)
@@ -658,7 +667,13 @@ begin
     tkClass:
     begin
       Value := TObject(GetOrdProp(Instance, PropInfo));
-      if Value = nil then Exit;
+      if Value = nil then
+      begin
+        WriteStr(Prefix + '"' + PropName + '":');
+        WriteWideString('null');
+        Result := True;
+        Exit;
+      end;
 
       if Value is TJsonCollection then
       begin
@@ -692,6 +707,14 @@ begin
             WriteProperties(TJsonPersistent(Value), Prefix + Indentation);
             WriteStr(Prefix + '}');
             Result := True;
+          end else
+          begin
+            if Value is TDouble then
+            begin
+              WriteStr(Prefix + '"' + PropName + '":');
+              WriteWideString(FloatToStr((Value as TDouble).Value));
+              Result := True;
+            end;
           end;
         end;
       end;
@@ -971,6 +994,14 @@ end;
 function TJsonPersistent.IsRequiredField(const Field: WideString): Boolean;
 begin
   Result := True;
+end;
+
+{ TDouble }
+
+constructor TDouble.Create(AValue: Double);
+begin
+  inherited Create;
+  Value := AValue;
 end;
 
 end.

@@ -16,7 +16,7 @@ uses
   // This
   LogFile, WebkassaImpl, WebkassaClient, MockPosPrinter, FileUtils,
   CustomReceipt, uLkJSON, ReceiptTemplate, SalesReceipt, DirectIOAPI,
-  DebugUtils, StringUtils, PrinterTypes, PrinterParameters;
+  DebugUtils, StringUtils, PrinterTypes, PrinterParameters, VatRate;
 
 const
   CRLF = #13#10;
@@ -82,6 +82,7 @@ type
     procedure TestNonFiscal;
     procedure OpenClaimEnable;
     procedure TestFiscalReceipt;
+    procedure TestFiscalReceipt2;
     procedure TestCoverError;
     procedure TestRecEmpty;
     procedure TestStatusUpateEvent;
@@ -109,6 +110,8 @@ const
 { TWebkassaImplTest }
 
 procedure TWebkassaImplTest.SetUp;
+var
+  VatRate: TVatRateRec;
 begin
   inherited SetUp;
   FLines := TStringList.Create;
@@ -144,8 +147,27 @@ begin
   FDriver.Params.PaymentType2 := PaymentTypeCard;
   FDriver.Params.PaymentType3 := PaymentTypeCredit;
   FDriver.Params.PaymentType4 := PaymentTypeMobile;
+
   FDriver.Params.VatRates.Clear;
-  FDriver.Params.VatRates.Add(4, 12, 'VAT 12%');
+
+  VatRate.Id := 1;
+  VatRate.Rate := 0;
+  VatRate.Name := '';
+  VatRate.VatType := VAT_TYPE_ZERO_TAX;
+  FDriver.Params.VatRates.Add(VatRate);
+
+  VatRate.Id := 2;
+  VatRate.Rate := 0;
+  VatRate.Name := '';
+  VatRate.VatType := VAT_TYPE_NO_TAX;
+  FDriver.Params.VatRates.Add(VatRate);
+
+  VatRate.Id := 4;
+  VatRate.Rate := 12;
+  VatRate.Name := 'VAT 12%';
+  VatRate.VatType := VAT_TYPE_NORMAL;
+  FDriver.Params.VatRates.Add(VatRate);
+
   FDriver.Params.VatRateEnabled := True;
 
   FDriver.Params.HeaderText :=
@@ -459,14 +481,17 @@ begin
     CheckEquals(FPTR_PS_FISCAL_RECEIPT, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
 
     FptrCheck(Driver.PrintRecItem('Item 1', 123.45, 1000, 1, 123.45, 'кг'));
+    FptrCheck(Driver.PrintRecItem('Item 2', 1.23, 1000, 2, 1.23, 'кг'));
+    FptrCheck(Driver.PrintRecItem('Item 3', 2.34, 1000, 4, 2.34, 'кг'));
 
-    FptrCheck(Driver.PrintRecTotal(123.45, 10, '0'));
-    FptrCheck(Driver.PrintRecTotal(123.45, 20, '1'));
-    FptrCheck(Driver.PrintRecTotal(123.45, 30, '2'));
-    FptrCheck(Driver.PrintRecTotal(123.45, 63.45, '3'));
+    FptrCheck(Driver.PrintRecTotal(127.02, 10, '0'));
+    FptrCheck(Driver.PrintRecTotal(127.02, 20, '1'));
+    FptrCheck(Driver.PrintRecTotal(127.02, 30, '2'));
+    FptrCheck(Driver.PrintRecTotal(127.02, 67.02, '3'));
 
     CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
     CheckEquals(OPOS_E_EXTENDED, Driver.EndFiscalReceipt(False));
+
     ResultCode := Driver.GetPropertyNumber(PIDX_ResultCode);
     CheckEquals(OPOS_E_EXTENDED, ResultCode, 'ResultCode');
     ResultCodeExtended := Driver.GetPropertyNumber(PIDX_ResultCodeExtended);
@@ -476,6 +501,47 @@ begin
   finally
     ErrorResult.Free;
   end;
+end;
+
+procedure TWebkassaImplTest.TestFiscalReceipt2;
+var
+  JsonText: string;
+  ExpectedText: string;
+begin
+  OpenClaimEnable;
+
+  CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
+  CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
+  CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
+
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+  CheckEquals(FPTR_PS_FISCAL_RECEIPT, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+
+  // ExternalCheckNumber
+  FptrCheck(FDriver.DirectIO2(DIO_SET_DRIVER_PARAMETER,
+    DriverParameterExternalCheckNumber, 'ExternalCheckNumber'));
+
+  FptrCheck(Driver.PrintRecItem('Item 1', 123.45, 1000, 1, 123.45, 'кг'));
+  FptrCheck(Driver.PrintRecItem('Item 2', 1.23, 1000, 2, 1.23, 'кг'));
+  FptrCheck(Driver.PrintRecItem('Item 3', 2.34, 1000, 4, 2.34, 'кг'));
+
+  FptrCheck(Driver.PrintRecTotal(127.02, 10, '0'));
+  FptrCheck(Driver.PrintRecTotal(127.02, 20, '1'));
+  FptrCheck(Driver.PrintRecTotal(127.02, 30, '2'));
+  FptrCheck(Driver.PrintRecTotal(127.02, 67.02, '3'));
+
+  CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+  FptrCheck(Driver.EndFiscalReceipt(False));
+
+  JsonText := UTF8Decode(Driver.Client.CommandJson);
+  ExpectedText := UTF8Decode(ReadFileData(GetModulePath + 'FiscalReceipt.json'));
+  if JsonText <> ExpectedText then
+  begin
+    WriteFileData(GetModulePath + 'FiscalReceipt1.json', ExpectedText);
+    WriteFileData(GetModulePath + 'FiscalReceipt2.json', JsonText);
+  end;
+  CheckEquals(ExpectedText, JsonText, 'Driver.Client.CommandJson');
 end;
 
 const
@@ -1407,9 +1473,14 @@ begin
   FptrCheck(Driver.DirectIO2(30, 73, '33'));
   FptrCheck(Driver.DirectIO2(30, 81, '5'));
   FptrCheck(Driver.DirectIO2(30, 80, '000000487435878"*y35ebWE2Slls'));
-  FptrCheck(Driver.PrintRecItem('С'#$18#$13#$10'Р'#$15'ТЫ WINSTON XSTYLE SILVER', 870, 1000, 4, 870, 'шт'));
+
+  FptrCheck(Driver.PrintRecItem('С'#$18#$13#$10'Р'#$15'ТЫ WINSTON XSTYLE SILVER', 870, 1000, 1, 870, 'шт'));
   FptrCheck(Driver.DirectIO2(120, 0, '2402209000'));
-  FptrCheck(Driver.PrintRecTotal(2920, 5000, '0'));
+
+  FptrCheck(Driver.PrintRecItem('Item 3', 870, 1000, 2, 870, 'шт'));
+
+  FptrCheck(Driver.PrintRecTotal(3790, 5000, '0'));
+
   FptrCheck(Driver.PrintRecMessage(#$1E'ператор: Танекенова  '#$10'йнур'));
   FptrCheck(Driver.PrintRecMessage('Транз.:    2965055 '));
   FptrCheck(Driver.DirectIO2(30, 302, '1'));

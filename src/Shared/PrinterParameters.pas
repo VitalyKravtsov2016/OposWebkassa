@@ -380,6 +380,8 @@ begin
 end;
 
 procedure TPrinterParameters.SetDefaults;
+var
+  VatRate: TVatRateRec;
 begin
   Logger.Debug('TPrinterParameters.SetDefaults');
 
@@ -411,7 +413,11 @@ begin
   AmountDecimalPlaces := DefAmountDecimalPlaces;
   // VatRates
   VatRates.Clear;
-  VatRates.Add(1, 12, 'ÍÄÑ 12%'); // ÍÄÑ 12%
+  VatRate.ID := 1;
+  VatRate.Rate := 12;
+  VatRate.Name := 'ÍÄÑ 12%';
+  VatRate.VatType := VAT_TYPE_NORMAL;
+  VatRates.Add(VatRate);
 
   FRemoteHost := DefRemoteHost;
   FRemotePort := DefRemotePort;

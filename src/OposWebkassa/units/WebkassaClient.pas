@@ -484,7 +484,7 @@ type
   private
     FCount: Double;
     FPrice: Currency;
-    FTaxPercent: Double;
+    FTaxPercent: TDouble;
     FTax: Currency;
     FTaxType: Integer;
     FPositionName: WideString;
@@ -500,10 +500,13 @@ type
     FGTIN: WideString;
     FProductld: Integer;
     FWarehouseType: Integer;
+    procedure SetTaxPercent(const Value: TDouble);
+  public
+    destructor Destroy; override;
   published
     property Count: Double read FCount write FCount;
     property Price: Currency read FPrice write FPrice;
-    property TaxPercent: Double read FTaxPercent write FTaxPercent;
+    property TaxPercent: TDouble read FTaxPercent write SetTaxPercent;
     property Tax: Currency read FTax write FTax;
     property TaxType: Integer read FTaxType write FTaxType;
     property PositionName: WideString read FPositionName write FPositionName;
@@ -3550,6 +3553,20 @@ begin
     FTaxPayerIN := Src.TaxPayerIN;
     FTaxPayerName := Src.TaxPayerName;
   end;
+end;
+
+{ TTicketItem }
+
+destructor TTicketItem.Destroy;
+begin
+  FTaxPercent.Free;
+  inherited Destroy;
+end;
+
+procedure TTicketItem.SetTaxPercent(const Value: TDouble);
+begin
+  FTaxPercent.Free;
+  FTaxPercent := Value;
 end;
 
 initialization

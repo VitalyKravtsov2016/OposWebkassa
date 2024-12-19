@@ -1,6 +1,6 @@
 object fmPrinter: TfmPrinter
-  Left = 577
-  Top = 205
+  Left = 596
+  Top = 394
   Width = 471
   Height = 502
   Caption = #1055#1088#1080#1085#1090#1077#1088
@@ -64,7 +64,7 @@ object fmPrinter: TfmPrinter
     Top = 8
     Width = 441
     Height = 345
-    ActivePage = tsCommonParams
+    ActivePage = tsSerialParams
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 0
     object tsCommonParams: TTntTabSheet

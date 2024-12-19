@@ -14,7 +14,7 @@ uses
   // This
   LogFile, WebkassaImpl, WebkassaClient, MockPosPrinter, PrinterParameters,
   SerialPort, DirectIOAPI, FileUtils, oleFiscalPrinter, StringUtils,
-  PosPrinterRongta;
+  PosPrinterRongta, VatRate;
 
 const
   CRLF = #13#10;
@@ -120,6 +120,8 @@ begin
 end;
 
 procedure TWebkassaImplTest.SetUp;
+var
+  VatRate: TVatRateRec;
 begin
   inherited SetUp;
   if Printer = nil then
@@ -168,7 +170,11 @@ begin
     Params.VATNumber := '7654321';
     Params.AmountDecimalPlaces := 2;
     Params.VatRates.Clear;
-    Params.VatRates.Add(1, 12, 'ÍÄÑ 12%');
+
+    VatRate.Id := 1;
+    VatRate.Rate := 12;
+    VatRate.Name := 'VAT 12%';
+    Params.VatRates.Add(VatRate);
 
   (*
     // Network
@@ -691,9 +697,15 @@ end;
 
 
 procedure TWebkassaImplTest.TestFiscalReceiptWithVAT;
+var
+  VatRate: TVatRateRec;
 begin
   Params.VatRates.Clear;
-  Params.VatRates.Add(4, 12, 'Tax1');
+  VatRate.ID := 4;
+  VatRate.Rate := 12;
+  VatRate.Name := 'Tax1';
+  VatRate.VatType := VAT_TYPE_NORMAL;
+  Params.VatRates.Add(VatRate);
   Params.VatRateEnabled := True;
   Params.RoundType := RoundTypeItems;
 
@@ -722,9 +734,15 @@ begin
 end;
 
 procedure TWebkassaImplTest.TestFiscalReceiptWithAdjustments;
+var
+  VatRate: TVatRateRec;
 begin
   Params.VatRates.Clear;
-  Params.VatRates.Add(4, 12, 'Tax1');
+  VatRate.ID := 4;
+  VatRate.Rate := 12;
+  VatRate.Name := 'Tax1';
+  VatRate.VatType := VAT_TYPE_NORMAL;
+  Params.VatRates.Add(VatRate);
   Params.VatRateEnabled := True;
   Params.RoundType := RoundTypeNone;
 
@@ -763,9 +781,15 @@ begin
 end;
 
 procedure TWebkassaImplTest.TestFiscalReceiptWithAdjustments2;
+var
+  VatRate: TVatRateRec;
 begin
   Params.VatRates.Clear;
-  Params.VatRates.Add(4, 12, 'Tax1');
+  VatRate.ID := 4;
+  VatRate.Rate := 12;
+  VatRate.Name := 'Tax1';
+  VatRate.VatType := VAT_TYPE_NORMAL;
+  Params.VatRates.Add(VatRate);
   Params.VatRateEnabled := True;
   Params.RoundType := RoundTypeTotal;
 
@@ -804,9 +828,15 @@ begin
 end;
 
 procedure TWebkassaImplTest.TestFiscalReceiptWithAdjustments3;
+var
+  VatRate: TVatRateRec;
 begin
   Params.VatRates.Clear;
-  Params.VatRates.Add(4, 12, 'Tax1');
+  VatRate.ID := 4;
+  VatRate.Rate := 12;
+  VatRate.Name := 'Tax1';
+  VatRate.VatType := VAT_TYPE_NORMAL;
+  Params.VatRates.Add(VatRate);
   Params.VatRateEnabled := True;
   Params.RoundType := RoundTypeItems;
 

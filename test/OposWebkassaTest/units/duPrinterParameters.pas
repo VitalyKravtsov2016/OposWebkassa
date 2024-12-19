@@ -10,7 +10,8 @@ uses
   // Tnt
   TntClasses,
   // This
-  PrinterParameters, PrinterParametersReg, LogFile, StringUtils, FileUtils;
+  PrinterParameters, PrinterParametersReg, LogFile, StringUtils, FileUtils,
+  VatRate;
 
 type
   { TPrinterParametersTest }
@@ -54,6 +55,8 @@ begin
 end;
 
 procedure TPrinterParametersTest.SetNonDefaultParams;
+var
+  VatRate: TVatRateRec;
 begin
   FParams.NumHeaderLines := 2;
   FParams.NumTrailerLines := 3;
@@ -70,8 +73,19 @@ begin
   FParams.PrinterName := '2138e09uhi432uy';
   FParams.PrinterType := 0;
   FParams.VatRates.Clear;
-  FParams.VatRates.Add(123, 34.45, '2j3erkuy237');
-  FParams.VatRates.Add(546, 34.67, '2j3erkuy237');
+
+  VatRate.Id := 123;
+  VatRate.Rate := 34.45;
+  VatRate.Name := '2j3erkuy237';
+  VatRate.VatType := VAT_TYPE_NORMAL;
+  FParams.VatRates.Add(VatRate);
+
+  VatRate.Id := 546;
+  VatRate.Rate := 34.67;
+  VatRate.Name := '2j3erkuy237';
+  VatRate.VatType := VAT_TYPE_NORMAL;
+  FParams.VatRates.Add(VatRate);
+
   FParams.VatRateEnabled := False;
   FParams.PaymentType2 := 0;
   FParams.PaymentType3 := 0;

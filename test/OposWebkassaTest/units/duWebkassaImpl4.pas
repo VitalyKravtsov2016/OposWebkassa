@@ -16,7 +16,7 @@ uses
   LogFile, WebkassaImpl, WebkassaClient, MockPosPrinter, FileUtils,
   CustomReceipt, uLkJSON, ReceiptTemplate, SalesReceipt, DirectIOAPI,
   DebugUtils, StringUtils, PrinterTypes, PrinterParameters,
-  RawPrinterPort;
+  RawPrinterPort, VatRate;
 
 const
   CRLF = #13#10;
@@ -63,6 +63,8 @@ end;
 { TWebkassaImplTest4 }
 
 procedure TWebkassaImplTest4.SetUp;
+var
+  VatRate: TVatRateRec;
 begin
   inherited SetUp;
   FDriver := TWebkassaImpl.Create(nil);
@@ -94,7 +96,12 @@ begin
   FDriver.Params.PaymentType3 := PaymentTypeCredit;
   FDriver.Params.PaymentType4 := PaymentTypeMobile;
   FDriver.Params.VatRates.Clear;
-  FDriver.Params.VatRates.Add(4, 12, 'VAT 12%');
+
+  VatRate.Id := 4;
+  VatRate.Rate := 12;
+  VatRate.Name := 'VAT 12%';
+  VatRate.VatType := VAT_TYPE_NORMAL;
+  FDriver.Params.VatRates.Add(VatRate);
   FDriver.Params.VatRateEnabled := True;
 
   FDriver.Params.HeaderText :=

@@ -3464,13 +3464,20 @@ begin
         if VatRate = nil then
         begin
           Position.Tax := 0;
-          Position.TaxPercent := 0;
+          Position.TaxPercent := TDouble.Create(0);
           Position.TaxType := TaxTypeNoTax;
         end else
         begin
           Position.Tax := Abs(VatRate.GetTax(Item.GetTotalAmount(Params.RoundType)));
           Position.TaxType := TaxTypeVAT;
-          Position.TaxPercent := VatRate.Rate;
+          Position.TaxPercent := TDouble.Create(VatRate.Rate);
+          if VatRate.VatType in [VAT_TYPE_ZERO_TAX, VAT_TYPE_NO_TAX] then
+          begin
+            Position.TaxType := TaxTypeNoTax;
+            Position.TaxPercent := TDouble.Create(0);
+          end;
+          if VatRate.VatType = VAT_TYPE_NO_TAX then
+            Position.TaxPercent := nil;
         end;
       end;
     end;
