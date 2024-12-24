@@ -29,10 +29,10 @@ type
     procedure lvUnitNamesSelectItem(Sender: TObject; Item: TListItem;
       Selected: Boolean);
   private
-    procedure UpdateItems;
-    procedure UpdadeSrvNames;
-    function CreateDriver: TWebkassaClient;
     procedure UpdateSrvUnits;
+    procedure UpdadeSrvNames;
+    procedure UpdateListItems;
+    function CreateDriver: TWebkassaClient;
   public
     procedure UpdatePage; override;
     procedure UpdateObject; override;
@@ -59,7 +59,7 @@ begin
   Result := Driver;
 end;
 
-procedure TfmFptrUnitName.UpdateItems;
+procedure TfmFptrUnitName.UpdateListItems;
 var
   i: Integer;
   Item: TListItem;
@@ -132,7 +132,7 @@ end;
 
 procedure TfmFptrUnitName.UpdatePage;
 begin
-  UpdateItems;
+  UpdateListItems;
   UpdadeSrvNames;
   btnAdd.Enabled := (edtAppUnitName.Text <> '')and(cbSrvUnitName.Text <> '');
   btnDelete.Enabled := lvUnitNames.Selected <> nil;

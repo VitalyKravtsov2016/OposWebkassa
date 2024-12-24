@@ -58,10 +58,6 @@ procedure TPrinterParametersTest.SetNonDefaultParams;
 var
   VatRate: TVatRateRec;
 begin
-  FParams.NumHeaderLines := 2;
-  FParams.NumTrailerLines := 3;
-  FParams.HeaderText := 'HLine 1' + CRLF + 'HLine 2';
-  FParams.TrailerText := 'TLine 1' + CRLF + 'TLine 2' + CRLF + 'TLine 3';
   FParams.LogMaxCount := 123;
   FParams.LogFileEnabled := False;
   FParams.LogFilePath := '97898798';
@@ -72,20 +68,6 @@ begin
   FParams.CashboxNumber := '2de9h9347r';
   FParams.PrinterName := '2138e09uhi432uy';
   FParams.PrinterType := 0;
-  FParams.VatRates.Clear;
-
-  VatRate.Id := 123;
-  VatRate.Rate := 34.45;
-  VatRate.Name := '2j3erkuy237';
-  VatRate.VatType := VAT_TYPE_NORMAL;
-  FParams.VatRates.Add(VatRate);
-
-  VatRate.Id := 546;
-  VatRate.Rate := 34.67;
-  VatRate.Name := '2j3erkuy237';
-  VatRate.VatType := VAT_TYPE_NORMAL;
-  FParams.VatRates.Add(VatRate);
-
   FParams.VatRateEnabled := False;
   FParams.PaymentType2 := 0;
   FParams.PaymentType3 := 0;
@@ -94,10 +76,30 @@ begin
   FParams.VATNumber := '1234';
   FParams.TranslationEnabled := True;
   FParams.OfflineText := 'OfflineText';
+  FParams.ReplaceDataMatrixWithQRCode := True;
+  // Header
+  FParams.NumHeaderLines := 2;
+  FParams.HeaderText := 'HLine 1' + CRLF + 'HLine 2';
+  // Trailer
+  FParams.NumTrailerLines := 3;
+  FParams.TrailerText := 'TLine 1' + CRLF + 'TLine 2' + CRLF + 'TLine 3';
+  // VatRates
+  FParams.VatRates.Clear;
+  VatRate.Id := 123;
+  VatRate.Rate := 34.45;
+  VatRate.Name := '2j3erkuy237';
+  VatRate.VatType := VAT_TYPE_NORMAL;
+  FParams.VatRates.Add(VatRate);
+  VatRate.Id := 546;
+  VatRate.Rate := 34.67;
+  VatRate.Name := '2j3erkuy237';
+  VatRate.VatType := VAT_TYPE_NORMAL;
+  FParams.VatRates.Add(VatRate);
+  // Units
   FParams.Units.Clear;
   FParams.Units.AddItem(1, '123', '234', '345');
   FParams.Units.AddItem(2, '876', '547', '875');
-  FParams.ReplaceDataMatrixWithQRCode := True;
+  // UnitNames
   FParams.UnitNames.Clear;
   FParams.AddUnitName('л.', 'литр', 1);
   FParams.AddUnitName('Л', 'литр', 2);
@@ -107,13 +109,6 @@ procedure TPrinterParametersTest.CheckNonDefaultParams;
 begin
   CheckEquals(2, FParams.NumHeaderLines, 'NumHeaderLines');
   CheckEquals(3, FParams.NumTrailerLines, 'NumTrailerLines');
-  CheckEquals(2, Length(FParams.Header), 'Length(FParams.Header)');
-  CheckEquals(3, Length(FParams.Trailer), 'Length(FParams.Trailer)');
-  CheckEquals('HLine 1', FParams.Header[0], 'FParams.Header[0]');
-  CheckEquals('HLine 2', FParams.Header[1], 'FParams.Header[1]');
-  CheckEquals('TLine 1', FParams.Trailer[0], 'FParams.Trailer[0]');
-  CheckEquals('TLine 2', FParams.Trailer[1], 'FParams.Trailer[1]');
-  CheckEquals('TLine 3', FParams.Trailer[2], 'FParams.Trailer[2]');
   CheckEquals(123, FParams.LogMaxCount, 'LogMaxCount');
   CheckEquals(False, FParams.LogFileEnabled, 'LogFileEnabled');
   CheckEquals('97898798', FParams.LogFilePath, 'LogFilePath');
@@ -124,10 +119,6 @@ begin
   CheckEquals('2de9h9347r', FParams.CashboxNumber, 'CashboxNumber');
   CheckEquals('2138e09uhi432uy', FParams.PrinterName, 'PrinterName');
   CheckEquals(0, FParams.PrinterType, 'PrinterType');
-  CheckEquals(2, FParams.VatRates.Count, 'VatRates.Count');
-  CheckEquals(123, FParams.VatRates[0].ID, 'VatRates[0].ID');
-  CheckEquals(34.45, FParams.VatRates[0].Rate, 0.001, 'VatRates[0].Rate');
-  CheckEquals('2j3erkuy237', FParams.VatRates[0].Name, 'VatRates[0].Name');
   CheckEquals(False, FParams.VatRateEnabled, 'VatRateEnabled');
   CheckEquals(0, FParams.PaymentType2, 'PaymentType2');
   CheckEquals(0, FParams.PaymentType3, 'PaymentType3');
@@ -136,6 +127,21 @@ begin
   CheckEquals('1234', FParams.VATNumber, 'VATNumber');
   CheckEquals(True, FParams.TranslationEnabled, 'TranslationEnabled');
   CheckEquals('OfflineText', FParams.OfflineText, 'OfflineText');
+  // Header
+  CheckEquals(2, Length(FParams.Header), 'Length(FParams.Header)');
+  CheckEquals('HLine 1', FParams.Header[0], 'FParams.Header[0]');
+  CheckEquals('HLine 2', FParams.Header[1], 'FParams.Header[1]');
+  // Trailer
+  CheckEquals(3, Length(FParams.Trailer), 'Length(FParams.Trailer)');
+  CheckEquals('TLine 1', FParams.Trailer[0], 'FParams.Trailer[0]');
+  CheckEquals('TLine 2', FParams.Trailer[1], 'FParams.Trailer[1]');
+  CheckEquals('TLine 3', FParams.Trailer[2], 'FParams.Trailer[2]');
+  // VatRates
+  CheckEquals(2, FParams.VatRates.Count, 'VatRates.Count');
+  CheckEquals(123, FParams.VatRates[0].ID, 'VatRates[0].ID');
+  CheckEquals(34.45, FParams.VatRates[0].Rate, 0.001, 'VatRates[0].Rate');
+  CheckEquals('2j3erkuy237', FParams.VatRates[0].Name, 'VatRates[0].Name');
+  // Units
   CheckEquals(2, FParams.Units.Count, 'Units.Count');
   CheckEquals(1, FParams.Units[0].Code, 'Units[0].Code');
   CheckEquals('123', FParams.Units[0].NameRu, 'Units[0].NameRu');
@@ -146,17 +152,15 @@ begin
   CheckEquals('547', FParams.Units[1].NameKz, 'Units[1].NameKz');
   CheckEquals('875', FParams.Units[1].NameEn, 'Units[1].NameEn');
   CheckEquals(True, FParams.ReplaceDataMatrixWithQRCode, 'ReplaceDataMatrixWithQRCode');
+  // UnitNames
   CheckEquals(2, FParams.UnitNames.Count, 'UnitNames.Count');
-
   CheckEquals('л.', FParams.UnitNames[0].AppName, 'UnitNames[0].AppName');
   CheckEquals('литр', FParams.UnitNames[0].SrvName, 'UnitNames[0].SrvName');
   CheckEquals(1, FParams.UnitNames[0].SrvCode, 'UnitNames[0].SrvCode');
-
   CheckEquals('Л', FParams.UnitNames[1].AppName, 'UnitNames[1].AppName');
   CheckEquals('литр', FParams.UnitNames[1].SrvName, 'UnitNames[1].SrvName');
   CheckEquals(2, FParams.UnitNames[1].SrvCode, 'UnitNames[1].SrvCode');
 end;
-
 
 procedure TPrinterParametersTest.CheckDefaultParams;
 begin

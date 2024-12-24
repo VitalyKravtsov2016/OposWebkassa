@@ -27,6 +27,8 @@ type
     procedure SaveIBTParameters(const DeviceName: WideString);
 
     property Parameters: TPrinterParameters read FParameters;
+    procedure LoadVatRates(const DeviceName: WideString);
+    procedure LoadUnitNames(const DeviceName: WideString);
   public
     constructor Create(AParameters: TPrinterParameters; ALogger: ILogFile);
 
@@ -39,6 +41,7 @@ type
   end;
 
 procedure DeleteParametersReg(const DeviceName: WideString; Logger: ILogFile);
+
 procedure LoadParametersReg(Parameters: TPrinterParameters; const DeviceName: WideString;
   Logger: ILogFile);
 
@@ -149,14 +152,8 @@ end;
 
 procedure TPrinterParametersReg.LoadSysParameters(const DeviceName: WideString);
 var
-  i: Integer;
   Reg: TTntRegistry;
-  Names: TTntStrings;
   KeyName: WideString;
-  VatRate: TVatRateRec;
-  AppName: WideString;
-  SrvName: WideString;
-  SrvCode: Integer;
 begin
   Logger.Debug('TPrinterParametersReg.LoadSysParameters', [DeviceName]);
 
@@ -305,69 +302,96 @@ begin
       if Reg.ValueExists('ReplaceDataMatrixWithQRCode') then
         Parameters.ReplaceDataMatrixWithQRCode := Reg.ReadBool('ReplaceDataMatrixWithQRCode');
 
-
       Reg.CloseKey;
     end;
     // VatRates
-    if Reg.OpenKey(KeyName + '\' + REGSTR_KEY_VATRATES, False) then
-    begin
-      Parameters.VatRates.Clear;
-      Names := TTntStringList.Create;
-      try
-        Reg.GetKeyNames(Names);
-        Reg.CloseKey;
-
-        for i := 0 to Names.Count-1 do
-        begin
-          if Reg.OpenKey(KeyName + '\' + REGSTR_KEY_VATRATES, False) then
-          begin
-            if Reg.OpenKey(Names[i], False) then
-            begin
-              VatRate.ID := Reg.ReadInteger('ID');
-              VatRate.Rate := Reg.ReadFloat('Rate');
-              VatRate.Name := Reg.ReadString('Name');
-              VatRate.VatType := Reg.ReadInteger('VatType');
-              Parameters.VatRates.Add(VatRate);
-              Reg.CloseKey;
-            end;
-          end;
-        end;
-      finally
-        Names.Free;
-      end;
-    end;
+    LoadVatRates(DeviceName);
     // UnitNames
-    if Reg.OpenKey(KeyName + '\' + REGSTR_KEY_UNITNAMES, False) then
-    begin
-      Parameters.UnitNames.Clear;
-      Names := TTntStringList.Create;
-      try
-        Reg.GetKeyNames(Names);
-        Reg.CloseKey;
-
-        for i := 0 to Names.Count-1 do
-        begin
-          if Reg.OpenKey(KeyName + '\' + REGSTR_KEY_UNITNAMES, False) then
-          begin
-            if Reg.OpenKey(Names[i], False) then
-            begin
-              AppName := Reg.ReadString('AppName');
-              SrvName := Reg.ReadString('SrvName');
-              SrvCode := Reg.ReadInteger('SrvCode');
-              Parameters.AddUnitName(AppName, SrvName, SrvCode);
-              Reg.CloseKey;
-            end;
-          end;
-        end;
-      finally
-        Names.Free;
-      end;
-    end;
+    LoadUnitNames(DeviceName);
   except
     on E: Exception do
       Logger.Error('TPrinterParametersReg.LoadSysParameters', E);
   end;
   Reg.Free;
+end;
+
+procedure TPrinterParametersReg.LoadUnitNames(const DeviceName: WideString);
+var
+  i: Integer;
+  Reg: TTntRegistry;
+  Names: TTntStrings;
+  KeyName: WideString;
+  Data: TUnitNameRec;
+begin
+  Parameters.UnitNames.Clear;
+
+  Reg := TTntRegistry.Create;
+  Names := TTntStringList.Create;
+  try
+    Reg.Access := KEY_READ;
+    Reg.RootKey := HKEY_LOCAL_MACHINE;
+    KeyName := GetSysKeyName(DeviceName) + '\' + REGSTR_KEY_UNITNAMES;
+    if Reg.OpenKey(KeyName, False) then
+    begin
+      Reg.GetKeyNames(Names);
+      Reg.CloseKey;
+    end;
+
+    for i := 0 to Names.Count-1 do
+    begin
+      if Reg.OpenKey(KeyName + '\' + Names[i], False) then
+      begin
+        Data.AppName := Reg.ReadString('AppName');
+        Data.SrvName := Reg.ReadString('SrvName');
+        Data.SrvCode := Reg.ReadInteger('SrvCode');
+        Parameters.AddUnitName(Data.AppName, Data.SrvName, Data.SrvCode);
+        Reg.CloseKey;
+      end;
+    end;
+  finally
+    Reg.Free;
+    Names.Free;
+  end;
+end;
+
+procedure TPrinterParametersReg.LoadVatRates(const DeviceName: WideString);
+var
+  i: Integer;
+  Reg: TTntRegistry;
+  Names: TTntStrings;
+  KeyName: WideString;
+  VatRate: TVatRateRec;
+begin
+  Parameters.VatRates.Clear;
+
+  Reg := TTntRegistry.Create;
+  Names := TTntStringList.Create;
+  try
+    Reg.Access := KEY_READ;
+    Reg.RootKey := HKEY_LOCAL_MACHINE;
+    KeyName := GetSysKeyName(DeviceName) + '\' + REGSTR_KEY_VATRATES;
+    if Reg.OpenKey(KeyName, False) then
+    begin
+      Reg.GetKeyNames(Names);
+      Reg.CloseKey;
+    end;
+
+    for i := 0 to Names.Count-1 do
+    begin
+      if Reg.OpenKey(KeyName + '\' + Names[i], False) then
+      begin
+        VatRate.ID := Reg.ReadInteger('ID');
+        VatRate.Rate := Reg.ReadFloat('Rate');
+        VatRate.Name := Reg.ReadString('Name');
+        VatRate.VatType := Reg.ReadInteger('VatType');
+        Parameters.VatRates.Add(VatRate);
+        Reg.CloseKey;
+      end;
+    end;
+  finally
+    Reg.Free;
+    Names.Free;
+  end;
 end;
 
 procedure TPrinterParametersReg.SaveSysParameters(const DeviceName: WideString);

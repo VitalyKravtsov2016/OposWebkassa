@@ -136,13 +136,23 @@ const
   TranslationNameKaz = 'KAZ';
 
 type
-  { TUnitName }
+  { TUnitNameRec }
 
-  TUnitName = class(TCollectionItem)
-  public
+  TUnitNameRec = record
     AppName: WideString;
     SrvName: WideString;
     SrvCode: Integer;
+  end;
+
+  { TUnitName }
+
+  TUnitName = class(TCollectionItem)
+  private
+    FData: TUnitNameRec;
+  public
+    property AppName: WideString read FData.AppName;
+    property SrvName: WideString read FData.SrvName;
+    property SrvCode: Integer read FData.SrvCode;
   end;
 
   { TUnitNames }
@@ -814,6 +824,7 @@ procedure TPrinterParameters.AddUnitName(const AppName, SrvName: string;
   SrvCode: Integer);
 var
   Item: TUnitName;
+  Data: TUnitNameRec;
 begin
   if AppName = '' then
     raise Exception.Create('Ќазвание единицы приложени€ не может быть пустым');
@@ -822,10 +833,11 @@ begin
   ItemByAppName(AppName) <> nil then
     raise Exception.CreateFmt('—оответствие дл€ единицы "%s" уже задано', [AppName]);
 
+  Data.AppName := AppName;
+  Data.SrvName := SrvName;
+  Data.SrvCode := SrvCode;
   Item := TUnitName.Create(FUnitNames);
-  Item.AppName := AppName;
-  Item.SrvName := SrvName;
-  Item.SrvCode := SrvCode;
+  Item.FData := Data;
 end;
 
 { TUnitNames }

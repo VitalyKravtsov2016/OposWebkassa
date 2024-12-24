@@ -1,23 +1,19 @@
 [Closed Files]
-File_0=SourceModule,'D:\Projects\OposWebkassa\test\OposWebkassaTest\units\duWebkassaImpl.pas',0,1,1,1,1,0,0
-File_1=SourceModule,'D:\Projects\OposWebkassa\src\OposWebkassa\units\WebkassaClient.pas',0,1,1,1,16,0,0
-File_2=SourceModule,'D:\Projects\OposWebkassa\src\OposWebkassa\units\WebkassaImpl.pas',0,1,3453,27,3464,0,0
-File_3=SourceModule,'D:\Projects\OposWebkassa\src\Shared\JsonUtils.pas',0,1,12,19,25,0,0
-File_4=SourceModule,'D:\Projects\OposWebkassa\test\OposWebkassaTest\units\duWebkassaImpl4.pas',0,1,39,15,39,0,0
-File_5=SourceModule,'D:\Projects\OposWebkassa\src\Shared\VatRate.pas',0,1,1,18,15,0,0
-File_6=SourceModule,'D:\Projects\OposWebkassa\test\OposWebkassaTest\units\duPrinterParameters.pas',0,1,71,14,81,0,0
-File_7=SourceModule,'D:\Projects\OposWebkassa\test\WebkassaAccTest\units\duWebkassaImpl.pas',0,1,1,1,1,0,0
-File_8=SourceModule,'D:\Projects\OposWebkassa\src\Shared\PrinterParameters.pas',0,1,411,1,420,0,0
-File_9=SourceModule,'D:\Projects\OposWebkassa\test\WebkassaAccTest\units\duWebkassaClient.pas',0,1,356,25,367,0,0
+File_0=SourceModule,'D:\Projects\OposWebkassa\src\OposConfig\Fmu\fmuFptrUnitName.pas',0,1,62,77,81,1,0
+File_1=SourceModule,'D:\Projects\OposWebkassa\src\Shared\PrinterParameters.pas',0,1,785,34,806,0,0
+File_2=SourceModule,'D:\Projects\OposWebkassa\src\Shared\PrinterParametersReg.pas',0,1,318,27,345,0,0
+File_3=SourceModule,'D:\Projects\OposWebkassa\test\OposWebkassaTest\units\duPrinterParameters.pas',0,1,134,13,153,0,0
+File_4=SourceModule,'D:\Projects\OposWebkassa\src\OposWebkassa\Units\oleFiscalPrinter.pas',0,1,203,21,216,0,0
+File_5=SourceModule,'D:\Projects\OposWebkassa\test\OposWebkassaTest\units\duWebkassaImpl.pas',0,1,453,2,463,0,0
+File_6=SourceModule,'D:\Projects\OposWebkassa\src\OposWebkassa\units\WebkassaClient.pas',0,1,3189,28,3204,0,0
+File_7=SourceModule,'D:\Projects\OposWebkassa\src\OposWebkassa\units\WebkassaImpl.pas',0,1,1484,1,1502,0,0
+File_8=SourceModule,'D:\Projects\OposWebkassa\src\Shared\JsonUtils.pas',0,1,699,11,720,0,0
+File_9=SourceModule,'D:\Projects\OposWebkassa\test\OposWebkassaTest\units\duWebkassaImpl4.pas',0,1,39,15,39,0,0
 
 [Modules]
 Count=0
 EditWindowCount=0
 TypeLibWindowCount=1
-
-[D:\Projects\OposWebkassa\test\WebkassaAccTest\WebkassaAccTest.dpr]
-FormState=0
-FormOnTop=0
 
 [D:\Projects\OposWebkassa\src\Webkassa.bpg]
 FormState=0
@@ -44,6 +40,10 @@ FormState=0
 FormOnTop=0
 
 [D:\Projects\OposWebkassa\test\OposWebkassaTest\OposWebkassaTestLib.dpr]
+FormState=0
+FormOnTop=0
+
+[D:\Projects\OposWebkassa\test\WebkassaAccTest\WebkassaAccTest.dpr]
 FormState=0
 FormOnTop=0
 
@@ -115,12 +115,12 @@ Visible=1
 State=0
 Left=1
 Top=109
-Width=520
-Height=798
+Width=552
+Height=330
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=504
-ClientHeight=759
+ClientWidth=536
+ClientHeight=291
 TBDockHeight=681
 LRDockWidth=445
 Dockable=0
@@ -157,7 +157,7 @@ ClientHeight=60
 
 [PropertyInspector]
 Create=1
-Visible=1
+Visible=0
 State=0
 Left=-8
 Top=118
@@ -254,15 +254,15 @@ Dockable=1
 Create=1
 Visible=0
 State=0
-Left=0
-Top=919
-Width=436
-Height=490
+Left=909
+Top=222
+Width=876
+Height=604
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=420
-ClientHeight=451
-TBDockHeight=429
+ClientWidth=860
+ClientHeight=565
+TBDockHeight=356
 LRDockWidth=445
 Dockable=1
 
