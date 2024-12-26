@@ -85,14 +85,16 @@ uses
   MockPosPrinter in '..\OposWebkassaTest\units\MockPosPrinter.pas',
   oleFiscalPrinter in '..\..\src\OposWebkassa\Units\oleFiscalPrinter.pas',
   EscPrinterOA48 in '..\..\src\Shared\EscPrinterOA48.pas',
-  EscPrinterRongta in '..\..\src\Shared\EscPrinterRongta.pas',
-  PosPrinterRongta in '..\..\src\Shared\PosPrinterRongta.pas',
+  EscPrinterPosiflex in '..\..\src\Shared\EscPrinterPosiflex.pas',
+  PosPrinterPosiflex in '..\..\src\Shared\PosPrinterPosiflex.pas',
   OposDevice in '..\..\src\Opos\OposDevice.pas',
   duPosPrinterRongta in 'units\duPosPrinterRongta.pas',
   duEscPrinterOA48 in 'units\duEscPrinterOA48.pas',
   EscPrinterUtils in '..\..\src\Shared\EscPrinterUtils.pas',
   PtrDirectIO in '..\..\src\OposWebkassa\units\PtrDirectIO.pas',
-  PageBuffer in '..\..\src\OposWebkassa\units\PageBuffer.pas';
+  PageBuffer in '..\..\src\OposWebkassa\units\PageBuffer.pas',
+  PosPrinterRongta in '..\..\src\Shared\PosPrinterRongta.pas',
+  EscPrinterRongta in '..\..\src\Shared\EscPrinterRongta.pas';
 
 {$R *.RES}
 {$R ..\..\src\OposWebkassa\OposWebkassa.tlb}

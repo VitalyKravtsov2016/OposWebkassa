@@ -92,13 +92,15 @@ uses
   BarcodeUtils in '..\..\src\Shared\BarcodeUtils.pas',
   duEscPrinter in 'units\duEscPrinter.pas',
   duLogFile in 'units\duLogFile.pas',
-  PosPrinterRongta in '..\..\src\Shared\PosPrinterRongta.pas',
-  EscPrinterRongta in '..\..\src\Shared\EscPrinterRongta.pas',
+  PosPrinterPosiflex in '..\..\src\Shared\PosPrinterPosiflex.pas',
+  EscPrinterPosiflex in '..\..\src\Shared\EscPrinterPosiflex.pas',
   OposDevice in '..\..\src\Opos\OposDevice.pas',
   duWebkassaImpl in 'units\duWebkassaImpl.pas',
   EscPrinterUtils in '..\..\src\Shared\EscPrinterUtils.pas',
   PtrDirectIO in '..\..\src\OposWebkassa\units\PtrDirectIO.pas',
-  PageBuffer in '..\..\src\OposWebkassa\units\PageBuffer.pas';
+  PageBuffer in '..\..\src\OposWebkassa\units\PageBuffer.pas',
+  PosPrinterRongta in '..\..\src\Shared\PosPrinterRongta.pas',
+  EscPrinterRongta in '..\..\src\Shared\EscPrinterRongta.pas';
 
 {$R *.RES}
 

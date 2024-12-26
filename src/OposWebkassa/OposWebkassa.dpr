@@ -74,11 +74,13 @@ uses
   xmlParser in '..\Shared\XMLParser.pas',
   PrinterTypes in '..\Shared\PrinterTypes.pas',
   BarcodeUtils in '..\Shared\BarcodeUtils.pas',
-  PosPrinterRongta in '..\Shared\PosPrinterRongta.pas',
-  EscPrinterRongta in '..\Shared\EscPrinterRongta.pas',
+  PosPrinterPosiflex in '..\Shared\PosPrinterPosiflex.pas',
+  EscPrinterPosiflex in '..\Shared\EscPrinterPosiflex.pas',
   EscPrinterUtils in '..\Shared\EscPrinterUtils.pas',
   PtrDirectIO in 'units\PtrDirectIO.pas',
-  PageBuffer in 'units\PageBuffer.pas';
+  PageBuffer in 'units\PageBuffer.pas',
+  EscPrinterRongta in '..\Shared\EscPrinterRongta.pas',
+  PosPrinterRongta in '..\Shared\PosPrinterRongta.pas';
 
 exports
   DllGetClassObject,

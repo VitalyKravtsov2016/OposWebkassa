@@ -95,13 +95,15 @@ uses
   xmlParser in '..\Shared\XMLParser.pas',
   PrinterTypes in '..\Shared\PrinterTypes.pas',
   BarcodeUtils in '..\Shared\BarcodeUtils.pas',
-  PosPrinterRongta in '..\Shared\PosPrinterRongta.pas',
-  EscPrinterRongta in '..\Shared\EscPrinterRongta.pas',
+  PosPrinterPosiflex in '..\Shared\PosPrinterPosiflex.pas',
+  EscPrinterPosiflex in '..\Shared\EscPrinterPosiflex.pas',
   OposFiscalPrinter_1_13_Lib_TLB in '..\Opos\OposFiscalPrinter_1_13_Lib_TLB.pas',
   EscPrinterUtils in '..\Shared\EscPrinterUtils.pas',
   fmuFptrVatRate in 'Fmu\fmuFptrVatRate.pas' {fmFptrVatRate},
   PtrDirectIO in '..\OposWebkassa\units\PtrDirectIO.pas',
-  PageBuffer in '..\OposWebkassa\units\PageBuffer.pas';
+  PageBuffer in '..\OposWebkassa\units\PageBuffer.pas',
+  PosPrinterRongta in '..\Shared\PosPrinterRongta.pas',
+  EscPrinterRongta in '..\Shared\EscPrinterRongta.pas';
 
 {$R *.RES}
 {$R WindowsXP.RES}

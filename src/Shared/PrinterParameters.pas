@@ -48,8 +48,9 @@ const
   PrinterTypeEscPrinterWindows  = 4;
 
   // ESC printer command set
-  EscPrinterTypeRongta  = 0;
-  EscPrinterTypeOA48    = 1;
+  EscPrinterTypeRongta    = 0;
+  EscPrinterTypeOA48      = 1;
+  EscPrinterTypePosiflex  = 2;
 
 
   DefLogMaxCount = 10;
@@ -79,7 +80,7 @@ const
   DefCashboxNumber = 'SWK00032685';
   DefPrinterName = '';
   DefPrinterType = 0;
-  DefEscPrinterType  = 0;
+  DefEscPrinterType = EscPrinterTypeRongta;
   DefFontName = '';
   DefRoundType = RoundTypeNone; // Округление позиций
   DefVATNumber = '00000';

@@ -64,7 +64,7 @@ object fmPrinter: TfmPrinter
     Top = 8
     Width = 441
     Height = 345
-    ActivePage = tsSerialParams
+    ActivePage = tsCommonParams
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 0
     object tsCommonParams: TTntTabSheet
@@ -216,7 +216,8 @@ object fmPrinter: TfmPrinter
         OnChange = cbEscPrinterTypeChange
         Items.Strings = (
           'Rongta'
-          'OA-48')
+          'OA-48'
+          'Posiflex')
       end
     end
     object tsSocketParams: TTntTabSheet

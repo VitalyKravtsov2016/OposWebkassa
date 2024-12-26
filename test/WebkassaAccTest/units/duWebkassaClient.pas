@@ -308,7 +308,7 @@ begin
     Item := FReceipt.Request.Positions.Add as TTicketItem;
     Item.Count := 123.456;
     Item.Price := 123.45;
-    Item.TaxPercent := '12';
+    Item.TaxPercent.Value := 12;
     Item.Tax := 1633.03;
     Item.TaxType := TaxTypeVAT;
     Item.PositionName := 'ItemText'; //'Позиция чека 1';
@@ -322,7 +322,7 @@ begin
     Item := FReceipt.Request.Positions.Add as TTicketItem;
     Item.Count := 12.456;
     Item.Price := 12.45;
-    Item.TaxPercent := '12';
+    Item.TaxPercent.Value := 12;
     Item.Tax := 16.72;
     Item.TaxType := TaxTypeVAT;
     Item.PositionName := 'Позиция чека 2';
@@ -364,7 +364,7 @@ begin
   Item := FReceipt.Request.Positions.Add as TTicketItem;
   Item.Count := 2;
   Item.Price := 23;
-  Item.TaxPercent := '0';
+  Item.TaxPercent.Value := 0;
   Item.Tax := 0;
   Item.TaxType := TaxTypeNoTax;
   Item.PositionName := 'Позиция чека 1';
