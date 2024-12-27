@@ -16,7 +16,7 @@ const
   // Font type
 
   FONT_TYPE_A = 0; // 12x24
-  FONT_TYPE_B = 1; // 9x17
+  FONT_TYPE_B = 1; // 8x16
 
   FONT_TYPE_MIN = FONT_TYPE_A;
   FONT_TYPE_MAX = FONT_TYPE_B;
@@ -60,8 +60,6 @@ const
   CHARSET_SPAIN_II        = 11;
   CHARSET_LATIN_AMERICA   = 12;
   CHARSET_KOREA           = 13;
-  CHARSET_SLOVENIA_CROATIA = 14;
-  CHARSET_CHINA           = 15;
 
   /////////////////////////////////////////////////////////////////////////////
   // Justification constants
@@ -176,6 +174,7 @@ type
 
   TPrinterStatus = record
     DrawerOpened: Boolean;
+    IsOnline: Boolean;
   end;
 
   { TOfflineStatus }
@@ -197,6 +196,7 @@ type
   { TPaperStatus }
 
   TPaperStatus = record
+    PaperNearEnd: Boolean; // 5.3
     PaperPresent: Boolean; // 5.6
   end;
 
@@ -574,6 +574,7 @@ begin
   try
     Send(#$10#$04#$01);
     Result.DrawerOpened := TestBit(ReadByte, 2);
+    Result.IsOnline := not TestBit(ReadByte, 3);
   finally
     FPort.Unlock;
   end;
@@ -584,7 +585,7 @@ var
   B: Byte;
 begin
   Logger.Debug('TEscPrinterPosiflex.ReadOfflineStatus');
-  
+
   CheckCapRead;
   FPort.Lock;
   try
@@ -603,7 +604,7 @@ var
   B: Byte;
 begin
   Logger.Debug('TEscPrinterPosiflex.ReadErrorStatus');
-  
+
   CheckCapRead;
   FPort.Lock;
   try
@@ -622,12 +623,13 @@ var
   B: Byte;
 begin
   Logger.Debug('TEscPrinterPosiflex.ReadPaperStatus');
-  
+
   CheckCapRead;
   FPort.Lock;
   try
     Send(#$10#$04#$04);
     B := ReadByte;
+    Result.PaperNearEnd := TestBit(B, 3);
     Result.PaperPresent := not TestBit(B, 5);
   finally
     FPort.Unlock;
@@ -1468,12 +1470,12 @@ begin
       begin
         SetCharacterFont(FONT_TYPE_B);
         Bitmap.LoadFromFile(FontFileName);
-        FontWidth := 9;
+        FontWidth := 8;
         BitmapData := '';
         Count := Bitmap.Width div FontWidth;
         Code := FUserCharCode;
         Inc(FUserCharCode, Count);
-        Data := GetBitmapData(Bitmap, 17);
+        Data := GetBitmapData(Bitmap, 16);
         for i := 0 to Count-1 do
         begin
           FUserChars.Add(Code + i, WideChar(KazakhUnicodeChars[i]), FONT_TYPE_B);

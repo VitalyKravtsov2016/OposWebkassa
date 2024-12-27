@@ -1,5 +1,7 @@
 program OposWebkassaTest;
 
+{%ToDo 'OposWebkassaTest.todo'}
+
 uses
   FastMM4,
   SysUtils,
