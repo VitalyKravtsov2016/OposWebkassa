@@ -206,16 +206,6 @@ type
     PaperNearEnd: Boolean;
   end;
 
-  { TPrintMode }
-
-  TPrintMode = record
-    CharacterFontB: Boolean;
-    Emphasized: Boolean;
-    DoubleHeight: Boolean;
-    DoubleWidth: Boolean;
-    Underlined: Boolean;
-  end;
-
   { TUserChar }
 
   TUserChar = record

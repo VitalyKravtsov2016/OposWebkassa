@@ -2,9 +2,15 @@ unit OposEsc;
 
 interface
 
+uses
+  // VCL
+  SysUtils, 
+  // This
+  RegExpr;
+
 const
-  GS     = #$1D;
-  ESC     = #$1B;
+  GS = #$1D;
+  ESC = #$1B;
 
   ESC_Bold              = ESC + '|bC';
   ESC_Normal            = ESC + '|1C'; // Prints normal size.
@@ -22,6 +28,32 @@ const
   ESCPaper75Cut = ESC + '|75P';
   ESCPaper50Cut = ESC + '|50P';
 
+function EscGetFontIndex(const Text: string; var FontIndex: Integer): Boolean;
+
 implementation
+
+function EscGetFontIndex(const Text: string; var FontIndex: Integer): Boolean;
+const
+  RegExprFontIndex = '\'#$1B'\|[0-9]{0,3}fT';
+var
+  R: TRegExpr;
+begin
+  R := TRegExpr.Create;
+  try
+    R.Expression := RegExprFontIndex;
+    Result := R.Exec(Text);
+    if Result then
+    begin
+      R.Expression := '[0-9]{0,3}';
+      Result := R.Exec(Text);
+      if Result then
+      begin
+        FontIndex := StrToInt(R.Match[0]);
+      end;
+    end;
+  finally
+    R.Free;
+  end;
+end;
 
 end.
