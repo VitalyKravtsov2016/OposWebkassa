@@ -24,7 +24,8 @@ uses
   uZintBarcode, uZintInterface, FileUtils, PosWinPrinter, PosPrinterRongta,
   PosPrinterOA48, PosPrinterPosiflex, SerialPort, PrinterPort, SocketPort,
   ReceiptTemplate, RawPrinterPort, PrinterTypes, DirectIOAPI, BarcodeUtils,
-  PrinterParametersReg, JsonUtils, EscPrinterRongta, PtrDirectIO, PageBuffer;
+  PrinterParametersReg, JsonUtils, EscPrinterRongta, PtrDirectIO, PageBuffer,
+  EscPrinterUtils;
 
 const
   PrinterClaimTimeout = 100;
@@ -3114,7 +3115,7 @@ begin
     end;
     PrinterTypeWinPrinter:
     begin
-      PosWinPrinter := TPosWinPrinter.Create2(nil, Logger);
+      PosWinPrinter := TPosWinPrinter.Create2(nil, Logger, nil);
       PosWinPrinter.FontName := Params.FontName;
       FPrinterObj := PosWinPrinter;
       Result := PosWinPrinter;

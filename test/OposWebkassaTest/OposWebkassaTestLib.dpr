@@ -63,7 +63,7 @@ uses
   uZintBarcode in '..\..\src\Shared\uZintBarcode.pas',
   uZintInterface in '..\..\src\Shared\uZintInterface.pas',
   POSPrinterLog in '..\..\src\Opos\POSPrinterLog.pas',
-  duReceiptTemplate in 'units\duReceiptTemplate.pas',
+  duRegExpr in 'units\duRegExpr.pas',
   EscPrinterOA48 in '..\..\src\Shared\EscPrinterOA48.pas',
   ByteUtils in '..\..\src\Shared\ByteUtils.pas',
   PosWinPrinter in '..\..\src\Shared\PosWinPrinter.pas',
@@ -87,7 +87,7 @@ uses
   duWebkassaImpl4 in 'units\duWebkassaImpl4.pas',
   duOposUtils in 'units\duOposUtils.pas',
   duWebkassaImpl2 in 'units\duWebkassaImpl2.pas',
-  duPosEscPrinter in 'units\duPosEscPrinter.pas',
+  duPosWinPrinter in 'units\duPosWinPrinter.pas',
   PrinterTypes in '..\..\src\Shared\PrinterTypes.pas',
   BarcodeUtils in '..\..\src\Shared\BarcodeUtils.pas',
   duEscPrinter in 'units\duEscPrinter.pas',
@@ -100,7 +100,8 @@ uses
   PtrDirectIO in '..\..\src\OposWebkassa\units\PtrDirectIO.pas',
   PageBuffer in '..\..\src\OposWebkassa\units\PageBuffer.pas',
   PosPrinterRongta in '..\..\src\Shared\PosPrinterRongta.pas',
-  EscPrinterRongta in '..\..\src\Shared\EscPrinterRongta.pas';
+  EscPrinterRongta in '..\..\src\Shared\EscPrinterRongta.pas',
+  CustomPrinter in '..\..\src\Shared\CustomPrinter.pas';
 
 {$R *.RES}
 

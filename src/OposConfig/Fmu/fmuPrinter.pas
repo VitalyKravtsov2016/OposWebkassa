@@ -13,7 +13,7 @@ uses
   // This
   untUtil, PrinterParameters, FptrTypes, FiscalPrinterDevice, FileUtils,
   WebkassaImpl, OposFiscalPrinter_1_13_Lib_TLB, SerialPort, DirectIOAPI,
-  PosPrinterOA48, TntClasses;
+  PosPrinterOA48, TntClasses, EscPrinterUtils;
 
 type
   { TfmPrinter }

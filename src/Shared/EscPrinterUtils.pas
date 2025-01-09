@@ -5,8 +5,36 @@ interface
 uses
   // VCL
   SysUtils, Graphics,
+  // Opos
+  OposEsc,
   // This
   TntGraphics, ByteUtils;
+
+const
+  FontNameA = 'Font A (12x24)';
+  FontNameB = 'Font B (9x17)';
+
+type
+  TPrinterMode = (pmFontB, pmBold, pmDoubleWide, pmDoubleHigh, pmUnderlined);
+  TPrinterModes = set of TPrinterMode;
+
+  { TEscToken }
+
+  TEscToken = record
+    IsEsc: Boolean;
+    Text: WideString;
+  end;
+
+  { TPrintMode }
+
+  TPrintMode = record
+    CharacterFontB: Boolean;
+    Emphasized: Boolean;
+    DoubleHeight: Boolean;
+    DoubleWidth: Boolean;
+    Underlined: Boolean;
+  end;
+
 
 const
   KazakhUnicodeChars: array [0..17] of Integer = (
@@ -38,9 +66,39 @@ function GetBitmapData(Bitmap: TBitmap; FontHeight: Integer): AnsiString;
 function GetRasterImageData(Image: TGraphic): AnsiString;
 function GetImageData2(Image: TGraphic): AnsiString;
 procedure DrawImage(Image: TGraphic; Bitmap: TBitmap);
+function GetToken(var Text: WideString; var Token: TEscToken): Boolean;
 
 
 implementation
+
+function GetToken(var Text: WideString; var Token: TEscToken): Boolean;
+var
+  P: Integer;
+begin
+  Result := False;
+  if Length(Text) = 0 then Exit;
+
+  Result := True;
+  P := Pos(ESC + '|', Text);
+  Token.IsEsc := P = 1;
+  if P = 0 then
+  begin
+    Token.Text := Text;
+    Text := '';
+  end else
+  begin
+    if P = 1 then
+    begin
+      Token.Text := Copy(Text, 1, 4);
+      Text := Copy(Text, 5, Length(Text));
+    end else
+    begin
+      Token.Text := Copy(Text, 1, P-1);
+      Text := Copy(Text, P, Length(Text));
+    end;
+  end;
+end;
+
 
 function IsKazakhUnicodeChar(Char: WideChar): Boolean;
 var

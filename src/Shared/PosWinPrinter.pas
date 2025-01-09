@@ -4,21 +4,24 @@ interface
 
 uses
   // VCL
-  Windows, Classes, SysUtils, Printers, Graphics,
+  Windows, Classes, SysUtils, Graphics, Printers,
   // Tnt
   TntClasses,
   // Opos
   Opos, OposEsc, OposPtr, OposException, OposServiceDevice19,
-  OposPOSPrinter_CCO_TLB, WException,
+  OposPOSPrinter_CCO_TLB, WException, OposPtrUtils,
   // This
-  LogFile, DriverError;
+  LogFile, DriverError, CustomPrinter, EscPrinterUtils;
 
 type
   { TPosWinPrinter }
 
   TPosWinPrinter = class(TComponent, IOPOSPOSPrinter)
   private
+    function GetPrinter: TCustomPrinter;
+  private
     FLogger: ILogFile;
+    FPrinter: TCustomPrinter;
     FDevice: TOposServiceDevice19;
     FPositionY: Integer;
     FTransaction: Boolean;
@@ -165,10 +168,13 @@ type
     function IllegalError: Integer;
     procedure Initialize;
     procedure CheckRecStation(Station: Integer);
-    procedure PrintText(const Data: WideString);
+    procedure PrintText(Text: WideString);
     procedure PrintGraphics(Graphic: TGraphic; Width, Alignment: Integer);
+
+    property Printer: TCustomPrinter read GetPrinter;
   public
-    constructor Create2(AOwner: TComponent; ALogger: ILogFile);
+    constructor Create2(AOwner: TComponent; ALogger: ILogFile;
+      APrinter: TCustomPrinter);
     destructor Destroy; override;
   public
     function Get_OpenResult: Integer; safecall;
@@ -544,21 +550,37 @@ type
     property FontName: WideString read FFontName write FFontName;
   end;
 
+const
+  LineSpacing = 6;
+  NormalFontSize = 12;
+  DoubleFontSize = 18;
+  DefaultFontName = 'MS Sans Serif';
+
 implementation
 
-constructor TPosWinPrinter.Create2(AOwner: TComponent; ALogger: ILogFile);
+constructor TPosWinPrinter.Create2(AOwner: TComponent; ALogger: ILogFile;
+  APrinter: TCustomPrinter);
 begin
   inherited Create(AOwner);
   FLogger := ALogger;
   FDevice := TOposServiceDevice19.Create(FLogger);
   FDevice.ErrorEventEnabled := False;
+  FPrinter := APrinter;
   Initialize;
 end;
 
 destructor TPosWinPrinter.Destroy;
 begin
   FDevice.Free;
+  FPrinter.Free;
   inherited Destroy;
+end;
+
+function TPosWinPrinter.GetPrinter: TCustomPrinter;
+begin
+  if FPrinter = nil then
+    FPrinter := TWinPrinter.Create;
+  Result := FPrinter;
 end;
 
 procedure TPosWinPrinter.Initialize;
@@ -670,8 +692,8 @@ begin
   FRecCurrentCartridge := 0;
   FRecEmpty := False;
   FRecLetterQuality := False;
-  FRecLineChars := 42;
-  FRecLineCharsList := '42,56';
+  FRecLineChars := 48;
+  FRecLineCharsList := '48,64';
   FRecLineHeight := 24;
   FRecLineSpacing := 30;
   FRecLinesToPaperCut := 5;
@@ -1266,7 +1288,7 @@ end;
 
 function TPosWinPrinter.Get_FontTypefaceList: WideString;
 begin
-  Result := FFontTypefaceList;
+  Result := StringsToCommaSeparatedList(Printers.Printer.Fonts);
 end;
 
 function TPosWinPrinter.Get_FreezeEvents: WordBool;
@@ -1588,7 +1610,8 @@ function TPosWinPrinter.Open(const DeviceName: WideString): Integer;
 begin
   try
     FDevice.Open('POSPrinter', DeviceName, nil);
-    Printer.PrinterIndex := Printer.Printers.IndexOf(DeviceName);
+
+    Printer.PrinterName := DeviceName;
     Printer.Canvas.Font.Name := FontName;
 
     Result := ClearResult;
@@ -1610,7 +1633,6 @@ function TPosWinPrinter.PrintBarCode(Station: Integer;
   const Data: WideString; Symbology, Height, Width, Alignment,
   TextPosition: Integer): Integer;
 begin
-
   Result := ClearResult;
 end;
 
@@ -1715,35 +1737,68 @@ begin
     raiseIllegalError('Station not supported');
 end;
 
-procedure TPosWinPrinter.PrintText(const Data: WideString);
+procedure TPosWinPrinter.PrintText(Text: WideString);
 var
-  i: Integer;
-  Text: WideString;
-  Lines: TTntStringList;
-  IsDoubleHighAndWide: Boolean;
+  Index: Integer;
+  Token: TEscToken;
 begin
-  Lines := TTntStringList.Create;
-  try
-    Lines.Text := Data;
-    for i := 0 to Lines.Count-1 do
+  while GetToken(Text, Token) do
+  begin
+    if Token.IsEsc then
     begin
-      Text := Lines[i];
-      IsDoubleHighAndWide := Pos(ESC_DoubleHighWide, Text) <> 0;
-      if IsDoubleHighAndWide then
+      // Normal Restores printer characteristics to normal condition.
+      if Token.Text = ESC + '|N' then
       begin
-        Text := StringReplace(Text, ESC_DoubleHighWide, '', []);
-        Printer.Canvas.Font.Name := 'FontA22';
+        Printer.Canvas.Font.Style := [];
+        Printer.Canvas.Font.Name := DefaultFontName;
       end;
-      Printer.Canvas.TextOut(0, FPositionY, Text);
-      Inc(FPositionY, RecLineSpacing);
-      if IsDoubleHighAndWide then
+      // Font
+      if EscGetFontIndex(Token.Text, Index) then
+        Printer.Canvas.Font.Name := Printers.Printer.Fonts[Index];
+
+      // Bold
+      if Token.Text = ESC + '|bC' then
+        Printer.Canvas.Font.Style := Printer.Canvas.Font.Style + [fsBold];
+
+      if Token.Text = ESC + '|!bC' then
+        Printer.Canvas.Font.Style := Printer.Canvas.Font.Style - [fsBold];
+
+      // Underline
+      if Token.Text = ESC + '|uC' then
+        Printer.Canvas.Font.Style := Printer.Canvas.Font.Style + [fsUnderline];
+
+      if Token.Text = ESC + '|!uC' then
+        Printer.Canvas.Font.Style := Printer.Canvas.Font.Style - [fsUnderline];
+
+      // Prints normal size.
+      if Token.Text = ESC + '|1C' then
+        Printer.Canvas.Font.Size := NormalFontSize;
+
+      // Prints double-wide characters.
+      if Token.Text = ESC + '|2C' then
       begin
-        Printer.Canvas.Font.Name := 'FontA11';
-        Inc(FPositionY, RecLineSpacing);
+        Printer.Canvas.Font.Size := DoubleFontSize;
+        Printer.Canvas.Font.Style := Printer.Canvas.Font.Style + [fsBold];
       end;
+
+      // Prints double-high characters.
+      if Token.Text = ESC + '|3C' then
+      begin
+        Printer.Canvas.Font.Size := DoubleFontSize;
+        Printer.Canvas.Font.Style := Printer.Canvas.Font.Style + [fsBold];
+      end;
+
+      // Prints double-high/double-wide characters.
+      if Token.Text = ESC + '|4C' then
+      begin
+        Printer.Canvas.Font.Size := DoubleFontSize;
+        Printer.Canvas.Font.Style := Printer.Canvas.Font.Style + [fsBold];
+      end;
+    end else
+    begin
+      Printer.Canvas.TextOut(0, FPositionY, Token.Text);
+      Inc(FPositionY, Printer.Canvas.Font.Size + LineSpacing);
     end;
-  finally
-    Lines.Free;
   end;
 end;
 

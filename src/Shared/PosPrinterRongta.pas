@@ -13,11 +13,7 @@ uses
   // This
   LogFile, DriverError, EscPrinterRongta, PrinterPort, NotifyThread,
   RegExpr, SerialPort, Jpeg, GifImage, BarcodeUtils,
-  StringUtils, DebugUtils, PtrDirectIO;
-
-const
-  FontNameA = 'Font A (12x24)';
-  FontNameB = 'Font B (9x17)';
+  StringUtils, DebugUtils, PtrDirectIO, EscPrinterUtils;
 
 type
   { TPageMode }
@@ -30,16 +26,6 @@ type
     HorizontalPosition: Integer;
   end;
 
-  TPrintMode = (pmFontB, pmBold, pmDoubleWide, pmDoubleHigh, pmUnderlined);
-  TPrintModes = set of TPrintMode;
-
-  { TEscToken }
-
-  TEscToken = record
-    IsEsc: Boolean;
-    Text: WideString;
-  end;
-
   { TPosPrinterRongta }
 
   TPosPrinterRongta = class(TComponent, IOPOSPOSPrinter, IOposEvents)
@@ -49,7 +35,7 @@ type
     FThread: TNotifyThread;
     FPrinter: TEscPrinterRongta;
     FDevice: TOposServiceDevice19;
-    FLastPrintMode: TPrintModes;
+    FLastPrintMode: TPrinterModes;
 
     FFontName: WideString;
     FDevicePollTime: Integer;
@@ -2838,9 +2824,9 @@ end;
 
 procedure TPosPrinterRongta.PrintText(Text: WideString);
 var
+  Mode: TPrintMode;
   Token: TEscToken;
-  PrintMode: TPrintModes;
-  Mode: EscPrinterRongta.TPrintMode;
+  PrintMode: TPrinterModes;
 begin
   PrintMode := [];
   if FontName = FontNameB then

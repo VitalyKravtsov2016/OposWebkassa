@@ -4,7 +4,7 @@ interface
 
 uses
   // VCL
-  Types, SysUtils,
+  Types, SysUtils, Classes,
   // Opos
   OposUtils, OposPtr, OposPtrhi;
 
@@ -19,8 +19,22 @@ function MapToDots(const R: TRect; MapMode: Integer): TRect; overload;
 function MapToDots(const R: TPoint; MapMode: Integer): TPoint; overload;
 function MapFromDots(const R: TRect; MapMode: Integer): TRect; overload;
 function MapFromDots(const R: TPoint; MapMode: Integer): TPoint; overload;
+function StringsToCommaSeparatedList(Strings: TStrings): string;
 
 implementation
+
+function StringsToCommaSeparatedList(Strings: TStrings): string;
+var
+  i: Integer;
+begin
+  Result := '';
+  for i := 0 to Strings.Count-1 do
+  begin
+    if Result <> '' then
+      Result := Result + ',';
+    Result := Result + Strings[i];
+  end;
+end;
 
 function PtrPropertyName(const ID: Integer): WideString;
 begin

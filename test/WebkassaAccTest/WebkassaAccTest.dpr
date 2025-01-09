@@ -94,7 +94,8 @@ uses
   PtrDirectIO in '..\..\src\OposWebkassa\units\PtrDirectIO.pas',
   PageBuffer in '..\..\src\OposWebkassa\units\PageBuffer.pas',
   PosPrinterRongta in '..\..\src\Shared\PosPrinterRongta.pas',
-  EscPrinterRongta in '..\..\src\Shared\EscPrinterRongta.pas';
+  EscPrinterRongta in '..\..\src\Shared\EscPrinterRongta.pas',
+  CustomPrinter in '..\..\src\Shared\CustomPrinter.pas';
 
 {$R *.RES}
 {$R ..\..\src\OposWebkassa\OposWebkassa.tlb}

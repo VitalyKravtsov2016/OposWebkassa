@@ -12,12 +12,8 @@ uses
   OposPOSPrinter_CCO_TLB, WException, OposPtrUtils, OposUtils,
   // This
   LogFile, DriverError, EscPrinterPosiflex, PrinterPort, NotifyThread,
-  RegExpr, SerialPort, Jpeg, GifImage, BarcodeUtils,
-  StringUtils, DebugUtils, PtrDirectIO;
-
-const
-  FontNameA = 'Font A (12x24)';
-  FontNameB = 'Font B (9x17)';
+  RegExpr, SerialPort, Jpeg, GifImage, BarcodeUtils, StringUtils, DebugUtils,
+  PtrDirectIO, EscPrinterUtils;
 
 type
   { TPageMode }
@@ -30,16 +26,6 @@ type
     HorizontalPosition: Integer;
   end;
 
-  TPrintMode = (pmFontB, pmBold, pmDoubleWide, pmDoubleHigh, pmUnderlined);
-  TPrintModes = set of TPrintMode;
-
-  { TEscToken }
-
-  TEscToken = record
-    IsEsc: Boolean;
-    Text: WideString;
-  end;
-
   { TPosPrinterPosiflex }
 
   TPosPrinterPosiflex = class(TComponent, IOPOSPOSPrinter, IOposEvents)
@@ -49,7 +35,7 @@ type
     FThread: TNotifyThread;
     FPrinter: TEscPrinterPosiflex;
     FDevice: TOposServiceDevice19;
-    FLastPrintMode: TPrintModes;
+    FLastPrintMode: TPrinterModes;
 
     FFontName: WideString;
     FDevicePollTime: Integer;
@@ -2818,9 +2804,9 @@ end;
 
 procedure TPosPrinterPosiflex.PrintText(Text: WideString);
 var
+  Mode: TPrintMode;
   Token: TEscToken;
-  PrintMode: TPrintModes;
-  Mode: EscPrinterPosiflex.TPrintMode;
+  PrintMode: TPrinterModes;
 begin
   PrintMode := [];
   if FontName = FontNameB then
@@ -2828,7 +2814,6 @@ begin
     PrintMode := [pmFontB];
   end;
 
-  //Text := ReplaceRegExpr('\' + ESC + '\|[0-9]{0,3}\P', Text, #$1B#$69);
   while GetToken(Text, Token) do
   begin
     if Token.IsEsc then

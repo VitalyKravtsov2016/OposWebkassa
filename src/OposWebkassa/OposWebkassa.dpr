@@ -80,7 +80,8 @@ uses
   PtrDirectIO in 'units\PtrDirectIO.pas',
   PageBuffer in 'units\PageBuffer.pas',
   EscPrinterRongta in '..\Shared\EscPrinterRongta.pas',
-  PosPrinterRongta in '..\Shared\PosPrinterRongta.pas';
+  PosPrinterRongta in '..\Shared\PosPrinterRongta.pas',
+  CustomPrinter in '..\Shared\CustomPrinter.pas';
 
 exports
   DllGetClassObject,

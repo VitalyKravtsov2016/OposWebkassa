@@ -1,0 +1,4 @@
+{TODO -oVitaly Kravtsov -c1 : Fix error with downloaded Kazakh font - it looks really BAD}
+{TODO -oVitaly Kravtsov -c1 : Fix error with memory leak in Json parser class}
+{TODO 1 -oVitaly Kravtsov -c1 : Add Windows printer test}
+{TODO -c1 -oVitaly Kravtsov : Check Posiflex ESC commands and update class EscPrinterPosiflex}

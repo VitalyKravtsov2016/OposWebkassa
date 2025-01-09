@@ -12,24 +12,10 @@ uses
   OposPOSPrinter_CCO_TLB, WException, OposPtrUtils,
   // This
   LogFile, DriverError, EscPrinterOA48, PrinterPort, NotifyThread,
-  RegExpr, SerialPort, Jpeg, GifImage, BarcodeUtils,
-  StringUtils, DebugUtils;
-
-const
-  FontNameA = 'Font A (12x24)';
-  FontNameB = 'Font B (9x17)';
+  RegExpr, SerialPort, Jpeg, GifImage, BarcodeUtils, StringUtils,
+  DebugUtils, EscPrinterUtils;
 
 type
-  TPrintMode = (pmFontB, pmBold, pmDoubleWide, pmDoubleHigh, pmUnderlined);
-  TPrintModes = set of TPrintMode;
-
-  { TEscToken }
-
-  TEscToken = record
-    IsEsc: Boolean;
-    Text: WideString;
-  end;
-
   { TPosPrinterOA48 }
 
   TPosPrinterOA48 = class(TComponent, IOPOSPOSPrinter, IOposEvents)
@@ -39,7 +25,7 @@ type
     FThread: TNotifyThread;
     FPrinter: TEscPrinterOA48;
     FDevice: TOposServiceDevice19;
-    FLastPrintMode: TPrintModes;
+    FLastPrintMode: TPrinterModes;
 
     FFontName: WideString;
     FDevicePollTime: Integer;
@@ -209,7 +195,6 @@ type
     procedure StartDeviceThread;
     procedure StopDeviceThread;
 
-    function GetToken(var Text: WideString; var Token: TEscToken): Boolean;
     procedure PrintText(Text: WideString);
     procedure InitializeDevice;
     procedure CheckPaperPresent;
@@ -2737,39 +2722,11 @@ begin
 
 end;
 
-function TPosPrinterOA48.GetToken(var Text: WideString; var Token: TEscToken): Boolean;
-var
-  P: Integer;
-begin
-  Result := False;
-  if Length(Text) = 0 then Exit;
-
-  Result := True;
-  P := Pos(ESC + '|', Text);
-  Token.IsEsc := P = 1;
-  if P = 0 then
-  begin
-    Token.Text := Text;
-    Text := '';
-  end else
-  begin
-    if P = 1 then
-    begin
-      Token.Text := Copy(Text, 1, 4);
-      Text := Copy(Text, 5, Length(Text));
-    end else
-    begin
-      Token.Text := Copy(Text, 1, P-1);
-      Text := Copy(Text, P, Length(Text));
-    end;
-  end;
-end;
-
 procedure TPosPrinterOA48.PrintText(Text: WideString);
 var
+  Mode: TPrintMode;
   Token: TEscToken;
-  PrintMode: TPrintModes;
-  Mode: EscPrinterOA48.TPrintMode;
+  PrintMode: TPrinterModes;
 begin
   PrintMode := [];
   if FontName = FontNameB then
