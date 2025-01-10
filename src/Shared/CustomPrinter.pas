@@ -11,7 +11,7 @@ type
 
   TCustomPrinter = class
   public
-    procedure EndDoc; virtual; abstract;
+    procedure EndDoc(Height: Integer); virtual; abstract;
     procedure BeginDoc; virtual; abstract;
     function GetCanvas: TCanvas; virtual; abstract;
     function GetPrinterName: string; virtual; abstract;
@@ -30,7 +30,7 @@ type
     function GetCanvas: TCanvas; override;
     function GetPrinterName: string; override;
 
-    procedure EndDoc; override;
+    procedure EndDoc(Height: Integer); override;
     procedure BeginDoc; override;
     procedure SetPrinterName(const Value: string); override;
 
@@ -51,7 +51,7 @@ type
 
     function GetCanvas: TCanvas; override;
     function GetPrinterName: string; override;
-    procedure EndDoc; override;
+    procedure EndDoc(Height: Integer); override;
     procedure BeginDoc; override;
     procedure SetPrinterName(const Value: string); override;
 
@@ -72,7 +72,7 @@ type
 
     function GetCanvas: TCanvas; override;
     function GetPrinterName: string; override;
-    procedure EndDoc; override;
+    procedure EndDoc(Height: Integer); override;
     procedure BeginDoc; override;
     procedure SetPrinterName(const Value: string); override;
 
@@ -90,7 +90,7 @@ begin
   Printer.BeginDoc;
 end;
 
-procedure TWinPrinter.EndDoc;
+procedure TWinPrinter.EndDoc(Height: Integer);
 begin
   Printer.EndDoc;
 end;
@@ -130,7 +130,7 @@ procedure TEmfPrinter.BeginDoc;
 begin
 end;
 
-procedure TEmfPrinter.EndDoc;
+procedure TEmfPrinter.EndDoc(Height: Integer);
 begin
 end;
 
@@ -157,7 +157,7 @@ begin
   FBitmap.Monochrome := True;
   FBitmap.PixelFormat := pf1Bit;
   FBitmap.Width := 576;
-  FBitmap.Height := 500;
+  FBitmap.Height := 1000;
 end;
 
 destructor TBmpPrinter.Destroy;
@@ -170,8 +170,9 @@ procedure TBmpPrinter.BeginDoc;
 begin
 end;
 
-procedure TBmpPrinter.EndDoc;
+procedure TBmpPrinter.EndDoc(Height: Integer);
 begin
+  Bitmap.Height := Height;
 end;
 
 function TBmpPrinter.GetCanvas: TCanvas;

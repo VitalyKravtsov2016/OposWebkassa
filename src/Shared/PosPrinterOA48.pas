@@ -4,7 +4,7 @@ interface
 
 uses
   // VCL
-  Windows, Classes, SysUtils, Graphics, Math,
+  Windows, Classes, SysUtils, Graphics, Math, Jpeg, GifImage,
   // Tnt
   TntClasses,
   // Opos
@@ -12,7 +12,7 @@ uses
   OposPOSPrinter_CCO_TLB, WException, OposPtrUtils,
   // This
   LogFile, DriverError, EscPrinterOA48, PrinterPort, NotifyThread,
-  RegExpr, SerialPort, Jpeg, GifImage, BarcodeUtils, StringUtils,
+  RegExpr, SerialPort, BarcodeUtils, StringUtils,
   DebugUtils, EscPrinterUtils;
 
 type
@@ -200,7 +200,6 @@ type
     procedure CheckPaperPresent;
     procedure CheckCoverClosed;
     procedure SetPowerState(PowerState: Integer);
-    procedure LoadMemoryGraphic(Graphic: TGraphic; const Data: AnsiString);
   public
     constructor Create2(AOwner: TComponent; APort: IPrinterPort; ALogger: ILogFile);
     destructor Destroy; override;
@@ -2111,26 +2110,11 @@ begin
   FPrinter.PrintAndFeed(10);
 end;
 
-procedure TPosPrinterOA48.LoadMemoryGraphic(Graphic: TGraphic;
-  const Data: AnsiString);
-var
-  Stream: TMemoryStream;
-begin
-  Stream := TMemoryStream.Create;
-  try
-    Stream.Write(Data[1], Length(Data));
-    Stream.Position := 0;
-    Graphic.LoadFromStream(Stream);
-  finally
-    Stream.Free;
-  end;
-end;
-
 function TPosPrinterOA48.PrintMemoryBitmap(Station: Integer;
   const Data: WideString; Type_, Width, Alignment: Integer): Integer;
 begin
-  CheckRecStation(Station);
   try
+    CheckRecStation(Station);
     PrintMemoryGraphic(Data, Type_, Width, Alignment);
     Result := ClearResult;
   except

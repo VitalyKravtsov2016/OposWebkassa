@@ -28,8 +28,24 @@ procedure RenderBarcode(Bitmap: TBitmap; Symbol: PZSymbol; Is1D: Boolean);
 procedure RenderBarcodeToBitmap(var Barcode: TPosBarcode; Bitmap: TBitmap);
 function RenderBarcodeRec(var Barcode: TPosBarcode): AnsiString;
 function BitmapToStr(Bitmap: TBitmap): AnsiString;
+procedure LoadMemoryGraphic(Graphic: TGraphic; const Data: AnsiString);
 
 implementation
+
+procedure LoadMemoryGraphic(Graphic: TGraphic; const Data: AnsiString);
+var
+  Stream: TMemoryStream;
+begin
+  Stream := TMemoryStream.Create;
+  try
+    Stream.Write(Data[1], Length(Data));
+    Stream.Position := 0;
+    Graphic.LoadFromStream(Stream);
+  finally
+    Stream.Free;
+  end;
+end;
+
 
 procedure ScaleGraphic(Graphic: TGraphic; Scale: Integer);
 var

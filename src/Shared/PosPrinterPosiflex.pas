@@ -210,7 +210,6 @@ type
     procedure CheckPaperPresent;
     procedure CheckCoverClosed;
     procedure SetPowerState(PowerState: Integer);
-    procedure LoadMemoryGraphic(Graphic: TGraphic; const Data: AnsiString);
   public
     constructor Create2(AOwner: TComponent; APort: IPrinterPort; ALogger: ILogFile);
     destructor Destroy; override;
@@ -2139,21 +2138,6 @@ begin
   end;
   FPrinter.SetJustification(JUSTIFICATION_LEFT);
   FPrinter.PrintAndFeed(10);
-end;
-
-procedure TPosPrinterPosiflex.LoadMemoryGraphic(Graphic: TGraphic;
-  const Data: AnsiString);
-var
-  Stream: TMemoryStream;
-begin
-  Stream := TMemoryStream.Create;
-  try
-    Stream.Write(Data[1], Length(Data));
-    Stream.Position := 0;
-    Graphic.LoadFromStream(Stream);
-  finally
-    Stream.Free;
-  end;
 end;
 
 function TPosPrinterPosiflex.PrintMemoryBitmap(Station: Integer;

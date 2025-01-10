@@ -4,14 +4,14 @@ interface
 
 uses
   // VCL
-  Windows, Classes, SysUtils, Graphics, Printers,
+  Windows, Classes, SysUtils, Graphics, Printers, Jpeg, GifImage,
   // Tnt
   TntClasses,
   // Opos
   Opos, OposEsc, OposPtr, OposException, OposServiceDevice19,
   OposPOSPrinter_CCO_TLB, WException, OposPtrUtils,
   // This
-  LogFile, DriverError, CustomPrinter, EscPrinterUtils;
+  LogFile, DriverError, CustomPrinter, EscPrinterUtils, BarcodeUtils;
 
 type
   { TPosWinPrinter }
@@ -19,6 +19,9 @@ type
   TPosWinPrinter = class(TComponent, IOPOSPOSPrinter)
   private
     function GetPrinter: TCustomPrinter;
+    procedure PrintBarcodeAsGraphics(var Barcode: TPosBarcode);
+    procedure PrintMemoryGraphic(const Data: WideString; BMPType, Width,
+      Alignment: Integer);
   private
     FLogger: ILogFile;
     FPrinter: TCustomPrinter;
@@ -621,7 +624,7 @@ begin
   FCapRecLeft90 := True;
   FCapRecMarkFeed := 0;
   FCapRecNearEndSensor := False;
-  FCapRecPageMode := True;
+  FCapRecPageMode := False;
   FCapRecPapercut := True;
   FCapRecPresent := True;
   FCapRecRight90 := True;
@@ -1632,8 +1635,59 @@ end;
 function TPosWinPrinter.PrintBarCode(Station: Integer;
   const Data: WideString; Symbology, Height, Width, Alignment,
   TextPosition: Integer): Integer;
+var
+  Barcode: TPosBarcode;
 begin
-  Result := ClearResult;
+  try
+    CheckRecStation(Station);
+
+    Barcode.Data := Data;
+    Barcode.Width := Width;
+    Barcode.Height := Height;
+    Barcode.Alignment := Alignment;
+    Barcode.Symbology := Symbology;
+    Barcode.TextPosition := TextPosition;
+    PrintBarcodeAsGraphics(Barcode);
+
+    Result := ClearResult;
+  except
+    on E: Exception do
+      Result := HandleException(E);
+  end;
+end;
+
+procedure TPosWinPrinter.PrintBarcodeAsGraphics(var Barcode: TPosBarcode);
+var
+  Data: AnsiString;
+begin
+  if not CapRecBitmap then
+    RaiseIllegalError('Bitmaps are not supported');
+
+  Data := RenderBarcodeRec(Barcode);
+  PrintMemoryGraphic(Data, PTR_BMT_BMP, Barcode.Width, Barcode.Alignment);
+end;
+
+procedure TPosWinPrinter.PrintMemoryGraphic(const Data: WideString;
+  BMPType, Width, Alignment: Integer);
+var
+  Graphic: TGraphic;
+  BinaryData: AnsiString;
+begin
+  Graphic := nil;
+  try
+    case BMPType of
+      PTR_BMT_BMP: Graphic := TBitmap.Create;
+      PTR_BMT_JPEG: Graphic := TJpegImage.Create;
+      PTR_BMT_GIF: Graphic := TGifImage.Create;
+    else
+      raiseIllegalError('Only BMP supported');
+    end;
+    BinaryData := FDevice.TextToBinary(Data);
+    LoadMemoryGraphic(Graphic, BinaryData);
+    PrintGraphics(Graphic, Width, Alignment);
+  finally
+    Graphic.Free;
+  end;
 end;
 
 function TPosWinPrinter.PrintBitmap(Station: Integer;
@@ -1700,35 +1754,15 @@ end;
 
 function TPosWinPrinter.PrintMemoryBitmap(Station: Integer;
   const Data: WideString; Type_, Width, Alignment: Integer): Integer;
-var
-  Bitmap: TBitmap;
-  BinaryData: string;
-  Stream: TMemoryStream;
 begin
-  Bitmap := TBitmap.Create;
-  Stream := TMemoryStream.Create;
   try
     CheckRecStation(Station);
-    BinaryData := FDevice.TextToBinary(Data);
-    if Length(BinaryData) > 0 then
-    begin
-      Stream.Write(BinaryData[1], Length(BinaryData));
-
-      Stream.Position := 0;
-      case Type_ of
-        PTR_BMT_BMP: Bitmap.LoadFromStream(Stream);
-      else
-        raiseIllegalError('Only BMP supported');
-      end;
-      PrintGraphics(Bitmap, Width, Alignment);
-    end;
+    PrintMemoryGraphic(Data, Type_, Width, Alignment);
     Result := ClearResult;
   except
     on E: Exception do
       Result := HandleException(E);
   end;
-  Bitmap.Free;
-  Stream.Free;
 end;
 
 procedure TPosWinPrinter.CheckRecStation(Station: Integer);
@@ -2067,7 +2101,7 @@ begin
       begin
         if FTransaction then
         begin
-          Printer.EndDoc;
+          Printer.EndDoc(FPositionY);
           FPositionY := 0;
           FTransaction := False;
         end;
