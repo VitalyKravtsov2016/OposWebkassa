@@ -13,6 +13,14 @@ uses
 
 const
   /////////////////////////////////////////////////////////////////////////////
+  // PDF417 options
+
+  // 0 Selects the standard PDF417.
+  PDF417_OPTIONS_STANDARD   = 0;
+  // 1 Selects the truncated PDF417
+  PDF417_OPTIONS_TRANCATED  = 1;
+
+  /////////////////////////////////////////////////////////////////////////////
   // Font type
 
   FONT_TYPE_A = 0; // 12x24
@@ -143,12 +151,6 @@ const
   BARCODE2_CODE128  = 73;
 
   /////////////////////////////////////////////////////////////////////////////
-  // Barcode constants to select 2D barcode, 1D5A command
-
-  BARCODE_PDF417    = 0;
-  BARCODE_QR_CODE   = 1;
-
-  /////////////////////////////////////////////////////////////////////////////
   // Page mode direction constants
 
   PM_DIRECTION_LEFT_TO_RIGHT  = 0;
@@ -219,16 +221,19 @@ type
   { TPDF417 }
 
   TPDF417 = record
+    RowNumber: Byte; // 1..30
     ColumnNumber: Byte; // 1..30
-    SecurityLevel: Byte; // 0..8
-    HVRatio: Byte; // 2..5
+    ErrorCorrectionLevel: Byte; // 0..8
+    ModuleWidth: Byte;
+    ModuleHeight: Byte;
+    Options: Byte;
     data: AnsiString;
   end;
 
   { TQRCode }
 
   TQRCode = record
-    SymbolVersion: Byte; // 1~40, 0:auto size
+    Model: Byte; // 1..2
     ECLevel: Byte; // 1..19
     ModuleSize: Byte; // 1..8
     data: AnsiString;
@@ -365,7 +370,6 @@ type
     procedure SetStandardMode;
     procedure SetPageModeDirection(n: Byte);
     procedure SetPageModeArea(R: TRect);
-    procedure printBarcode2D(m, n, k: Byte; const data: AnsiString);
     procedure printPDF417(const Barcode: TPDF417);
     procedure printQRCode(const Barcode: TQRCode);
     procedure SetKanjiQuadSizeMode(Value: Boolean);
@@ -375,7 +379,6 @@ type
     procedure SelectCounterPrintMode(n, m: Byte);
     procedure SelectCountMode(a, b: Word; n, r: Byte);
     procedure SetCounter(n: Word);
-    procedure Select2DBarcode(n: Byte);
     procedure SetPMRelativeVerticalPosition(n: Word);
     procedure PrintCounter;
     procedure PrintText(Text: AnsiString);
@@ -393,6 +396,21 @@ type
     procedure WriteKazakhCharacters;
     procedure PrintUserChar(Char: WideChar);
     function IsUserChar(Char: WideChar): Boolean;
+
+    procedure QRCodeSetModuleSize(n: Byte);
+    procedure QRCodeSetErrorCorrectionLevel(n: Byte);
+    procedure QRCodePrint;
+    procedure QRCodeWriteData(Data: AnsiString);
+    procedure QRCodeSetModel(n: Byte);
+
+    procedure PDF417SetColumnNumber(n: Byte);
+    procedure PDF417SetRowNumber(n: Byte);
+    procedure PDF417Print;
+    procedure PDF417SetErrorCorrectionLevel(n: Byte);
+    procedure PDF417SetModuleHeight(n: Byte);
+    procedure PDF417SetModuleWidth(n: Byte);
+    procedure PDF417SetOptions(m: Byte);
+    procedure PDF417Write(const data: AnsiString);
 
     property Port: IPrinterPort read FPort;
     property Logger: ILogFile read FLogger;
@@ -1289,13 +1307,6 @@ begin
     Chr(Lo(R.Bottom)) + Chr(Hi(R.Bottom)));
 end;
 
-procedure TEscPrinterPosiflex.printBarcode2D(m, n, k: Byte; const data: AnsiString);
-begin
-  Logger.Debug('TEscPrinterPosiflex.printBarcode2D');
-  Send(#$1B#$5A + Chr(m) + Chr(n) + Chr(k) +
-    Chr(Lo(Length(data))) + Chr(Hi(Length(data))) + data);
-end;
-
 (*
 PDF417:barcode type0
 m specifies column number of 2D barcode.(1.m.30)
@@ -1308,14 +1319,110 @@ d is the length of data
 procedure TEscPrinterPosiflex.printPDF417(const Barcode: TPDF417);
 begin
   Logger.Debug('TEscPrinterPosiflex.printPDF417');
-  printBarcode2D(Barcode.ColumnNumber, Barcode.SecurityLevel, Barcode.HVRatio, Barcode.data);
+  PDF417SetColumnNumber(Barcode.ColumnNumber);
+  PDF417SetRowNumber(Barcode.RowNumber);
+  PDF417SetModuleWidth(Barcode.ModuleWidth);
+  PDF417SetModuleHeight(Barcode.ModuleHeight);
+  PDF417SetErrorCorrectionLevel(Barcode.ErrorCorrectionLevel);
+  PDF417SetOptions(Barcode.Options);
+  PDF417Write(Barcode.Data);
+  PDF417Print;
+end;
+
+///////////////////////////////////////////////////////////////////////////////
+// 0 <= n <= 30
+procedure TEscPrinterPosiflex.PDF417SetColumnNumber(n: Byte);
+begin
+  if n > 30 then n := 30;
+  Send(#$1D#$28#$6B#$03#$00#$30#$41 + Chr(n));
+end;
+
+///////////////////////////////////////////////////////////////////////////////
+// 3 <= n <= 90, n = 0
+procedure TEscPrinterPosiflex.PDF417SetRowNumber(n: Byte);
+begin
+  if (n in [1..2])or(n > 90) then n := 0;
+  Send(#$1D#$28#$6B#$03#$00#$30#$42 + Chr(n));
+end;
+
+procedure TEscPrinterPosiflex.PDF417SetModuleWidth(n: Byte);
+begin
+  Send(#$1D#$28#$6B#$03#$00#$30#$43 + Chr(n));
+end;
+
+procedure TEscPrinterPosiflex.PDF417SetModuleHeight(n: Byte);
+begin
+  Send(#$1D#$28#$6B#$03#$00#$30#$44 + Chr(n));
+end;
+
+// n 0..8
+procedure TEscPrinterPosiflex.PDF417SetErrorCorrectionLevel(n: Byte);
+begin
+  if N > 8 then n := 8;
+  Send(#$1D#$28#$6B#$03#$00#$30#$45#$30 + Chr($30 + n));
+end;
+
+procedure TEscPrinterPosiflex.PDF417SetOptions(m: Byte);
+begin
+  Send(#$1D#$28#$6B#$03#$00#$30#$46 + Chr(m));
+end;
+
+procedure TEscPrinterPosiflex.PDF417Write(const data: AnsiString);
+var
+  L: Word;
+begin
+  L := Length(Data) + 3;
+  Send(#$1D#$28#$6B + Chr(Lo(L)) + Chr(Hi(L)) + #$30#$50#$30 + Data);
+end;
+
+procedure TEscPrinterPosiflex.PDF417Print;
+begin
+  Send(#$1D#$28#$6B#$03#$00#$30#$51#$30);
 end;
 
 procedure TEscPrinterPosiflex.printQRCode(const Barcode: TQRCode);
 begin
   Logger.Debug('TEscPrinterPosiflex.printQRCode');
-  printBarcode2D(Barcode.SymbolVersion, Barcode.ECLevel, Barcode.ModuleSize, Barcode.data);
+  QRCodeSetModel(Barcode.Model);
+  QRCodeSetModuleSize(Barcode.ModuleSize);
+  QRCodeSetErrorCorrectionLevel(Barcode.ECLevel);
+  QRCodeWriteData(Barcode.Data);
+  QRCodePrint;
 end;
+
+procedure TEscPrinterPosiflex.QRCodeSetModel(n: Byte);
+begin
+  if n < 1 then n := 1;
+  if n > 2 then n := 2;
+  Send(#$1D#$28#$6B#$04#$00#$31#$45 + Chr($30 + n));
+end;
+
+procedure TEscPrinterPosiflex.QRCodeSetErrorCorrectionLevel(n: Byte);
+begin
+  if n > 3 then n := 3;
+  Send(#$1D#$28#$6B#$04#$00#$31#$45 + Chr($30 + n));
+end;
+
+procedure TEscPrinterPosiflex.QRCodeSetModuleSize(n: Byte);
+begin
+  if n < 1 then n := 1;
+  if n > 16 then n := 16;
+  Send(#$1D#$28#$6B#$04#$00#$31#$43 + Chr(n));
+end;
+
+procedure TEscPrinterPosiflex.QRCodeWriteData(Data: AnsiString);
+var
+  k: Integer;
+begin
+  k := Length(Data) + 3;
+  Send(#$1D#$28#$6B + Chr(Hi(k)) + Chr(Lo(k)) + #$31#$50#$30 + Data);
+end;
+
+procedure TEscPrinterPosiflex.QRCodePrint;
+begin
+  Send(#$1D#$28#$6B#$04#$00#$31#$51);
+end;
+
 
 procedure TEscPrinterPosiflex.SetKanjiQuadSizeMode(Value: Boolean);
 begin
@@ -1358,12 +1465,6 @@ procedure TEscPrinterPosiflex.SetCounter(n: Word);
 begin
   Logger.Debug('TEscPrinterPosiflex.SetCounter');
   Send(#$1D#$43#$32 + Chr(Lo(n)) + Chr(Hi(n)));
-end;
-
-procedure TEscPrinterPosiflex.Select2DBarcode(n: Byte);
-begin
-  Logger.Debug('TEscPrinterPosiflex.Select2DBarcode');
-  Send(#$1D#$5A + Chr(n));
 end;
 
 procedure TEscPrinterPosiflex.SetPMRelativeVerticalPosition(n: Word);

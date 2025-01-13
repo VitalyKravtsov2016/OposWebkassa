@@ -1932,20 +1932,21 @@ begin
         case Symbology of
           PTR_BCS_PDF417:
           begin
-            FPrinter.Select2DBarcode(BARCODE_PDF417);
+            PDF417.RowNumber := 1;
             PDF417.ColumnNumber := 4;
-            PDF417.SecurityLevel := 0;
-            PDF417.HVRatio := 2;
+            PDF417.ErrorCorrectionLevel := 0;
+            PDF417.ModuleWidth := 3;
+            PDF417.ModuleHeight := 100;
+            PDF417.Options := PDF417_OPTIONS_STANDARD;
             PDF417.data := Data;
             FPrinter.printPDF417(PDF417);
           end;
           PTR_BCS_QRCODE:
           begin
-            FPrinter.Select2DBarcode(BARCODE_QR_CODE);
-            QRCode.SymbolVersion := 0;
+            QRCode.Model := 2;
             QRCode.ECLevel := REP_QRCODE_ECL_7;
             QRCode.ModuleSize := 4;
-            QRCode.data := Data;
+            QRCode.Data := Data;
             FPrinter.printQRCode(QRCode);
           end;
           PTR_BCS_MAXICODE,
