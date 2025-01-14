@@ -1474,6 +1474,7 @@ var
   BitmapData: AnsiString;
   FontFileName: WideString;
 begin
+  Code := FUserCharCode;
   try
     EnableUserCharacters;
     Bitmap := TBitmap.Create;
@@ -1487,7 +1488,6 @@ begin
         FontWidth := 12;
         BitmapData := '';
         Count := Bitmap.Width div FontWidth;
-        Code := FUserCharCode;
         Data := GetBitmapData(Bitmap, 24);
         for i := 0 to Count-1 do
         begin
@@ -1495,7 +1495,9 @@ begin
           BitmapData := BitmapData + Chr(FontWidth) + Copy(Data, i*FontWidth*3 + 1, FontWidth*3);
         end;
         Send(#$1B#$26#$03 + Chr(Code) + Chr(Code + Count -1) + BitmapData);
+        Inc(FUserCharCode, Count);
       end;
+      Code := FUserCharCode;
       // FONT_TYPE_B
       FontFileName := GetModulePath + 'Fonts\KazakhFontB.bmp';
       if FileExists(FontFileName) then
@@ -1505,8 +1507,6 @@ begin
         FontWidth := 9;
         BitmapData := '';
         Count := Bitmap.Width div FontWidth;
-        Code := FUserCharCode;
-        Inc(FUserCharCode, Count);
         Data := GetBitmapData(Bitmap, 17);
         for i := 0 to Count-1 do
         begin
@@ -1514,6 +1514,7 @@ begin
           BitmapData := BitmapData + Chr(FontWidth) + Copy(Data, i*FontWidth*3 + 1, FontWidth*3);
         end;
         Send(#$1B#$26#$03 + Chr(Code) + Chr(Code + Count -1) + BitmapData);
+        Inc(FUserCharCode, Count);
       end;
     finally
       Bitmap.Free;
@@ -1551,22 +1552,19 @@ begin
       Send(#$1B#$26#$03 + Chr(FUserCharCode) + Chr(FUserCharCode) + Chr(FontWidth) + BitmapData);
       Inc(FUserCharCode);
     end;
-(*
     // FONT_TYPE_B
     Bitmap.LoadFromFile(GetModulePath + 'Fonts\KazakhFontB.bmp');
     FontWidth := 9;
     BitmapData := '';
     Count := Bitmap.Width div FontWidth;
-    Code := FUserCharCode;
-    Inc(FUserCharCode, Count);
     Data := GetBitmapData(Bitmap, 17);
     for i := 0 to Count-1 do
     begin
-      FUserChars.Add(Code + i, WideChar(KazakhUnicodeChars[i]), FONT_TYPE_B);
+      FUserChars.Add(FUserCharCode, WideChar(KazakhUnicodeChars[i]), FONT_TYPE_B);
       BitmapData := BitmapData + Chr(FontWidth) + Copy(Data, i*FontWidth + 1, FontWidth*3);
+      Send(#$1B#$26#$03 + Chr(FUserCharCode) + Chr(FUserCharCode) + BitmapData);
+      Inc(FUserCharCode);
     end;
-    Send(#$1B#$26#$03 + Chr(Code) + Chr(Code + Count -1) + BitmapData);
-*)
   finally
     Bitmap.Free;
   end;
