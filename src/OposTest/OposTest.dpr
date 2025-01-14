@@ -91,7 +91,8 @@ uses
   Translation in '..\Shared\Translation.pas',
   ReceiptTemplate in '..\Shared\ReceiptTemplate.pas',
   xmlParser in '..\Shared\XMLParser.pas',
-  PrinterTypes in '..\Shared\PrinterTypes.pas';
+  PrinterTypes in '..\Shared\PrinterTypes.pas',
+  fmuFptrSetPosID in 'Fmu\fmuFptrSetPosID.pas' {fmFptrSetPosId};
 
 {$R *.RES}
 {$R WindowsXP.RES}

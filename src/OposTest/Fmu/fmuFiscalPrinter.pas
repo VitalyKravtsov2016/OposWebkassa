@@ -7,7 +7,7 @@ uses
   Windows, StdCtrls, Controls, ExtCtrls, Classes, Forms, SysUtils,
   Registry, ComCtrls,
   // Tnt
-  TntStdCtrls, TntSysUtils, TntComCtrls, 
+  TntStdCtrls, TntSysUtils, TntComCtrls,
   // Opos
   OposFptrUtils, OposUtils,
   // This
@@ -20,7 +20,7 @@ uses
   fmuFptrRecTotal, fmuFptrRecSubtotal, fmuFptrFiscalDocument, fmuFptrSetVatTable,
   fmuFptrDate, fmuFptrSlipInsertion, fmuFptrSetLine, fmuFptrProperties,
   fmuFptrAddHeaderTrailer, fmuFptrGetData, fmuFptrRecCash,
-  fmuFptrWritableProperties, fmuFptrSetHeadertrailer,
+  fmuFptrWritableProperties, fmuFptrSetHeadertrailer, fmuFptrSetPosID,
   fmuFptrTraining, fmuPrintRecVoidItem,
   fmuPrintRecItemRefund, fmuPrintRecItemRefundVoid,
   fmuFptrStatistics, fmuFptrEvents, fmuFptrTest, fmuFptrTest2,
@@ -151,6 +151,7 @@ begin
   // Others
   AddPage(TfmFptrSlipInsertion);
   AddPage(TfmFptrFiscalDocument);
+  AddPage(TfmFptrSetPosID);
   AddPage(TfmFptrDate);
   AddPage(TfmFptrSetVatTable);
   AddPage(TfmFptrSetLine);
