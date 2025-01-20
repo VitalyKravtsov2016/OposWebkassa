@@ -4628,10 +4628,6 @@ begin
     Render.Data := BarcodeData;
     Render.ShowHumanReadableText := False;
     Render.Option1 := 0;
-    (*
-    if Render.BarcodeType = tBARCODE_QRCODE then
-      Render.Option1 := 4;
-    *)
     Render.EncodeNow;
     RenderBarcode(Bitmap, Render.Symbol, False);
     ScaleGraphic(Bitmap, 2);
@@ -4711,10 +4707,6 @@ begin
     Render.Data := Barcode.Data;
     Render.ShowHumanReadableText := False;
     Render.Option1 := 0;
-    (*
-    if Render.BarcodeType = tBARCODE_QRCODE then
-      Render.Option1 := 4;
-    *)
     Render.EncodeNow;
     RenderBarcode(Bitmap, Render.Symbol, False);
 
