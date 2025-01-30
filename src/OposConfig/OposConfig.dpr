@@ -86,7 +86,7 @@ uses
   SocketPort in '..\Shared\SocketPort.pas',
   ReceiptTemplate in '..\Shared\ReceiptTemplate.pas',
   MockPrinterPort in '..\Shared\MockPrinterPort.pas',
-  RawPrinterPort in '..\Shared\RawPrinterPort.pas',
+  UsbPrinterPort in '..\Shared\UsbPrinterPort.pas',
   Translation in '..\Shared\Translation.pas',
   fmuFptrBarcode in 'Fmu\fmuFptrBarcode.pas' {fmFptrBarcode},
   fmuFptrHeader in 'Fmu\fmuFptrHeader.pas' {fmFptrHeader},
@@ -104,7 +104,8 @@ uses
   PageBuffer in '..\OposWebkassa\units\PageBuffer.pas',
   PosPrinterRongta in '..\Shared\PosPrinterRongta.pas',
   EscPrinterRongta in '..\Shared\EscPrinterRongta.pas',
-  CustomPrinter in '..\Shared\CustomPrinter.pas';
+  CustomPrinter in '..\Shared\CustomPrinter.pas',
+  RawPrinterPort in '..\Shared\RawPrinterPort.pas';
 
 {$R *.RES}
 {$R WindowsXP.RES}

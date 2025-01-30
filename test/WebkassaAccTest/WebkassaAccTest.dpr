@@ -42,7 +42,6 @@ uses
   StringUtils in '..\..\src\Shared\StringUtils.pas',
   RegExpr in '..\..\src\Shared\RegExpr.pas',
   MathUtils in '..\..\src\OposWebkassa\units\MathUtils.pas',
-  duEscPrinterRongta in 'units\duEscPrinterRongta.pas',
   WebkassaImpl in '..\..\src\OposWebkassa\units\WebkassaImpl.pas',
   SalesReceipt in '..\..\src\OposWebkassa\units\SalesReceipt.pas',
   ReceiptItem in '..\..\src\OposWebkassa\units\ReceiptItem.pas',
@@ -76,7 +75,7 @@ uses
   ReceiptTemplate in '..\..\src\Shared\ReceiptTemplate.pas',
   duWebkassaImpl in 'units\duWebkassaImpl.pas',
   MockPrinterPort in '..\..\src\Shared\MockPrinterPort.pas',
-  RawPrinterPort in '..\..\src\Shared\RawPrinterPort.pas',
+  UsbPrinterPort in '..\..\src\Shared\UsbPrinterPort.pas',
   Translation in '..\..\src\Shared\Translation.pas',
   DirectIOAPI in '..\..\src\OposWebkassa\units\DirectIOAPI.pas',
   DriverContext in '..\..\src\Shared\DriverContext.pas',
@@ -89,13 +88,16 @@ uses
   PosPrinterPosiflex in '..\..\src\Shared\PosPrinterPosiflex.pas',
   OposDevice in '..\..\src\Opos\OposDevice.pas',
   duPosPrinterRongta in 'units\duPosPrinterRongta.pas',
-  duEscPrinterOA48 in 'units\duEscPrinterOA48.pas',
+  duEscPrinterPosiflex in 'units\duEscPrinterPosiflex.pas',
   EscPrinterUtils in '..\..\src\Shared\EscPrinterUtils.pas',
   PtrDirectIO in '..\..\src\OposWebkassa\units\PtrDirectIO.pas',
   PageBuffer in '..\..\src\OposWebkassa\units\PageBuffer.pas',
   PosPrinterRongta in '..\..\src\Shared\PosPrinterRongta.pas',
   EscPrinterRongta in '..\..\src\Shared\EscPrinterRongta.pas',
-  CustomPrinter in '..\..\src\Shared\CustomPrinter.pas';
+  CustomPrinter in '..\..\src\Shared\CustomPrinter.pas',
+  duEscPrinterRongta in 'units\duEscPrinterRongta.pas',
+  duEscPrinterOA48 in 'units\duEscPrinterOA48.pas',
+  RawPrinterPort in '..\..\src\Shared\RawPrinterPort.pas';
 
 {$R *.RES}
 {$R ..\..\src\OposWebkassa\OposWebkassa.tlb}

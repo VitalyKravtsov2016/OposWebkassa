@@ -1942,7 +1942,7 @@ begin
           PTR_BCS_QRCODE:
           begin
             QRCode.Model := 2;
-            QRCode.ECLevel := REP_QRCODE_ECL_7;
+            QRCode.ECLevel := PFX_QRCODE_ECL_7;
             QRCode.ModuleSize := 4;
             QRCode.Data := Data;
             FPrinter.printQRCode(QRCode);

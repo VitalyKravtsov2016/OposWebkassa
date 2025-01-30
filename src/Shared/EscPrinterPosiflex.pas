@@ -32,10 +32,10 @@ const
   /////////////////////////////////////////////////////////////////////////////
   // QRCode error correction level
 
-  REP_QRCODE_ECL_7   = 0;
-  REP_QRCODE_ECL_15  = 1;
-  REP_QRCODE_ECL_25  = 2;
-  REP_QRCODE_ECL_30  = 3;
+  PFX_QRCODE_ECL_7   = 0;
+  PFX_QRCODE_ECL_15  = 1;
+  PFX_QRCODE_ECL_25  = 2;
+  PFX_QRCODE_ECL_30  = 3;
 
   SupportedCodePages: array [0..18] of Integer = (
     437,737,850,852,855,857,858,860,862,863,

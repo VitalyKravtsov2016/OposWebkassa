@@ -78,7 +78,7 @@ uses
   SerialPorts in '..\..\src\Shared\SerialPorts.pas',
   ReceiptTemplate in '..\..\src\Shared\ReceiptTemplate.pas',
   MockPrinterPort in '..\..\src\Shared\MockPrinterPort.pas',
-  RawPrinterPort in '..\..\src\Shared\RawPrinterPort.pas',
+  UsbPrinterPort in '..\..\src\Shared\UsbPrinterPort.pas',
   Translation in '..\..\src\Shared\Translation.pas',
   duPrinterParameters in 'units\duPrinterParameters.pas',
   DirectIOAPI in '..\..\src\OposWebkassa\units\DirectIOAPI.pas',
@@ -105,7 +105,8 @@ uses
   EscPrinterRongta in '..\..\src\Shared\EscPrinterRongta.pas',
   duPosPrinterRongta in 'units\duPosPrinterRongta.pas',
   CustomPrinter in '..\..\src\Shared\CustomPrinter.pas',
-  duReceiptTemplate in 'units\duReceiptTemplate.pas';
+  duReceiptTemplate in 'units\duReceiptTemplate.pas',
+  RawPrinterPort in '..\..\src\Shared\RawPrinterPort.pas';
 
 {$R *.RES}
 

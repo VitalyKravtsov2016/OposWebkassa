@@ -68,7 +68,7 @@ uses
   SerialPorts in '..\Shared\SerialPorts.pas',
   ReceiptTemplate in '..\Shared\ReceiptTemplate.pas',
   MockPrinterPort in '..\Shared\MockPrinterPort.pas',
-  RawPrinterPort in '..\Shared\RawPrinterPort.pas',
+  UsbPrinterPort in '..\Shared\UsbPrinterPort.pas',
   Translation in '..\Shared\Translation.pas',
   DirectIOAPI in 'units\DirectIOAPI.pas',
   xmlParser in '..\Shared\XMLParser.pas',
@@ -81,7 +81,8 @@ uses
   PageBuffer in 'units\PageBuffer.pas',
   EscPrinterRongta in '..\Shared\EscPrinterRongta.pas',
   PosPrinterRongta in '..\Shared\PosPrinterRongta.pas',
-  CustomPrinter in '..\Shared\CustomPrinter.pas';
+  CustomPrinter in '..\Shared\CustomPrinter.pas',
+  RawPrinterPort in '..\Shared\RawPrinterPort.pas';
 
 exports
   DllGetClassObject,
