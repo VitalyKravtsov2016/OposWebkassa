@@ -1553,6 +1553,7 @@ begin
           BitmapData := Chr(FontWidth) + Copy(Data, i*FontWidth*3 + 1, FontWidth*3);
           Send(#$1B#$26#$03 + Chr(Code + i) + Chr(Code + i) + BitmapData);
         end;
+        Inc(FUserCharCode, Count);
       end;
       // FONT_TYPE_B
       FontFileName := GetModulePath + 'Fonts\KazakhFontB.bmp';
@@ -1563,7 +1564,6 @@ begin
         FontWidth := 9;
         Count := Bitmap.Width div FontWidth;
         Code := FUserCharCode;
-        Inc(FUserCharCode, Count);
         Data := GetBitmapData(Bitmap, 16);
         for i := 0 to Count-1 do
         begin
@@ -1571,6 +1571,7 @@ begin
           BitmapData := Chr(FontWidth) + Copy(Data, i*FontWidth*3 + 1, (FontWidth-1)*3);
           Send(#$1B#$26#$03 + Chr(Code + i) + Chr(Code + i) + BitmapData);
         end;
+        Inc(FUserCharCode, Count);
       end;
     finally
       Bitmap.Free;

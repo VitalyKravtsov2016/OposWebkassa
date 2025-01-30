@@ -103,7 +103,7 @@ uses
   PageBuffer in '..\..\src\OposWebkassa\units\PageBuffer.pas',
   PosPrinterRongta in '..\..\src\Shared\PosPrinterRongta.pas',
   EscPrinterRongta in '..\..\src\Shared\EscPrinterRongta.pas',
-  duPosEscPrinter in 'units\duPosEscPrinter.pas',
+  duPosPrinterRongta in 'units\duPosPrinterRongta.pas',
   CustomPrinter in '..\..\src\Shared\CustomPrinter.pas',
   duReceiptTemplate in 'units\duReceiptTemplate.pas';
 

@@ -609,10 +609,8 @@ procedure CharacterToCodePage(C: WideChar; var CodePage: Integer);
 implementation
 
 const
-  SupportedCodePages: array [0..39] of Integer = (
-    437,720,737,755,775,850,852,855,856,857,858,860,862,863,864,865,866,874,
-    997,998,999,1250,1251,1252,1253,1254,1255,1256,1257,1258,
-    28591,28592,28593,28594,28595,28596,28597,28598,28599,28605);
+  SupportedCodePages: array [0..18] of Integer = (
+    437,737,850,852,855,857,858,860,862,863,864,865,866,1251,1253,1254,1255,1256,1257);
 
 function CharacterSetToPrinterCodePage(CharacterSet: Integer): Integer;
 begin

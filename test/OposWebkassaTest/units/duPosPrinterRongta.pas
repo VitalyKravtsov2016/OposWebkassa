@@ -1,4 +1,4 @@
-unit duPosEscPrinter;
+unit duPosPrinterRongta;
 
 interface
 
