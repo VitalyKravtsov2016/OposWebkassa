@@ -4,7 +4,9 @@ interface
 
 uses
   // VCL
-  Windows;
+  Windows,
+  // This
+  WException;
 
 type
   { IPrinterPort }
@@ -21,6 +23,10 @@ type
     function CapRead: Boolean;
     function GetDescription: WideString;
   end;
+
+  ESerialError = class(WideException);
+  ENoPortError = class(ESerialError);
+  ETimeoutError = class(ESerialError);
 
 implementation
 

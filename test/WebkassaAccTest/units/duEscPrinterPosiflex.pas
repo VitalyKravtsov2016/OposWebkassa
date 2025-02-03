@@ -11,7 +11,7 @@ uses
   TntClasses, TntSysUtils,
   // This
   DebugUtils, StringUtils, EscPrinterPosiflex, PrinterPort, SerialPort, LogFile,
-  FileUtils, SocketPort, RawPrinterPort, EscPrinterUtils;
+  FileUtils, SocketPort, RawPrinterPort, USBPrinterPort, EscPrinterUtils;
 
 type
   { TPrinterPosiflexTest }
@@ -22,6 +22,7 @@ type
     FPrinter: TEscPrinterPosiflex;
     FPrinterPort: IPrinterPort;
     function GetKazakhChars2: AnsiString;
+    function CreateUSBPort: TUSBPrinterPort;
   protected
     procedure SetUp; override;
     procedure TearDown; override;
@@ -99,7 +100,7 @@ begin
 
   //FPrinterPort := CreateSocketPort;
   //FPrinterPort := CreateSerialPort;
-  FPrinterPort := CreateRawPort;
+  FPrinterPort := CreateUSBPort;
   FPrinterPort.Open;
   FPrinter := TEscPrinterPosiflex.Create(FPrinterPort, FLogger);
 end;
@@ -111,9 +112,15 @@ begin
   inherited TearDown;
 end;
 
+function TPrinterPosiflexTest.CreateUSBPort: TUSBPrinterPort;
+begin
+  Result := TUSBPrinterPort.Create(FLogger, '');
+  Result.GetDeviceFileName;
+end;
+
 function TPrinterPosiflexTest.CreateRawPort: TRawPrinterPort;
 begin
-  Result := TRawPrinterPort.Create(FLogger, 'POS-80C');
+  Result := TRawPrinterPort.Create(FLogger, 'PP-6900 Thermal Printer');
 end;
 
 function TPrinterPosiflexTest.CreateSerialPort: TSerialPort;

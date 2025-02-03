@@ -6,9 +6,10 @@ uses
   // VCL
   Windows, Classes, SysUtils, SyncObjs, SysConst, Variants, ActiveX,
   // 3'd
-  TntClasses, DBT,
+  TntClasses, TntSysUtils,
+  DBT,
   // This
-  LogFile, PrinterPort, WException, TntSysUtils, gnugettext,
+  LogFile, PrinterPort, WException, gnugettext,
   DeviceNotification, PortUtil, TextReport;
 
 const
@@ -76,10 +77,6 @@ type
     property Opened: Boolean read GetOpened;
     function GetDescription: WideString;
   end;
-
-  ESerialError = class(WideException);
-  ENoPortError = class(ESerialError);
-  ETimeoutError = class(ESerialError);
 
   { ESerialPortError }
 
