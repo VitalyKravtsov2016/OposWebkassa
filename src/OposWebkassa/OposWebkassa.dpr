@@ -82,7 +82,8 @@ uses
   EscPrinterRongta in '..\Shared\EscPrinterRongta.pas',
   PosPrinterRongta in '..\Shared\PosPrinterRongta.pas',
   CustomPrinter in '..\Shared\CustomPrinter.pas',
-  RawPrinterPort in '..\Shared\RawPrinterPort.pas';
+  RawPrinterPort in '..\Shared\RawPrinterPort.pas',
+  CharCode in '..\Shared\CharCode.pas';
 
 exports
   DllGetClassObject,

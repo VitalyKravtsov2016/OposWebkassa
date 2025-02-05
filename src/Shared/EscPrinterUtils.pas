@@ -67,6 +67,7 @@ function GetRasterImageData(Image: TGraphic): AnsiString;
 function GetImageData2(Image: TGraphic): AnsiString;
 procedure DrawImage(Image: TGraphic; Bitmap: TBitmap);
 function GetToken(var Text: WideString; var Token: TEscToken): Boolean;
+function GetKazakhUnicodeChars: WideString;
 
 
 implementation
@@ -258,6 +259,15 @@ begin
   end;
 end;
 
-
+function GetKazakhUnicodeChars: WideString;
+var
+  i: Integer;
+begin
+  Result := '';
+  for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
+  begin
+    Result := Result + WideChar(KazakhUnicodeChars[i]);
+  end;
+end;
 
 end.

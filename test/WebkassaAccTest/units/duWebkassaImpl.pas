@@ -196,7 +196,8 @@ begin
     Params.FlowControl := FLOW_CONTROL_NONE;
     Params.ReconnectPort := False;
   *)
-    Params.PrinterType := PrinterTypeEscPrinterWindows;
+    Params.PrinterType := PrinterTypeEscCommands;
+    Params.PortType := PortTypeWindows;
     Params.PrinterName := 'RONGTA 80mm Series Printer';
     Params.EscPrinterType := EscPrinterTypeRongta;
     (*

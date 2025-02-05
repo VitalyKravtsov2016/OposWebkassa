@@ -86,7 +86,8 @@ begin
   FDriver.Params.WebkassaAddress := 'https://devkkm.webkassa.kz/';
   FDriver.Params.CashboxNumber := 'SWK00032685';
   FDriver.Params.PrinterName := 'ThermalU';
-  FDriver.Params.PrinterType := PrinterTypeEscPrinterWindows;
+  FDriver.Params.PrinterType := PrinterTypeEscCommands;
+  FDriver.Params.PortType := PortTypeWindows;
   FDriver.Params.PrintBarcode := PrintBarcodeEscCommands;
   FDriver.Params.NumHeaderLines := 4;
   FDriver.Params.NumTrailerLines := 3;

@@ -40,14 +40,24 @@ const
 
   FiscalPrinterProgID = 'OposWebkassa.FiscalPrinter';
 
+  /////////////////////////////////////////////////////////////////////////////
   // PrinterType constants
-  PrinterTypePosPrinter         = 0;
-  PrinterTypeWinPrinter         = 1;
-  PrinterTypeEscPrinterSerial   = 2;
-  PrinterTypeEscPrinterNetwork  = 3;
-  PrinterTypeEscPrinterWindows  = 4;
 
+  PrinterTypeOPOS = 0; // OPOS driver
+  PrinterTypeWindows = 1; // Windows printer
+  PrinterTypeEscCommands = 2; // ESC printer
+
+  /////////////////////////////////////////////////////////////////////////////
+  // PortType constants
+
+  PortTypeSerial = 0;
+  PortTypeWindows  = 1;
+  PortTypeNetwork = 2;
+  PortTypeUSB = 3;
+
+  /////////////////////////////////////////////////////////////////////////////
   // ESC printer command set
+
   EscPrinterTypeRongta    = 0;
   EscPrinterTypeOA48      = 1;
   EscPrinterTypePosiflex  = 2;
@@ -112,6 +122,7 @@ const
   DefRecLineHeight = 24;
   DefHeaderPrinted = false;
   DefUtf8Enabled = True;
+  DefPortType = PortTypeSerial;
 
   /////////////////////////////////////////////////////////////////////////////
   // Header and trailer parameters
@@ -233,6 +244,7 @@ type
     function GetTranslationRus: TTranslation;
     function GetTemplateFileName(const DeviceName: WideString): WideString;
   public
+    PortType: Integer;
     PortName: string;
     DataBits: Integer;
     StopBits: Integer;
@@ -254,6 +266,7 @@ type
     RefundTotal: Currency;
     ReplaceDataMatrixWithQRCode: Boolean;
     AcceptLanguage: string;
+    USBPort: string;
 
     constructor Create(ALogger: ILogFile);
     destructor Destroy; override;
@@ -463,6 +476,8 @@ begin
   ReplaceDataMatrixWithQRCode := False;
   AcceptLanguage := 'kk-KZ';
   UnitNames.Clear;
+  PortType := DefPortType;
+  USBPort := '';
 end;
 
 procedure TPrinterParameters.LogText(const Caption, Text: WideString);
@@ -505,6 +520,16 @@ begin
   Logger.Debug('PrinterName: ' + PrinterName);
   Logger.Debug('PrinterType: ' + IntToStr(PrinterType));
   Logger.Debug('EscPrinterType: ' + IntToStr(EscPrinterType));
+  Logger.Debug('PortType: ' + IntToStr(PortType));
+  Logger.Debug('USBPort: ' + USBPort);
+  Logger.Debug('PortName: ' + PortName);
+  Logger.Debug('DataBits: ' + IntToStr(DataBits));
+  Logger.Debug('StopBits: ' + IntToStr(StopBits));
+  Logger.Debug('Parity: ' + IntToStr(Parity));
+  Logger.Debug('FlowControl: ' + IntToStr(FlowControl));
+  Logger.Debug('SerialTimeout: ' + IntToStr(SerialTimeout));
+  Logger.Debug('ReconnectPort: ' + BoolToStr(ReconnectPort));
+  Logger.Debug('PrintBarcode: ' + IntToStr(PrintBarcode));
   Logger.Debug('CashboxNumber: ' + CashboxNumber);
   Logger.Debug('NumHeaderLines: ' + IntToStr(NumHeaderLines));
   Logger.Debug('NumTrailerLines: ' + IntToStr(NumTrailerLines));
@@ -523,7 +548,6 @@ begin
   Logger.Debug('RemotePort: ' + IntToStr(RemotePort));
   Logger.Debug('ByteTimeout: ' + IntToStr(ByteTimeout));
   Logger.Debug('DevicePollTime: ' + IntToStr(DevicePollTime));
-  Logger.Debug('PrintBarcode: ' + IntToStr(PrintBarcode));
   Logger.Debug('TemplateEnabled: ' + BoolToStr(TemplateEnabled));
   Logger.Debug('CurrencyName: ' + CurrencyName);
   Logger.Debug('OfflineText: ' + OfflineText);
@@ -719,6 +743,7 @@ begin
     ByteTimeout := Src.ByteTimeout;
     BaudRate := Src.BaudRate;
     PortName := Src.PortName;
+    PortType := Src.PortType;
     DataBits := Src.DataBits;
     StopBits := Src.StopBits;
     Parity := Src.Parity;

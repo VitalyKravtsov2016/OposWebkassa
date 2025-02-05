@@ -9,7 +9,7 @@ uses
   TntGraphics,
   // This
   ByteUtils, PrinterPort, RegExpr, StringUtils, LogFile, FileUtils,
-  EscPrinterUtils;
+  EscPrinterUtils, CharCode, DebugUtils;
 
 const
   /////////////////////////////////////////////////////////////////////////////
@@ -90,7 +90,6 @@ const
   CODEPAGE_CP858        = 19;
   CODEPAGE_CP862        = 21;
   CODEPAGE_CP864        = 22;
-  CODEPAGE_WCP1253      = 23;
   CODEPAGE_WCP1254      = 24;
   CODEPAGE_WCP1257      = 26;
   CODEPAGE_WCP1256      = 27;
@@ -101,6 +100,7 @@ const
   CODEPAGE_THAI2        = 34;
   CODEPAGE_CP855        = 36;
   CODEPAGE_CP857        = 37;
+  CODEPAGE_KAZAKH       = 224;
 
   /////////////////////////////////////////////////////////////////////////////
   // BMP mode constants
@@ -239,31 +239,6 @@ type
     data: AnsiString;
   end;
 
-  { TUserCharacter }
-
-  TUserCharacter = class(TCollectionItem)
-  private
-    FCode: Byte;
-    FFont: Byte;
-    FChar: WideChar;
-  public
-    property Code: Byte read FCode;
-    property Font: Byte read FFont;
-    property Char: WideChar read FChar;
-  end;
-
-  { TUserCharacters }
-
-  TUserCharacters = class(TCollection)
-  private
-    function GetItem(Index: Integer): TUserCharacter;
-    procedure Remove(Char: WideChar);
-  public
-    function ItemByChar(Char: WideChar): TUserCharacter;
-    function Add(Code: Byte; Char: WideChar; Font: Byte): TUserCharacter;
-    property Items[Index: Integer]: TUserCharacter read GetItem; default;
-  end;
-
   { TEscPrinterPosiflex }
 
   TEscPrinterPosiflex = class
@@ -274,7 +249,8 @@ type
     FUserCharCode: Byte;
     FInTransaction: Boolean;
     FUserCharacterMode: Integer;
-    FUserChars: TUserCharacters;
+    FUserChars: TCharCodes;
+    FKazakhChars: TCharCodes;
     FDeviceMetrics: TDeviceMetrics;
     procedure CheckUserCharCode(Code: Byte);
     procedure ClearUserChars;
@@ -395,6 +371,7 @@ type
     procedure WriteUserChar2(AChar: WideChar; ACode, AFont: Byte);
     procedure WriteKazakhCharacters;
     procedure PrintUserChar(Char: WideChar);
+    procedure PrintKazakhChar(Char: WideChar);
     function IsUserChar(Char: WideChar): Boolean;
 
     procedure QRCodeSetModuleSize(n: Byte);
@@ -411,6 +388,9 @@ type
     procedure PDF417SetModuleWidth(n: Byte);
     procedure PDF417SetOptions(m: Byte);
     procedure PDF417Write(const data: AnsiString);
+
+    procedure PrintUnicode(const AText: WideString);
+    class procedure CharacterToCodePage(C: WideChar; var CodePage: Integer);
 
     property Port: IPrinterPort read FPort;
     property Logger: ILogFile read FLogger;
@@ -445,9 +425,9 @@ begin
     863: Result := CODEPAGE_CP863;
     864: Result := CODEPAGE_CP864;
     865: Result := CODEPAGE_CP865;
-    866: Result := CODEPAGE_CP866;
+    //866: Result := CODEPAGE_CP866;
+    866: Result := CODEPAGE_KAZAKH;
     1251: Result := CODEPAGE_WCP1251;
-    1253: Result := CODEPAGE_WCP1253;
     1254: Result := CODEPAGE_WCP1254;
     1255: Result := CODEPAGE_WCP1255;
     1256: Result := CODEPAGE_WCP1256;
@@ -457,63 +437,65 @@ begin
   end;
 end;
 
-{ TUserChars }
-
-procedure TUserCharacters.Remove(Char: WideChar);
-var
-  i: Integer;
-  Item: TUserCharacter;
-begin
-  for i := Count-1 downto 0 do
-  begin
-    Item := Items[i];
-    if Item.Char = Char then
-    begin
-      Item.Free;
-    end;
-  end;
-end;
-
-function TUserCharacters.ItemByChar(Char: WideChar): TUserCharacter;
-var
-  i: Integer;
-begin
-  for i := 0 to Count-1 do
-  begin
-    Result := Items[i];
-    if Result.Char = Char then Exit;
-  end;
-  Result := nil;
-end;
-
-function TUserCharacters.Add(Code: Byte; Char: WideChar; Font: Byte): TUserCharacter;
-begin
-  Remove(Char);
-  Result := TUserCharacter.Create(Self);
-  Result.FCode := Code;
-  Result.FChar := Char;
-  Result.FFont := Font;
-end;
-
-function TUserCharacters.GetItem(Index: Integer): TUserCharacter;
-begin
-  Result := inherited Items[Index] as TUserCharacter;
-end;
-
 { TEscPrinterPosiflex }
 
 constructor TEscPrinterPosiflex.Create(APort: IPrinterPort; ALogger: ILogFile);
+
+  procedure AddKazakhChars(Font: Integer);
+  begin
+    // 1170, // cyrillic capital letter ghe stroke
+    FKazakhChars.Add($DB, WideChar(1170), Font);
+    // 1171, // cyrillic small letter ghe stroke
+    FKazakhChars.Add($DC, WideChar(1171), Font);
+    // 1178, // cyrillic capital letter ka descender
+    FKazakhChars.Add($DE, WideChar(1178), Font);
+    // 1179, // cyrillic small letter ka descender
+    FKazakhChars.Add($DF, WideChar(1179), Font);
+    // 1186, // cyrillic capital letter en descender
+    FKazakhChars.Add($F0, WideChar(1186), Font);
+    // 1187, // cyrillic small letter en descender
+    FKazakhChars.Add($F1, WideChar(1187), Font);
+    // 1198, // cyrillic capital letter straight u
+    FKazakhChars.Add($F7, WideChar(1198), Font);
+    // 1199, // cyrillic small letter straight u
+    FKazakhChars.Add($F2, WideChar(1199), Font);
+    // 1200, // cyrillic capital letter straight u stroke
+    FKazakhChars.Add($F5, WideChar(1200), Font);
+    // 1201, // cyrillic small letter straight u stroke
+    FKazakhChars.Add($F6, WideChar(1201), Font);
+    // 1210, // cyrillic capital letter shha
+    FKazakhChars.Add($FD, WideChar(1210), Font);
+    // 1211, // cyrillic small letter shha
+    FKazakhChars.Add($FE, WideChar(1211), Font);
+    // 1240, // cyrillic capital letter schwa
+    FKazakhChars.Add($B0, WideChar(1240), Font);
+    // 1241, // cyrillic small letter schwa
+    FKazakhChars.Add($B1, WideChar(1241), Font);
+    // 1256, // cyrillic capital letter barred o
+    FKazakhChars.Add($F3, WideChar(1256), Font);
+    // 1257, // cyrillic small letter barred o
+    FKazakhChars.Add($F4, WideChar(1257), Font);
+    //1030,  // cyrillic capital letter byelorussian-ukrainian
+    FKazakhChars.Add($49, WideChar(1030), Font);
+    //1110 // cyrillic small letter byelorussian-ukrainian
+    FKazakhChars.Add($69, WideChar(1110), Font);
+  end;
+
 begin
   inherited Create;
   FPort := APort;
   FLogger := ALogger;
   FDeviceMetrics.PrintWidth := 576;
-  FUserChars := TUserCharacters.Create(TUserCharacter);
+  FUserChars := TCharCodes.Create(TCharCode);
+  FKazakhChars := TCharCodes.Create(TCharCode);
+  AddKazakhChars(FONT_TYPE_A);
+  AddKazakhChars(FONT_TYPE_B);
 end;
 
 destructor TEscPrinterPosiflex.Destroy;
 begin
   FUserChars.Free;
+  FKazakhChars.Free;
   inherited Destroy;
 end;
 
@@ -1384,45 +1366,53 @@ procedure TEscPrinterPosiflex.printQRCode(const Barcode: TQRCode);
 begin
   Logger.Debug('TEscPrinterPosiflex.printQRCode');
   QRCodeSetModel(Barcode.Model);
-  QRCodeSetModuleSize(Barcode.ModuleSize);
   QRCodeSetErrorCorrectionLevel(Barcode.ECLevel);
+  QRCodeSetModuleSize(Barcode.ModuleSize);
   QRCodeWriteData(Barcode.Data);
   QRCodePrint;
 end;
 
 procedure TEscPrinterPosiflex.QRCodeSetModel(n: Byte);
 begin
+  Logger.Debug(Format('TEscPrinterPosiflex.QRCodeSetModel(%d)', [n]));
+
   if n < 1 then n := 1;
   if n > 2 then n := 2;
-  Send(#$1D#$28#$6B#$04#$00#$31#$45 + Chr($30 + n));
+  Send(#$1D#$28#$6B#$04#$00#$31#$41 + Chr($30 + n) + #$00);
 end;
 
 procedure TEscPrinterPosiflex.QRCodeSetErrorCorrectionLevel(n: Byte);
 begin
+  Logger.Debug(Format('TEscPrinterPosiflex.QRCodeSetErrorCorrectionLevel(%d)', [n]));
+
   if n > 3 then n := 3;
   Send(#$1D#$28#$6B#$04#$00#$31#$45 + Chr($30 + n));
 end;
 
 procedure TEscPrinterPosiflex.QRCodeSetModuleSize(n: Byte);
 begin
+  Logger.Debug(Format('TEscPrinterPosiflex.QRCodeSetModuleSize(%d)', [n]));
+
   if n < 1 then n := 1;
   if n > 16 then n := 16;
-  Send(#$1D#$28#$6B#$04#$00#$31#$43 + Chr(n));
+  Send(#$1D#$28#$6B#$04#$00#$31#$43 + Chr(n) + #$00);
 end;
 
 procedure TEscPrinterPosiflex.QRCodeWriteData(Data: AnsiString);
 var
   k: Integer;
 begin
+  Logger.Debug(Format('TEscPrinterPosiflex.QRCodeWriteData(''%s'')', [Data]));
+
   k := Length(Data) + 3;
-  Send(#$1D#$28#$6B + Chr(Hi(k)) + Chr(Lo(k)) + #$31#$50#$30 + Data);
+  Send(#$1D#$28#$6B + Chr(Lo(k)) + Chr(Hi(k)) + #$31#$50#$30 + Data);
 end;
 
 procedure TEscPrinterPosiflex.QRCodePrint;
 begin
-  Send(#$1D#$28#$6B#$04#$00#$31#$51);
+  Logger.Debug('TEscPrinterPosiflex.QRCodePrint');
+  Send(#$1D#$28#$6B#$03#$00#$31#$51#$30);
 end;
-
 
 procedure TEscPrinterPosiflex.SetKanjiQuadSizeMode(Value: Boolean);
 begin
@@ -1637,7 +1627,7 @@ end;
 
 procedure TEscPrinterPosiflex.PrintUserChar(Char: WideChar);
 var
-  Item: TUserCharacter;
+  Item: TCharCode;
 begin
   Item := FUserChars.ItemByChar(Char);
   if Item <> nil then
@@ -1646,5 +1636,86 @@ begin
     PrintText(Chr(Item.Code));
   end;
 end;
+
+procedure TEscPrinterPosiflex.PrintKazakhChar(Char: WideChar);
+var
+  Item: TCharCode;
+begin
+  Item := FKazakhChars.ItemByChar(Char);
+  if Item <> nil then
+  begin
+    SetCodePage(CODEPAGE_KAZAKH);
+    PrintText(Chr(Item.Code));
+  end;
+end;
+
+function TestCodePage(S: WideString; CodePage: Integer): Boolean;
+var
+  P: PAnsiChar;
+  Count: Integer;
+  UsedDefaultChar: BOOL;
+const
+  DefaultChar: PAnsiChar = '?';
+begin
+  ODS('TestCharCodePage. CodePage: ' + IntToStr(CodePage));
+  Count := WideCharToMultiByte(CodePage, 0, PWideChar(S), Length(S), nil, 0,
+    nil, nil);
+  if Count > 0 then
+  begin
+    P := AllocMem(Count);
+    Count := WideCharToMultiByte(CodePage, 0, PWideChar(S), Length(S),
+      P, Count, DefaultChar, @UsedDefaultChar);
+    FreeMem(P);
+  end;
+  Result := (Count > 0) and(not UsedDefaultChar);
+end;
+
+class procedure TEscPrinterPosiflex.CharacterToCodePage(C: WideChar;
+  var CodePage: Integer);
+var
+  i: Integer;
+begin
+  if TestCodePage(C, CodePage) then Exit;
+  for i := Low(SupportedCodePages) to High(SupportedCodePages) do
+  begin
+    CodePage := SupportedCodePages[i];
+    if TestCodePage(C, CodePage) then Exit;
+  end;
+  CodePage := 1251;
+end;
+
+
+procedure TEscPrinterPosiflex.PrintUnicode(const AText: WideString);
+var
+  i: Integer;
+  C: WideChar;
+  CodePage: Integer;
+begin
+  CodePage := 1251;
+  if TestCodePage(AText, CodePage) then
+  begin
+    Logger.Debug(WideFormat('TPosPrinterPosiflex.PrintText(''%s'')', [AText]));
+    SetCodePage(CharacterSetToPrinterCodePage(CodePage));
+    PrintText(WideStringToAnsiString(CodePage, AText));
+  end else
+  begin
+    for i := 1 to Length(AText) do
+    begin
+      C := AText[i];
+      Logger.Debug(WideFormat('TPosPrinterPosiflex.PrintChar(''%s'')', [C]));
+      if IsKazakhUnicodeChar(C) then
+      begin
+        PrintKazakhChar(C);
+      end else
+      begin
+        CharacterToCodePage(C, CodePage);
+        SetCodePage(CharacterSetToPrinterCodePage(CodePage));
+        PrintText(WideStringToAnsiString(CodePage, C));
+      end;
+    end;
+  end;
+  DisableUserCharacters;
+end;
+
 
 end.

@@ -184,7 +184,6 @@ type
       BMPType, Width, Alignment: Integer);
     procedure PrintBarcodeAsGraphics(var Barcode: TPosBarcode);
     procedure PrintWideString(const AText: WideString);
-    procedure PrintUnicode(const AText: WideString);
     function ClearResult: Integer;
     function HandleException(E: Exception): Integer;
     procedure CheckEnabled;
@@ -604,8 +603,6 @@ type
     property OnStatusUpdateEvent: TOPOSPOSPrinterStatusUpdateEvent read FOnStatusUpdateEvent write FOnStatusUpdateEvent;
   end;
 
-procedure CharacterToCodePage(C: WideChar; var CodePage: Integer);
-
 implementation
 
 const
@@ -633,7 +630,6 @@ begin
     865: Result := CODEPAGE_CP865;
     866: Result := CODEPAGE_CP866;
     1251: Result := CODEPAGE_WCP1251;
-    1253: Result := CODEPAGE_WCP1253;
     1254: Result := CODEPAGE_WCP1254;
     1255: Result := CODEPAGE_WCP1255;
     1256: Result := CODEPAGE_WCP1256;
@@ -651,20 +647,6 @@ begin
   begin
     Result := CharacterSet = SupportedCodePages[i];
     if Result then Break;
-  end;
-end;
-
-function ArrayToString(const Items: array of Integer): string;
-var
-  i: Integer;
-begin
-  Result := '';
-  for i := Low(Items) to High(Items) do
-  begin
-    if Result <> '' then
-      Result := Result + ',';
-
-    Result := Result + IntToStr(Items[i]);
   end;
 end;
 
@@ -710,7 +692,7 @@ end;
 
 procedure TPosPrinterPosiflex.Initialize;
 const
-  DefPageModeArea: TPoint = (X: 576; Y: 832);
+  DefPageModeArea: TPoint = (X: 512; Y: 832);
   DefPageModePrintArea: TRect = (Left: 0; Top: 0; Right: 0; Bottom: 0);
 begin
   FAsyncMode := False;
@@ -756,7 +738,7 @@ begin
   FCapRecItalic := False;
   FCapRecLeft90 := True;
   FCapRecMarkFeed := 0;
-  FCapRecPageMode := True;
+  FCapRecPageMode := False;
   FCapRecPapercut := True;
   FCapRecPresent := True;
   FCapRecRight90 := True;
@@ -788,7 +770,7 @@ begin
   FCapSlpUnderline := False;
   FCapTransaction := True;
   FCartridgeNotify := 0;
-  FCharacterSet := 1251;
+  FCharacterSet := PTR_CS_UNICODE;
   FCharacterSetList := ArrayToString(SupportedCodePages);
   FControlObjectDescription := 'OPOS Windows Printer';
   FControlObjectVersion := 1014001;
@@ -828,7 +810,7 @@ begin
   FRecLineCharsList := '48,64';
   FRecLineHeight := 24;
   FRecLineSpacing := 30;
-  FRecLineWidth := 576;
+  FRecLineWidth := 512;
   FRecNearEnd := False;
   FRecSidewaysMaxChars := 69;
   FRecSidewaysMaxLines := 17;
@@ -1684,10 +1666,8 @@ begin
 end;
 
 function TPosPrinterPosiflex.Get_RecLinesToPaperCut: Integer;
-const
-  DistanceToCutterInDots = 128;
 begin
-  Result := DistanceToCutterInDots div (RecLineSpacing + RecLineHeight + 10);
+  Result := 0;
 end;
 
 function TPosPrinterPosiflex.Get_RecLineWidth: Integer;
@@ -2438,8 +2418,6 @@ begin
   if FInitialized then Exit;
 
   FPrinter.Initialize;
-  FPrinter.WriteKazakhCharacters;
-  FPrinter.DisableUserCharacters;
   FPrinter.SetCodePage(CODEPAGE_WCP1251);
   FPrinter.SetCharacterFont(FONT_TYPE_A);
   if FontName = FontNameB then
@@ -2858,78 +2836,11 @@ var
 begin
   case CharacterSet of
     PTR_CS_UNICODE,
-    PTR_CS_WINDOWS: PrintUnicode(AText);
+    PTR_CS_WINDOWS: FPrinter.PrintUnicode(AText);
   else
     CodePage := CharacterSetToCodePage(CharacterSet);
     FPrinter.PrintText(WideStringToAnsiString(CodePage, AText));
   end;
-end;
-
-function TestCodePage(S: WideString; CodePage: Integer): Boolean;
-var
-  P: PAnsiChar;
-  Count: Integer;
-  UsedDefaultChar: BOOL;
-const
-  DefaultChar: PAnsiChar = '?';
-begin
-  ODS('TestCharCodePage. CodePage: ' + IntToStr(CodePage));
-  Count := WideCharToMultiByte(CodePage, 0, PWideChar(S), Length(S), nil, 0,
-    nil, nil);
-  if Count > 0 then
-  begin
-    P := AllocMem(Count);
-    Count := WideCharToMultiByte(CodePage, 0, PWideChar(S), Length(S),
-      P, Count, DefaultChar, @UsedDefaultChar);
-    FreeMem(P);
-  end;
-  Result := (Count > 0) and(not UsedDefaultChar);
-end;
-
-procedure CharacterToCodePage(C: WideChar; var CodePage: Integer);
-var
-  i: Integer;
-begin
-  if TestCodePage(C, CodePage) then Exit;
-  for i := Low(EscPrinterPosiflex.SupportedCodePages) to High(EscPrinterPosiflex.SupportedCodePages) do
-  begin
-    CodePage := EscPrinterPosiflex.SupportedCodePages[i];
-    if TestCodePage(C, CodePage) then Exit;
-  end;
-  CodePage := 1251;
-end;
-
-procedure TPosPrinterPosiflex.PrintUnicode(const AText: WideString);
-var
-  i: Integer;
-  C: WideChar;
-  CodePage: Integer;
-begin
-  CodePage := 1251;
-  if TestCodePage(AText, CodePage) then
-  begin
-    Logger.Debug(WideFormat('TPosPrinterPosiflex.PrintText(''%s'')', [AText]));
-    Printer.SetCodePage(CharacterSetToPrinterCodePage(CodePage));
-    Printer.PrintText(WideStringToAnsiString(CodePage, AText));
-  end else
-  begin
-    for i := 1 to Length(AText) do
-    begin
-      C := AText[i];
-      Logger.Debug(WideFormat('TPosPrinterPosiflex.PrintChar(''%s'')', [C]));
-      if Printer.IsUserChar(C) then
-      begin
-        Printer.PrintUserChar(C);
-      end else
-      begin
-        Printer.DisableUserCharacters;
-        CharacterToCodePage(C, CodePage);
-        Printer.SetCodePage(CharacterSetToPrinterCodePage(CodePage));
-        Printer.PrintText(WideStringToAnsiString(CodePage, C));
-      end;
-    end;
-  end;
-  Printer.DisableUserCharacters;
 end;
 
 end.

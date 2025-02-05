@@ -63,7 +63,7 @@ uses
   POSPrinterLog in '..\..\src\Opos\POSPrinterLog.pas',
   PosWinPrinter in '..\..\src\Shared\PosWinPrinter.pas',
   ByteUtils in '..\..\src\Shared\ByteUtils.pas',
-  duPosPrinterOA48 in 'units\duPosPrinterOA48.pas',
+  duPosPrinterPosiflex in 'units\duPosPrinterPosiflex.pas',
   PrinterPort in '..\..\src\Shared\PrinterPort.pas',
   SerialPort in '..\..\src\Shared\SerialPort.pas',
   DeviceNotification in '..\..\src\Shared\DeviceNotification.pas',
@@ -97,7 +97,9 @@ uses
   CustomPrinter in '..\..\src\Shared\CustomPrinter.pas',
   duEscPrinterRongta in 'units\duEscPrinterRongta.pas',
   duEscPrinterOA48 in 'units\duEscPrinterOA48.pas',
-  RawPrinterPort in '..\..\src\Shared\RawPrinterPort.pas';
+  RawPrinterPort in '..\..\src\Shared\RawPrinterPort.pas',
+  CharCode in '..\..\src\Shared\CharCode.pas',
+  duPosPrinterOA48 in 'units\duPosPrinterOA48.pas';
 
 {$R *.RES}
 {$R ..\..\src\OposWebkassa\OposWebkassa.tlb}

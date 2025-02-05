@@ -9,7 +9,7 @@ uses
   TntGraphics,
   // This
   ByteUtils, PrinterPort, RegExpr, StringUtils, LogFile, FileUtils,
-  EscPrinterUtils;
+  EscPrinterUtils, CharCode;
 
 const
   /////////////////////////////////////////////////////////////////////////////
@@ -275,31 +275,6 @@ type
     data: AnsiString;
   end;
 
-  { TUserCharacter }
-
-  TUserCharacter = class(TCollectionItem)
-  private
-    FCode: Byte;
-    FFont: Byte;
-    FChar: WideChar;
-  public
-    property Code: Byte read FCode;
-    property Font: Byte read FFont;
-    property Char: WideChar read FChar;
-  end;
-
-  { TUserCharacters }
-
-  TUserCharacters = class(TCollection)
-  private
-    function GetItem(Index: Integer): TUserCharacter;
-    procedure Remove(Char: WideChar);
-  public
-    function ItemByChar(Char: WideChar): TUserCharacter;
-    function Add(Code: Byte; Char: WideChar; Font: Byte): TUserCharacter;
-    property Items[Index: Integer]: TUserCharacter read GetItem; default;
-  end;
-
   { TEscPrinterOA48 }
 
   TEscPrinterOA48 = class
@@ -310,7 +285,7 @@ type
     FUserCharCode: Byte;
     FInTransaction: Boolean;
     FUserCharacterMode: Integer;
-    FUserChars: TUserCharacters;
+    FUserChars: TCharCodes;
     FDeviceMetrics: TDeviceMetrics;
     procedure CheckUserCharCode(Code: Byte);
     procedure ClearUserChars;
@@ -481,49 +456,6 @@ begin
   end;
 end;
 
-{ TUserChars }
-
-procedure TUserCharacters.Remove(Char: WideChar);
-var
-  i: Integer;
-  Item: TUserCharacter;
-begin
-  for i := Count-1 downto 0 do
-  begin
-    Item := Items[i];
-    if Item.Char = Char then
-    begin
-      Item.Free;
-    end;
-  end;
-end;
-
-function TUserCharacters.ItemByChar(Char: WideChar): TUserCharacter;
-var
-  i: Integer;
-begin
-  for i := 0 to Count-1 do
-  begin
-    Result := Items[i];
-    if Result.Char = Char then Exit;
-  end;
-  Result := nil;
-end;
-
-function TUserCharacters.Add(Code: Byte; Char: WideChar; Font: Byte): TUserCharacter;
-begin
-  Remove(Char);
-  Result := TUserCharacter.Create(Self);
-  Result.FCode := Code;
-  Result.FChar := Char;
-  Result.FFont := Font;
-end;
-
-function TUserCharacters.GetItem(Index: Integer): TUserCharacter;
-begin
-  Result := inherited Items[Index] as TUserCharacter;
-end;
-
 { TEscPrinterOA48 }
 
 constructor TEscPrinterOA48.Create(APort: IPrinterPort; ALogger: ILogFile);
@@ -532,7 +464,7 @@ begin
   FPort := APort;
   FLogger := ALogger;
   FDeviceMetrics.PrintWidth := 576;
-  FUserChars := TUserCharacters.Create(TUserCharacter);
+  FUserChars := TCharCodes.Create(TCharCode);
 end;
 
 destructor TEscPrinterOA48.Destroy;
@@ -1452,7 +1384,7 @@ end;
 
 procedure TEscPrinterOA48.PrintUserChar(Char: WideChar);
 var
-  Item: TUserCharacter;
+  Item: TCharCode;
 begin
   Item := FUserChars.ItemByChar(Char);
   if Item <> nil then

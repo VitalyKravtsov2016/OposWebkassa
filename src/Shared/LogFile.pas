@@ -264,7 +264,7 @@ end;
 procedure ODS(const S: WideString);
 begin
 {$IFDEF DEBUG}
-  //OutputDebugStringW(PWideChar(S));
+  OutputDebugStringW(PWideChar(S));
 {$ENDIF}
 end;
 

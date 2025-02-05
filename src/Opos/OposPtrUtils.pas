@@ -20,6 +20,8 @@ function MapToDots(const R: TPoint; MapMode: Integer): TPoint; overload;
 function MapFromDots(const R: TRect; MapMode: Integer): TRect; overload;
 function MapFromDots(const R: TPoint; MapMode: Integer): TPoint; overload;
 function StringsToCommaSeparatedList(Strings: TStrings): string;
+function ArrayToString(const Src: array of Integer): string;
+procedure SortArray(Src: array of Integer; var Dst: array of Integer);
 
 implementation
 
@@ -293,6 +295,59 @@ begin
   Result.X := MapFromDots(R.X, MapMode);
   Result.Y := MapFromDots(R.Y, MapMode);
 end;
+
+function ArrayToString(const Src: array of Integer): string;
+var
+  i: Integer;
+  Dst: array of Integer;
+begin
+  Result := '';
+
+  SetLength(Dst, Length(Src));
+  SortArray(Src, Dst);
+  for i := Low(Dst) to High(Dst) do
+  begin
+    if Result <> '' then
+      Result := Result + ',';
+
+    Result := Result + IntToStr(Dst[i]);
+  end;
+end;
+
+function CompareInt(Item1, Item2: Integer): Integer;
+begin
+  if Item1 = Item2 then Result := 0 else
+  if Item1 > Item2 then Result := 1 else
+  Result := -1;
+end;
+
+function SortIntProc(Item1, Item2: Pointer): Integer;
+begin
+  Result := CompareInt(Integer(Item1), Integer(Item2));
+end;
+
+procedure SortArray(Src: array of Integer; var Dst: array of Integer);
+var
+  i: Integer;
+  List: TList;
+begin
+  List := TList.Create;
+  try
+    for i := Low(Src) to High(Src) do
+    begin
+      List.Add(Pointer(Src[i]));
+    end;
+    List.Sort(SortIntProc);
+    for i := 0 to List.Count-1 do
+    begin
+      Dst[i] := Integer(List[i]);
+    end;
+  finally
+    List.Free;
+  end;
+end;
+
+
 
 
 

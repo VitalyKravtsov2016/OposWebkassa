@@ -14,14 +14,13 @@ uses
   FileUtils, SocketPort, RawPrinterPort, USBPrinterPort, EscPrinterUtils;
 
 type
-  { TPrinterPosiflexTest }
+  { TEscPrinterPosiflexTest }
 
-  TPrinterPosiflexTest = class(TTestCase)
+  TEscPrinterPosiflexTest = class(TTestCase)
   private
     FLogger: ILogFile;
     FPrinter: TEscPrinterPosiflex;
     FPrinterPort: IPrinterPort;
-    function GetKazakhChars2: AnsiString;
     function CreateUSBPort: TUSBPrinterPort;
   protected
     procedure SetUp; override;
@@ -36,13 +35,13 @@ type
     function CreateSerialPort: TSerialPort;
     function CreateSocketPort: TSocketPort;
     function GetKazakhText: WideString;
-    function GetKazakhChars: AnsiString;
 
     property Printer: TEscPrinterPosiflex read FPrinter;
   published
+    procedure TestReadPrinterID;
+
     procedure TestBitmap;
     procedure TestPrintRasterBMP;
-    procedure TestReadPrinterID;
     procedure TestInitialize;
     procedure TestPrintText;
     procedure TestReadStatus;
@@ -79,7 +78,9 @@ type
     procedure TestPageModeA;
     procedure TestPageModeA2;
     procedure TestPageModeB;
-    procedure TestPrintRussianFontB;
+    procedure TestKazakhCodePage;
+    procedure TestKazakhCodePage2;
+    procedure TestKazakhCodePage3;
     procedure TestPrintFontBMode;
     procedure TestPrintFontBMode2;
     procedure TestCutterError;
@@ -87,9 +88,9 @@ type
 
 implementation
 
-{ TPrinterPosiflexTest }
+{ TEscPrinterPosiflexTest }
 
-procedure TPrinterPosiflexTest.SetUp;
+procedure TEscPrinterPosiflexTest.SetUp;
 begin
   inherited SetUp;
   FLogger := TLogFile.Create;
@@ -105,25 +106,28 @@ begin
   FPrinter := TEscPrinterPosiflex.Create(FPrinterPort, FLogger);
 end;
 
-procedure TPrinterPosiflexTest.TearDown;
+procedure TEscPrinterPosiflexTest.TearDown;
 begin
   FPrinter.Free;
   FPrinterPort := nil;
   inherited TearDown;
 end;
 
-function TPrinterPosiflexTest.CreateUSBPort: TUSBPrinterPort;
+function TEscPrinterPosiflexTest.CreateUSBPort: TUSBPrinterPort;
+var
+  Devices: TUsbDevices;
 begin
-  Result := TUSBPrinterPort.Create(FLogger, '');
-  Result.GetDeviceFileName;
+  Devices := ReadPosiflexDevices;
+  CheckEquals(1, Length(Devices), 'Length(Devices)');
+  Result := TUSBPrinterPort.Create(FLogger, Devices[0].Path);
 end;
 
-function TPrinterPosiflexTest.CreateRawPort: TRawPrinterPort;
+function TEscPrinterPosiflexTest.CreateRawPort: TRawPrinterPort;
 begin
   Result := TRawPrinterPort.Create(FLogger, 'PP-6900 Thermal Printer');
 end;
 
-function TPrinterPosiflexTest.CreateSerialPort: TSerialPort;
+function TEscPrinterPosiflexTest.CreateSerialPort: TSerialPort;
 var
   SerialParams: TSerialParams;
 begin
@@ -138,7 +142,7 @@ begin
   Result := TSerialPort.Create(SerialParams, FLogger);
 end;
 
-function TPrinterPosiflexTest.CreateSocketPort: TSocketPort;
+function TEscPrinterPosiflexTest.CreateSocketPort: TSocketPort;
 var
   SocketParams: TSocketParams;
 begin
@@ -149,7 +153,7 @@ begin
   Result := TSocketPort.Create(SocketParams, FLogger);
 end;
 
-procedure TPrinterPosiflexTest.TestPrintText;
+procedure TEscPrinterPosiflexTest.TestPrintText;
 begin
   FPrinter.PrintText('12345678901234567890123456789012345678901234567890' + CRLF);
 
@@ -158,13 +162,13 @@ begin
   FPrinter.PrintText('Печать строки 3' + CRLF);
 end;
 
-procedure TPrinterPosiflexTest.TestInitialize;
+procedure TEscPrinterPosiflexTest.TestInitialize;
 begin
   FPrinter.Initialize;
   FPrinter.SetCodePage(CODEPAGE_WCP1251);
 end;
 
-procedure TPrinterPosiflexTest.TestReadStatus;
+procedure TEscPrinterPosiflexTest.TestReadStatus;
 var
   ErrorStatus: TErrorStatus;
   OfflineStatus: TOfflineStatus;
@@ -193,7 +197,7 @@ begin
   CheckEquals(False, RollStatus.PaperNearEnd, 'PaperNearEnd');
 end;
 
-procedure TPrinterPosiflexTest.TestPrintMode;
+procedure TEscPrinterPosiflexTest.TestPrintMode;
 var
   PrintMode: TPrintMode;
 begin
@@ -290,7 +294,7 @@ begin
   FPrinter.PartialCut;
 end;
 
-procedure TPrinterPosiflexTest.TestPrintModeInLine;
+procedure TEscPrinterPosiflexTest.TestPrintModeInLine;
 var
   PrintMode: TPrintMode;
 begin
@@ -339,7 +343,7 @@ begin
   FPrinter.PrintText(' Double height & width' + CRLF);
 end;
 
-procedure TPrinterPosiflexTest.TestBarcode;
+procedure TEscPrinterPosiflexTest.TestBarcode;
 begin
   FPrinter.SetNormalPrintMode;
   FPrinter.SetBarcodeLeft(50);
@@ -359,11 +363,14 @@ begin
   FPrinter.PrintBarcode(BARCODE_CODE39, '837465873');
   FPrinter.PrintText('ITF' + CRLF);
   FPrinter.PrintBarcode(BARCODE_ITF, '83746587');
+(*
+  Posiflex 6900 виснет при печати CODABAR
   FPrinter.PrintText('CODABAR' + CRLF);
-  FPrinter.PrintBarcode(BARCODE_CODABAR, '837465873');
+  FPrinter.PrintBarcode(BARCODE_CODABAR, '8374658738237468');
+*)
 end;
 
-procedure TPrinterPosiflexTest.TestBarcode2;
+procedure TEscPrinterPosiflexTest.TestBarcode2;
 begin
   FPrinter.SetNormalPrintMode;
   FPrinter.SetBarcodeLeft(50);
@@ -392,7 +399,7 @@ begin
   FPrinter.PrintText(CRLF);
 end;
 
-procedure TPrinterPosiflexTest.TestPDF417;
+procedure TEscPrinterPosiflexTest.TestPDF417;
 var
   Barcode: TPDF417;
 const
@@ -410,10 +417,11 @@ begin
   FPrinter.printPDF417(Barcode);
 end;
 
-procedure TPrinterPosiflexTest.TestQRCode;
+procedure TEscPrinterPosiflexTest.TestQRCode;
 var
   QRCode: TQRCode;
 begin
+  QRCode.Model := 2;
   QRCode.ModuleSize := 3;
   QRCode.ECLevel := PFX_QRCODE_ECL_7;
   QRCode.data := 'http://dev.kofd.kz/consumer?i=1320526842876&f=555697470167&s=2000.00&t=20240327T093611';
@@ -425,11 +433,12 @@ end;
 ///////////////////////////////////////////////////////////////////////////////
 // ECL - Error correction level
 
-procedure TPrinterPosiflexTest.TestQRCodeECL;
+procedure TEscPrinterPosiflexTest.TestQRCodeECL;
 var
   QRCode: TQRCode;
 begin
-  QRCode.ModuleSize := 4;
+  QRCode.Model := 1;
+  QRCode.ModuleSize := 3;
   QRCode.ECLevel := 0;
   QRCode.data := 'http://dev.kofd.kz/consumer?i=1320526842876&f=555697470167&s=2000.00&t=20240327T093611';
 
@@ -455,10 +464,11 @@ begin
   FPrinter.printQRCode(QRCode);
 end;
 
-procedure TPrinterPosiflexTest.TestQRCodeModuleSize;
+procedure TEscPrinterPosiflexTest.TestQRCodeModuleSize;
 var
   QRCode: TQRCode;
 begin
+  QRCode.Model := 2;
   QRCode.ECLevel := PFX_QRCODE_ECL_7;
   QRCode.data := 'http://dev.kofd.kz/consumer?i=1320526842876&f=555697470167&s=2000.00&t=20240327T093611';
 
@@ -471,12 +481,12 @@ begin
   QRCode.ModuleSize := 5;
   FPrinter.printQRCode(QRCode);
 
-  FPrinter.PrintText('Module size 10' + CRLF);
-  QRCode.ModuleSize := 10;
+  FPrinter.PrintText('Module size 100' + CRLF);
+  QRCode.ModuleSize := 100;
   FPrinter.printQRCode(QRCode);
 end;
 
-procedure TPrinterPosiflexTest.TestQRCodeJustification;
+procedure TEscPrinterPosiflexTest.TestQRCodeJustification;
 var
   QRCode: TQRCode;
 begin
@@ -494,7 +504,7 @@ begin
   FPrinter.printQRCode(QRCode);
 end;
 
-procedure TPrinterPosiflexTest.TestBitmap;
+procedure TEscPrinterPosiflexTest.TestBitmap;
 var
   Bitmap: TBitmap;
   FileName: string;
@@ -517,7 +527,7 @@ begin
   end;
 end;
 
-procedure TPrinterPosiflexTest.TestPrintRasterBMP;
+procedure TEscPrinterPosiflexTest.TestPrintRasterBMP;
 var
   Bitmap: TBitmap;
 begin
@@ -539,8 +549,10 @@ _2013-01-05
 _RONGTA
 *)
 
-procedure TPrinterPosiflexTest.TestReadPrinterID;
+procedure TEscPrinterPosiflexTest.TestReadPrinterID;
 begin
+  CheckEquals('TM-T88III', FPrinter.ReadPrinterID(67), 'Printer name');
+(*
   CheckEquals('7.03 ESC/POS', FPrinter.ReadPrinterID(65), 'Firmware version');
 
   CheckEquals('7.03 ESC/POS', FPrinter.ReadFirmwareVersion, 'Firmware version');
@@ -550,15 +562,16 @@ begin
   CheckEquals('TM-T88III', FPrinter.ReadPrinterName, 'Printer name');
   CheckEquals('D6KG074561', FPrinter.ReadPrinterID(68), 'Serial number');
   CheckEquals('D6KG074561', FPrinter.ReadSerialNumber, 'Serial number');
+*)  
 end;
 
-procedure TPrinterPosiflexTest.PrintTestPage;
+procedure TEscPrinterPosiflexTest.PrintTestPage;
 begin
   FPrinter.Initialize;
   FPrinter.PrintTestPage;
 end;
 
-procedure TPrinterPosiflexTest.TestJustification;
+procedure TEscPrinterPosiflexTest.TestJustification;
 var
   QRCode: TQRCode;
 begin
@@ -573,7 +586,7 @@ begin
   FPrinter.SetJustification(JUSTIFICATION_LEFT);
 end;
 
-procedure TPrinterPosiflexTest.TestJustification2;
+procedure TEscPrinterPosiflexTest.TestJustification2;
 begin
   FPrinter.Initialize;
   FPrinter.PrintText('Default justification' + CRLF);
@@ -585,7 +598,7 @@ begin
   FPrinter.PrintText('Right justification' + CRLF);
 end;
 
-procedure TPrinterPosiflexTest.TestUnderlined;
+procedure TEscPrinterPosiflexTest.TestUnderlined;
 var
   PrintMode: TPrintMode;
 begin
@@ -611,13 +624,13 @@ begin
   FPrinter.PrintText('Underlined mode, font A' + CRLF);
 end;
 
-procedure TPrinterPosiflexTest.TestBeepParams;
+procedure TEscPrinterPosiflexTest.TestBeepParams;
 begin
   FPrinter.Initialize;
   FPrinter.SetBeepParams(3, 1);
 end;
 
-procedure TPrinterPosiflexTest.TestEmphasized;
+procedure TEscPrinterPosiflexTest.TestEmphasized;
 begin
   FPrinter.Initialize;
   FPrinter.PrintText('Emphasized mode OFF ');
@@ -627,7 +640,7 @@ begin
   FPrinter.SetEmphasizedMode(False);
 end;
 
-procedure TPrinterPosiflexTest.TestDoubleStrikeMode;
+procedure TEscPrinterPosiflexTest.TestDoubleStrikeMode;
 begin
   FPrinter.Initialize;
   FPrinter.PrintText('Double-strike mode OFF ');
@@ -637,7 +650,7 @@ begin
   FPrinter.SetDoubleStrikeMode(False);
 end;
 
-procedure TPrinterPosiflexTest.TestCharacterFont;
+procedure TEscPrinterPosiflexTest.TestCharacterFont;
 begin
   FPrinter.Initialize;
   FPrinter.PrintText('Character font A' + CRLF);
@@ -648,7 +661,7 @@ begin
   FPrinter.SetCharacterFont(0);
 end;
 
-procedure TPrinterPosiflexTest.TestCodePage;
+procedure TEscPrinterPosiflexTest.TestCodePage;
 const
   TextCodePage1251: WideString = 'Кодовая страница 1251';
   TextCodePage866: WideString = 'Кодовая страница 866';
@@ -681,7 +694,7 @@ begin
   end;
 end;
 
-procedure TPrinterPosiflexTest.TestCodePage2;
+procedure TEscPrinterPosiflexTest.TestCodePage2;
 const
   TextCodePage1251: WideString = 'Кодовая страница 1251';
   TextCodePage866: WideString = 'Кодовая страница 866';
@@ -713,7 +726,7 @@ begin
   end;
 end;
 
-procedure TPrinterPosiflexTest.TestCodePages;
+procedure TEscPrinterPosiflexTest.TestCodePages;
 var
   i: Integer;
   Text: AnsiString;
@@ -722,8 +735,10 @@ begin
   for i := $80 to $FF do
     Text := Text + AnsiChar(i);
 
-  //for i := 0 to 70 do
-  for i := 71 to 75 do
+  //for i := 0 to 20 do
+  //for i := 21 to 40 do
+  //for i := 220 to 230 do
+  i := 224;
   begin
     FPrinter.Initialize;
     FPrinter.SetCodePage(i);
@@ -732,7 +747,7 @@ begin
   end;
 end;
 
-procedure TPrinterPosiflexTest.TestNVBitImage;
+procedure TEscPrinterPosiflexTest.TestNVBitImage;
 var
   Bitmap: TBitmap;
   FileName: string;
@@ -751,7 +766,7 @@ begin
   end;
 end;
 
-procedure TPrinterPosiflexTest.TestCoverOpen;
+procedure TEscPrinterPosiflexTest.TestCoverOpen;
 var
   i: Integer;
 begin
@@ -779,7 +794,7 @@ begin
 *)
 end;
 
-procedure TPrinterPosiflexTest.TestRecoverError;
+procedure TEscPrinterPosiflexTest.TestRecoverError;
 var
   ErrorStatus: TErrorStatus;
 begin
@@ -790,7 +805,7 @@ begin
   end;
 end;
 
-procedure TPrinterPosiflexTest.TestLineSpacing;
+procedure TEscPrinterPosiflexTest.TestLineSpacing;
 var
   i: Integer;
 begin
@@ -812,7 +827,7 @@ begin
   end;
 end;
 
-procedure TPrinterPosiflexTest.TestCutDistanceFontA;
+procedure TEscPrinterPosiflexTest.TestCutDistanceFontA;
 begin
   FPrinter.Initialize;
   FPrinter.SetLineSpacing(0);
@@ -822,17 +837,14 @@ begin
   FPrinter.PrintText('Trailer line 3' + CRLF);
   FPrinter.PrintText('Trailer line 4' + CRLF);
   FPrinter.PrintText('Trailer line 5' + CRLF);
-  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText(' ' + CRLF);
+  FPrinter.PartialCut;
   FPrinter.PrintText('Header line 1' + CRLF);
   FPrinter.PrintText('Header line 2' + CRLF);
   FPrinter.PrintText('Header line 3' + CRLF);
-  FPrinter.PartialCut;
-  FPrinter.PrintText('Header line 4' + CRLF);
-  FPrinter.PrintText('Header line 5' + CRLF);
-  FPrinter.PrintText('Header line 6' + CRLF);
 end;
 
-procedure TPrinterPosiflexTest.TestCutDistanceFontB;
+procedure TEscPrinterPosiflexTest.TestCutDistanceFontB;
 begin
   FPrinter.Initialize;
   FPrinter.SetLineSpacing(0);
@@ -894,51 +906,21 @@ arabic letter uighur kazakh kirghiz alef maksura medial form
 kazakhstan flag
 *)
 
-function TPrinterPosiflexTest.GetKazakhChars: AnsiString;
-var
-  i: Integer;
-  Code: Byte;
+procedure TEscPrinterPosiflexTest.TestUserCharacter;
 begin
-  Result := '';
-  Code := USER_CHAR_CODE_MIN;
-  for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
-  begin
-    Result := Result + Chr(Code);
-    Inc(Code);
-  end;
-end;
-
-function TPrinterPosiflexTest.GetKazakhChars2: AnsiString;
-var
-  i: Integer;
-  Code: Byte;
-begin
-  Result := '';
-  Code := USER_CHAR_CODE_MIN;
-  for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
-  begin
-    Result := Result + Chr(Code);
-    Inc(Code);
-  end;
-end;
-
-procedure TPrinterPosiflexTest.TestUserCharacter;
-begin
+(*
   FPrinter.Initialize;
   FPrinter.WriteKazakhCharacters;
   // FONT A
   FPrinter.SetCharacterFont(FONT_TYPE_A);
   FPrinter.PrintText('KAZAKH CHARACTERS A: ');
-  FPrinter.SelectUserCharacter(1);
-  FPrinter.PrintText(GetKazakhChars2 + CRLF);
-  FPrinter.SelectUserCharacter(0);
+  FPrinter.PrintUnicode(GetKazakhUnicodeChars + CRLF);
   // FONT B
   FPrinter.SetCharacterFont(FONT_TYPE_B);
   FPrinter.PrintText('KAZAKH CHARACTERS B: ');
   FPrinter.SelectUserCharacter(1);
   FPrinter.PrintText(GetKazakhChars2 + CRLF);
   FPrinter.SelectUserCharacter(0);
-
 
   (*
   // Test that charater printed at full size
@@ -966,7 +948,7 @@ begin
 *)
 end;
 
-procedure TPrinterPosiflexTest.TestUserCharacter2;
+procedure TEscPrinterPosiflexTest.TestUserCharacter2;
 var
   Bitmap: TBitmap;
   UserChar: TUserChar;
@@ -990,7 +972,7 @@ begin
   end;
 end;
 
-procedure TPrinterPosiflexTest.TestBitmap2;
+procedure TEscPrinterPosiflexTest.TestBitmap2;
 const
   DownloadBMPCommand =
   '1D 2A 0A 0A FF F9 E6 61 E6 7E 06 1F FF 80 80 19 9F 9F F9 E6 18 18 01 80 80 19 9F 9F F9 E6' + CRLF +
@@ -1034,7 +1016,7 @@ begin
   end;
 end;
 
-procedure TPrinterPosiflexTest.TestPageMode;
+procedure TEscPrinterPosiflexTest.TestPageMode;
 const
   Barcode = 't=20240719T1314&s=460.00&fn=7380440700076549&i=41110&fp=2026476352&n=1';
 var
@@ -1042,26 +1024,20 @@ var
   PageSize: TRect;
 begin
   FPrinter.Initialize;
-  //FPrinter.SetLineSpacing(0);
+  FPrinter.SetCodePage(CODEPAGE_WCP1251);
   FPrinter.BeginDocument;
   // Page mode
   FPrinter.SetPageMode;
   PageSize.Left := 0;
   PageSize.Top := 0;
-  PageSize.Right := 652;
+  PageSize.Right := 512;
   PageSize.Bottom := 550;
-  //FPrinter.SetPageModeArea(PageSize);
+  FPrinter.SetPageModeArea(PageSize);
   // QR code on the right
   FPrinter.SetJustification(JUSTIFICATION_LEFT);
   FPrinter.PrintText('ЗН ККТ 00106304241645' + CRLF);
   FPrinter.PrintText('РН ККТ 0000373856050035' + CRLF);
   FPrinter.PrintText('ИНН 7725699008' + CRLF);
-  (*
-  QRCode.ECLevel := 0;
-  QRCode.ModuleSize := 6;
-  QRCode.data := Barcode;
-  FPrinter.printQRCode(QRCode);
-  *)
   // Text on the left
   //FPrinter.SetPMRelativeVerticalPosition(70);
   FPrinter.SetPMAbsoluteVerticalPosition(70);
@@ -1105,7 +1081,7 @@ end;
   ПРИХОД 19.07.24 13:14
   *)
 
-procedure TPrinterPosiflexTest.TestPageModeA;
+procedure TEscPrinterPosiflexTest.TestPageModeA;
 const
   Separator = '------------------------------------------------';
   Barcode = 't=20240719T1314&s=460.00&fn=7380440700076549&i=41110&fp=2026476352&n=1';
@@ -1202,7 +1178,7 @@ begin
   FPrinter.EndDocument;
 end;
 
-procedure TPrinterPosiflexTest.TestPageModeA2;
+procedure TEscPrinterPosiflexTest.TestPageModeA2;
 const
   Separator = '------------------------------------------------';
   Barcode = 'http://dev.kofd.kz/consumer?i=1556041617048&f=768814097419&s=3098.00&t=20241211T151839';
@@ -1220,7 +1196,7 @@ begin
   // Page mode area for text
   PageSize.Left := 0;
   PageSize.Top := 0;
-  PageSize.Right := 576-150;
+  PageSize.Right := 512-150;
   PageSize.Bottom := 450;
   FPrinter.SetPageModeArea(PageSize);
   // Text on the left
@@ -1232,9 +1208,9 @@ begin
   FPrinter.PrintText('ФП 2026476352' + CRLF);
   FPrinter.PrintText('ПРИХОД 19.07.24 13:14        ');
   // Page mode area for QR code
-  PageSize.Left := 576-150 + 1;
+  PageSize.Left := 512-150 + 1;
   PageSize.Top := 0;
-  PageSize.Right := 576;
+  PageSize.Right := 512;
   PageSize.Bottom := 450;
   FPrinter.SetPageModeArea(PageSize);
   // QR code on the right
@@ -1255,7 +1231,7 @@ begin
   FPrinter.EndDocument;
 end;
 
-procedure TPrinterPosiflexTest.TestPageModeB;
+procedure TEscPrinterPosiflexTest.TestPageModeB;
 const
   Separator = '----------------------------------------------------------------';
   Barcode = 't=20240719T1314&s=460.00&fn=7380440700076549&i=41110&fp=2026476352&n=1';
@@ -1350,7 +1326,7 @@ begin
   FPrinter.EndDocument;
 end;
 
-function TPrinterPosiflexTest.GetKazakhText: WideString;
+function TEscPrinterPosiflexTest.GetKazakhText: WideString;
 var
   Strings: TTntStringList;
 begin
@@ -1364,7 +1340,7 @@ begin
   end;
 end;
 
-procedure TPrinterPosiflexTest.PrintCodePage;
+procedure TEscPrinterPosiflexTest.PrintCodePage;
 var
   i: Integer;
   S: AnsiString;
@@ -1381,7 +1357,7 @@ begin
   end;
 end;
 
-procedure TPrinterPosiflexTest.PrintCodePageUTF8;
+procedure TEscPrinterPosiflexTest.PrintCodePageUTF8;
 var
   i: Integer;
   S: AnsiString;
@@ -1398,24 +1374,24 @@ begin
   end;
 end;
 
-procedure TPrinterPosiflexTest.PrintCodePage2;
+procedure TEscPrinterPosiflexTest.PrintCodePage2;
 var
   i: Integer;
   S: AnsiString;
 begin
   S := '';
-  for i := $80 to $ff do
+  for i := $00 to $ff do
   begin
     S := S + Chr(i);
-    if Length(S) = 32 then
+    if Length(S) = 16 then
     begin
-      FPrinter.PrintText('0x' + IntToHex(i-$1F, 2) + '  ' + S + CRLF);
+      FPrinter.PrintText('0x' + IntToHex(i-$0F, 2) + '  ' + S + CRLF);
       S := '';
     end;
   end;
 end;
 
-procedure TPrinterPosiflexTest.PrintCodePages(const CodePageName: string);
+procedure TEscPrinterPosiflexTest.PrintCodePages(const CodePageName: string);
 begin
   FPrinter.PrintText('-----------------------------------------' + CRLF);
   FPrinter.PrintText(CodePageName + CRLF);
@@ -1427,14 +1403,15 @@ begin
   PrintCodePage;
 end;
 
-procedure TPrinterPosiflexTest.TestPrintRussianFontB;
+procedure TEscPrinterPosiflexTest.TestKazakhCodePage;
 var
   CodePage: Integer;
 begin
   FPrinter.Initialize;
-  FPrinter.SetCharacterFont(FONT_TYPE_B);
+  FPrinter.SetCharacterFont(FONT_TYPE_A);
 
-  for CodePage := 0 to 20 do
+  //for CodePage := 0 to 20 do
+  CodePage := 224;
   begin
     FPrinter.SetCodePage(CodePage);
     FPrinter.PrintText('---------------------------------------------' + CRLF);
@@ -1444,7 +1421,34 @@ begin
   end;
 end;
 
-procedure TPrinterPosiflexTest.TestPrintFontBMode;
+procedure TEscPrinterPosiflexTest.TestKazakhCodePage2;
+begin
+  FPrinter.Initialize;
+  // FONT A
+  FPrinter.SetCharacterFont(FONT_TYPE_A);
+  FPrinter.PrintUnicode('КАЗАХСКИЕ СИМВОЛЫ, ШРИФТ A: ' + CRLF);
+  FPrinter.PrintUnicode(GetKazakhUnicodeChars + CRLF);
+  // FONT B
+  FPrinter.SetCharacterFont(FONT_TYPE_B);
+  FPrinter.PrintUnicode('КАЗАХСКИЕ СИМВОЛЫ, ШРИФТ Б: ' + CRLF);
+  FPrinter.PrintUnicode(GetKazakhUnicodeChars + CRLF);
+end;
+
+procedure TEscPrinterPosiflexTest.TestKazakhCodePage3;
+var
+  i: Integer;
+begin
+  FPrinter.Initialize;
+  FPrinter.SetCodePage(224);
+  FPrinter.SetCharacterFont(FONT_TYPE_A);
+  for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
+  begin
+    FPrinter.PrintKazakhChar(WideChar(KazakhUnicodeChars[i]));
+  end;
+  FPrinter.PrintText(CRLF);
+end;
+
+procedure TEscPrinterPosiflexTest.TestPrintFontBMode;
 var
   Text: AnsiString;
   KazakhText: WideString;
@@ -1464,7 +1468,7 @@ begin
   FPrinter.PrintText(UTF8Encode('Казахский текст: ' + KazakhText + CRLF));
 end;
 
-procedure TPrinterPosiflexTest.TestPrintFontBMode2;
+procedure TEscPrinterPosiflexTest.TestPrintFontBMode2;
 var
   KazakhText: WideString;
 begin
@@ -1482,7 +1486,7 @@ begin
   FPrinter.PrintText(UTF8Encode('Казахский текст: ' + KazakhText + CRLF));
 end;
 
-procedure TPrinterPosiflexTest.TestCutterError;
+procedure TEscPrinterPosiflexTest.TestCutterError;
 var
   i: Integer;
   P: Integer;
@@ -1516,6 +1520,6 @@ begin
 end;
 
 initialization
-  RegisterTest('', TPrinterPosiflexTest.Suite);
+  RegisterTest('', TEscPrinterPosiflexTest.Suite);
 
 end.

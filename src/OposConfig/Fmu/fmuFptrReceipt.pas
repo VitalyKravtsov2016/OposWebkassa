@@ -91,7 +91,7 @@ begin
   reReceipt.Lines.Clear;
   if TemplateXml = '' then Exit;
 
-  Parameters.PrinterType := PrinterTypeEscPrinterSerial; // !!! 
+  Parameters.PrinterType := PrinterTypeEscCommands; // !!!
   Driver := TWebkassaImpl.Create(nil);
   Receipt := TSalesReceipt.CreateReceipt(rtSell,
     Parameters.AmountDecimalPlaces, Parameters.RoundType);

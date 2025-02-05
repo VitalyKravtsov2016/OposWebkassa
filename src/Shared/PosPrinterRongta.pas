@@ -676,20 +676,6 @@ begin
   end;
 end;
 
-function ArrayToString(const Items: array of Integer): string;
-var
-  i: Integer;
-begin
-  Result := '';
-  for i := Low(Items) to High(Items) do
-  begin
-    if Result <> '' then
-      Result := Result + ',';
-
-    Result := Result + IntToStr(Items[i]);
-  end;
-end;
-
 function CharacterSetToCodePage(CharacterSet: Integer): Integer;
 begin
   case CharacterSet of

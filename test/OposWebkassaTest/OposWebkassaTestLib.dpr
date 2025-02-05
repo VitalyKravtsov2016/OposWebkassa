@@ -104,7 +104,8 @@ uses
   duPosPrinterRongta in 'units\duPosPrinterRongta.pas',
   CustomPrinter in '..\..\src\Shared\CustomPrinter.pas',
   duReceiptTemplate in 'units\duReceiptTemplate.pas',
-  RawPrinterPort in '..\..\src\Shared\RawPrinterPort.pas';
+  RawPrinterPort in '..\..\src\Shared\RawPrinterPort.pas',
+  CharCode in '..\..\src\Shared\CharCode.pas';
 
 {$R *.RES}
 

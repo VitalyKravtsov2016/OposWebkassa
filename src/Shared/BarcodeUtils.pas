@@ -135,7 +135,7 @@ var
 begin
   if Barcode.Height = 0 then
   begin
-    Barcode.Height := 150;
+    Barcode.Height := 100;
   end;
   if Barcode.Width = 0 then
   begin
@@ -156,11 +156,11 @@ begin
     Render.EncodeNow;
     RenderBarcode(Bitmap, Render.Symbol, False);
 
-    Scale := Barcode.Width div (Bitmap.Width * 2);
+    Scale := Round(Barcode.Width / Bitmap.Width);
     if not (Scale in [1..10]) then Scale := 1;
     ScaleGraphic(Bitmap, Scale);
-    Barcode.Width  := Bitmap.Width * 2;
-    Barcode.Height  := Bitmap.Height * 2;
+    Barcode.Width  := Bitmap.Width;
+    Barcode.Height  := Bitmap.Height;
 
   finally
     Render.Free;

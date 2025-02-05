@@ -22,10 +22,10 @@ uses
   PrinterParameters, CashInReceipt, CashOutReceipt,
   SalesReceipt, TextDocument, ReceiptItem, StringUtils, DebugUtils, VatRate,
   uZintBarcode, uZintInterface, FileUtils, PosWinPrinter, PosPrinterRongta,
-  PosPrinterOA48, PosPrinterPosiflex, SerialPort, PrinterPort, SocketPort,
-  ReceiptTemplate, RawPrinterPort, PrinterTypes, DirectIOAPI, BarcodeUtils,
-  PrinterParametersReg, JsonUtils, EscPrinterRongta, PtrDirectIO, PageBuffer,
-  EscPrinterUtils;
+  PosPrinterOA48, PosPrinterPosiflex,  ReceiptTemplate,
+  SerialPort, PrinterPort, SocketPort, RawPrinterPort, UsbPrinterPort,
+  PrinterTypes, DirectIOAPI, BarcodeUtils, PrinterParametersReg, JsonUtils,
+  EscPrinterRongta, PtrDirectIO, PageBuffer, EscPrinterUtils;
 
 const
   PrinterClaimTimeout = 100;
@@ -146,7 +146,6 @@ type
     procedure PrintTextLine(Prefix, Text: WideString;
       RecLineChars: Integer);
     function CreatePrinter: IOPOSPOSPrinter;
-    function CreateSerialPort: TSerialPort;
     procedure PrintReceiptDuplicate(const pString: WideString);
     procedure PrintReceiptDuplicate2(const pString: WideString);
   public
@@ -1115,11 +1114,9 @@ function TWebkassaImpl.DioReadPrinterList: WideString;
 begin
   Result := '';
   case Params.PrinterType of
-    PrinterTypePosPrinter: Result := ReadPosPrinterDeviceList;
-    PrinterTypeWinPrinter: Result := Printers.Printer.Printers.Text;
-    PrinterTypeEscPrinterSerial: Result := 'Serial ESC printer';
-    PrinterTypeEscPrinterNetwork: Result := 'Network ESC printer';
-    PrinterTypeEscPrinterWindows: Result := Printers.Printer.Printers.Text;
+    PrinterTypeOPOS: Result := ReadPosPrinterDeviceList;
+    PrinterTypeWindows: Result := Printers.Printer.Printers.Text;
+    PrinterTypeEscCommands: Result := 'ESC printer';
   end;
 end;
 
@@ -3094,15 +3091,52 @@ function TWebkassaImpl.CreatePrinter: IOPOSPOSPrinter;
     end;
   end;
 
+  function CreateSerialPort: TSerialPort;
+  var
+    SerialParams: TSerialParams;
+  begin
+    SerialParams.PortName := Params.PortName;
+    SerialParams.BaudRate := Params.BaudRate;
+    SerialParams.DataBits := Params.DataBits;
+    SerialParams.StopBits := Params.StopBits;
+    SerialParams.Parity := Params.Parity;
+    SerialParams.FlowControl := Params.FlowControl;
+    SerialParams.ReconnectPort := Params.ReconnectPort;
+    SerialParams.ByteTimeout := Params.SerialTimeout;
+    Result := TSerialPort.Create(SerialParams, Logger);
+  end;
+
+  function CreateNetworkPort: IPrinterPort;
+  var
+    SocketParams: TSocketParams;
+  begin
+    SocketParams.RemoteHost := Params.RemoteHost;
+    SocketParams.RemotePort := Params.RemotePort;
+    SocketParams.ByteTimeout := Params.ByteTimeout;
+    SocketParams.MaxRetryCount := 1;
+    Result := TSocketPort.Create(SocketParams, Logger);
+  end;
+
+  function CreatePrinterPort: IPrinterPort;
+  begin
+    case Params.PortType of
+      PortTypeSerial: Result := CreateSerialPort;
+      PortTypeWindows: Result := TRawPrinterPort.Create(Logger, Params.PrinterName);
+      PortTypeNetwork: Result := CreateNetworkPort;
+      PortTypeUSB: Result := TUsbPrinterPort.Create(Logger, Params.UsbPort);
+    else
+      Result := CreateSerialPort;
+    end;
+  end;
+
 var
   POSPrinter: TOPOSPOSPrinter;
   PosWinPrinter: TPosWinPrinter;
-  SocketParams: TSocketParams;
 begin
   FPrinterObj.Free;
 
   case Params.PrinterType of
-    PrinterTypePosPrinter:
+    PrinterTypeOPOS:
     begin
       PosPrinter := TOPOSPOSPrinter.Create(nil);
       PosPrinter.OnStatusUpdateEvent := PrinterStatusUpdateEvent;
@@ -3113,53 +3147,20 @@ begin
       FPrinterObj := FPrinterLog;
       Result := FPrinterLog;
     end;
-    PrinterTypeWinPrinter:
+    PrinterTypeWindows:
     begin
       PosWinPrinter := TPosWinPrinter.Create2(nil, Logger, nil);
       PosWinPrinter.FontName := Params.FontName;
       FPrinterObj := PosWinPrinter;
       Result := PosWinPrinter;
     end;
-    PrinterTypeEscPrinterSerial:
+    PrinterTypeEscCommands:
     begin
       if FPort = nil then
-        FPort := CreateSerialPort;
-      Result := CreatePosEscPrinter(FPort);
-    end;
-    PrinterTypeEscPrinterNetwork:
-    begin
-      if FPort = nil then
-      begin
-        SocketParams.RemoteHost := Params.RemoteHost;
-        SocketParams.RemotePort := Params.RemotePort;
-        SocketParams.ByteTimeout := Params.ByteTimeout;
-        SocketParams.MaxRetryCount := 1;
-        FPort := TSocketPort.Create(SocketParams, Logger);
-      end;
-      Result := CreatePosEscPrinter(FPort);
-    end;
-    PrinterTypeEscPrinterWindows:
-    begin
-      if FPort = nil then
-        FPort := TRawPrinterPort.Create(Logger, Params.PrinterName);
+        FPort := CreatePrinterPort;
       Result := CreatePosEscPrinter(FPort);
     end;
   end;
-end;
-
-function TWebkassaImpl.CreateSerialPort: TSerialPort;
-var
-  SerialParams: TSerialParams;
-begin
-  SerialParams.PortName := Params.PortName;
-  SerialParams.BaudRate := Params.BaudRate;
-  SerialParams.DataBits := Params.DataBits;
-  SerialParams.StopBits := Params.StopBits;
-  SerialParams.Parity := Params.Parity;
-  SerialParams.FlowControl := Params.FlowControl;
-  SerialParams.ReconnectPort := Params.ReconnectPort;
-  SerialParams.ByteTimeout := Params.SerialTimeout;
-  Result := TSerialPort.Create(SerialParams, Logger);
 end;
 
 function TWebkassaImpl.DoCloseDevice: Integer;
@@ -4562,8 +4563,8 @@ var
   Count: Integer;
   Text: WideString;
 begin
-  PrintLine('');
-  PrintLine('');
+  PrintLine(' ');
+  PrintLine(' ');
   if Printer.CapRecPapercut then
   begin
     Count := Min(FParams.NumHeaderLines, Printer.RecLinesToPaperCut);
@@ -4574,7 +4575,7 @@ begin
     end;
     for i := Count to Printer.RecLinesToPaperCut-1 do
     begin
-      PrintLine('');
+      PrintLine(' ');
     end;
     Printer.CutPaper(90);
     for i := Count to FParams.NumHeaderLines-1 do

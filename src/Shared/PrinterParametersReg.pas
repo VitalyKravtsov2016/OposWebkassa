@@ -200,6 +200,12 @@ begin
       if Reg.ValueExists('PrinterType') then
         Parameters.PrinterType := Reg.ReadInteger('PrinterType');
 
+      if Reg.ValueExists('PortType') then
+        Parameters.PortType := Reg.ReadInteger('PortType');
+
+      if Reg.ValueExists('UsbPort') then
+        Parameters.UsbPort := Reg.ReadString('UsbPort');
+
       if Reg.ValueExists('EscPrinterType') then
         Parameters.EscPrinterType := Reg.ReadInteger('EscPrinterType');
 
@@ -426,6 +432,8 @@ begin
     Reg.WriteString('CashboxNumber', FParameters.CashboxNumber);
     Reg.WriteString('PrinterName', FParameters.PrinterName);
     Reg.WriteInteger('PrinterType', FParameters.PrinterType);
+    Reg.WriteInteger('PortType', FParameters.PortType);
+    Reg.WriteString('UsbPort', FParameters.UsbPort);
     Reg.WriteInteger('EscPrinterType', FParameters.EscPrinterType);
     Reg.WriteString('FontName', FParameters.FontName);
     Reg.WriteInteger('PaymentType2', FParameters.PaymentType2);
@@ -439,7 +447,6 @@ begin
     Reg.WriteString('RemoteHost', FParameters.RemoteHost);
     Reg.WriteInteger('RemotePort', FParameters.RemotePort);
     Reg.WriteInteger('ByteTimeout', FParameters.ByteTimeout);
-
     Reg.WriteString('PortName', FParameters.PortName);
     Reg.WriteInteger('BaudRate', FParameters.BaudRate);
     Reg.WriteInteger('DataBits', FParameters.DataBits);

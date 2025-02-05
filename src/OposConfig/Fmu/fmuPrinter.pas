@@ -13,7 +13,7 @@ uses
   // This
   untUtil, PrinterParameters, FptrTypes, FiscalPrinterDevice, FileUtils,
   WebkassaImpl, OposFiscalPrinter_1_13_Lib_TLB, SerialPort, DirectIOAPI,
-  PosPrinterOA48, TntClasses, EscPrinterUtils;
+  PosPrinterOA48, TntClasses, EscPrinterUtils, UsbPrinterPort;
 
 type
   { TfmPrinter }
@@ -63,6 +63,12 @@ type
     seRecLineHeight: TSpinEdit;
     lblEscPrinterType: TTntLabel;
     cbEscPrinterType: TTntComboBox;
+    lblPortType: TTntLabel;
+    cbPortType: TTntComboBox;
+    tsUSBPort: TTabSheet;
+    TntLabel1: TTntLabel;
+    cbUSBPort: TTntComboBox;
+    btnReadUsbDevices: TButton;
     procedure btnTestConnectionClick(Sender: TObject);
     procedure btnPrintReceiptClick(Sender: TObject);
     procedure cbPrinterTypeChange(Sender: TObject);
@@ -70,7 +76,9 @@ type
     procedure ModifiedClick(Sender: TObject);
     procedure cbFontNameChange(Sender: TObject);
     procedure cbEscPrinterTypeChange(Sender: TObject);
+    procedure btnReadUsbDevicesClick(Sender: TObject);
   private
+    procedure UpdateUsbPort;
     procedure UpdateFontNames;
     procedure UpdateDeviceNames;
     procedure UpdateBaudRates;
@@ -97,12 +105,15 @@ implementation
 procedure TfmPrinter.UpdatePage;
 begin
   cbPrinterType.ItemIndex := Parameters.PrinterType;
+  cbPortType.ItemIndex := Parameters.PortType;
   cbEscPrinterType.ItemIndex := Parameters.EscPrinterType;
+
   UpdateDeviceNames;
   cbPrinterName.Text := Parameters.PrinterName;
   UpdateFontNames;
   cbFontName.Text := Parameters.FontName;
 
+  UpdateUsbPort;
   UpdatePortNames;
   UpdateBaudRates;
   UpdateDataBits;
@@ -216,8 +227,9 @@ end;
 procedure TfmPrinter.UpdateObject;
 begin
   Parameters.PrinterType := cbPrinterType.ItemIndex;
-  Parameters.EscPrinterType := cbEscPrinterType.ItemIndex;
   Parameters.PrinterName := cbPrinterName.Text;
+  Parameters.PortType := cbPortType.ItemIndex;
+  Parameters.EscPrinterType := cbEscPrinterType.ItemIndex;
   Parameters.FontName := cbFontName.Text;
   Parameters.PortName := cbPortName.Text;
   Parameters.DevicePollTime := seDevicePollTime.Value;
@@ -235,6 +247,8 @@ begin
   Parameters.RemoteHost := edtRemoteHost.Text;
   Parameters.RemotePort := seRemotePort.Value;
   Parameters.ByteTimeout := seByteTimeout.Value;
+  // Usb
+  Parameters.USBPort := cbUSBPort.Text;
 end;
 
 procedure TfmPrinter.FptrCheck(Printer: TOPOSFiscalPrinter; Code: Integer);
@@ -352,11 +366,9 @@ function TfmPrinter.ReadPrinterNames(APrinterType: Integer): WideString;
 begin
   Result := '';
   case APrinterType of
-    PrinterTypePosPrinter: Result := ReadPosPrinterDeviceList;
-    PrinterTypeWinPrinter: Result := Printers.Printer.Printers.Text;
-    PrinterTypeEscPrinterSerial: Result := 'Serial ESC printer';
-    PrinterTypeEscPrinterNetwork: Result := 'Network ESC printer';
-    PrinterTypeEscPrinterWindows: Result := Printers.Printer.Printers.Text;
+    PrinterTypeOPOS: Result := ReadPosPrinterDeviceList;
+    PrinterTypeWindows: Result := Printers.Printer.Printers.Text;
+    PrinterTypeEscCommands: Result := Printers.Printer.Printers.Text;
   end;
 end;
 
@@ -366,11 +378,9 @@ const
 begin
   Result := '';
   case APrinterType of
-    PrinterTypePosPrinter: Result := '';
-    PrinterTypeWinPrinter: Result := Printers.Printer.Fonts.GetText;
-    PrinterTypeEscPrinterSerial: Result := FontNames;
-    PrinterTypeEscPrinterNetwork: Result := FontNames;
-    PrinterTypeEscPrinterWindows: Result := FontNames;
+    PrinterTypeOPOS: Result := '';
+    PrinterTypeWindows: Result := Printers.Printer.Fonts.GetText;
+    PrinterTypeEscCommands: Result := FontNames;
   end;
 end;
 
@@ -449,6 +459,40 @@ begin
   Parameters.EscPrinterType := cbEscPrinterType.ItemIndex;
   UpdateFontNames;
   Modified;
+end;
+
+procedure TfmPrinter.btnReadUsbDevicesClick(Sender: TObject);
+var
+  i: Integer;
+  Device: TUsbDevice;
+  Devices: TUsbDevices;
+begin
+  cbUSBPort.Items.BeginUpdate;
+  try
+    cbUSBPort.Items.Clear;
+    Devices := ReadPosiflexDevices;
+    for i := Low(Devices) to High(Devices) do
+    begin
+      Device := Devices[i];
+      cbUSBPort.Items.Add(Device.Path);
+    end;
+    if cbUSBPort.Items.Count > 0 then
+      cbUSBPort.ItemIndex := 0;
+  finally
+    cbUSBPort.Items.EndUpdate;
+  end;
+end;
+
+procedure TfmPrinter.UpdateUsbPort;
+begin
+  cbUSBPort.Items.BeginUpdate;
+  try
+    cbUSBPort.Items.Clear;
+    cbUSBPort.Items.Add(Parameters.USBPort);
+    cbUSBPort.ItemIndex := 0;
+  finally
+    cbUSBPort.Items.EndUpdate;
+  end;
 end;
 
 end.

@@ -14,9 +14,9 @@ uses
   FileUtils, SocketPort, RawPrinterPort, EscPrinterUtils;
 
 type
-  { TPrinterRongtaTest }
+  { TEscPrinterRongtaTest }
 
-  TPrinterRongtaTest = class(TTestCase)
+  TEscPrinterRongtaTest = class(TTestCase)
   private
     FLogger: ILogFile;
     FPrinter: TEscPrinterRongta;
@@ -85,9 +85,9 @@ type
 
 implementation
 
-{ TPrinterRongtaTest }
+{ TEscPrinterRongtaTest }
 
-procedure TPrinterRongtaTest.SetUp;
+procedure TEscPrinterRongtaTest.SetUp;
 begin
   inherited SetUp;
   FLogger := TLogFile.Create;
@@ -103,19 +103,19 @@ begin
   FPrinter := TEscPrinterRongta.Create(FPrinterPort, FLogger);
 end;
 
-procedure TPrinterRongtaTest.TearDown;
+procedure TEscPrinterRongtaTest.TearDown;
 begin
   FPrinter.Free;
   FPrinterPort := nil;
   inherited TearDown;
 end;
 
-function TPrinterRongtaTest.CreateRawPort: TRawPrinterPort;
+function TEscPrinterRongtaTest.CreateRawPort: TRawPrinterPort;
 begin
   Result := TRawPrinterPort.Create(FLogger, 'RONGTA 80mm Series Printer');
 end;
 
-function TPrinterRongtaTest.CreateSerialPort: TSerialPort;
+function TEscPrinterRongtaTest.CreateSerialPort: TSerialPort;
 var
   SerialParams: TSerialParams;
 begin
@@ -130,7 +130,7 @@ begin
   Result := TSerialPort.Create(SerialParams, FLogger);
 end;
 
-function TPrinterRongtaTest.CreateSocketPort: TSocketPort;
+function TEscPrinterRongtaTest.CreateSocketPort: TSocketPort;
 var
   SocketParams: TSocketParams;
 begin
@@ -141,20 +141,20 @@ begin
   Result := TSocketPort.Create(SocketParams, FLogger);
 end;
 
-procedure TPrinterRongtaTest.TestPrintText;
+procedure TEscPrinterRongtaTest.TestPrintText;
 begin
   FPrinter.PrintText('Печать строки 1' + CRLF);
   FPrinter.PrintText('Печать строки 2' + CRLF);
   FPrinter.PrintText('Печать строки 3' + CRLF);
 end;
 
-procedure TPrinterRongtaTest.TestInitialize;
+procedure TEscPrinterRongtaTest.TestInitialize;
 begin
   FPrinter.Initialize;
   FPrinter.SetCodePage(CODEPAGE_WCP1251);
 end;
 
-procedure TPrinterRongtaTest.TestReadStatus;
+procedure TEscPrinterRongtaTest.TestReadStatus;
 var
   ErrorStatus: TErrorStatus;
   OfflineStatus: TOfflineStatus;
@@ -183,7 +183,7 @@ begin
   CheckEquals(False, RollStatus.PaperNearEnd, 'PaperNearEnd');
 end;
 
-procedure TPrinterRongtaTest.TestPrintMode;
+procedure TEscPrinterRongtaTest.TestPrintMode;
 var
   PrintMode: TPrintMode;
 begin
@@ -280,7 +280,7 @@ begin
   FPrinter.PartialCut;
 end;
 
-procedure TPrinterRongtaTest.TestPrintModeInLine;
+procedure TEscPrinterRongtaTest.TestPrintModeInLine;
 var
   PrintMode: TPrintMode;
 begin
@@ -329,7 +329,7 @@ begin
   FPrinter.PrintText(' Double height & width' + CRLF);
 end;
 
-procedure TPrinterRongtaTest.TestBarcode;
+procedure TEscPrinterRongtaTest.TestBarcode;
 begin
   FPrinter.SetNormalPrintMode;
   FPrinter.SetBarcodeLeft(50);
@@ -353,7 +353,7 @@ begin
   FPrinter.PrintBarcode(BARCODE_CODABAR, '837465873');
 end;
 
-procedure TPrinterRongtaTest.TestBarcode2;
+procedure TEscPrinterRongtaTest.TestBarcode2;
 begin
   FPrinter.SetNormalPrintMode;
   FPrinter.SetBarcodeLeft(50);
@@ -382,7 +382,7 @@ begin
   FPrinter.PrintText(CRLF);
 end;
 
-procedure TPrinterRongtaTest.TestPDF417;
+procedure TEscPrinterRongtaTest.TestPDF417;
 var
   Barcode: TPDF417;
 const
@@ -398,7 +398,7 @@ begin
   FPrinter.printPDF417(Barcode);
 end;
 
-procedure TPrinterRongtaTest.TestQRCode;
+procedure TEscPrinterRongtaTest.TestQRCode;
 var
   QRCode: TQRCode;
 begin
@@ -415,7 +415,7 @@ end;
 ///////////////////////////////////////////////////////////////////////////////
 // ECL - Error correction level
 
-procedure TPrinterRongtaTest.TestQRCodeECL;
+procedure TEscPrinterRongtaTest.TestQRCodeECL;
 var
   QRCode: TQRCode;
 begin
@@ -446,7 +446,7 @@ begin
   FPrinter.printQRCode(QRCode);
 end;
 
-procedure TPrinterRongtaTest.TestQRCodeModuleSize;
+procedure TEscPrinterRongtaTest.TestQRCodeModuleSize;
 var
   QRCode: TQRCode;
 begin
@@ -470,7 +470,7 @@ begin
   FPrinter.printQRCode(QRCode);
 end;
 
-procedure TPrinterRongtaTest.TestQRCodeJustification;
+procedure TEscPrinterRongtaTest.TestQRCodeJustification;
 var
   QRCode: TQRCode;
 begin
@@ -491,7 +491,7 @@ begin
   FPrinter.printQRCode(QRCode);
 end;
 
-procedure TPrinterRongtaTest.TestBitmap;
+procedure TEscPrinterRongtaTest.TestBitmap;
 var
   Bitmap: TBitmap;
   FileName: string;
@@ -514,7 +514,7 @@ begin
   end;
 end;
 
-procedure TPrinterRongtaTest.TestPrintRasterBMP;
+procedure TEscPrinterRongtaTest.TestPrintRasterBMP;
 var
   Bitmap: TBitmap;
 begin
@@ -536,7 +536,7 @@ _2013-01-05
 _RONGTA
 *)
 
-procedure TPrinterRongtaTest.TestReadPrinterID;
+procedure TEscPrinterRongtaTest.TestReadPrinterID;
 begin
   CheckEquals('7.03 ESC/POS', FPrinter.ReadPrinterID(65), 'Firmware version');
 
@@ -549,13 +549,13 @@ begin
   CheckEquals('D6KG074561', FPrinter.ReadSerialNumber, 'Serial number');
 end;
 
-procedure TPrinterRongtaTest.PrintTestPage;
+procedure TEscPrinterRongtaTest.PrintTestPage;
 begin
   FPrinter.Initialize;
   FPrinter.PrintTestPage;
 end;
 
-procedure TPrinterRongtaTest.TestJustification;
+procedure TEscPrinterRongtaTest.TestJustification;
 var
   QRCode: TQRCode;
 begin
@@ -570,7 +570,7 @@ begin
   FPrinter.SetJustification(JUSTIFICATION_LEFT);
 end;
 
-procedure TPrinterRongtaTest.TestJustification2;
+procedure TEscPrinterRongtaTest.TestJustification2;
 begin
   FPrinter.Initialize;
   FPrinter.PrintText('Default justification' + CRLF);
@@ -582,7 +582,7 @@ begin
   FPrinter.PrintText('Right justification' + CRLF);
 end;
 
-procedure TPrinterRongtaTest.TestUnderlined;
+procedure TEscPrinterRongtaTest.TestUnderlined;
 var
   PrintMode: TPrintMode;
 begin
@@ -608,13 +608,13 @@ begin
   FPrinter.PrintText('Underlined mode, font A' + CRLF);
 end;
 
-procedure TPrinterRongtaTest.TestBeepParams;
+procedure TEscPrinterRongtaTest.TestBeepParams;
 begin
   FPrinter.Initialize;
   FPrinter.SetBeepParams(3, 1);
 end;
 
-procedure TPrinterRongtaTest.TestEmphasized;
+procedure TEscPrinterRongtaTest.TestEmphasized;
 begin
   FPrinter.Initialize;
   FPrinter.PrintText('Emphasized mode OFF ');
@@ -624,7 +624,7 @@ begin
   FPrinter.SetEmphasizedMode(False);
 end;
 
-procedure TPrinterRongtaTest.TestDoubleStrikeMode;
+procedure TEscPrinterRongtaTest.TestDoubleStrikeMode;
 begin
   FPrinter.Initialize;
   FPrinter.PrintText('Double-strike mode OFF ');
@@ -634,7 +634,7 @@ begin
   FPrinter.SetDoubleStrikeMode(False);
 end;
 
-procedure TPrinterRongtaTest.TestCharacterFont;
+procedure TEscPrinterRongtaTest.TestCharacterFont;
 begin
   FPrinter.Initialize;
   FPrinter.PrintText('Character font A' + CRLF);
@@ -645,7 +645,7 @@ begin
   FPrinter.SetCharacterFont(0);
 end;
 
-procedure TPrinterRongtaTest.TestCodePage;
+procedure TEscPrinterRongtaTest.TestCodePage;
 const
   TextCodePage1251: WideString = 'Кодовая страница 1251';
   TextCodePage866: WideString = 'Кодовая страница 866';
@@ -678,7 +678,7 @@ begin
   end;
 end;
 
-procedure TPrinterRongtaTest.TestCodePage2;
+procedure TEscPrinterRongtaTest.TestCodePage2;
 const
   TextCodePage1251: WideString = 'Кодовая страница 1251';
   TextCodePage866: WideString = 'Кодовая страница 866';
@@ -710,7 +710,7 @@ begin
   end;
 end;
 
-procedure TPrinterRongtaTest.TestCodePages;
+procedure TEscPrinterRongtaTest.TestCodePages;
 var
   i: Integer;
   Text: AnsiString;
@@ -729,7 +729,7 @@ begin
   end;
 end;
 
-procedure TPrinterRongtaTest.TestNVBitImage;
+procedure TEscPrinterRongtaTest.TestNVBitImage;
 var
   Bitmap: TBitmap;
   FileName: string;
@@ -748,7 +748,7 @@ begin
   end;
 end;
 
-procedure TPrinterRongtaTest.TestCoverOpen;
+procedure TEscPrinterRongtaTest.TestCoverOpen;
 var
   i: Integer;
 begin
@@ -776,7 +776,7 @@ begin
 *)
 end;
 
-procedure TPrinterRongtaTest.TestRecoverError;
+procedure TEscPrinterRongtaTest.TestRecoverError;
 var
   ErrorStatus: TErrorStatus;
 begin
@@ -787,7 +787,7 @@ begin
   end;
 end;
 
-procedure TPrinterRongtaTest.TestLineSpacing;
+procedure TEscPrinterRongtaTest.TestLineSpacing;
 var
   i: Integer;
 begin
@@ -809,7 +809,7 @@ begin
   end;
 end;
 
-procedure TPrinterRongtaTest.TestCutDistanceFontA;
+procedure TEscPrinterRongtaTest.TestCutDistanceFontA;
 begin
   FPrinter.Initialize;
   FPrinter.SetLineSpacing(0);
@@ -827,7 +827,7 @@ begin
   FPrinter.PartialCut;
 end;
 
-procedure TPrinterRongtaTest.TestCutDistanceFontB;
+procedure TEscPrinterRongtaTest.TestCutDistanceFontB;
 begin
   FPrinter.Initialize;
   FPrinter.SetLineSpacing(0);
@@ -889,7 +889,7 @@ arabic letter uighur kazakh kirghiz alef maksura medial form
 kazakhstan flag
 *)
 
-function TPrinterRongtaTest.GetKazakhChars: AnsiString;
+function TEscPrinterRongtaTest.GetKazakhChars: AnsiString;
 var
   i: Integer;
   Code: Byte;
@@ -903,7 +903,7 @@ begin
   end;
 end;
 
-function TPrinterRongtaTest.GetKazakhChars2: AnsiString;
+function TEscPrinterRongtaTest.GetKazakhChars2: AnsiString;
 var
   i: Integer;
   Code: Byte;
@@ -917,7 +917,7 @@ begin
   end;
 end;
 
-procedure TPrinterRongtaTest.TestUserCharacter;
+procedure TEscPrinterRongtaTest.TestUserCharacter;
 begin
   FPrinter.Initialize;
   FPrinter.WriteKazakhCharacters;
@@ -961,7 +961,7 @@ begin
 *)
 end;
 
-procedure TPrinterRongtaTest.TestUserCharacter2;
+procedure TEscPrinterRongtaTest.TestUserCharacter2;
 var
   Bitmap: TBitmap;
   UserChar: TUserChar;
@@ -985,7 +985,7 @@ begin
   end;
 end;
 
-procedure TPrinterRongtaTest.TestBitmap2;
+procedure TEscPrinterRongtaTest.TestBitmap2;
 const
   DownloadBMPCommand =
   '1D 2A 0A 0A FF F9 E6 61 E6 7E 06 1F FF 80 80 19 9F 9F F9 E6 18 18 01 80 80 19 9F 9F F9 E6' + CRLF +
@@ -1029,7 +1029,7 @@ begin
   end;
 end;
 
-procedure TPrinterRongtaTest.TestPageMode;
+procedure TEscPrinterRongtaTest.TestPageMode;
 const
   Barcode = 't=20240719T1314&s=460.00&fn=7380440700076549&i=41110&fp=2026476352&n=1';
 var
@@ -1102,7 +1102,7 @@ end;
   ПРИХОД 19.07.24 13:14
   *)
 
-procedure TPrinterRongtaTest.TestPageModeA;
+procedure TEscPrinterRongtaTest.TestPageModeA;
 const
   Separator = '------------------------------------------------';
   Barcode = 't=20240719T1314&s=460.00&fn=7380440700076549&i=41110&fp=2026476352&n=1';
@@ -1204,7 +1204,7 @@ begin
   FPrinter.EndDocument;
 end;
 
-procedure TPrinterRongtaTest.TestPageModeA2;
+procedure TEscPrinterRongtaTest.TestPageModeA2;
 const
   Separator = '------------------------------------------------';
   Barcode = 'http://dev.kofd.kz/consumer?i=1556041617048&f=768814097419&s=3098.00&t=20241211T151839';
@@ -1258,7 +1258,7 @@ begin
   FPrinter.EndDocument;
 end;
 
-procedure TPrinterRongtaTest.TestPageModeB;
+procedure TEscPrinterRongtaTest.TestPageModeB;
 const
   Separator = '----------------------------------------------------------------';
   Barcode = 't=20240719T1314&s=460.00&fn=7380440700076549&i=41110&fp=2026476352&n=1';
@@ -1355,7 +1355,7 @@ begin
   FPrinter.EndDocument;
 end;
 
-function TPrinterRongtaTest.GetKazakhText: WideString;
+function TEscPrinterRongtaTest.GetKazakhText: WideString;
 var
   Strings: TTntStringList;
 begin
@@ -1369,7 +1369,7 @@ begin
   end;
 end;
 
-procedure TPrinterRongtaTest.PrintCodePage;
+procedure TEscPrinterRongtaTest.PrintCodePage;
 var
   i: Integer;
   S: AnsiString;
@@ -1386,7 +1386,7 @@ begin
   end;
 end;
 
-procedure TPrinterRongtaTest.PrintCodePageUTF8;
+procedure TEscPrinterRongtaTest.PrintCodePageUTF8;
 var
   i: Integer;
   S: AnsiString;
@@ -1403,7 +1403,7 @@ begin
   end;
 end;
 
-procedure TPrinterRongtaTest.PrintCodePage2;
+procedure TEscPrinterRongtaTest.PrintCodePage2;
 var
   i: Integer;
   S: AnsiString;
@@ -1420,7 +1420,7 @@ begin
   end;
 end;
 
-procedure TPrinterRongtaTest.PrintCodePages(const CodePageName: string);
+procedure TEscPrinterRongtaTest.PrintCodePages(const CodePageName: string);
 begin
   FPrinter.PrintText('-----------------------------------------' + CRLF);
   FPrinter.PrintText(CodePageName + CRLF);
@@ -1432,7 +1432,7 @@ begin
   PrintCodePage;
 end;
 
-procedure TPrinterRongtaTest.TestPrintRussianFontB;
+procedure TEscPrinterRongtaTest.TestPrintRussianFontB;
 var
   CodePage: Integer;
 begin
@@ -1449,7 +1449,7 @@ begin
   end;
 end;
 
-procedure TPrinterRongtaTest.TestPrintFontBMode;
+procedure TEscPrinterRongtaTest.TestPrintFontBMode;
 var
   Text: AnsiString;
   KazakhText: WideString;
@@ -1466,7 +1466,7 @@ begin
   FPrinter.PrintText(Text);
 end;
 
-procedure TPrinterRongtaTest.TestCutterError;
+procedure TEscPrinterRongtaTest.TestCutterError;
 var
   i: Integer;
   P: Integer;
@@ -1500,6 +1500,6 @@ begin
 end;
 
 initialization
-  RegisterTest('', TPrinterRongtaTest.Suite);
+  RegisterTest('', TEscPrinterRongtaTest.Suite);
 
 end.

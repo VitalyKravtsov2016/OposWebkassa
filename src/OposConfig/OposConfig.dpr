@@ -105,7 +105,8 @@ uses
   PosPrinterRongta in '..\Shared\PosPrinterRongta.pas',
   EscPrinterRongta in '..\Shared\EscPrinterRongta.pas',
   CustomPrinter in '..\Shared\CustomPrinter.pas',
-  RawPrinterPort in '..\Shared\RawPrinterPort.pas';
+  RawPrinterPort in '..\Shared\RawPrinterPort.pas',
+  CharCode in '..\Shared\CharCode.pas';
 
 {$R *.RES}
 {$R WindowsXP.RES}
