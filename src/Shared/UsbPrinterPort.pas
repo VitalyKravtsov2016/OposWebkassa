@@ -92,8 +92,9 @@ const
     end;
   end;
 
-  function ReadDevicePath(DevInfo: HDEVINFO; Index: Integer): string;
+  function ReadDevicePath(DevInfo: HDEVINFO): string;
   var
+    Index: Integer;
     Success: LongBool;
     DevicePath: string;
     BytesReturned: DWORD;
@@ -101,35 +102,42 @@ const
     DeviceInterfaceData: TSPDeviceInterfaceData;
     FunctionClassDeviceData: PSPDeviceInterfaceDetailData;
   begin
-    DeviceInterfaceData.cbSize := SizeOf(TSPDeviceInterfaceData);
-    Success := SetupDiEnumDeviceInterfaces(DevInfo, nil,
-      GUID_DEVINTERFACE_USB_DEVICE, Index, DeviceInterfaceData);
-    if Success then
-    begin
-      DevData.cbSize := SizeOf(DevData);
-      BytesReturned := 0;
-      //evalue size needed to store the detailed interface data in FunctionClassDeviceData
-      SetupDiGetDeviceInterfaceDetail(DevInfo, @DeviceInterfaceData, nil, 0, BytesReturned, @DevData);
-      if (BytesReturned <> 0) and (GetLastError = ERROR_INSUFFICIENT_BUFFER) then
+    ODS('ReadDevicePath.Begin');
+    Index := 0;
+    repeat
+      DeviceInterfaceData.cbSize := SizeOf(TSPDeviceInterfaceData);
+      Success := SetupDiEnumDeviceInterfaces(DevInfo, nil,
+        GUID_DEVINTERFACE_USB_DEVICE, Index, DeviceInterfaceData);
+      if Success then
       begin
-        FunctionClassDeviceData := AllocMem(BytesReturned);
-        try
-          FunctionClassDeviceData^.cbSize := SizeOf(TSPDeviceInterfaceDetailData);
-          if SetupDiGetDeviceInterfaceDetail(DevInfo, @DeviceInterfaceData,
-            FunctionClassDeviceData, BytesReturned, BytesReturned, @DevData) then
-          begin
-            // Win64: Don't include the padding bytes into the string length calculation
-            SetString(DevicePath, PChar(@FunctionClassDeviceData.DevicePath),
-              (BytesReturned - (SizeOf(FunctionClassDeviceData.cbSize) +
-              SizeOf(FunctionClassDeviceData.DevicePath))) div SizeOf(Char));
+        DevData.cbSize := SizeOf(DevData);
+        BytesReturned := 0;
+        //evalue size needed to store the detailed interface data in FunctionClassDeviceData
+        SetupDiGetDeviceInterfaceDetail(DevInfo, @DeviceInterfaceData, nil, 0, BytesReturned, @DevData);
+        if (BytesReturned <> 0) and (GetLastError = ERROR_INSUFFICIENT_BUFFER) then
+        begin
+          FunctionClassDeviceData := AllocMem(BytesReturned);
+          try
+            FunctionClassDeviceData^.cbSize := SizeOf(TSPDeviceInterfaceDetailData);
+            if SetupDiGetDeviceInterfaceDetail(DevInfo, @DeviceInterfaceData,
+              FunctionClassDeviceData, BytesReturned, BytesReturned, @DevData) then
+            begin
+              // Win64: Don't include the padding bytes into the string length calculation
+              SetString(DevicePath, PChar(@FunctionClassDeviceData.DevicePath),
+                (BytesReturned - (SizeOf(FunctionClassDeviceData.cbSize) +
+                SizeOf(FunctionClassDeviceData.DevicePath))) div SizeOf(Char));
 
-            Result := DevicePath;
+              ODS(DevicePath);
+              Result := DevicePath;
+            end;
+          finally
+            FreeMem(FunctionClassDeviceData);
           end;
-        finally
-          FreeMem(FunctionClassDeviceData);
         end;
       end;
-    end;
+      Inc(Index);
+    until not Success;
+    ODS('ReadDevicePath.End');
   end;
 
 
@@ -154,7 +162,7 @@ begin
     DevData.cbSize := sizeof(DevData);
     if not SetupDiEnumDeviceInfo(DevInfo, Index, DevData) then Break;
 
-    DevicePath := ReadDevicePath(DevInfo, Index);
+    DevicePath := ReadDevicePath(DevInfo);
     HardwareID := ReadProperty(DevInfo, DevData, SPDRP_HARDWAREID);
     DeviceDesc := ReadProperty(DevInfo, DevData, SPDRP_DEVICEDESC);
 
