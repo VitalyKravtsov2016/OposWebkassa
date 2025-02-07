@@ -48,6 +48,8 @@ type
     function CapRead: Boolean;
     procedure Flush;
     function GetDescription: WideString;
+    function ReadByte: Byte;
+    function ReadString: AnsiString;
   end;
 
 
@@ -215,6 +217,25 @@ end;
 function TSocketPort.GetDescription: WideString;
 begin
   Result := 'SocketPort';
+end;
+
+function TSocketPort.ReadByte: Byte;
+begin
+  Result := Ord(Read(1)[1]);
+  FLogger.Debug('<- ' + StrToHex(Chr(Result)));
+end;
+
+function TSocketPort.ReadString: AnsiString;
+var
+  C: Char;
+begin
+  Result := '';
+  repeat
+    C := Read(1)[1];
+    if C <> #0 then
+      Result := Result + C;
+  until C = #0;
+  FLogger.Debug('<- ' + StrToHex(Result));
 end;
 
 end.

@@ -92,7 +92,7 @@ uses
   duPosWinPrinter in 'units\duPosWinPrinter.pas',
   PrinterTypes in '..\..\src\Shared\PrinterTypes.pas',
   BarcodeUtils in '..\..\src\Shared\BarcodeUtils.pas',
-  duEscPrinter in 'units\duEscPrinter.pas',
+  duComUtils in 'units\duComUtils.pas',
   duLogFile in 'units\duLogFile.pas',
   PosPrinterPosiflex in '..\..\src\Shared\PosPrinterPosiflex.pas',
   EscPrinterPosiflex in '..\..\src\Shared\EscPrinterPosiflex.pas',
@@ -107,7 +107,9 @@ uses
   CustomPrinter in '..\..\src\Shared\CustomPrinter.pas',
   duReceiptTemplate in 'units\duReceiptTemplate.pas',
   RawPrinterPort in '..\..\src\Shared\RawPrinterPort.pas',
-  CharCode in '..\..\src\Shared\CharCode.pas';
+  CharCode in '..\..\src\Shared\CharCode.pas',
+  ComUtils in '..\..\src\Shared\ComUtils.pas',
+  duEscPrinter in 'units\duEscPrinter.pas';
 
 {$R *.RES}
 

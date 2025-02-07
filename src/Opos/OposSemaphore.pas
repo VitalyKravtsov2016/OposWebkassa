@@ -31,6 +31,11 @@ implementation
 const
   SEMAPHORE_MODIFY_STATE = $0002;
 
+procedure ODS(const S: WideString);
+begin
+  OutputDebugStringW(PWideChar(S));
+end;
+
 { TOposSemaphore }
 
 destructor TOposSemaphore.Destroy;
@@ -59,16 +64,19 @@ begin
       if GetLastError = ERROR_ALREADY_EXISTS then
       begin
         FHandle := OpenSemaphoreW(SEMAPHORE_MODIFY_STATE, False, PWideChar(AName));
-        if FHandle = 0 then
-          RaiseLastOsError;
       end;
     end;
+    ODS(Format('%.8x, "%s", CreateSemaphore', [FHandle, AName]));
+    if FHandle = 0 then
+      RaiseLastOsError;
   end;
 end;
 
 function TOposSemaphore.WaitFor(Timeout: Integer): Integer;
 begin
   Result := WaitForSingleObject(FHandle, Timeout);
+  if Result <> WAIT_OBJECT_0 then
+    ODS(Format('%.8x, %d, SemaphoreWaitFailed', [FHandle, Result]));
 end;
 
 procedure TOposSemaphore.Release;
@@ -76,6 +84,7 @@ begin
   if FClaimed then
   begin
     ReleaseSemaphore(FHandle, 1, nil);
+    ODS(Format('%.8x, ReleaseSemaphore', [FHandle]));
     FClaimed := False;
   end;
 end;

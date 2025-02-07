@@ -34,12 +34,12 @@ type
     FReadTimeout: Integer;
     FOvlRead: TOverlapped;
     FOvlWrite: TOverlapped;
-    FBuffer: AnsiString;
 
     procedure CreateHandle;
     function GetHandle: THandle;
     function GetOpened: Boolean;
-    procedure WriteData(const Data: AnsiString);
+    function DoRead(Count: DWORD): AnsiString;
+    function DoRead2(Count: DWORD): AnsiString;
   public
     constructor Create(ALogger: ILogFile; const AFileName: string);
     destructor Destroy; override;
@@ -54,10 +54,11 @@ type
     function Read(Count: DWORD): AnsiString;
     function CapRead: Boolean;
     function GetDescription: WideString;
+    function ReadString: AnsiString;
+    function ReadByte: Byte;
 
     property Opened: Boolean read GetOpened;
     property Logger: ILogFile read FLogger;
-    property Buffer: AnsiString read FBuffer;
     property ReadTimeout: Integer read FReadTimeout write FReadTimeout;
   end;
 
@@ -92,9 +93,8 @@ const
     end;
   end;
 
-  function ReadDevicePath(DevInfo: HDEVINFO): string;
+  function ReadDevicePath(DevInfo: HDEVINFO; Index: Integer): string;
   var
-    Index: Integer;
     Success: LongBool;
     DevicePath: string;
     BytesReturned: DWORD;
@@ -102,44 +102,36 @@ const
     DeviceInterfaceData: TSPDeviceInterfaceData;
     FunctionClassDeviceData: PSPDeviceInterfaceDetailData;
   begin
-    ODS('ReadDevicePath.Begin');
-    Index := 0;
-    repeat
-      DeviceInterfaceData.cbSize := SizeOf(TSPDeviceInterfaceData);
-      Success := SetupDiEnumDeviceInterfaces(DevInfo, nil,
-        GUID_DEVINTERFACE_USB_DEVICE, Index, DeviceInterfaceData);
-      if Success then
+    DeviceInterfaceData.cbSize := SizeOf(TSPDeviceInterfaceData);
+    Success := SetupDiEnumDeviceInterfaces(DevInfo, nil,
+      GUID_DEVINTERFACE_USB_DEVICE, Index, DeviceInterfaceData);
+    if Success then
+    begin
+      DevData.cbSize := SizeOf(DevData);
+      BytesReturned := 0;
+      //evalue size needed to store the detailed interface data in FunctionClassDeviceData
+      SetupDiGetDeviceInterfaceDetail(DevInfo, @DeviceInterfaceData, nil, 0, BytesReturned, @DevData);
+      if (BytesReturned <> 0) and (GetLastError = ERROR_INSUFFICIENT_BUFFER) then
       begin
-        DevData.cbSize := SizeOf(DevData);
-        BytesReturned := 0;
-        //evalue size needed to store the detailed interface data in FunctionClassDeviceData
-        SetupDiGetDeviceInterfaceDetail(DevInfo, @DeviceInterfaceData, nil, 0, BytesReturned, @DevData);
-        if (BytesReturned <> 0) and (GetLastError = ERROR_INSUFFICIENT_BUFFER) then
-        begin
-          FunctionClassDeviceData := AllocMem(BytesReturned);
-          try
-            FunctionClassDeviceData^.cbSize := SizeOf(TSPDeviceInterfaceDetailData);
-            if SetupDiGetDeviceInterfaceDetail(DevInfo, @DeviceInterfaceData,
-              FunctionClassDeviceData, BytesReturned, BytesReturned, @DevData) then
-            begin
-              // Win64: Don't include the padding bytes into the string length calculation
-              SetString(DevicePath, PChar(@FunctionClassDeviceData.DevicePath),
-                (BytesReturned - (SizeOf(FunctionClassDeviceData.cbSize) +
-                SizeOf(FunctionClassDeviceData.DevicePath))) div SizeOf(Char));
+        FunctionClassDeviceData := AllocMem(BytesReturned);
+        try
+          FunctionClassDeviceData^.cbSize := SizeOf(TSPDeviceInterfaceDetailData);
+          if SetupDiGetDeviceInterfaceDetail(DevInfo, @DeviceInterfaceData,
+            FunctionClassDeviceData, BytesReturned, BytesReturned, @DevData) then
+          begin
+            // Win64: Don't include the padding bytes into the string length calculation
+            SetString(DevicePath, PChar(@FunctionClassDeviceData.DevicePath),
+              (BytesReturned - (SizeOf(FunctionClassDeviceData.cbSize) +
+              SizeOf(FunctionClassDeviceData.DevicePath))) div SizeOf(Char));
 
-              ODS(DevicePath);
-              Result := DevicePath;
-            end;
-          finally
-            FreeMem(FunctionClassDeviceData);
+            Result := DevicePath;
           end;
+        finally
+          FreeMem(FunctionClassDeviceData);
         end;
       end;
-      Inc(Index);
-    until not Success;
-    ODS('ReadDevicePath.End');
+    end;
   end;
-
 
 var
   Index: Integer;
@@ -162,7 +154,7 @@ begin
     DevData.cbSize := sizeof(DevData);
     if not SetupDiEnumDeviceInfo(DevInfo, Index, DevData) then Break;
 
-    DevicePath := ReadDevicePath(DevInfo);
+    DevicePath := ReadDevicePath(DevInfo, Index);
     HardwareID := ReadProperty(DevInfo, DevData, SPDRP_HARDWAREID);
     DeviceDesc := ReadProperty(DevInfo, DevData, SPDRP_DEVICEDESC);
 
@@ -183,64 +175,6 @@ begin
   UnloadSetupApi;
 end;
 
-(*
-function TUsbPrinterPort.GetDeviceFileName: string;
-var
-  PnPHandle: HDEVINFO;
-  DevData: TSPDevInfoData;
-  DeviceInterfaceData: TSPDeviceInterfaceData;
-  FunctionClassDeviceData: PSPDeviceInterfaceDetailData;
-  Success: LongBool;
-  Devn: Integer;
-  BytesReturned: DWORD;
-  Handled: Boolean;
-  RetryCreate: Boolean;
-  DevicePath: string;
-  DeviceGuid: TGUID;
-begin
-  DeviceGuid := GUID_DEVINTERFACE_USB_DEVICE;
-  // Get a handle for the Plug and Play node and request currently active HID devices
-  PnPHandle := SetupDiGetClassDevs(@DeviceGuid, nil, 0, DIGCF_PRESENT or DIGCF_DEVICEINTERFACE);
-  if PnPHandle = Pointer(INVALID_HANDLE_VALUE) then Exit;
-  Devn := 0;
-  repeat
-    DeviceInterfaceData.cbSize := SizeOf(TSPDeviceInterfaceData);
-    // Is there a HID device at this table entry?
-    Success := SetupDiEnumDeviceInterfaces(PnPHandle, nil, DeviceGuid, Devn, DeviceInterfaceData);
-    if Success then
-    begin
-      DevData.cbSize := SizeOf(DevData);
-      BytesReturned := 0;
-      //evalue size needed to store the detailed interface data in FunctionClassDeviceData
-      SetupDiGetDeviceInterfaceDetail(PnPHandle, @DeviceInterfaceData, nil, 0, BytesReturned, @DevData);
-      if (BytesReturned <> 0) and (GetLastError = ERROR_INSUFFICIENT_BUFFER) then
-      begin
-        FunctionClassDeviceData := AllocMem(BytesReturned);
-        try
-          FunctionClassDeviceData^.cbSize := SizeOf(TSPDeviceInterfaceDetailData);
-          if SetupDiGetDeviceInterfaceDetail(PnPHandle, @DeviceInterfaceData,
-            FunctionClassDeviceData, BytesReturned, BytesReturned, @DevData) then
-          begin
-            // Win64: Don't include the padding bytes into the string length calculation
-            SetString(DevicePath, PChar(@FunctionClassDeviceData.DevicePath),
-              (BytesReturned - (SizeOf(FunctionClassDeviceData.cbSize) +
-              SizeOf(FunctionClassDeviceData.DevicePath))) div SizeOf(Char));
-
-            ODS('DevicePath: ' + DevicePath);
-            Result := DevicePath;
-            Break;
-          end;
-        finally
-          FreeMem(FunctionClassDeviceData);
-        end;
-      end;
-    end;
-    Inc(Devn);
-  until not Success;
-  SetupDiDestroyDeviceInfoList(PnPHandle);
-end;
-*)
-
 { TUsbPrinterPort }
 
 constructor TUsbPrinterPort.Create(ALogger: ILogFile; const AFileName: string);
@@ -252,7 +186,7 @@ begin
   FLogger := ALogger;
   FFileName := AFileName;
   FHandle := INVALID_HANDLE_VALUE;
-  FReadTimeout := 10000;
+  FReadTimeout := 100;
 end;
 
 destructor TUsbPrinterPort.Destroy;
@@ -303,6 +237,23 @@ end;
 
 function TUsbPrinterPort.Read(Count: DWORD): AnsiString;
 var
+  TickCount: Int64;
+begin
+  Result := '';
+  TickCount := GetTickCount;
+  while True do
+  begin
+    Result := DoRead(Count);
+    if Length(Result) > 0 then Break;
+    if GetTickCount > (TickCount + ReadTimeout) then
+      raise ETimeoutError.Create('Read data failed');
+    // Sleep(50); !!!
+  end;
+end;
+
+function TUsbPrinterPort.DoRead(Count: DWORD): AnsiString;
+var
+  LastError: Integer;
   ReadCount: DWORD;
 begin
   Lock;
@@ -310,13 +261,14 @@ begin
     Result := '';
     if Count = 0 then Exit;
 
-    SetLength(Result, Count);
+    Result := StringOfChar(#0, Count);
     FEvent.ResetEvent;
     FillChar(FOvlRead, SizeOf(TOverlapped), #0);
     FOvlRead.hEvent := FEvent.Handle;
     if not ReadFile(GetHandle, Result[1], Count, ReadCount, @FOvlRead) then
     begin
-      if GetLastError <> ERROR_IO_PENDING then
+      LastError := GetLastError;
+      if (LastError <> 0)and(LastError <> ERROR_IO_PENDING) then
       begin
         Logger.Error('ReadFile function failed.');
         Logger.Error(GetLastErrorText);
@@ -330,14 +282,35 @@ begin
     begin
       RaiseLastWin32Error;
     end;
-
-    if ReadCount < Count then
-    begin
-      Logger.Error(Format('Read data: %d <> %d', [ReadCount, Count]));
-      Logger.Error('Read error. ' + 'Device not connected');
-      raise ETimeoutError.Create('Read data failed');
-    end;
     SetLength(Result, ReadCount);
+  finally
+    Unlock;
+  end;
+end;
+
+function TUsbPrinterPort.DoRead2(Count: DWORD): AnsiString;
+var
+  ReadCount: DWORD;
+  Buffer: AnsiString;
+begin
+  Lock;
+  try
+    Result := '';
+    if Count = 0 then Exit;
+
+    Buffer := StringOfChar(#0, Count);
+    FEvent.ResetEvent;
+    FillChar(FOvlRead, SizeOf(TOverlapped), #0);
+    FOvlRead.hEvent := FEvent.Handle;
+    if ReadFile(GetHandle, Buffer[1], Count, ReadCount, @FOvlRead) then
+    begin
+      FEvent.WaitFor(ReadTimeout);
+      if GetOverlappedResult(GetHandle, FOvlRead, ReadCount, True) then
+      begin
+        SetLength(Buffer, ReadCount);
+        Result := Buffer;
+      end;
+    end;
   finally
     Unlock;
   end;
@@ -345,8 +318,7 @@ end;
 
 function TUsbPrinterPort.CapRead: Boolean;
 begin
-  // Result := True;
-  Result := False;
+  Result := True;
 end;
 
 procedure TUsbPrinterPort.Close;
@@ -365,8 +337,6 @@ end;
 
 procedure TUsbPrinterPort.Flush;
 begin
-  WriteData(FBuffer);
-  FBuffer := '';
 end;
 
 procedure TUsbPrinterPort.Lock;
@@ -386,7 +356,6 @@ begin
     if not GetOpened then
     begin
       CreateHandle;
-      FBuffer := '';
     end;
   finally
     Unlock;
@@ -394,16 +363,16 @@ begin
 end;
 
 procedure TUsbPrinterPort.Purge;
+var
+  i: Integer;
 begin
-  FBuffer := '';
+  for i := 1 to 10 do
+  begin
+    if DoRead2($40) = '' then Break;
+  end;
 end;
 
 procedure TUsbPrinterPort.Write(const Data: AnsiString);
-begin
-  FBuffer := FBuffer + Data;
-end;
-
-procedure TUsbPrinterPort.WriteData(const Data: AnsiString);
 var
   Count: DWORD;
   WriteCount: DWORD;
@@ -442,7 +411,24 @@ end;
 
 function TUsbPrinterPort.GetDescription: WideString;
 begin
-  Result := 'RawPrinterPort';
+  Result := 'USBPrinterPort';
 end;
+
+function TUsbPrinterPort.ReadString: AnsiString;
+begin
+  Result := PChar(Read($40));
+  FLogger.Debug('<- ' + StrToHex(Result));
+end;
+
+function TUsbPrinterPort.ReadByte: Byte;
+var
+  S: AnsiString;
+begin
+  S := Read(1);
+  Result := Ord(S[1]);
+  FLogger.Debug('<- ' + StrToHex(Chr(Result)));
+end;
+
+
 
 end.

@@ -8,25 +8,26 @@ uses
   // DUnit
   TestFramework,
   // 3'd
-  TntClasses, Opos, OposPtr, OposPtrUtils,
+  TntClasses, Opos, OposPtr, OposPtrUtils, OposPOSPrinter_CCO_TLB,
   // This
   LogFile, PosPrinterRongta, MockPrinterPort, PrinterPort, StringUtils;
 
 type
-  { TPosEscPrinterTest }
+  { TPosPrinterRongtaTest }
 
-  TPosEscPrinterTest = class(TTestCase)
+  TPosPrinterRongtaTest = class(TTestCase)
   private
     FLogger: ILogFile;
     FPort: TMockPrinterPort;
-    FPrinter: TPosPrinterRongta;
+    FPrinter: IOPOSPOSPrinter;
+
     procedure ClaimDevice;
     procedure EnableDevice;
     procedure OpenClaimEnable;
     procedure OpenService;
     procedure PtrCheck(Code: Integer);
 
-    property Printer: TPosPrinterRongta read FPrinter;
+    property Printer: IOPOSPOSPrinter read FPrinter;
   protected
     procedure SetUp; override;
     procedure TearDown; override;
@@ -37,21 +38,22 @@ type
 
 implementation
 
-{ TPosEscPrinterTest }
+{ TPosPrinterRongtaTest }
 
-procedure TPosEscPrinterTest.SetUp;
+procedure TPosPrinterRongtaTest.SetUp;
 begin
   FLogger := TLogFile.Create;
   FPort := TMockPrinterPort.Create('');
-  FPrinter := TPosPrinterRongta.Create2(nil, FPort, FLogger);
+  FPrinter := TPosPrinterRongta.Create(FPort, FLogger);
 end;
 
-procedure TPosEscPrinterTest.TearDown;
+procedure TPosPrinterRongtaTest.TearDown;
 begin
-  FPrinter.Free;
+  FLogger := nil;
+  FPrinter := nil;
 end;
 
-procedure TPosEscPrinterTest.PtrCheck(Code: Integer);
+procedure TPosPrinterRongtaTest.PtrCheck(Code: Integer);
 var
   Text: WideString;
 begin
@@ -68,33 +70,33 @@ begin
   end;
 end;
 
-procedure TPosEscPrinterTest.OpenService;
+procedure TPosPrinterRongtaTest.OpenService;
 begin
   PtrCheck(Printer.Open('DeviceName'));
 end;
 
-procedure TPosEscPrinterTest.ClaimDevice;
+procedure TPosPrinterRongtaTest.ClaimDevice;
 begin
   CheckEquals(False, Printer.Claimed, 'Printer.Claimed');
   PtrCheck(Printer.ClaimDevice(1000));
   CheckEquals(True, Printer.Claimed, 'Printer.Claimed');
 end;
 
-procedure TPosEscPrinterTest.EnableDevice;
+procedure TPosPrinterRongtaTest.EnableDevice;
 begin
   Printer.DeviceEnabled := True;
   CheckEquals(OPOS_SUCCESS, Printer.ResultCode, 'OPOS_SUCCESS');
   CheckEquals(True, Printer.DeviceEnabled, 'DeviceEnabled');
 end;
 
-procedure TPosEscPrinterTest.OpenClaimEnable;
+procedure TPosPrinterRongtaTest.OpenClaimEnable;
 begin
   OpenService;
   ClaimDevice;
   EnableDevice;
 end;
 
-procedure TPosEscPrinterTest.TestPrintNormal;
+procedure TPosPrinterRongtaTest.TestPrintNormal;
 const
   Text = 'Line 1';
 begin
@@ -104,7 +106,7 @@ begin
   CheckEquals(StrToHex(Text), StrToHex(FPort.Buffer), 'Port.Buffer');
 end;
 
-procedure TPosEscPrinterTest.TestRecLineChars;
+procedure TPosPrinterRongtaTest.TestRecLineChars;
 begin
   OpenClaimEnable;
   CheckEquals(48, Printer.RecLineChars, 'Printer.RecLineChars.0');
@@ -113,6 +115,6 @@ begin
 end;
 
 initialization
-  RegisterTest('', TPosEscPrinterTest.Suite);
+  RegisterTest('', TPosPrinterRongtaTest.Suite);
 
 end.

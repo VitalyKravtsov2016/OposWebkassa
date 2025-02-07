@@ -33,6 +33,8 @@ type
     function Read(Count: DWORD): AnsiString;
     function CapRead: Boolean;
     function GetDescription: WideString;
+    function ReadByte: Byte;
+    function ReadString: AnsiString;
 
     property Buffer: AnsiString read FBuffer;
   end;
@@ -113,6 +115,16 @@ end;
 function TRawPrinterPort.GetDescription: WideString;
 begin
   Result := 'RawPrinterPort';
+end;
+
+function TRawPrinterPort.ReadByte: Byte;
+begin
+  Result := 0;
+end;
+
+function TRawPrinterPort.ReadString: AnsiString;
+begin
+  Result := '';
 end;
 
 end.

@@ -16,12 +16,12 @@ uses
   EscPrinterRongta;
 
 type
-  { TPosEscPrinterTest }
+  { TEscPrinterRongtaTest }
 
-  TPosEscPrinterTest = class(TTestCase)
+  TEscPrinterRongtaTest = class(TTestCase)
   private
     FLogger: ILogFile;
-    FPort: TMockPrinterPort;
+    FPort: IPrinterPort;
     FPrinter: TEscPrinterRongta;
   protected
     procedure SetUp; override;
@@ -34,17 +34,19 @@ type
 
 implementation
 
-{ TPosEscPrinterTest }
+{ TEscPrinterRongtaTest }
 
-procedure TPosEscPrinterTest.SetUp;
+procedure TEscPrinterRongtaTest.SetUp;
 begin
   FLogger := TLogFile.Create;
   FPort := TMockPrinterPort.Create('');
   FPrinter := TEscPrinterRongta.Create(FPort, FLogger);
 end;
 
-procedure TPosEscPrinterTest.TearDown;
+procedure TEscPrinterRongtaTest.TearDown;
 begin
+  FPort := nil;
+  FLogger := nil;
   FPrinter.Free;
 end;
 
@@ -52,7 +54,7 @@ end;
 //  FONT_TYPE_A = 0; // 12x24
 //  FONT_TYPE_B = 1; // 9x17
 
-procedure TPosEscPrinterTest.EncodeUserCharacter;
+procedure TEscPrinterRongtaTest.EncodeUserCharacter;
 var
   Font: TFont;
   Bitmap: TBitmap;
@@ -88,6 +90,6 @@ end;
 
 
 initialization
-  RegisterTest('', TPosEscPrinterTest.Suite);
+  RegisterTest('', TEscPrinterRongtaTest.Suite);
 
 end.

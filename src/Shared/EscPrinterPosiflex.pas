@@ -13,6 +13,25 @@ uses
 
 const
   /////////////////////////////////////////////////////////////////////////////
+  // Params constants
+
+  PFX_PARAM_HOURS_POWERED = $10;
+  PFX_PARAM_CUT_COUNT     = $15;
+  PFX_PARAM_INSTALL_DATE  = $09;
+  PFX_PARAM_CUT_FAILED    = $16;
+  PFX_PARAM_LINE_PRINTED  = $1B;
+  PFX_PARAM_SERIAL   = $05;
+  PFX_PARAM_LANGUAGE = $24;
+  PFX_PARAM_CODE_PAGE = $21;
+  PFX_PARAM_CHARSET = $22;
+  PFX_PARAM_SW1 = $27;
+  PFX_PARAM_SW2 = $28;
+  PFX_PARAM_SW3 = $29;
+  PFX_PARAM_SW4 = $2A;
+  PFX_PARAM_SW5 = $2B;
+
+
+  /////////////////////////////////////////////////////////////////////////////
   // PDF417 options
 
   // 0 Selects the standard PDF417.
@@ -265,9 +284,7 @@ type
     destructor Destroy; override;
 
     procedure CheckCapRead;
-    function ReadByte: Byte;
     function CapRead: Boolean;
-    function ReadAnsiString: AnsiString;
     procedure Send(const Data: AnsiString);
 
     procedure HorizontalTab;
@@ -315,6 +332,8 @@ type
     procedure PrintBmp(Mode: Byte);
     procedure SetWhiteBlackReverse(Value: Boolean);
     function ReadPrinterID(N: Byte): AnsiString;
+    function ReadParam(N: Byte): AnsiString;
+    function ReadPrinterIDInt(N: Byte): Integer;
     procedure SetHRIPosition(N: Byte);
     procedure SetLeftMargin(N: Word);
     procedure SetCutModeAndCutPaper(M: Byte);
@@ -520,25 +539,6 @@ begin
   end;
 end;
 
-function TEscPrinterPosiflex.ReadByte: Byte;
-begin
-  Result := Ord(FPort.Read(1)[1]);
-  FLogger.Debug('<- ' + StrToHex(Chr(Result)));
-end;
-
-function TEscPrinterPosiflex.ReadAnsiString: AnsiString;
-var
-  C: Char;
-begin
-  Result := '';
-  repeat
-    C := FPort.Read(1)[1];
-    if C <> #0 then
-      Result := Result + C;
-  until C = #0;
-  FLogger.Debug('<- ' + StrToHex(Result));
-end;
-
 procedure TEscPrinterPosiflex.CarriageReturn;
 begin
   Send(CR);
@@ -556,15 +556,19 @@ begin
 end;
 
 function TEscPrinterPosiflex.ReadPrinterStatus: TPrinterStatus;
+var
+  B: Byte;
 begin
   Logger.Debug('TEscPrinterPosiflex.ReadPrinterStatus');
   CheckCapRead;
 
   FPort.Lock;
   try
+    FPort.Purge;
     Send(#$10#$04#$01);
-    Result.DrawerOpened := TestBit(ReadByte, 2);
-    Result.IsOnline := not TestBit(ReadByte, 3);
+    B := FPort.ReadByte;
+    Result.DrawerOpened := TestBit(B, 2);
+    Result.IsOnline := not TestBit(B, 3);
   finally
     FPort.Unlock;
   end;
@@ -579,8 +583,9 @@ begin
   CheckCapRead;
   FPort.Lock;
   try
+    FPort.Purge;
     Send(#$10#$04#$02);
-    B := ReadByte;
+    B := FPort.ReadByte;
     Result.CoverOpened := TestBit(B, 2);
     Result.FeedButton := TestBit(B, 3);
     Result.ErrorOccurred := TestBit(B, 6);
@@ -598,8 +603,9 @@ begin
   CheckCapRead;
   FPort.Lock;
   try
+    FPort.Purge;
     Send(#$10#$04#$03);
-    B := ReadByte;
+    B := FPort.ReadByte;
     Result.CutterError := TestBit(B, 3);
     Result.UnrecoverableError := TestBit(B, 5);
     Result.AutoRecoverableError := TestBit(B, 6);
@@ -617,8 +623,9 @@ begin
   CheckCapRead;
   FPort.Lock;
   try
+    FPort.Purge;
     Send(#$10#$04#$04);
-    B := ReadByte;
+    B := FPort.ReadByte;
     Result.PaperNearEnd := TestBit(B, 3);
     Result.PaperPresent := not TestBit(B, 5);
   finally
@@ -1038,18 +1045,32 @@ begin
   Send(#$1D#$42 + Chr(BoolToInt[Value]));
 end;
 
-function TEscPrinterPosiflex.ReadPrinterID(N: Byte): AnsiString;
-var
-  S: AnsiString;
+function TEscPrinterPosiflex.ReadPrinterIDInt(N: Byte): Integer;
 begin
-  Logger.Debug('TEscPrinterPosiflex.ReadPrinterID');
-  
+  Logger.Debug('TEscPrinterPosiflex.ReadPrinterIDInt');
+
   CheckCapRead;
   FPort.Lock;
   try
+    FPort.Purge;
     Send(#$1D#$49 + Chr(N));
-    S := ReadAnsiString;
-    Result := Copy(S, 2, Length(S)-1);
+    Result := FPort.ReadByte;
+  finally
+    FPort.Unlock;
+  end;
+end;
+
+function TEscPrinterPosiflex.ReadPrinterID(N: Byte): AnsiString;
+begin
+  Logger.Debug('TEscPrinterPosiflex.ReadPrinterID');
+
+  CheckCapRead;
+  FPort.Lock;
+  try
+    FPort.Purge;
+    Send(#$1D#$49 + Chr(N));
+    Result := FPort.ReadString;
+    Result := TrimRight(Copy(Result, 2, Length(Result)));
   finally
     FPort.Unlock;
   end;
@@ -1162,8 +1183,9 @@ begin
   CheckCapRead;
   FPort.Lock;
   try
+    FPort.Purge;
     Send(#$1D#$72#$01);
-    Result.PaperNearEnd := TestBit(ReadByte, 2);
+    Result.PaperNearEnd := TestBit(FPort.ReadByte, 2);
   finally
     FPort.Unlock;
   end;
@@ -1716,6 +1738,48 @@ begin
   end;
   DisableUserCharacters;
 end;
+
+(*
+1D 67 34 10 - Hous powered
+1D 67 34 15 - Cut paper count
+1D 67 34 09 - Install date
+1D 67 34 16 - Failed paper cut
+1D 67 34 1B - Line printed
+1D 67 34 05 - Serial number
+1D 67 34 24 - Language model
+1D 67 34 21 - Code page
+1D 67 34 22 - Character set
+
+1D 67 34 27 - SW1
+1D 67 34 28 - SW2
+1D 67 34 29 - SW3
+1D 67 34 2A - SW4
+1D 67 34 2B - SW5
+*)
+
+function TEscPrinterPosiflex.ReadParam(N: Byte): AnsiString;
+begin
+  Logger.Debug('TEscPrinterPosiflex.ReadParam');
+
+  CheckCapRead;
+  FPort.Lock;
+  try
+    FPort.Purge;
+    Send(#$1D#$67#$34 + Chr(N));
+    Result := FPort.ReadString;
+    Result := Copy(Result, 2, Length(Result));
+  finally
+    FPort.Unlock;
+  end;
+end;
+
+
+
+
+
+
+
+
 
 
 end.

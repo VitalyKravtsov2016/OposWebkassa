@@ -4,21 +4,23 @@ interface
 
 uses
   // VCL
-  Windows, Classes, SysUtils,
+  Windows, Classes, SysUtils, ComObj, 
   // Opos
-  LogFile, OposPOSPrinter_CCO_TLB;
+  LogFile, ComUtils, OposPOSPrinter_CCO_TLB;
 
 type
   { TPosPrinterLog }
 
-  TPosPrinterLog = class(TComponent, IOPOSPOSPrinter)
+  TPosPrinterLog = class(TDispIntfObject, IOPOSPOSPrinter)
   private
     FLogger: ILogFile;
     FStartTime: Integer;
     FDriver: IOPOSPOSPrinter;
     property Driver: IOPOSPOSPrinter read FDriver;
   public
-    constructor Create2(AOwner: TComponent; ADriver: IOPOSPOSPrinter; ALogger: ILogFile);
+    constructor Create(ADriver: IOPOSPOSPrinter; ALogger: ILogFile);
+    destructor Destroy; override;
+
     procedure MethodStart(const AMethodName: string; Params: array of const);
     procedure MethodEnd(const AMethodName: string; Params: array of const);
   public
@@ -396,12 +398,18 @@ type
 implementation
 
 
-constructor TPosPrinterLog.Create2(AOwner: TComponent;
-  ADriver: IOPOSPOSPrinter; ALogger: ILogFile);
+constructor TPosPrinterLog.Create(ADriver: IOPOSPOSPrinter; ALogger: ILogFile);
 begin
-  inherited Create(AOwner);
+  inherited Create;
   FDriver := ADriver;
   FLogger := ALogger;
+end;
+
+destructor TPosPrinterLog.Destroy;
+begin
+  FDriver := nil;
+  FLogger := nil;
+  inherited Destroy;
 end;
 
 procedure TPosPrinterLog.MethodStart(const AMethodName: string; Params: array of const);

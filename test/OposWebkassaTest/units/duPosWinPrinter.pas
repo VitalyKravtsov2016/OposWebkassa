@@ -19,8 +19,8 @@ type
   TPosWinPrinterTest = class(TTestCase)
   private
     FLogger: ILogFile;
-    FPrinter: TPosWinPrinter;
     FWinPrinter: TBmpPrinter;
+    FPrinter: TPosWinPrinter;
 
     procedure ClaimDevice;
     procedure EnableDevice;
@@ -45,7 +45,7 @@ procedure TPosWinPrinterTest.SetUp;
 begin
   FLogger := TLogFile.Create;
   FWinPrinter := TBmpPrinter.Create;
-  FPrinter := TPosWinPrinter.Create2(nil, FLogger, FWinPrinter);
+  FPrinter := TPosWinPrinter.Create(FLogger, FWinPrinter);
 end;
 
 procedure TPosWinPrinterTest.TearDown;

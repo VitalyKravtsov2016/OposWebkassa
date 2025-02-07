@@ -10,7 +10,7 @@ uses
   DBT,
   // This
   LogFile, PrinterPort, WException, gnugettext,
-  DeviceNotification, PortUtil, TextReport;
+  DeviceNotification, PortUtil, TextReport, StringUtils;
 
 const
   /////////////////////////////////////////////////////////////////////////////
@@ -76,6 +76,8 @@ type
     function CapRead: Boolean;
     property Opened: Boolean read GetOpened;
     function GetDescription: WideString;
+    function ReadString: AnsiString;
+    function ReadByte: Byte;
   end;
 
   { ESerialPortError }
@@ -643,5 +645,25 @@ function TSerialPort.GetDescription: WideString;
 begin
   Result := 'SerialPort';
 end;
+
+function TSerialPort.ReadByte: Byte;
+begin
+  Result := Ord(Read(1)[1]);
+  FLogger.Debug('<- ' + StrToHex(Chr(Result)));
+end;
+
+function TSerialPort.ReadString: AnsiString;
+var
+  C: Char;
+begin
+  Result := '';
+  repeat
+    C := Read(1)[1];
+    if C <> #0 then
+      Result := Result + C;
+  until C = #0;
+  FLogger.Debug('<- ' + StrToHex(Result));
+end;
+
 
 end.

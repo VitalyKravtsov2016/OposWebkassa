@@ -4,7 +4,7 @@ interface
 
 uses
   // VCL
-  Windows, Classes, SysUtils, Graphics, Math,
+  Windows, Classes, SysUtils, Graphics, Math, ComObj,
   // Tnt
   TntClasses,
   // Opos
@@ -13,7 +13,7 @@ uses
   // This
   LogFile, DriverError, EscPrinterPosiflex, PrinterPort, NotifyThread,
   RegExpr, SerialPort, Jpeg, GifImage, BarcodeUtils, StringUtils, DebugUtils,
-  PtrDirectIO, EscPrinterUtils;
+  PtrDirectIO, EscPrinterUtils, ComUtils;
 
 type
   { TPageMode }
@@ -28,7 +28,7 @@ type
 
   { TPosPrinterPosiflex }
 
-  TPosPrinterPosiflex = class(TComponent, IOPOSPOSPrinter, IOposEvents)
+  TPosPrinterPosiflex = class(TDispIntfObject, IOPOSPOSPrinter, IOposEvents)
   private
     FLogger: ILogFile;
     FPort: IPrinterPort;
@@ -193,6 +193,7 @@ type
     procedure PrintGraphics(Graphic: TGraphic; Width, Alignment: Integer);
     procedure DeviceProc(Sender: TObject);
     procedure UpdatePrinterStatus;
+    procedure UpdatePrinterStatus2;
     procedure SetCoverState(CoverOpened: Boolean);
 
     property Logger: ILogFile read FLogger;
@@ -210,7 +211,7 @@ type
     procedure CheckCoverClosed;
     procedure SetPowerState(PowerState: Integer);
   public
-    constructor Create2(AOwner: TComponent; APort: IPrinterPort; ALogger: ILogFile);
+    constructor Create(APort: IPrinterPort; ALogger: ILogFile);
     destructor Destroy; override;
   public
     function Get_OpenResult: Integer; safecall;
@@ -663,25 +664,22 @@ end;
 
 { TPosPrinterPosiflex }
 
-constructor TPosPrinterPosiflex.Create2(AOwner: TComponent; APort: IPrinterPort;
-  ALogger: ILogFile);
+constructor TPosPrinterPosiflex.Create(APort: IPrinterPort; ALogger: ILogFile);
 begin
-  inherited Create(AOwner);
+  inherited Create;
   FPort := APort;
   FPrinter := TEscPrinterPosiflex.Create(APort, ALogger);
   FLogger := ALogger;
   FDevice := TOposServiceDevice19.Create(FLogger);
   FDevice.ErrorEventEnabled := False;
   FPageMode.IsActive := False;
-
-  Initialize;
+  if APort <> nil then
+    Initialize;
 end;
 
 destructor TPosPrinterPosiflex.Destroy;
 begin
-  if FDevice.Opened then
-    Close;
-
+  Close;
   FDevice.Free;
   FThread.Free;
   FPrinter.Free;
@@ -983,7 +981,6 @@ end;
 function TPosPrinterPosiflex.Close: Integer;
 begin
   try
-    Set_DeviceEnabled(False);
     ReleaseDevice;
     FDevice.Close;
     Result := ClearResult;
@@ -2174,7 +2171,6 @@ begin
   try
     CheckEnabled;
     CheckRecStation(Station);
-    CheckPaperPresent;
     UpdatePageMode;
     PrintText(Data);
     Result := ClearResult;
@@ -2193,6 +2189,7 @@ end;
 function TPosPrinterPosiflex.ReleaseDevice: Integer;
 begin
   try
+    DeviceEnabled := False;
     FDevice.ReleaseDevice;
     Result := ClearResult;
   except
@@ -2401,6 +2398,28 @@ begin
   end;
 end;
 
+procedure TPosPrinterPosiflex.UpdatePrinterStatus2;
+var
+  ErrorStatus: TErrorStatus;
+  OfflineStatus: TOfflineStatus;
+begin
+  if not FPrinter.CapRead then Exit;
+
+  try
+    OfflineStatus := FPrinter.ReadOfflineStatus;
+    SetCoverState(OfflineStatus.CoverOpened);
+    SetRecEmpty(not FPrinter.ReadPaperStatus.PaperPresent);
+    ErrorStatus := FPrinter.ReadErrorStatus;
+    SetPowerState(OPOS_PS_ONLINE);
+  except
+    on E: Exception do
+    begin
+      SetPowerState(OPOS_PS_OFF_OFFLINE);
+      raise;
+    end;
+  end;
+end;
+
 procedure TPosPrinterPosiflex.SetPowerState(PowerState: Integer);
 begin
   if PowerState <> FDevice.PowerState then
@@ -2436,7 +2455,7 @@ begin
     while not FThread.Terminated do
     begin
       try
-        UpdatePrinterStatus;
+        UpdatePrinterStatus2;
       except
         on E: Exception do
         begin

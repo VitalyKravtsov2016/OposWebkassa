@@ -362,7 +362,7 @@ begin
       FHandle := CreateFileW(PWideChar(FileName), GENERIC_READ or GENERIC_WRITE,
         FILE_SHARE_READ, nil, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
 
-      if Opened then
+      if FHandle <> INVALID_HANDLE_VALUE then
       begin
         FileSeek(FHandle, 0, 2); // 0 from end
         FFileName := FileName;

@@ -283,9 +283,7 @@ type
     destructor Destroy; override;
 
     procedure CheckCapRead;
-    function ReadByte: Byte;
     function CapRead: Boolean;
-    function ReadAnsiString: AnsiString;
     procedure Send(const Data: AnsiString);
 
     procedure HorizontalTab;
@@ -496,25 +494,6 @@ begin
   end;
 end;
 
-function TEscPrinterRongta.ReadByte: Byte;
-begin
-  Result := Ord(FPort.Read(1)[1]);
-  FLogger.Debug('<- ' + StrToHex(Chr(Result)));
-end;
-
-function TEscPrinterRongta.ReadAnsiString: AnsiString;
-var
-  C: Char;
-begin
-  Result := '';
-  repeat
-    C := FPort.Read(1)[1];
-    if C <> #0 then
-      Result := Result + C;
-  until C = #0;
-  FLogger.Debug('<- ' + StrToHex(Result));
-end;
-
 procedure TEscPrinterRongta.CarriageReturn;
 begin
   Send(CR);
@@ -539,7 +518,7 @@ begin
   FPort.Lock;
   try
     Send(#$10#$04#$01);
-    Result.DrawerOpened := TestBit(ReadByte, 2);
+    Result.DrawerOpened := TestBit(FPort.ReadByte, 2);
   finally
     FPort.Unlock;
   end;
@@ -555,7 +534,7 @@ begin
   FPort.Lock;
   try
     Send(#$10#$04#$02);
-    B := ReadByte;
+    B := FPort.ReadByte;
     Result.CoverOpened := TestBit(B, 2);
     Result.FeedButton := TestBit(B, 3);
     Result.ErrorOccurred := TestBit(B, 6);
@@ -574,7 +553,7 @@ begin
   FPort.Lock;
   try
     Send(#$10#$04#$03);
-    B := ReadByte;
+    B := FPort.ReadByte;
     Result.CutterError := TestBit(B, 3);
     Result.UnrecoverableError := TestBit(B, 5);
     Result.AutoRecoverableError := TestBit(B, 6);
@@ -593,7 +572,7 @@ begin
   FPort.Lock;
   try
     Send(#$10#$04#$04);
-    B := ReadByte;
+    B := FPort.ReadByte;
     Result.PaperPresent := not TestBit(B, 5);
   finally
     FPort.Unlock;
@@ -1022,7 +1001,7 @@ begin
   FPort.Lock;
   try
     Send(#$1D#$49 + Chr(N));
-    S := ReadAnsiString;
+    S := FPort.ReadString;
     Result := Copy(S, 2, Length(S)-1);
   finally
     FPort.Unlock;
@@ -1137,7 +1116,7 @@ begin
   FPort.Lock;
   try
     Send(#$1D#$72#$01);
-    Result.PaperNearEnd := TestBit(ReadByte, 2);
+    Result.PaperNearEnd := TestBit(FPort.ReadByte, 2);
   finally
     FPort.Unlock;
   end;

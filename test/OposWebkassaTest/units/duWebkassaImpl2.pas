@@ -141,7 +141,7 @@ begin
   FEvents := TOposEvents.Create;
   FPrinter := TMockPosPrinter2.Create;
 
-  FDriver := TWebkassaImpl.Create(nil);
+  FDriver := TWebkassaImpl.Create;
   FDriver.TestMode := True;
   FDriver.LoadParamsEnabled := False;
   FDriver.Client.TestMode := True;

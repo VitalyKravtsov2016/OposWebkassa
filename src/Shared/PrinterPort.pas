@@ -22,6 +22,8 @@ type
     function Read(Count: DWORD): AnsiString;
     function CapRead: Boolean;
     function GetDescription: WideString;
+    function ReadByte: Byte;
+    function ReadString: AnsiString;
   end;
 
   ESerialError = class(WideException);

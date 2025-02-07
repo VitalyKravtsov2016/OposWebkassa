@@ -38,13 +38,14 @@ type
 
     property Printer: TEscPrinterPosiflex read FPrinter;
   published
+    procedure TestReadStatus;
     procedure TestReadPrinterID;
+    procedure TestReadParams;
 
     procedure TestBitmap;
     procedure TestPrintRasterBMP;
     procedure TestInitialize;
     procedure TestPrintText;
-    procedure TestReadStatus;
     procedure TestPrintMode;
     procedure TestPrintModeInLine;
     procedure TestBarcode;
@@ -551,17 +552,33 @@ _RONGTA
 
 procedure TEscPrinterPosiflexTest.TestReadPrinterID;
 begin
-(*
-  CheckEquals('TM-T88III', FPrinter.ReadPrinterID(67), 'Printer name');
-  CheckEquals('7.03 ESC/POS', FPrinter.ReadPrinterID(65), 'Firmware version');
+  CheckEquals($20, FPrinter.ReadPrinterIdInt(1), 'ReadPrinterIdInt(1)');
+  CheckEquals($02, FPrinter.ReadPrinterIdInt(2), 'ReadPrinterIdInt(2)');
+  CheckEquals($10, FPrinter.ReadPrinterIdInt(3), 'ReadPrinterIdInt(3)');
 
-  CheckEquals('7.03 ESC/POS', FPrinter.ReadFirmwareVersion, 'Firmware version');
-  CheckEquals('EPSON', FPrinter.ReadPrinterID(66), 'Manufacturer');
-  CheckEquals('EPSON', FPrinter.ReadManufacturer, 'Manufacturer');
-  CheckEquals('TM-T88III', FPrinter.ReadPrinterID(67), 'Printer name');
-  CheckEquals('TM-T88III', FPrinter.ReadPrinterName, 'Printer name');
-  CheckEquals('D6KG074561', FPrinter.ReadPrinterID(68), 'Serial number');
-  CheckEquals('D6KG074561', FPrinter.ReadSerialNumber, 'Serial number');
+  CheckEquals('POSIFLEX', FPrinter.ReadManufacturer, 'Manufacturer');
+  CheckEquals('1.4', FPrinter.ReadFirmwareVersion, 'Firmware version');
+  CheckEquals('PP-6900', FPrinter.ReadPrinterName, 'Printer name');
+  CheckEquals('H6DFQ0', FPrinter.ReadSerialNumber, 'Serial number');
+end;
+
+procedure TEscPrinterPosiflexTest.TestReadParams;
+begin
+  CheckEquals('H6DFQ0  ', FPrinter.ReadParam(PFX_PARAM_SERIAL), 'ReadParam(PFX_PARAM_SERIAL)');
+  CheckEquals('223', FPrinter.ReadParam(PFX_PARAM_SW1), 'ReadParam(PFX_PARAM_SW1)');
+  CheckEquals('255', FPrinter.ReadParam(PFX_PARAM_SW2), 'ReadParam(PFX_PARAM_SW2)');
+  CheckEquals('255', FPrinter.ReadParam(PFX_PARAM_SW3), 'ReadParam(PFX_PARAM_SW3)');
+  CheckEquals('255', FPrinter.ReadParam(PFX_PARAM_SW4), 'ReadParam(PFX_PARAM_SW4)');
+  CheckEquals('255', FPrinter.ReadParam(PFX_PARAM_SW5), 'ReadParam(PFX_PARAM_SW5)');
+  CheckEquals('20170808', FPrinter.ReadParam(PFX_PARAM_INSTALL_DATE), 'ReadParam(PFX_PARAM_INSTALL_DATE)');
+  CheckEquals('Cyrillic', FPrinter.ReadParam(PFX_PARAM_LANGUAGE), 'ReadParam(PFX_PARAM_LANGUAGE)');
+  CheckEquals('17', FPrinter.ReadParam(PFX_PARAM_CODE_PAGE), 'ReadParam(PFX_PARAM_CODE_PAGE)');
+  CheckEquals('0', FPrinter.ReadParam(PFX_PARAM_CHARSET), 'ReadParam(PFX_PARAM_CHARSET)');
+(*
+  CheckEquals('51076', FPrinter.ReadParam(PFX_PARAM_HOURS_POWERED), 'ReadParam(PFX_PARAM_HOURS_POWERED)');
+  CheckEquals('1373980', FPrinter.ReadParam(PFX_PARAM_CUT_COUNT), 'ReadParam(PFX_PARAM_CUT_COUNT)');
+  CheckEquals('13', FPrinter.ReadParam(PFX_PARAM_CUT_FAILED), 'ReadParam(PFX_PARAM_CUT_FAILED)');
+  CheckEquals('52216416', FPrinter.ReadParam(PFX_PARAM_LINE_PRINTED), 'ReadParam(PFX_PARAM_LINE_PRINTED)');
 *)  
 end;
 

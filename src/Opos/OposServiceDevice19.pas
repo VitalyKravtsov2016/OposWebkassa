@@ -155,10 +155,11 @@ end;
 
 destructor TOposServiceDevice19.Destroy;
 begin
-  FEventThread.Free;
+  Close;
   FEvents.Free;
   FSemaphore.Free;
   FOposEvents := nil;
+  FEventThread.Free;
   inherited Destroy;
 end;
 
@@ -177,6 +178,7 @@ begin
   FDeviceName := ADeviceName;
   FLongDeviceName := Tnt_WideFormat('%s/%s', [ADeviceClass, ADeviceName]);
   FOposEvents := AOposEvents;
+  //AOposEvents._Release;!!!
 
   // State is changed to S_IDLE when the open method is successfully called.
   FState := OPOS_S_IDLE;
@@ -185,9 +187,8 @@ end;
 
 procedure TOposServiceDevice19.Close;
 begin
-  if FClaimed then
-    ReleaseDevice;
-
+  SetFreezeEvents(True);
+  ReleaseDevice;
   FOpened := False;
   FOposEvents := nil;
   FState := OPOS_S_CLOSED;
@@ -387,7 +388,7 @@ end;
 
 procedure TOposServiceDevice19.StatusUpdateEvent(Data: Integer);
 begin
-  //Logger.Debug('StatusUpdateEvent: ' + GetStatusUpdateEventText(Data));
+  Logger.Debug('StatusUpdateEvent: ' + GetStatusUpdateEventText(Data));
   FireEvent(TStatusUpdateEvent.Create(Data, Logger));
 end;
 

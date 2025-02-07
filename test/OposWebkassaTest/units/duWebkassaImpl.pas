@@ -85,7 +85,7 @@ type
     procedure TestFiscalReceipt2;
     procedure TestCoverError;
     procedure TestRecEmpty;
-    procedure TestStatusUpateEvent;
+    procedure TestStatusUpdateEvent;
     procedure TestDuplicateReceipt;
     procedure TestSetHeaderLines;
     procedure TestSetTrailerLines;
@@ -117,12 +117,12 @@ begin
   FLines := TStringList.Create;
   FWaitEvent := TEvent.Create(nil, False, False, '');
   FEvents := TOposEvents.Create;
-  FPrinter := TMockPosPrinter.Create(nil);
+  FPrinter := TMockPosPrinter.Create;
   FPrinter.RecLineChars := 42;
   FPrinter.FCapRecBold := False;
   FPrinter.FCapRecDwideDhigh := False;
 
-  FDriver := TWebkassaImpl.Create(nil);
+  FDriver := TWebkassaImpl.Create;
   FDriver.TestMode := True;
   FDriver.LoadParamsEnabled := False;
   FDriver.Client.TestMode := True;
@@ -187,14 +187,10 @@ end;
 
 procedure TWebkassaImplTest.TearDown;
 begin
-  if FDriver <> nil then
-    FDriver.Close;
-
   FDriver.Free;
   FEvents.Free;
   FWaitEvent.Free;
   FLines.Free;
-  FPrinter.Free;
   inherited TearDown;
 end;
 
@@ -785,7 +781,7 @@ begin
   CheckEquals('Receipt station is empty', ErrorString, 'ErrorString');
 end;
 
-procedure TWebkassaImplTest.TestStatusUpateEvent;
+procedure TWebkassaImplTest.TestStatusUpdateEvent;
 begin
   OpenClaimEnable;
   FDriver.SetPropertyNumber(PIDX_FreezeEvents, 0);

@@ -55,7 +55,7 @@ begin
 
   FLogger := TLogFile.Create;
   FPrinter := TMockPOSPrinter2.Create;
-  FDriver := TWebkassaImpl.Create(nil);
+  FDriver := TWebkassaImpl.Create;
 
   FDriver.TestMode := True;
   FDriver.LoadParamsEnabled := False;

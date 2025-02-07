@@ -25,7 +25,7 @@ uses
   PosPrinterOA48, PosPrinterPosiflex,  ReceiptTemplate,
   SerialPort, PrinterPort, SocketPort, RawPrinterPort, UsbPrinterPort,
   PrinterTypes, DirectIOAPI, BarcodeUtils, PrinterParametersReg, JsonUtils,
-  EscPrinterRongta, PtrDirectIO, PageBuffer, EscPrinterUtils;
+  EscPrinterRongta, PtrDirectIO, PageBuffer, EscPrinterUtils, ComUtils;
 
 const
   PrinterClaimTimeout = 100;
@@ -51,7 +51,7 @@ type
 
   { TWebkassaImpl }
 
-  TWebkassaImpl = class(TComponent, IFiscalPrinterService_1_12)
+  TWebkassaImpl = class(TDispIntfObject, IFiscalPrinterService_1_12)
   private
     FPort: IPrinterPort;
     FLines: TTntStrings;
@@ -67,9 +67,7 @@ type
     FDuplicate: TTextDocument;
     FPageBuffer: TPageBuffer;
     FReceipt: TCustomReceipt;
-    FPrinterObj: TObject;
     FPrinter: IOPOSPOSPrinter;
-    FPrinterLog: TPOSPrinterLog;
     FParams: TPrinterParameters;
     FOposDevice: TOposServiceDevice19;
     FPrinterState: TFiscalPrinterState;
@@ -130,13 +128,16 @@ type
     procedure PrintDocItemText(Item: TDocItem);
     function GetBarcodeSize(Barcode: TBarcodeRec): TPoint;
     procedure PrintDocItemBarcode(Item: TDocItem);
+    function CreatePrinterPort: IPrinterPort;
+    function CreatePosEscPrinter(
+      PrinterPort: IPrinterPort): IOPOSPOSPrinter;
+    procedure SetPrinter(const Value: IOPOSPOSPrinter);
   public
     procedure PrintDocumentSafe(Document: TTextDocument);
     procedure CheckCanPrint;
     function GetVatRate(ID: Integer): TVatRate;
     function AmountToStr(Value: Currency): AnsiString;
     function AmountToStrEq(Value: Currency): AnsiString;
-    procedure SetPrinter(const Value: IOPOSPOSPrinter);
     function ReadDailyTotal: Currency;
     function ReadRefundTotal: Currency;
     function ReadSellTotal: Currency;
@@ -390,7 +391,7 @@ type
                                     const UnitName: WideString): Integer; safecall;
     property OpenResult: Integer read Get_OpenResult;
   public
-    constructor Create(AOwner: TComponent); override;
+    constructor Create;
     destructor Destroy; override;
 
     function DecodeString(const Text: WideString): WideString;
@@ -575,9 +576,9 @@ end;
 
 { TWebkassaImpl }
 
-constructor TWebkassaImpl.Create(AOwner: TComponent);
+constructor TWebkassaImpl.Create;
 begin
-  inherited Create(AOwner);
+  inherited Create;
   FLogger := TLogFile.Create;
   FDocument := TTextDocument.Create;
   FDuplicate := TTextDocument.Create;
@@ -598,7 +599,6 @@ begin
   Close;
 
   FPrinter := nil;
-  FPrinterObj.Free;
   FLines.Free;
   FClient.Free;
   FParams.Free;
@@ -607,10 +607,14 @@ begin
   FOposDevice.Free;
   FPrinterState.Free;
   FReceipt.Free;
-  FPrinterLog.Free;
   FCashboxStatus.Free;
   FPageBuffer.Free;
   inherited Destroy;
+end;
+
+procedure TWebkassaImpl.SetPrinter(const Value: IOPOSPOSPrinter);
+begin
+  FPrinter := TPosPrinterLog.Create(Value, Logger);
 end;
 
 procedure TWebkassaImpl.SaveUsrParams;
@@ -656,13 +660,6 @@ begin
   if FPrinter = nil then
     raise Exception.Create('Not opened');
   Result := FPrinter;
-end;
-
-procedure TWebkassaImpl.SetPrinter(const Value: IOPOSPOSPrinter);
-begin
-  FPrinterLog.Free;
-  FPrinterLog := TPosPrinterLog.Create2(nil, Value, Logger);
-  FPrinter := FPrinterLog;
 end;
 
 function TWebkassaImpl.CreateReceipt(FiscalReceiptType: Integer): TCustomReceipt;
@@ -800,7 +797,7 @@ begin
   FAdditionalTrailer := '';
   FOposDevice.PhysicalDeviceName := FPTR_DEVICE_DESCRIPTION;
   FOposDevice.PhysicalDeviceDescription := FPTR_DEVICE_DESCRIPTION;
-  FOposDevice.ServiceObjectDescription := 'WebKassa OPOS fiscal printer service. SHTRIH-M, 2022';
+  FOposDevice.ServiceObjectDescription := 'WebKassa OPOS fiscal printer service. SHTRIH-M, 2025';
   FPredefinedPaymentLines := '0,1,2,3';
   FReservedWord := '';
   FChangeDue := '';
@@ -3007,7 +3004,7 @@ begin
 
     if FPrinter = nil then
     begin
-      FPrinter := CreatePrinter;
+      SetPrinter(CreatePrinter);
     end;
     CheckPtr(Printer.Open(FParams.PrinterName));
     FOposDevice.CapPowerReporting := Printer.CapPowerReporting;
@@ -3035,61 +3032,44 @@ end;
 
 function TWebkassaImpl.CreatePrinter: IOPOSPOSPrinter;
 
-  function CreatePosPrinterRongta(PrinterPort: IPrinterPort): IOPOSPOSPrinter;
+  function CreateOposPrinter: IOPOSPOSPrinter;
   var
-    Printer: TPosPrinterRongta;
+    POSPrinter: TOPOSPOSPrinter;
   begin
-    Printer := TPosPrinterRongta.Create2(nil, PrinterPort, Logger);
-    Printer.OnStatusUpdateEvent := PrinterStatusUpdateEvent;
-    Printer.OnErrorEvent := PrinterErrorEvent;
-    Printer.OnDirectIOEvent := PrinterDirectIOEvent;
-    Printer.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
-    Printer.FontName := Params.FontName;
-    Printer.DevicePollTime := Params.DevicePollTime;
-    FPrinterObj := Printer;
-    Result := Printer;
+    PosPrinter := TOPOSPOSPrinter.Create(nil);
+    PosPrinter.OnStatusUpdateEvent := PrinterStatusUpdateEvent;
+    PosPrinter.OnErrorEvent := PrinterErrorEvent;
+    PosPrinter.OnDirectIOEvent := PrinterDirectIOEvent;
+    PosPrinter.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
+    Result := PosPrinter.ControlInterface;
   end;
 
-  function CreatePosPrinterOA48(PrinterPort: IPrinterPort): IOPOSPOSPrinter;
+  function CreateWindowsPrinter: IOPOSPOSPrinter;
   var
-    Printer: TPosPrinterOA48;
+    PosWinPrinter: TPosWinPrinter;
   begin
-    Printer := TPosPrinterOA48.Create2(nil, PrinterPort, Logger);
-    Printer.OnStatusUpdateEvent := PrinterStatusUpdateEvent;
-    Printer.OnErrorEvent := PrinterErrorEvent;
-    Printer.OnDirectIOEvent := PrinterDirectIOEvent;
-    Printer.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
-    Printer.FontName := Params.FontName;
-    Printer.DevicePollTime := Params.DevicePollTime;
-    FPrinterObj := Printer;
-    Result := Printer;
+    PosWinPrinter := TPosWinPrinter.Create(Logger, nil);
+    PosWinPrinter.FontName := Params.FontName;
+    Result := PosWinPrinter;
   end;
 
-  function CreatePosPrinterPosiflex(PrinterPort: IPrinterPort): IOPOSPOSPrinter;
-  var
-    Printer: TPosPrinterPosiflex;
-  begin
-    Printer := TPosPrinterPosiflex.Create2(nil, PrinterPort, Logger);
-    Printer.OnStatusUpdateEvent := PrinterStatusUpdateEvent;
-    Printer.OnErrorEvent := PrinterErrorEvent;
-    Printer.OnDirectIOEvent := PrinterDirectIOEvent;
-    Printer.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
-    Printer.FontName := Params.FontName;
-    Printer.DevicePollTime := Params.DevicePollTime;
-    FPrinterObj := Printer;
-    Result := Printer;
-  end;
-
-  function CreatePosEscPrinter(PrinterPort: IPrinterPort): IOPOSPOSPrinter;
-  begin
-    case Params.EscPrinterType of
-      EscPrinterTypeRongta: Result := CreatePosPrinterRongta(PrinterPort);
-      EscPrinterTypeOA48: Result := CreatePosPrinterOA48(PrinterPort);
-      EscPrinterTypePosiflex: Result := CreatePosPrinterPosiflex(PrinterPort);
-    else
-      Result := CreatePosPrinterOA48(PrinterPort);
+begin
+  case Params.PrinterType of
+    PrinterTypeOPOS: Result := CreateOposPrinter;
+    PrinterTypeWindows: Result := CreateWindowsPrinter;
+    PrinterTypeEscCommands:
+    begin
+      if FPort = nil then
+        FPort := CreatePrinterPort;
+      Result := CreatePosEscPrinter(FPort);
     end;
+  else
+    // !!
+    Result := CreateWindowsPrinter;
   end;
+end;
+
+function TWebkassaImpl.CreatePrinterPort: IPrinterPort;
 
   function CreateSerialPort: TSerialPort;
   var
@@ -3117,49 +3097,74 @@ function TWebkassaImpl.CreatePrinter: IOPOSPOSPrinter;
     Result := TSocketPort.Create(SocketParams, Logger);
   end;
 
-  function CreatePrinterPort: IPrinterPort;
+  function CreateUsbPort: TUsbPrinterPort;
   begin
-    case Params.PortType of
-      PortTypeSerial: Result := CreateSerialPort;
-      PortTypeWindows: Result := TRawPrinterPort.Create(Logger, Params.PrinterName);
-      PortTypeNetwork: Result := CreateNetworkPort;
-      PortTypeUSB: Result := TUsbPrinterPort.Create(Logger, Params.UsbPort);
-    else
-      Result := CreateSerialPort;
-    end;
+    Result := TUsbPrinterPort.Create(Logger, Params.UsbPort);
+    Result.ReadTimeout := Params.ByteTimeout;
   end;
 
-var
-  POSPrinter: TOPOSPOSPrinter;
-  PosWinPrinter: TPosWinPrinter;
 begin
-  FPrinterObj.Free;
+  case Params.PortType of
+    PortTypeSerial: Result := CreateSerialPort;
+    PortTypeWindows: Result := TRawPrinterPort.Create(Logger, Params.PrinterName);
+    PortTypeNetwork: Result := CreateNetworkPort;
+    PortTypeUSB: Result := CreateUsbPort;
+  else
+    Result := CreateSerialPort;
+  end;
+end;
 
-  case Params.PrinterType of
-    PrinterTypeOPOS:
-    begin
-      PosPrinter := TOPOSPOSPrinter.Create(nil);
-      PosPrinter.OnStatusUpdateEvent := PrinterStatusUpdateEvent;
-      PosPrinter.OnErrorEvent := PrinterErrorEvent;
-      PosPrinter.OnDirectIOEvent := PrinterDirectIOEvent;
-      PosPrinter.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
-      FPrinterLog := TPosPrinterLog.Create2(nil, PosPrinter.ControlInterface, Logger);
-      FPrinterObj := FPrinterLog;
-      Result := FPrinterLog;
-    end;
-    PrinterTypeWindows:
-    begin
-      PosWinPrinter := TPosWinPrinter.Create2(nil, Logger, nil);
-      PosWinPrinter.FontName := Params.FontName;
-      FPrinterObj := PosWinPrinter;
-      Result := PosWinPrinter;
-    end;
-    PrinterTypeEscCommands:
-    begin
-      if FPort = nil then
-        FPort := CreatePrinterPort;
-      Result := CreatePosEscPrinter(FPort);
-    end;
+function TWebkassaImpl.CreatePosEscPrinter(PrinterPort: IPrinterPort): IOPOSPOSPrinter;
+
+  function CreatePosPrinterRongta(PrinterPort: IPrinterPort): IOPOSPOSPrinter;
+  var
+    Printer: TPosPrinterRongta;
+  begin
+    Printer := TPosPrinterRongta.Create(PrinterPort, Logger);
+    Printer.OnStatusUpdateEvent := PrinterStatusUpdateEvent;
+    Printer.OnErrorEvent := PrinterErrorEvent;
+    Printer.OnDirectIOEvent := PrinterDirectIOEvent;
+    Printer.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
+    Printer.FontName := Params.FontName;
+    Printer.DevicePollTime := Params.DevicePollTime;
+    Result := Printer;
+  end;
+
+  function CreatePosPrinterOA48(PrinterPort: IPrinterPort): IOPOSPOSPrinter;
+  var
+    Printer: TPosPrinterOA48;
+  begin
+    Printer := TPosPrinterOA48.Create(PrinterPort, Logger);
+    Printer.OnStatusUpdateEvent := PrinterStatusUpdateEvent;
+    Printer.OnErrorEvent := PrinterErrorEvent;
+    Printer.OnDirectIOEvent := PrinterDirectIOEvent;
+    Printer.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
+    Printer.FontName := Params.FontName;
+    Printer.DevicePollTime := Params.DevicePollTime;
+    Result := Printer;
+  end;
+
+  function CreatePosPrinterPosiflex(PrinterPort: IPrinterPort): IOPOSPOSPrinter;
+  var
+    Printer: TPosPrinterPosiflex;
+  begin
+    Printer := TPosPrinterPosiflex.Create(PrinterPort, Logger);
+    Printer.OnStatusUpdateEvent := PrinterStatusUpdateEvent;
+    Printer.OnErrorEvent := PrinterErrorEvent;
+    Printer.OnDirectIOEvent := PrinterDirectIOEvent;
+    Printer.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
+    Printer.FontName := Params.FontName;
+    Printer.DevicePollTime := Params.DevicePollTime;
+    Result := Printer;
+  end;
+
+begin
+  case Params.EscPrinterType of
+    EscPrinterTypeRongta: Result := CreatePosPrinterRongta(PrinterPort);
+    EscPrinterTypeOA48: Result := CreatePosPrinterOA48(PrinterPort);
+    EscPrinterTypePosiflex: Result := CreatePosPrinterPosiflex(PrinterPort);
+  else
+    Result := CreatePosPrinterOA48(PrinterPort);
   end;
 end;
 
@@ -3169,9 +3174,9 @@ begin
     Result := ClearResult;
     if not FOposDevice.Opened then Exit;
 
-    SetDeviceEnabled(False);
-    FOposDevice.Close;
+    ReleaseDevice;
     Printer.Close;
+    FOposDevice.Close;
     Result := ClearResult;
   except
     on E: Exception do
@@ -3236,6 +3241,7 @@ end;
 
 procedure TWebkassaImpl.DisablePosPrinter;
 begin
+  Printer.DeviceEnabled := False;
   Printer.ReleaseDevice;
 end;
 
@@ -3246,6 +3252,8 @@ begin
   CheckPtr(Printer.ClaimDevice(ClaimTimeout));
   Printer.DeviceEnabled := True;
   CheckPtr(Printer.ResultCode);
+
+  Logger.Debug('Printer.DeviceDescription: ' + Printer.DeviceDescription);
 
   CharacterSetList := Printer.CharacterSetList;
   if IsCharacterSetSupported(CharacterSetList, PTR_CS_UNICODE) then

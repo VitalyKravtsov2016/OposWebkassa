@@ -8,7 +8,7 @@ uses
   // Mock
   PascalMock,
   // Opos
-  OposPOSPrinter_CCO_TLB, DebugUtils;
+  OposPOSPrinter_CCO_TLB, DebugUtils, ComUtils;
 
 const
   CRLF = #13#10;
@@ -16,7 +16,7 @@ const
 type
   { TMockPOSPrinter }
 
-  TMockPOSPrinter = class(TComponent, IOPOSPOSPrinter)
+  TMockPOSPrinter = class(TDispIntfObject, IOPOSPOSPrinter)
   private
     FText: WideString;
     FLines: TStringList;
@@ -170,7 +170,7 @@ type
     FCapRecRuledLine: Integer;
     FCapSlpRuledLine: Integer;
 
-    constructor Create(AOwner: Tcomponent); override;
+    constructor Create;
     destructor Destroy; override;
 
     property Lines: TStringList read FLines;
@@ -562,9 +562,9 @@ implementation
 
 { TMockPOSPrinter }
 
-constructor TMockPOSPrinter.Create(AOwner: Tcomponent);
+constructor TMockPOSPrinter.Create;
 begin
-  inherited Create(AOwner);
+  inherited Create;
   FLines := TStringList.Create;
   FCapConcurrentJrnRec := True;
   FCapConcurrentJrnSlp := True;

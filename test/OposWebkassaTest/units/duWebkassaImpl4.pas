@@ -67,7 +67,7 @@ var
   VatRate: TVatRateRec;
 begin
   inherited SetUp;
-  FDriver := TWebkassaImpl.Create(nil);
+  FDriver := TWebkassaImpl.Create;
   FPort := TRawPrinterPortTest.Create(FDriver.Logger, '');
   FDriver.Port := FPort;
   FDriver.TestMode := True;
@@ -120,10 +120,7 @@ end;
 
 procedure TWebkassaImplTest4.TearDown;
 begin
-  if FDriver <> nil then
-    FDriver.Close;
-
-  FDriver.Free;
+  FDriver := nil;
   inherited TearDown;
 end;
 

@@ -59,7 +59,7 @@ type
     procedure TestPrintNormal2;
     procedure TestCharacterToCodePage;
     procedure TestArrayToString;
-
+    procedure TestDeviceDescription;
   end;
 
 implementation
@@ -497,6 +497,15 @@ begin
   PtrCheck(Printer.PrintBitmap(PTR_S_RECEIPT, 'ShtrihM.bmp', 219, PTR_BM_LEFT));
   PtrCheck(Printer.PrintBitmap(PTR_S_RECEIPT, 'ShtrihM.bmp', 219, PTR_BM_CENTER));
   PtrCheck(Printer.PrintBitmap(PTR_S_RECEIPT, 'ShtrihM.bmp', 219, PTR_BM_RIGHT));
+end;
+
+procedure TPosPrinterPosiflexTest.TestDeviceDescription;
+begin
+  OpenService;
+  CheckEquals('OPOS Windows Printer', Printer.DeviceDescription, 'DeviceDescription.0');
+  ClaimDevice;
+  EnableDevice;
+  CheckEquals('POSIFLEX PP-6900 1.4 H6DFQ0', Printer.DeviceDescription, 'DeviceDescription.1');
 end;
 
 initialization

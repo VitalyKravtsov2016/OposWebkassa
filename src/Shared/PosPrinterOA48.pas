@@ -13,12 +13,12 @@ uses
   // This
   LogFile, DriverError, EscPrinterOA48, PrinterPort, NotifyThread,
   RegExpr, SerialPort, BarcodeUtils, StringUtils,
-  DebugUtils, EscPrinterUtils;
+  DebugUtils, EscPrinterUtils, ComUtils;
 
 type
   { TPosPrinterOA48 }
 
-  TPosPrinterOA48 = class(TComponent, IOPOSPOSPrinter, IOposEvents)
+  TPosPrinterOA48 = class(TDispIntfObject, IOPOSPOSPrinter, IOposEvents)
   private
     FLogger: ILogFile;
     FPort: IPrinterPort;
@@ -201,7 +201,7 @@ type
     procedure CheckCoverClosed;
     procedure SetPowerState(PowerState: Integer);
   public
-    constructor Create2(AOwner: TComponent; APort: IPrinterPort; ALogger: ILogFile);
+    constructor Create(APort: IPrinterPort; ALogger: ILogFile);
     destructor Destroy; override;
   public
     function Get_OpenResult: Integer; safecall;
@@ -661,10 +661,9 @@ end;
 
 { TPosPrinterOA48 }
 
-constructor TPosPrinterOA48.Create2(AOwner: TComponent; APort: IPrinterPort;
-  ALogger: ILogFile);
+constructor TPosPrinterOA48.Create(APort: IPrinterPort; ALogger: ILogFile);
 begin
-  inherited Create(AOwner);
+  inherited Create;
   FPort := APort;
   FPrinter := TEscPrinterOA48.Create(APort, ALogger);
   FLogger := ALogger;
@@ -987,7 +986,6 @@ end;
 function TPosPrinterOA48.Close: Integer;
 begin
   try
-    Set_DeviceEnabled(False);
     ReleaseDevice;
     FDevice.Close;
     Result := ClearResult;
@@ -2101,6 +2099,7 @@ end;
 function TPosPrinterOA48.ReleaseDevice: Integer;
 begin
   try
+    DeviceEnabled := False;
     FDevice.ReleaseDevice;
     Result := ClearResult;
   except

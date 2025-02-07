@@ -483,8 +483,7 @@ begin
   FLogger := ALogger;
 end;
 
-procedure TStatusUpdateEvent.Execute(
-  EventInterface: IOposEvents);
+procedure TStatusUpdateEvent.Execute(EventInterface: IOposEvents);
 begin
   try
     if EventInterface <> nil then

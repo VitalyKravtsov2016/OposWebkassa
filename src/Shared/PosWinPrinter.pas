@@ -11,12 +11,12 @@ uses
   Opos, OposEsc, OposPtr, OposException, OposServiceDevice19,
   OposPOSPrinter_CCO_TLB, WException, OposPtrUtils,
   // This
-  LogFile, DriverError, CustomPrinter, EscPrinterUtils, BarcodeUtils;
+  LogFile, DriverError, CustomPrinter, EscPrinterUtils, BarcodeUtils, ComUtils;
 
 type
   { TPosWinPrinter }
 
-  TPosWinPrinter = class(TComponent, IOPOSPOSPrinter)
+  TPosWinPrinter = class(TDispIntfObject, IOPOSPOSPrinter)
   private
     function GetPrinter: TCustomPrinter;
     procedure PrintBarcodeAsGraphics(var Barcode: TPosBarcode);
@@ -176,8 +176,7 @@ type
 
     property Printer: TCustomPrinter read GetPrinter;
   public
-    constructor Create2(AOwner: TComponent; ALogger: ILogFile;
-      APrinter: TCustomPrinter);
+    constructor Create(ALogger: ILogFile; APrinter: TCustomPrinter);
     destructor Destroy; override;
   public
     function Get_OpenResult: Integer; safecall;
@@ -561,10 +560,9 @@ const
 
 implementation
 
-constructor TPosWinPrinter.Create2(AOwner: TComponent; ALogger: ILogFile;
-  APrinter: TCustomPrinter);
+constructor TPosWinPrinter.Create(ALogger: ILogFile; APrinter: TCustomPrinter);
 begin
-  inherited Create(AOwner);
+  inherited Create;
   FLogger := ALogger;
   FDevice := TOposServiceDevice19.Create(FLogger);
   FDevice.ErrorEventEnabled := False;

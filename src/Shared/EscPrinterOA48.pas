@@ -497,7 +497,6 @@ end;
 function TEscPrinterOA48.ReadByte: Byte;
 begin
   Result := Ord(FPort.Read(1)[1]);
-  FLogger.Debug('<- ' + StrToHex(Chr(Result)));
 end;
 
 function TEscPrinterOA48.ReadAnsiString: AnsiString;
@@ -510,7 +509,6 @@ begin
     if C <> #0 then
       Result := Result + C;
   until C = #0;
-  FLogger.Debug('<- ' + StrToHex(Result));
 end;
 
 procedure TEscPrinterOA48.CarriageReturn;

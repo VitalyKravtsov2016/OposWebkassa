@@ -14,8 +14,8 @@ type
   TMockPrinterPort = class(TInterfacedObject, IPrinterPort)
   private
     FBuffer: AnsiString;
-    FPrinterName: AnsiString;
     FLock: TCriticalSection;
+    FPrinterName: AnsiString;
   public
     constructor Create(const APrinterName: string);
     destructor Destroy; override;
@@ -30,6 +30,8 @@ type
     function Read(Count: DWORD): AnsiString;
     function CapRead: Boolean;
     function GetDescription: WideString;
+    function ReadByte: Byte;
+    function ReadString: AnsiString;
 
     property Buffer: AnsiString read FBuffer write FBuffer;
   end;
@@ -96,6 +98,16 @@ end;
 function TMockPrinterPort.GetDescription: WideString;
 begin
   Result := 'MockPrinterPort';
+end;
+
+function TMockPrinterPort.ReadByte: Byte;
+begin
+  Result := 0;
+end;
+
+function TMockPrinterPort.ReadString: AnsiString;
+begin
+  Result := '';
 end;
 
 end.

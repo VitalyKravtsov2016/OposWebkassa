@@ -12,8 +12,8 @@ uses
   OposPOSPrinter_CCO_TLB, WException, OposPtrUtils, OposUtils,
   // This
   LogFile, DriverError, EscPrinterRongta, PrinterPort, NotifyThread,
-  RegExpr, SerialPort, Jpeg, GifImage, BarcodeUtils,
-  StringUtils, DebugUtils, PtrDirectIO, EscPrinterUtils;
+  RegExpr, SerialPort, Jpeg, GifImage, BarcodeUtils, StringUtils,
+  DebugUtils, PtrDirectIO, EscPrinterUtils, ComUtils;
 
 type
   { TPageMode }
@@ -28,7 +28,7 @@ type
 
   { TPosPrinterRongta }
 
-  TPosPrinterRongta = class(TComponent, IOPOSPOSPrinter, IOposEvents)
+  TPosPrinterRongta = class(TDispIntfObject, IOPOSPOSPrinter, IOposEvents)
   private
     FLogger: ILogFile;
     FPort: IPrinterPort;
@@ -211,7 +211,7 @@ type
     procedure CheckCoverClosed;
     procedure SetPowerState(PowerState: Integer);
   public
-    constructor Create2(AOwner: TComponent; APort: IPrinterPort; ALogger: ILogFile);
+    constructor Create(APort: IPrinterPort; ALogger: ILogFile);
     destructor Destroy; override;
   public
     function Get_OpenResult: Integer; safecall;
@@ -689,25 +689,21 @@ end;
 
 { TPosPrinterRongta }
 
-constructor TPosPrinterRongta.Create2(AOwner: TComponent; APort: IPrinterPort;
-  ALogger: ILogFile);
+constructor TPosPrinterRongta.Create(APort: IPrinterPort; ALogger: ILogFile);
 begin
-  inherited Create(AOwner);
+  inherited Create;
   FPort := APort;
-  FPrinter := TEscPrinterRongta.Create(APort, ALogger);
   FLogger := ALogger;
-  FDevice := TOposServiceDevice19.Create(FLogger);
+  FPrinter := TEscPrinterRongta.Create(APort, ALogger);
+  FDevice := TOposServiceDevice19.Create(ALogger);
   FDevice.ErrorEventEnabled := False;
   FPageMode.IsActive := False;
-
   Initialize;
 end;
 
 destructor TPosPrinterRongta.Destroy;
 begin
-  if FDevice.Opened then
-    Close;
-
+  Close;
   FDevice.Free;
   FThread.Free;
   FPrinter.Free;
@@ -1009,7 +1005,6 @@ end;
 function TPosPrinterRongta.Close: Integer;
 begin
   try
-    Set_DeviceEnabled(False);
     ReleaseDevice;
     FDevice.Close;
     Result := ClearResult;
@@ -2220,6 +2215,7 @@ end;
 function TPosPrinterRongta.ReleaseDevice: Integer;
 begin
   try
+    DeviceEnabled := False;
     FDevice.ReleaseDevice;
     Result := ClearResult;
   except

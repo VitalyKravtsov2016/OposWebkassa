@@ -96,8 +96,12 @@ begin
 end;
 
 procedure TPosPrinterOA48Test.StatusUpdateEvent(ASender: TObject; Data: Integer);
+var
+  EventText: string;
 begin
-  Events.Add(PtrStatusUpdateEventText(Data));
+  EventText := PtrStatusUpdateEventText(Data);
+  ODS('StatusUpdateEvent: ' + EventText);
+  Events.Add(EventText);
 end;
 
 function TPosPrinterOA48Test.CreateRawPort: TRawPrinterPort;

@@ -101,7 +101,7 @@ DebugSourceDirs=
 UsePackages=0
 [Parameters]
 RunParams=
-HostApplication=..\Bin\OposConfig.exe
+HostApplication=..\Bin\OposTest.exe
 Launcher=
 UseLauncher=0
 DebugCWD=
@@ -122,7 +122,7 @@ AutoIncBuild=1
 MajorVer=1
 MinorVer=13
 Release=0
-Build=120
+Build=121
 Debug=0
 PreRelease=0
 Special=0
@@ -133,7 +133,7 @@ CodePage=1252
 [Version Info Keys]
 CompanyName=SHTRIH-M
 FileDescription=WebKassa OPOS fiscal printer service
-FileVersion=1.13.0.120
+FileVersion=1.13.0.121
 InternalName=WebKassa OPOS fiscal printer driver
 LegalCopyright=SHTRIH-M © 2022
 LegalTrademarks=
@@ -148,9 +148,10 @@ Item0=DEBUG
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
-Count=2
-Item0=Barcode
-Item1=c:\PROGRA~2\Borland\Delphi7\Comp\jcl\lib\d7\debug;$(DELPHI)\Comp\jvcl\lib\D7\debug
+Count=3
+Item0=$(DELPHI)\Lib\Debug;C:\PROGRA~2\Borland\Delphi7\Comp\jcl\lib\d7\debug
+Item1=Barcode
+Item2=c:\PROGRA~2\Borland\Delphi7\Comp\jcl\lib\d7\debug;$(DELPHI)\Comp\jvcl\lib\D7\debug
 [HistoryLists\hlUnitOutputDirectory]
 Count=2
 Item0=DCU
