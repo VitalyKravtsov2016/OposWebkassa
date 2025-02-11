@@ -186,7 +186,7 @@ begin
   FLogger := ALogger;
   FFileName := AFileName;
   FHandle := INVALID_HANDLE_VALUE;
-  FReadTimeout := 100;
+  FReadTimeout := 3000;
 end;
 
 destructor TUsbPrinterPort.Destroy;
@@ -247,7 +247,7 @@ begin
     if Length(Result) > 0 then Break;
     if GetTickCount > (TickCount + ReadTimeout) then
       raise ETimeoutError.Create('Read data failed');
-    // Sleep(50); !!!
+    Sleep(50);
   end;
 end;
 
@@ -394,12 +394,13 @@ begin
         RaiseLastWin32Error;
       end;
     end;
-
     if FEvent.WaitFor(ReadTimeout) <> wrSignaled then
       RaiseLastWin32Error;
 
-    GetOverlappedResult(GetHandle, FOvlWrite, DWORD(WriteCount), False);
-    if Count <> WriteCount then
+    if not GetOverlappedResult(GetHandle, FOvlWrite, DWORD(WriteCount), True) then
+      RaiseLastWin32Error;
+
+    if WriteCount < Count then
     begin
       Logger.Error('Write failed. Device not connected');
       raise ETimeoutError.Create('Write data failed');
