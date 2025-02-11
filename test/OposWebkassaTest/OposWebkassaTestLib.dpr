@@ -105,7 +105,9 @@ uses
   CustomPrinter in '..\..\src\Shared\CustomPrinter.pas',
   duReceiptTemplate in 'units\duReceiptTemplate.pas',
   RawPrinterPort in '..\..\src\Shared\RawPrinterPort.pas',
-  CharCode in '..\..\src\Shared\CharCode.pas';
+  CharCode in '..\..\src\Shared\CharCode.pas',
+  ComUtils in '..\..\src\Shared\ComUtils.pas',
+  OposEventsAdapter in '..\..\src\Opos\OposEventsAdapter.pas';
 
 {$R *.RES}
 

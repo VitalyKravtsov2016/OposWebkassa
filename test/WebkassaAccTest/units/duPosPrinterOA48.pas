@@ -90,7 +90,7 @@ begin
   FEvents := TStringList.Create;
   //FPrinterPort := CreateSerialPort;
   FPrinterPort := CreateRawPort;
-  FPrinter := TPosPrinterOA48.Create2(nil, FPrinterPort, FLogger);
+  FPrinter := TPosPrinterOA48.Create(FPrinterPort, FLogger);
   FPrinter.OnStatusUpdateEvent := StatusUpdateEvent;
   FPrinter.BarcodeInGraphics := False;
 end;

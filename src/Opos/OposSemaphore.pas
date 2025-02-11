@@ -6,7 +6,7 @@ uses
   // VCL
   Windows, SysUtils,
   // Opos
-  Opos, OposException;
+  Opos, OposException, DebugUtils;
 
 type
   { TOposSemaphore }
@@ -30,11 +30,6 @@ implementation
 
 const
   SEMAPHORE_MODIFY_STATE = $0002;
-
-procedure ODS(const S: WideString);
-begin
-  OutputDebugStringW(PWideChar(S));
-end;
 
 { TOposSemaphore }
 

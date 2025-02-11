@@ -93,7 +93,7 @@ begin
   FLogger.DeviceName := 'DeviceName';
   FEvents := TStringList.Create;
   FPort := CreateUSBPort;
-  FPrinter := TPosPrinterPosiflex.Create2(nil, FPort, FLogger);
+  FPrinter := TPosPrinterPosiflex.Create(FPort, FLogger);
   FPrinter.OnStatusUpdateEvent := StatusUpdateEvent;
   FPrinter.FontName := FontNameA;
   FPrinter.RecLineSpacing := 10;

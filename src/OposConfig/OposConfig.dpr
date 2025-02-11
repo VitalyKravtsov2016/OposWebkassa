@@ -106,7 +106,9 @@ uses
   EscPrinterRongta in '..\Shared\EscPrinterRongta.pas',
   CustomPrinter in '..\Shared\CustomPrinter.pas',
   RawPrinterPort in '..\Shared\RawPrinterPort.pas',
-  CharCode in '..\Shared\CharCode.pas';
+  CharCode in '..\Shared\CharCode.pas',
+  ComUtils in '..\Shared\ComUtils.pas',
+  OposEventsAdapter in '..\Opos\OposEventsAdapter.pas';
 
 {$R *.RES}
 {$R WindowsXP.RES}

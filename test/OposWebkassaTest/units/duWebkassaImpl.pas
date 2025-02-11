@@ -1356,7 +1356,7 @@ var
   i: Integer;
   Count: Integer;
 begin
-  ShowLines;
+  //ShowLines;
 
 (*
   if FLines.Text <> FPrinter.Lines.Text then

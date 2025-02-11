@@ -99,7 +99,9 @@ uses
   duEscPrinterOA48 in 'units\duEscPrinterOA48.pas',
   RawPrinterPort in '..\..\src\Shared\RawPrinterPort.pas',
   CharCode in '..\..\src\Shared\CharCode.pas',
-  duPosPrinterOA48 in 'units\duPosPrinterOA48.pas';
+  duPosPrinterOA48 in 'units\duPosPrinterOA48.pas',
+  ComUtils in '..\..\src\Shared\ComUtils.pas',
+  OposEventsAdapter in '..\..\src\Opos\OposEventsAdapter.pas';
 
 {$R *.RES}
 {$R ..\..\src\OposWebkassa\OposWebkassa.tlb}

@@ -92,7 +92,7 @@ begin
   if TemplateXml = '' then Exit;
 
   Parameters.PrinterType := PrinterTypeEscCommands; // !!!
-  Driver := TWebkassaImpl.Create(nil);
+  Driver := TWebkassaImpl.Create;
   Receipt := TSalesReceipt.CreateReceipt(rtSell,
     Parameters.AmountDecimalPlaces, Parameters.RoundType);
 

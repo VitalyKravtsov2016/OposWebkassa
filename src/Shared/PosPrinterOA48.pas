@@ -13,12 +13,12 @@ uses
   // This
   LogFile, DriverError, EscPrinterOA48, PrinterPort, NotifyThread,
   RegExpr, SerialPort, BarcodeUtils, StringUtils,
-  DebugUtils, EscPrinterUtils, ComUtils;
+  DebugUtils, EscPrinterUtils, ComUtils, OposEventsAdapter;
 
 type
   { TPosPrinterOA48 }
 
-  TPosPrinterOA48 = class(TDispIntfObject, IOPOSPOSPrinter, IOposEvents)
+  TPosPrinterOA48 = class(TDispIntfObject, IOPOSPOSPrinter)
   private
     FLogger: ILogFile;
     FPort: IPrinterPort;
@@ -26,6 +26,7 @@ type
     FPrinter: TEscPrinterOA48;
     FDevice: TOposServiceDevice19;
     FLastPrintMode: TPrinterModes;
+    FEvents: IOposEvents;
 
     FFontName: WideString;
     FDevicePollTime: Integer;
@@ -575,12 +576,12 @@ type
     property PageModeVerticalPosition: Integer read Get_PageModeVerticalPosition write Set_PageModeVerticalPosition;
   public
     // IOposEvents
-    procedure DataEvent(Status: Integer);
-    procedure StatusUpdateEvent(Data: Integer);
-    procedure OutputCompleteEvent(OutputID: Integer);
-    procedure DirectIOEvent(EventNumber: Integer; var pData: Integer;
-      var pString: WideString);
-    procedure ErrorEvent(ResultCode: Integer; ResultCodeExtended: Integer;
+    procedure DataEvent(Sender: TObject; Status: Integer);
+    procedure StatusUpdateEvent(Sender: TObject; Data: Integer);
+    procedure OutputCompleteEvent(Sender: TObject; OutputID: Integer);
+    procedure DirectIOEvent(Sender: TObject; EventNumber: Integer;
+      var pData: Integer; var pString: WideString);
+    procedure ErrorEvent(Sender: TObject; ResultCode: Integer; ResultCodeExtended: Integer;
       ErrorLocus: Integer; var pErrorResponse: Integer);
 
     property FontName: WideString read FFontName write FFontName;
@@ -662,11 +663,23 @@ end;
 { TPosPrinterOA48 }
 
 constructor TPosPrinterOA48.Create(APort: IPrinterPort; ALogger: ILogFile);
+
+  function CreateEventsAdapter: TOposEventsAdapter;
+  begin
+    Result := TOposEventsAdapter.Create;
+    Result.OnErrorEvent := ErrorEvent;
+    Result.OnDirectIOEvent := DirectIOEvent;
+    Result.OnStatusUpdateEvent := StatusUpdateEvent;
+    Result.OnOutputCompleteEvent := OutputCompleteEvent;
+  end;
+
 begin
   inherited Create;
   FPort := APort;
-  FPrinter := TEscPrinterOA48.Create(APort, ALogger);
   FLogger := ALogger;
+
+  FEvents := CreateEventsAdapter;
+  FPrinter := TEscPrinterOA48.Create(APort, ALogger);
   FDevice := TOposServiceDevice19.Create(FLogger);
   FDevice.ErrorEventEnabled := False;
   Initialize;
@@ -691,6 +704,7 @@ begin
   FDevice.Free;
   FThread.Free;
   FPrinter.Free;
+  FEvents := nil;
   FPort := nil;
   FLogger := nil;
   inherited Destroy;
@@ -1791,7 +1805,7 @@ end;
 function TPosPrinterOA48.Open(const DeviceName: WideString): Integer;
 begin
   try
-    FDevice.Open('POSPrinter', DeviceName, Self);
+    FDevice.Open('POSPrinter', DeviceName, FEvents);
     Result := ClearResult;
   except
     on E: Exception do
@@ -2590,32 +2604,32 @@ begin
   Result := ClearResult;
 end;
 
-procedure TPosPrinterOA48.DataEvent(Status: Integer);
+procedure TPosPrinterOA48.DataEvent(Sender: TObject; Status: Integer);
 begin
 
 end;
 
-procedure TPosPrinterOA48.DirectIOEvent(EventNumber: Integer;
+procedure TPosPrinterOA48.DirectIOEvent(Sender: TObject; EventNumber: Integer;
   var pData: Integer; var pString: WideString);
 begin
   if Assigned(FOnDirectIOEvent) then
     FOnDirectIOEvent(Self, EventNumber, pData, pString);
 end;
 
-procedure TPosPrinterOA48.ErrorEvent(ResultCode, ResultCodeExtended,
+procedure TPosPrinterOA48.ErrorEvent(Sender: TObject; ResultCode, ResultCodeExtended,
   ErrorLocus: Integer; var pErrorResponse: Integer);
 begin
   if Assigned(FOnErrorEvent) then
     FOnErrorEvent(Self, ResultCode, ResultCodeExtended, ErrorLocus, pErrorResponse);
 end;
 
-procedure TPosPrinterOA48.OutputCompleteEvent(OutputID: Integer);
+procedure TPosPrinterOA48.OutputCompleteEvent(Sender: TObject; OutputID: Integer);
 begin
   if Assigned(FOnOutputCompleteEvent) then
     FOnOutputCompleteEvent(Self, OutputID);
 end;
 
-procedure TPosPrinterOA48.StatusUpdateEvent(Data: Integer);
+procedure TPosPrinterOA48.StatusUpdateEvent(Sender: TObject; Data: Integer);
 begin
   if Assigned(FOnStatusUpdateEvent) then
     FOnStatusUpdateEvent(Self, Data);

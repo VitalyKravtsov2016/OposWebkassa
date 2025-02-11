@@ -1299,7 +1299,7 @@ end;
 function TMockPOSPrinter2.PrintNormal(Station: Integer;
   const Data: WideString): Integer;
 begin
-  ODS('"' + Data + '"');
+  //ODS('"' + Data + '"');
   //ODS(StrToHex(Data));
   Result := AddCall('PrintNormal').WithParams([Station, Data]).ReturnValue;
 end;

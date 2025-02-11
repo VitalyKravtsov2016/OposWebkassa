@@ -389,7 +389,7 @@ end;
 function ToleFiscalPrinter.GetDriver: TWebkassaImpl;
 begin
   if FDriver = nil then
-    FDriver := TWebkassaImpl.Create(nil);
+    FDriver := TWebkassaImpl.Create;
   Result := FDriver;
 end;
 

@@ -178,8 +178,6 @@ begin
   FDeviceName := ADeviceName;
   FLongDeviceName := Tnt_WideFormat('%s/%s', [ADeviceClass, ADeviceName]);
   FOposEvents := AOposEvents;
-  //AOposEvents._Release;!!!
-
   // State is changed to S_IDLE when the open method is successfully called.
   FState := OPOS_S_IDLE;
   FOpened := True;

@@ -83,7 +83,9 @@ uses
   PosPrinterRongta in '..\Shared\PosPrinterRongta.pas',
   CustomPrinter in '..\Shared\CustomPrinter.pas',
   RawPrinterPort in '..\Shared\RawPrinterPort.pas',
-  CharCode in '..\Shared\CharCode.pas';
+  CharCode in '..\Shared\CharCode.pas',
+  ComUtils in '..\Shared\ComUtils.pas',
+  OposEventsAdapter in '..\Opos\OposEventsAdapter.pas';
 
 exports
   DllGetClassObject,

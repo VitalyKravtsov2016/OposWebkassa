@@ -126,7 +126,7 @@ begin
   inherited SetUp;
   if Printer = nil then
   begin
-    Printer := TMockPOSPrinter.Create(nil);
+    Printer := TMockPOSPrinter.Create;
   end;
   if Driver = nil then
   begin

@@ -13,7 +13,7 @@ uses
   // This
   LogFile, DriverError, EscPrinterPosiflex, PrinterPort, NotifyThread,
   RegExpr, SerialPort, Jpeg, GifImage, BarcodeUtils, StringUtils, DebugUtils,
-  PtrDirectIO, EscPrinterUtils, ComUtils;
+  PtrDirectIO, EscPrinterUtils, ComUtils, OposEventsAdapter;
 
 type
   { TPageMode }
@@ -28,11 +28,12 @@ type
 
   { TPosPrinterPosiflex }
 
-  TPosPrinterPosiflex = class(TDispIntfObject, IOPOSPOSPrinter, IOposEvents)
+  TPosPrinterPosiflex = class(TDispIntfObject, IOPOSPOSPrinter)
   private
     FLogger: ILogFile;
     FPort: IPrinterPort;
     FThread: TNotifyThread;
+    FEvents: IOposEvents;
     FPrinter: TEscPrinterPosiflex;
     FDevice: TOposServiceDevice19;
     FLastPrintMode: TPrinterModes;
@@ -585,13 +586,12 @@ type
     property PageModeVerticalPosition: Integer read Get_PageModeVerticalPosition write Set_PageModeVerticalPosition;
   public
     // IOposEvents
-    procedure DataEvent(Status: Integer);
-    procedure StatusUpdateEvent(Data: Integer);
-    procedure OutputCompleteEvent(OutputID: Integer);
-    procedure DirectIOEvent(EventNumber: Integer; var pData: Integer;
-      var pString: WideString);
-    procedure ErrorEvent(ResultCode: Integer; ResultCodeExtended: Integer;
-      ErrorLocus: Integer; var pErrorResponse: Integer);
+    procedure StatusUpdateEvent(Sender: TObject; Data: Integer);
+    procedure OutputCompleteEvent(Sender: TObject; OutputID: Integer);
+    procedure DirectIOEvent(Sender: TObject; EventNumber: Integer;
+      var pData: Integer; var pString: WideString);
+    procedure ErrorEvent(Sender: TObject; ResultCode: Integer;
+      ResultCodeExtended: Integer; ErrorLocus: Integer; var pErrorResponse: Integer);
 
     property FontName: WideString read FFontName write FFontName;
     property DevicePollTime: Integer read FDevicePollTime write FDevicePollTime;
@@ -665,8 +665,19 @@ end;
 { TPosPrinterPosiflex }
 
 constructor TPosPrinterPosiflex.Create(APort: IPrinterPort; ALogger: ILogFile);
+
+  function CreateEventsAdapter: TOposEventsAdapter;
+  begin
+    Result := TOposEventsAdapter.Create;
+    Result.OnErrorEvent := ErrorEvent;
+    Result.OnDirectIOEvent := DirectIOEvent;
+    Result.OnStatusUpdateEvent := StatusUpdateEvent;
+    Result.OnOutputCompleteEvent := OutputCompleteEvent;
+  end;
+
 begin
   inherited Create;
+  FEvents := CreateEventsAdapter;
   FPort := APort;
   FPrinter := TEscPrinterPosiflex.Create(APort, ALogger);
   FLogger := ALogger;
@@ -683,6 +694,7 @@ begin
   FDevice.Free;
   FThread.Free;
   FPrinter.Free;
+  FEvents := nil;
   FPort := nil;
   FLogger := nil;
   inherited Destroy;
@@ -1810,7 +1822,7 @@ end;
 function TPosPrinterPosiflex.Open(const DeviceName: WideString): Integer;
 begin
   try
-    FDevice.Open('POSPrinter', DeviceName, Self);
+    FDevice.Open('POSPrinter', DeviceName, FEvents);
     Result := ClearResult;
   except
     on E: Exception do
@@ -2691,32 +2703,27 @@ begin
   Result := ClearResult;
 end;
 
-procedure TPosPrinterPosiflex.DataEvent(Status: Integer);
-begin
-
-end;
-
-procedure TPosPrinterPosiflex.DirectIOEvent(EventNumber: Integer;
-  var pData: Integer; var pString: WideString);
+procedure TPosPrinterPosiflex.DirectIOEvent(Sender: TObject;
+  EventNumber: Integer; var pData: Integer; var pString: WideString);
 begin
   if Assigned(FOnDirectIOEvent) then
     FOnDirectIOEvent(Self, EventNumber, pData, pString);
 end;
 
-procedure TPosPrinterPosiflex.ErrorEvent(ResultCode, ResultCodeExtended,
-  ErrorLocus: Integer; var pErrorResponse: Integer);
+procedure TPosPrinterPosiflex.ErrorEvent(Sender: TObject;
+  ResultCode, ResultCodeExtended, ErrorLocus: Integer; var pErrorResponse: Integer);
 begin
   if Assigned(FOnErrorEvent) then
     FOnErrorEvent(Self, ResultCode, ResultCodeExtended, ErrorLocus, pErrorResponse);
 end;
 
-procedure TPosPrinterPosiflex.OutputCompleteEvent(OutputID: Integer);
+procedure TPosPrinterPosiflex.OutputCompleteEvent(Sender: TObject; OutputID: Integer);
 begin
   if Assigned(FOnOutputCompleteEvent) then
     FOnOutputCompleteEvent(Self, OutputID);
 end;
 
-procedure TPosPrinterPosiflex.StatusUpdateEvent(Data: Integer);
+procedure TPosPrinterPosiflex.StatusUpdateEvent(Sender: TObject; Data: Integer);
 begin
   if Assigned(FOnStatusUpdateEvent) then
     FOnStatusUpdateEvent(Self, Data);
