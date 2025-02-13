@@ -174,6 +174,7 @@ begin
     VatRate.Id := 1;
     VatRate.Rate := 12;
     VatRate.Name := 'VAT 12%';
+    VatRate.VatType := VAT_TYPE_NORMAL;
     Params.VatRates.Add(VatRate);
 
   (*
@@ -197,17 +198,21 @@ begin
     Params.ReconnectPort := False;
   *)
     Params.PrinterType := PrinterTypeEscCommands;
+    Params.PortType := PortTypeUsb;
+    Params.PrinterName := 'Test';
+    Params.EscPrinterType := EscPrinterTypePosiflex;
+
+    (*
     Params.PortType := PortTypeWindows;
     Params.PrinterName := 'RONGTA 80mm Series Printer';
     Params.EscPrinterType := EscPrinterTypeRongta;
-    (*
     Params.PrinterName := 'POS-80C';
     Params.EscPrinterType := EscPrinterTypeOA48;
     *)
 
     Params.FontName := FontNameA;
     Params.LineSpacing := 0;
-    Params.RecLineChars := 48;
+    Params.RecLineChars := 42;
     Params.RecLineHeight := 24;
     Params.Utf8Enabled := True;
     Params.AcceptLanguage := 'kk-KZ';

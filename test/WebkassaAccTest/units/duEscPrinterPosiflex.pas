@@ -828,17 +828,32 @@ var
 begin
   FPrinter.Initialize;
   FPrinter.SetCharacterFont(FONT_TYPE_A);
-  for i := 1 to 10 do
+  for i := 1 to 3 do
   begin
     FPrinter.PrintText('Default line spacing ' + IntToStr(i) + CRLF);
   end;
   FPrinter.SetLineSpacing(0);
-  for i := 1 to 10 do
+  for i := 1 to 3 do
   begin
     FPrinter.PrintText('Zero line spacing ' + IntToStr(i) + CRLF);
   end;
+  FPrinter.SetLineSpacing(59);
+  for i := 1 to 3 do
+  begin
+    FPrinter.PrintText('59 line spacing ' + IntToStr(i) + CRLF);
+  end;
+  FPrinter.SetLineSpacing(60);
+  for i := 1 to 3 do
+  begin
+    FPrinter.PrintText('60 line spacing ' + IntToStr(i) + CRLF);
+  end;
+  FPrinter.SetLineSpacing(70);
+  for i := 1 to 3 do
+  begin
+    FPrinter.PrintText('70 line spacing ' + IntToStr(i) + CRLF);
+  end;
   FPrinter.SetLineSpacing(100);
-  for i := 1 to 10 do
+  for i := 1 to 3 do
   begin
     FPrinter.PrintText('100 line spacing ' + IntToStr(i) + CRLF);
   end;
@@ -1213,33 +1228,30 @@ begin
   // Page mode area for text
   PageSize.Left := 0;
   PageSize.Top := 0;
-  PageSize.Right := 512-150;
-  PageSize.Bottom := 450;
+  PageSize.Right := 512;
+  PageSize.Bottom := 500;
   FPrinter.SetPageModeArea(PageSize);
+  // QR code on the right
+  FPrinter.PrintText('                           ');
+  FPrinter.SetPMAbsoluteVerticalPosition(0);
+  QRCode.ECLevel := 0;
+  QRCode.ModuleSize := 4;
+  QRCode.data := Barcode;
+  FPrinter.printQRCode(QRCode);
   // Text on the left
-  FPrinter.PrintText('«Õ   “ 0010630424164528736482764827634872683476287346' + CRLF);
+  FPrinter.SetPMAbsoluteVerticalPosition(0);
+  FPrinter.PrintText(CRLF);
+  FPrinter.PrintText('«Õ   “ 00106304241645' + CRLF);
   FPrinter.PrintText('–Õ   “ 0000373856050035' + CRLF);
   FPrinter.PrintText('»ÕÕ 7725699008' + CRLF);
   FPrinter.PrintText('‘Õ 7380440700076549' + CRLF);
   FPrinter.PrintText('‘ƒ 41110' + CRLF);
   FPrinter.PrintText('‘œ 2026476352' + CRLF);
   FPrinter.PrintText('œ–»’Œƒ 19.07.24 13:14        ');
-  // Page mode area for QR code
-  PageSize.Left := 512-150 + 1;
-  PageSize.Top := 0;
-  PageSize.Right := 512;
-  PageSize.Bottom := 450;
-  FPrinter.SetPageModeArea(PageSize);
-  // QR code on the right
-  FPrinter.PrintText(CRLF);
-  QRCode.ECLevel := 0;
-  QRCode.ModuleSize := 4;
-  QRCode.data := Barcode;
-  FPrinter.printQRCode(QRCode);
+
+
   FPrinter.PrintAndReturnStandardMode;
 
-  FPrinter.PrintText(CRLF);
-  FPrinter.PrintText(CRLF);
   FPrinter.PrintText(CRLF);
   FPrinter.PrintText(CRLF);
   FPrinter.PrintText(CRLF);

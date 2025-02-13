@@ -622,9 +622,6 @@ begin
 
   if CashboxNumber = '' then
     RaiseOposException(OPOS_ORS_CONFIG, 'WebKassa number not defined');
-
-  if PrinterName = '' then
-    RaiseOposException(OPOS_ORS_CONFIG, 'WebKassa printer name not defined');
 end;
 
 procedure TPrinterParameters.SetHeaderText(const Text: WideString);

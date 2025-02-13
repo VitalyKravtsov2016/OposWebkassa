@@ -65,6 +65,7 @@ type
   EUsbPortError = class(WideException);
 
 function ReadPosiflexDevices: TUsbDevices;
+function ReadPosiflexPortName: string;
 
 implementation
 
@@ -175,6 +176,16 @@ begin
   UnloadSetupApi;
 end;
 
+function ReadPosiflexPortName: string;
+var
+  Devices: TUsbDevices;
+begin
+  Result := '';
+  Devices := ReadPosiflexDevices;
+  if Length(Devices) > 0 then
+    Result := Devices[0].Path;
+end;
+
 { TUsbPrinterPort }
 
 constructor TUsbPrinterPort.Create(ALogger: ILogFile; const AFileName: string);
@@ -184,7 +195,13 @@ begin
   FEvent := TEvent.Create(nil, False, False, 'UsbPrinterPortEvent');
 
   FLogger := ALogger;
-  FFileName := AFileName;
+  FFileName := Trim(AFileName);
+  if AFileName = '' then
+    FFileName := ReadPosiflexPortName;
+
+  if FFileName = '' then
+    raise Exception.Create('USB port: Empty file name');
+
   FHandle := INVALID_HANDLE_VALUE;
   FReadTimeout := 3000;
 end;

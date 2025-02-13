@@ -180,6 +180,12 @@ type
 
     property Device: TOposServiceDevice19 read FDevice;
     procedure UpdatePageMode;
+    procedure PrintBarCodeNormal(Barcode: TPosBarcode);
+    function IsSymbologySupported(Symbology: Integer): Boolean;
+    procedure PrintBarCodeEsc(Barcode: TPosBarcode);
+    procedure PrintBarCodePageMode(Barcode: TPosBarcode);
+    procedure PrintBarCodeEscQRCode(const Data: string);
+    procedure UpdateLineSpacing;
   public
     procedure PrintMemoryGraphic(const Data: WideString;
       BMPType, Width, Alignment: Integer);
@@ -215,6 +221,7 @@ type
     constructor Create(APort: IPrinterPort; ALogger: ILogFile);
     destructor Destroy; override;
   public
+    PollEnabled: Boolean;
     function Get_OpenResult: Integer; safecall;
     function Get_CheckHealthText: WideString; safecall;
     function Get_Claimed: WordBool; safecall;
@@ -677,6 +684,7 @@ constructor TPosPrinterPosiflex.Create(APort: IPrinterPort; ALogger: ILogFile);
 
 begin
   inherited Create;
+  PollEnabled := False;
   FEvents := CreateEventsAdapter;
   FPort := APort;
   FPrinter := TEscPrinterPosiflex.Create(APort, ALogger);
@@ -748,7 +756,7 @@ begin
   FCapRecItalic := False;
   FCapRecLeft90 := True;
   FCapRecMarkFeed := 0;
-  FCapRecPageMode := False;
+  FCapRecPageMode := True;
   FCapRecPapercut := True;
   FCapRecPresent := True;
   FCapRecRight90 := True;
@@ -819,7 +827,7 @@ begin
   FRecLineChars := 48;
   FRecLineCharsList := '48,64';
   FRecLineHeight := 24;
-  FRecLineSpacing := 30;
+  FRecLineSpacing := 5;
   FRecLineWidth := 512;
   FRecNearEnd := False;
   FRecSidewaysMaxChars := 69;
@@ -1842,6 +1850,7 @@ begin
       begin
         FPageMode.IsActive := True;
         FPrinter.SetPageMode;
+        UpdateLineSpacing;
       end;
 
       // Print the print area and destroy the canvas and exit PageMode.
@@ -1869,159 +1878,179 @@ function TPosPrinterPosiflex.PrintBarCode(Station: Integer;
   const Data: WideString; Symbology, Height, Width, Alignment,
   TextPosition: Integer): Integer;
 var
-  QRCode: TQRCode;
-  PDF417: TPDF417;
-  BarcodeType: Integer;
   Barcode: TPosBarcode;
-  Justification: Integer;
 begin
   try
     CheckRecStation(Station);
     UpdatePageMode;
 
-    if BarcodeInGraphics then
+    Barcode.Data := Data;
+    Barcode.Width := Width;
+    Barcode.Height := Height;
+    Barcode.Alignment := Alignment;
+    Barcode.Symbology := Symbology;
+    Barcode.TextPosition := TextPosition;
+    if FPageMode.IsActive then
     begin
-      Barcode.Data := Data;
-      Barcode.Width := Width;
-      Barcode.Height := Height;
-      Barcode.Alignment := Alignment;
-      Barcode.Symbology := Symbology;
-      Barcode.TextPosition := TextPosition;
-      PrintBarcodeAsGraphics(Barcode);
+      PrintBarcodePageMode(Barcode);
     end else
     begin
-      FPrinter.SetBarcodeHeight(Height);
-      FPrinter.SetBarcodeWidth(Width);
-      // Alignment
-      case Alignment of
-        PTR_BC_LEFT: Justification := JUSTIFICATION_LEFT;
-        PTR_BC_CENTER: Justification := JUSTIFICATION_CENTER;
-        PTR_BC_RIGHT: Justification := JUSTIFICATION_RIGHT;
-      else
-        Justification := JUSTIFICATION_CENTER;
-      end;
-
-      // textPosition
-      case TextPosition of
-        PTR_BC_TEXT_NONE: FPrinter.SetHRIPosition(HRI_NOT_PRINTED);
-        PTR_BC_TEXT_ABOVE: FPrinter.SetHRIPosition(HRI_ABOVE_BARCODE);
-        PTR_BC_TEXT_BELOW: FPrinter.SetHRIPosition(HRI_BELOW_BARCODE);
-      end;
-      // Symbology
-      if Is2DBarcode(Symbology) then
-      begin
-        if (Symbology = PTR_BCS_PDF417)or(Symbology = PTR_BCS_QRCODE) then
-        begin
-          FPrinter.PrintAndFeed(10);
-          FPrinter.SetJustification(Justification);
-        end;
-
-        case Symbology of
-          PTR_BCS_PDF417:
-          begin
-            PDF417.RowNumber := 1;
-            PDF417.ColumnNumber := 4;
-            PDF417.ErrorCorrectionLevel := 0;
-            PDF417.ModuleWidth := 3;
-            PDF417.ModuleHeight := 100;
-            PDF417.Options := PDF417_OPTIONS_STANDARD;
-            PDF417.data := Data;
-            FPrinter.printPDF417(PDF417);
-          end;
-          PTR_BCS_QRCODE:
-          begin
-            QRCode.Model := 2;
-            QRCode.ECLevel := PFX_QRCODE_ECL_7;
-            QRCode.ModuleSize := 4;
-            QRCode.Data := Data;
-            FPrinter.printQRCode(QRCode);
-          end;
-          PTR_BCS_MAXICODE,
-          PTR_BCS_DATAMATRIX,
-          PTR_BCS_UQRCODE,
-          PTR_BCS_AZTEC,
-          PTR_BCS_UPDF417:
-          begin
-            Barcode.Data := Data;
-            Barcode.Symbology := Symbology;
-            Barcode.Height := Height;
-            Barcode.Width := Width;
-            Barcode.Alignment := Alignment;
-            Barcode.TextPosition := TextPosition;
-            PrintBarcodeAsGraphics(Barcode);
-          end;
-        else
-          RaiseIllegalError('Symbology not supported');
-        end;
-
-        if (Symbology = PTR_BCS_PDF417)or(Symbology = PTR_BCS_QRCODE) then
-        begin
-          FPrinter.PrintAndFeed(10);
-          FPrinter.SetJustification(JUSTIFICATION_LEFT);
-        end;
-      end else
-      begin
-        BarcodeType := BARCODE2_CODE128;
-        case Symbology of
-          PTR_BCS_UPCA: BarcodeType := BARCODE2_UPC_A;
-          PTR_BCS_UPCE: BarcodeType := BARCODE2_UPC_E;
-          PTR_BCS_EAN8: BarcodeType := BARCODE2_EAN8;
-          PTR_BCS_EAN13: BarcodeType := BARCODE2_EAN13;
-          PTR_BCS_ITF: BarcodeType := BARCODE2_ITF;
-          PTR_BCS_Codabar: BarcodeType := BARCODE2_CODABAR;
-          PTR_BCS_Code39: BarcodeType := BARCODE2_CODE39;
-          PTR_BCS_Code93: BarcodeType := BARCODE2_CODE93;
-          PTR_BCS_Code128: BarcodeType := BARCODE2_CODE128;
-        end;
-
-        case Symbology of
-          PTR_BCS_UPCA,
-          PTR_BCS_UPCE,
-          PTR_BCS_EAN8,
-          PTR_BCS_EAN13,
-          PTR_BCS_ITF,
-          PTR_BCS_Codabar,
-          PTR_BCS_Code39,
-          PTR_BCS_Code93,
-          PTR_BCS_Code128:
-          begin
-            FPrinter.PrintBarcode2(BarcodeType, Data);
-          end;
-          PTR_BCS_TF,
-          PTR_BCS_UPCA_S,
-          PTR_BCS_UPCE_S,
-          PTR_BCS_UPCD1,
-          PTR_BCS_UPCD2,
-          PTR_BCS_UPCD3,
-          PTR_BCS_UPCD4,
-          PTR_BCS_UPCD5,
-          PTR_BCS_EAN8_S,
-          PTR_BCS_EAN13_S,
-          PTR_BCS_EAN128,
-          PTR_BCS_OCRA,
-          PTR_BCS_OCRB,
-          PTR_BCS_Code128_Parsed,
-          PTR_BCS_RSS14,
-          PTR_BCS_RSS_EXPANDED:
-          begin
-            Barcode.Data := Data;
-            Barcode.Symbology := Symbology;
-            Barcode.Height := Height;
-            Barcode.Width := Width;
-            Barcode.Alignment := Alignment;
-            Barcode.TextPosition := TextPosition;
-            PrintBarcodeAsGraphics(Barcode);
-          end;
-        else
-          RaiseIllegalError('Symbology not supported');
-        end;
-      end;
+      PrintBarcodeNormal(Barcode);
     end;
     Result := ClearResult;
   except
     on E: Exception do
       Result := HandleException(E);
   end;
+end;
+
+///////////////////////////////////////////////////////////////////////////////
+// In page mode barcode printed only in ESC
+// In page mode bitmaps are not supported
+
+procedure TPosPrinterPosiflex.PrintBarCodePageMode(Barcode: TPosBarcode);
+begin
+  if Barcode.Symbology = PTR_BCS_QRCODE then
+  begin
+    FPrinter.SetPMAbsoluteVerticalPosition(0);
+    FPrinter.PrintText(CRLF);
+    FPrinter.PrintText('                             ');
+    PrintBarCodeEscQRCode(Barcode.Data);
+    FPrinter.SetPMAbsoluteVerticalPosition(0);
+    FPrinter.PrintText(CRLF);
+  end;
+end;
+
+procedure TPosPrinterPosiflex.PrintBarCodeNormal(Barcode: TPosBarcode);
+begin
+  if BarcodeInGraphics then
+  begin
+    PrintBarcodeAsGraphics(Barcode);
+  end else
+  begin
+    if IsSymbologySupported(Barcode.Symbology) then
+      PrintBarCodeEsc(Barcode)
+    else
+      PrintBarcodeAsGraphics(Barcode);
+  end;
+end;
+
+function TPosPrinterPosiflex.IsSymbologySupported(Symbology: Integer): Boolean;
+begin
+  case Symbology of
+    PTR_BCS_UPCA,
+    PTR_BCS_UPCE,
+    PTR_BCS_EAN8,
+    PTR_BCS_EAN13,
+    PTR_BCS_ITF,
+    PTR_BCS_Codabar,
+    PTR_BCS_Code39,
+    PTR_BCS_Code93,
+    PTR_BCS_Code128,
+    PTR_BCS_PDF417,
+    PTR_BCS_QRCODE: Result := True;
+  else
+    Result := False;
+  end;
+end;
+
+procedure TPosPrinterPosiflex.PrintBarCodeEsc(Barcode: TPosBarcode);
+var
+  PDF417: TPDF417;
+  BarcodeType: Integer;
+  Justification: Integer;
+begin
+  FPrinter.SetBarcodeHeight(Barcode.Height);
+  FPrinter.SetBarcodeWidth(Barcode.Width);
+  // Alignment
+  case Barcode.Alignment of
+    PTR_BC_LEFT: Justification := JUSTIFICATION_LEFT;
+    PTR_BC_CENTER: Justification := JUSTIFICATION_CENTER;
+    PTR_BC_RIGHT: Justification := JUSTIFICATION_RIGHT;
+  else
+    Justification := JUSTIFICATION_CENTER;
+  end;
+
+  // textPosition
+  case Barcode.TextPosition of
+    PTR_BC_TEXT_NONE: FPrinter.SetHRIPosition(HRI_NOT_PRINTED);
+    PTR_BC_TEXT_ABOVE: FPrinter.SetHRIPosition(HRI_ABOVE_BARCODE);
+    PTR_BC_TEXT_BELOW: FPrinter.SetHRIPosition(HRI_BELOW_BARCODE);
+  end;
+  // Symbology
+  if Is2DBarcode(Barcode.Symbology) then
+  begin
+    if (Barcode.Symbology = PTR_BCS_PDF417)or(Barcode.Symbology = PTR_BCS_QRCODE) then
+    begin
+      FPrinter.PrintAndFeed(10);
+      FPrinter.SetJustification(Justification);
+    end;
+
+    case Barcode.Symbology of
+      PTR_BCS_PDF417:
+      begin
+        PDF417.RowNumber := 1;
+        PDF417.ColumnNumber := 4;
+        PDF417.ErrorCorrectionLevel := 0;
+        PDF417.ModuleWidth := 3;
+        PDF417.ModuleHeight := 100;
+        PDF417.Options := PDF417_OPTIONS_STANDARD;
+        PDF417.data := Barcode.Data;
+        FPrinter.printPDF417(PDF417);
+      end;
+      PTR_BCS_QRCODE: PrintBarCodeEscQRCode(Barcode.Data);
+    else
+      RaiseIllegalError('Symbology not supported');
+    end;
+
+    if (Barcode.Symbology = PTR_BCS_PDF417)or(Barcode.Symbology = PTR_BCS_QRCODE) then
+    begin
+      FPrinter.PrintAndFeed(10);
+      FPrinter.SetJustification(JUSTIFICATION_LEFT);
+    end;
+  end else
+  begin
+    BarcodeType := BARCODE2_CODE128;
+    case Barcode.Symbology of
+      PTR_BCS_UPCA: BarcodeType := BARCODE2_UPC_A;
+      PTR_BCS_UPCE: BarcodeType := BARCODE2_UPC_E;
+      PTR_BCS_EAN8: BarcodeType := BARCODE2_EAN8;
+      PTR_BCS_EAN13: BarcodeType := BARCODE2_EAN13;
+      PTR_BCS_ITF: BarcodeType := BARCODE2_ITF;
+      PTR_BCS_Codabar: BarcodeType := BARCODE2_CODABAR;
+      PTR_BCS_Code39: BarcodeType := BARCODE2_CODE39;
+      PTR_BCS_Code93: BarcodeType := BARCODE2_CODE93;
+      PTR_BCS_Code128: BarcodeType := BARCODE2_CODE128;
+    end;
+
+    case Barcode.Symbology of
+      PTR_BCS_UPCA,
+      PTR_BCS_UPCE,
+      PTR_BCS_EAN8,
+      PTR_BCS_EAN13,
+      PTR_BCS_ITF,
+      PTR_BCS_Codabar,
+      PTR_BCS_Code39,
+      PTR_BCS_Code93,
+      PTR_BCS_Code128:
+      begin
+        FPrinter.PrintBarcode2(BarcodeType, Barcode.Data);
+      end;
+    else
+      RaiseIllegalError('Symbology not supported');
+    end;
+  end;
+end;
+
+procedure TPosPrinterPosiflex.PrintBarCodeEscQRCode(const Data: string);
+var
+  QRCode: TQRCode;
+begin
+  QRCode.Model := 0;
+  QRCode.ECLevel := PFX_QRCODE_ECL_7;
+  QRCode.ModuleSize := 4;
+  QRCode.Data := Data;
+  FPrinter.printQRCode(QRCode);
 end;
 
 procedure TPosPrinterPosiflex.PrintBarcodeAsGraphics(var Barcode: TPosBarcode);
@@ -2293,7 +2322,7 @@ begin
           FDeviceDescription := WideFormat('%s %s %s %s', [
             FPrinter.ReadManufacturer, FPrinter.ReadPrinterName,
             FPrinter.ReadFirmwareVersion, FPrinter.ReadSerialNumber]);
-          StartDeviceThread;
+          if PollEnabled then StartDeviceThread;
         end;
       end else
       begin
@@ -2611,11 +2640,16 @@ begin
   RecLineSpacingInDots := MapToDots(pRecLineSpacing, MapMode);
   if RecLineSpacingInDots <> FRecLineSpacing then
   begin
-    if (RecLineSpacingInDots >= 0)and(RecLineSpacingInDots <= $FF) then
-    begin
-      FPrinter.SetLineSpacing(RecLineSpacingInDots);
-    end;
     FRecLineSpacing := RecLineSpacingInDots;
+    UpdateLineSpacing;
+  end;
+end;
+
+procedure TPosPrinterPosiflex.UpdateLineSpacing;
+begin
+  if (FRecLineSpacing >= 0)and(FRecLineSpacing <= $FF) then
+  begin
+    FPrinter.SetLineSpacing(FRecLineSpacing*2 + 50);
   end;
 end;
 

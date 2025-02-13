@@ -4428,7 +4428,7 @@ begin
   begin
     PtrPrintNormal(PTR_S_RECEIPT, FPrefix + Text);
     FPageBuffer.LineWidth := FPrinter.RecLineWidth;
-    FPageBuffer.LineSpacing := 5;// FPrinter.RecLineSpacing;
+    FPageBuffer.LineSpacing := FPrinter.RecLineSpacing + 5;
     FPageBuffer.Print(Text, LineStyles);
     if FPageBuffer.GetHeight >= (FPrintArea.Bottom div 2) then
     begin

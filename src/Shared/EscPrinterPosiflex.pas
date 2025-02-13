@@ -1303,7 +1303,9 @@ end;
 
 procedure TEscPrinterPosiflex.SetPageModeArea(R: TRect);
 begin
-  Logger.Debug('TEscPrinterPosiflex.SetPageModeArea');
+  Logger.Debug(Format('TEscPrinterPosiflex.SetPageModeArea(%d,%d,%d,%d)', [
+    R.Left, R.Top, R.Right, R.Bottom]));
+
   Send(#$1B#$57 +
     Chr(Lo(R.Left)) + Chr(Hi(R.Left)) +
     Chr(Lo(R.Top)) + Chr(Hi(R.Top)) +

@@ -180,6 +180,11 @@ type
 
     property Device: TOposServiceDevice19 read FDevice;
     procedure UpdatePageMode;
+    function IsSymbologySupported(Symbology: Integer): Boolean;
+    procedure PrintBarCodeEsc(Barcode: TPosBarcode);
+    procedure PrintBarCodeNormal(Barcode: TPosBarcode);
+    procedure PrintBarCodePageMode(Barcode: TPosBarcode);
+    procedure PrintBarCodeEscQRCode(const Data: string);
   public
     procedure PrintMemoryGraphic(const Data: WideString;
       BMPType, Width, Alignment: Integer);
@@ -1898,157 +1903,199 @@ function TPosPrinterRongta.PrintBarCode(Station: Integer;
   const Data: WideString; Symbology, Height, Width, Alignment,
   TextPosition: Integer): Integer;
 var
-  QRCode: TQRCode;
-  PDF417: TPDF417;
-  BarcodeType: Integer;
   Barcode: TPosBarcode;
-  Justification: Integer;
 begin
   try
     CheckRecStation(Station);
     UpdatePageMode;
 
-    if BarcodeInGraphics then
+    Barcode.Data := Data;
+    Barcode.Width := Width;
+    Barcode.Height := Height;
+    Barcode.Alignment := Alignment;
+    Barcode.Symbology := Symbology;
+    Barcode.TextPosition := TextPosition;
+    if FPageMode.IsActive then
     begin
-      Barcode.Data := Data;
-      Barcode.Width := Width;
-      Barcode.Height := Height;
-      Barcode.Alignment := Alignment;
-      Barcode.Symbology := Symbology;
-      Barcode.TextPosition := TextPosition;
-      PrintBarcodeAsGraphics(Barcode);
+      PrintBarcodePageMode(Barcode);
     end else
     begin
-      FPrinter.SetBarcodeHeight(Height);
-      FPrinter.SetBarcodeWidth(Width);
-      // Alignment
-      case Alignment of
-        PTR_BC_LEFT: Justification := JUSTIFICATION_LEFT;
-        PTR_BC_CENTER: Justification := JUSTIFICATION_CENTER;
-        PTR_BC_RIGHT: Justification := JUSTIFICATION_RIGHT;
-      else
-        Justification := JUSTIFICATION_CENTER;
-      end;
-
-      // textPosition
-      case TextPosition of
-        PTR_BC_TEXT_NONE: FPrinter.SetHRIPosition(HRI_NOT_PRINTED);
-        PTR_BC_TEXT_ABOVE: FPrinter.SetHRIPosition(HRI_ABOVE_BARCODE);
-        PTR_BC_TEXT_BELOW: FPrinter.SetHRIPosition(HRI_BELOW_BARCODE);
-      end;
-      // Symbology
-      if Is2DBarcode(Symbology) then
-      begin
-        if (Symbology = PTR_BCS_PDF417)or(Symbology = PTR_BCS_QRCODE) then
-        begin
-          FPrinter.PrintAndFeed(10);
-          FPrinter.SetJustification(Justification);
-        end;
-
-        case Symbology of
-          PTR_BCS_PDF417:
-          begin
-            FPrinter.Select2DBarcode(BARCODE_PDF417);
-            PDF417.ColumnNumber := 4;
-            PDF417.SecurityLevel := 0;
-            PDF417.HVRatio := 2;
-            PDF417.data := Data;
-            FPrinter.printPDF417(PDF417);
-          end;
-          PTR_BCS_QRCODE:
-          begin
-            FPrinter.Select2DBarcode(BARCODE_QR_CODE);
-            QRCode.SymbolVersion := 0;
-            QRCode.ECLevel := REP_QRCODE_ECL_7;
-            QRCode.ModuleSize := 4;
-            QRCode.data := Data;
-            FPrinter.printQRCode(QRCode);
-          end;
-          PTR_BCS_MAXICODE,
-          PTR_BCS_DATAMATRIX,
-          PTR_BCS_UQRCODE,
-          PTR_BCS_AZTEC,
-          PTR_BCS_UPDF417:
-          begin
-            Barcode.Data := Data;
-            Barcode.Symbology := Symbology;
-            Barcode.Height := Height;
-            Barcode.Width := Width;
-            Barcode.Alignment := Alignment;
-            Barcode.TextPosition := TextPosition;
-            PrintBarcodeAsGraphics(Barcode);
-          end;
-        else
-          RaiseIllegalError('Symbology not supported');
-        end;
-
-        if (Symbology = PTR_BCS_PDF417)or(Symbology = PTR_BCS_QRCODE) then
-        begin
-          FPrinter.PrintAndFeed(10);
-          FPrinter.SetJustification(JUSTIFICATION_LEFT);
-        end;
-      end else
-      begin
-        BarcodeType := BARCODE2_CODE128;
-        case Symbology of
-          PTR_BCS_UPCA: BarcodeType := BARCODE2_UPC_A;
-          PTR_BCS_UPCE: BarcodeType := BARCODE2_UPC_E;
-          PTR_BCS_EAN8: BarcodeType := BARCODE2_EAN8;
-          PTR_BCS_EAN13: BarcodeType := BARCODE2_EAN13;
-          PTR_BCS_ITF: BarcodeType := BARCODE2_ITF;
-          PTR_BCS_Codabar: BarcodeType := BARCODE2_CODABAR;
-          PTR_BCS_Code39: BarcodeType := BARCODE2_CODE39;
-          PTR_BCS_Code93: BarcodeType := BARCODE2_CODE93;
-          PTR_BCS_Code128: BarcodeType := BARCODE2_CODE128;
-        end;
-
-        case Symbology of
-          PTR_BCS_UPCA,
-          PTR_BCS_UPCE,
-          PTR_BCS_EAN8,
-          PTR_BCS_EAN13,
-          PTR_BCS_ITF,
-          PTR_BCS_Codabar,
-          PTR_BCS_Code39,
-          PTR_BCS_Code93,
-          PTR_BCS_Code128:
-          begin
-            FPrinter.PrintBarcode2(BarcodeType, Data);
-          end;
-          PTR_BCS_TF,
-          PTR_BCS_UPCA_S,
-          PTR_BCS_UPCE_S,
-          PTR_BCS_UPCD1,
-          PTR_BCS_UPCD2,
-          PTR_BCS_UPCD3,
-          PTR_BCS_UPCD4,
-          PTR_BCS_UPCD5,
-          PTR_BCS_EAN8_S,
-          PTR_BCS_EAN13_S,
-          PTR_BCS_EAN128,
-          PTR_BCS_OCRA,
-          PTR_BCS_OCRB,
-          PTR_BCS_Code128_Parsed,
-          PTR_BCS_RSS14,
-          PTR_BCS_RSS_EXPANDED:
-          begin
-            Barcode.Data := Data;
-            Barcode.Symbology := Symbology;
-            Barcode.Height := Height;
-            Barcode.Width := Width;
-            Barcode.Alignment := Alignment;
-            Barcode.TextPosition := TextPosition;
-            PrintBarcodeAsGraphics(Barcode);
-          end;
-        else
-          RaiseIllegalError('Symbology not supported');
-        end;
-      end;
+      PrintBarcodeNormal(Barcode);
     end;
     Result := ClearResult;
   except
     on E: Exception do
       Result := HandleException(E);
+  end;
+end;
+
+///////////////////////////////////////////////////////////////////////////////
+// In page mode barcode printed only in ESC
+// In page mode bitmaps are not supported
+
+procedure TPosPrinterRongta.PrintBarCodePageMode(Barcode: TPosBarcode);
+begin
+  if Barcode.Symbology = PTR_BCS_QRCODE then
+  begin
+    PrintBarCodeEscQRCode(Barcode.Data);
+  end;
+end;
+
+procedure TPosPrinterRongta.PrintBarCodeEscQRCode(const Data: string);
+var
+  QRCode: TQRCode;
+begin
+  FPrinter.Select2DBarcode(BARCODE_QR_CODE);
+  QRCode.SymbolVersion := 0;
+  QRCode.ECLevel := REP_QRCODE_ECL_7;
+  QRCode.ModuleSize := 4;
+  QRCode.data := Data;
+  FPrinter.printQRCode(QRCode);
+end;
+
+procedure TPosPrinterRongta.PrintBarCodeNormal(Barcode: TPosBarcode);
+begin
+  if BarcodeInGraphics then
+  begin
+    PrintBarcodeAsGraphics(Barcode);
+  end else
+  begin
+    if IsSymbologySupported(Barcode.Symbology) then
+      PrintBarCodeEsc(Barcode)
+    else
+      PrintBarcodeAsGraphics(Barcode);
+  end;
+end;
+
+function TPosPrinterRongta.IsSymbologySupported(Symbology: Integer): Boolean;
+begin
+  case Symbology of
+    PTR_BCS_UPCA,
+    PTR_BCS_UPCE,
+    PTR_BCS_EAN8,
+    PTR_BCS_EAN13,
+    PTR_BCS_ITF,
+    PTR_BCS_Codabar,
+    PTR_BCS_Code39,
+    PTR_BCS_Code93,
+    PTR_BCS_Code128,
+    PTR_BCS_PDF417,
+    PTR_BCS_QRCODE: Result := True;
+  else
+    Result := False;
+  end;
+end;
+
+procedure TPosPrinterRongta.PrintBarCodeEsc(Barcode: TPosBarcode);
+var
+  PDF417: TPDF417;
+  BarcodeType: Integer;
+  Justification: Integer;
+begin
+  FPrinter.SetBarcodeHeight(Barcode.Height);
+  FPrinter.SetBarcodeWidth(Barcode.Width);
+  // Alignment
+  case Barcode.Alignment of
+    PTR_BC_LEFT: Justification := JUSTIFICATION_LEFT;
+    PTR_BC_CENTER: Justification := JUSTIFICATION_CENTER;
+    PTR_BC_RIGHT: Justification := JUSTIFICATION_RIGHT;
+  else
+    Justification := JUSTIFICATION_CENTER;
+  end;
+
+  // textPosition
+  case Barcode.TextPosition of
+    PTR_BC_TEXT_NONE: FPrinter.SetHRIPosition(HRI_NOT_PRINTED);
+    PTR_BC_TEXT_ABOVE: FPrinter.SetHRIPosition(HRI_ABOVE_BARCODE);
+    PTR_BC_TEXT_BELOW: FPrinter.SetHRIPosition(HRI_BELOW_BARCODE);
+  end;
+  // Symbology
+  if Is2DBarcode(Barcode.Symbology) then
+  begin
+    if (Barcode.Symbology = PTR_BCS_PDF417)or(Barcode.Symbology = PTR_BCS_QRCODE) then
+    begin
+      FPrinter.PrintAndFeed(10);
+      FPrinter.SetJustification(Justification);
+    end;
+
+    case Barcode.Symbology of
+      PTR_BCS_PDF417:
+      begin
+        FPrinter.Select2DBarcode(BARCODE_PDF417);
+        PDF417.ColumnNumber := 4;
+        PDF417.SecurityLevel := 0;
+        PDF417.HVRatio := 2;
+        PDF417.data := Barcode.Data;
+        FPrinter.printPDF417(PDF417);
+      end;
+      PTR_BCS_QRCODE: PrintBarCodeEscQRCode(Barcode.Data);
+      PTR_BCS_MAXICODE,
+      PTR_BCS_DATAMATRIX,
+      PTR_BCS_UQRCODE,
+      PTR_BCS_AZTEC,
+      PTR_BCS_UPDF417:
+      begin
+        PrintBarcodeAsGraphics(Barcode);
+      end;
+    else
+      RaiseIllegalError('Symbology not supported');
+    end;
+
+    if (Barcode.Symbology = PTR_BCS_PDF417)or(Barcode.Symbology = PTR_BCS_QRCODE) then
+    begin
+      FPrinter.PrintAndFeed(10);
+      FPrinter.SetJustification(JUSTIFICATION_LEFT);
+    end;
+  end else
+  begin
+    BarcodeType := BARCODE2_CODE128;
+    case Barcode.Symbology of
+      PTR_BCS_UPCA: BarcodeType := BARCODE2_UPC_A;
+      PTR_BCS_UPCE: BarcodeType := BARCODE2_UPC_E;
+      PTR_BCS_EAN8: BarcodeType := BARCODE2_EAN8;
+      PTR_BCS_EAN13: BarcodeType := BARCODE2_EAN13;
+      PTR_BCS_ITF: BarcodeType := BARCODE2_ITF;
+      PTR_BCS_Codabar: BarcodeType := BARCODE2_CODABAR;
+      PTR_BCS_Code39: BarcodeType := BARCODE2_CODE39;
+      PTR_BCS_Code93: BarcodeType := BARCODE2_CODE93;
+      PTR_BCS_Code128: BarcodeType := BARCODE2_CODE128;
+    end;
+
+    case Barcode.Symbology of
+      PTR_BCS_UPCA,
+      PTR_BCS_UPCE,
+      PTR_BCS_EAN8,
+      PTR_BCS_EAN13,
+      PTR_BCS_ITF,
+      PTR_BCS_Codabar,
+      PTR_BCS_Code39,
+      PTR_BCS_Code93,
+      PTR_BCS_Code128:
+      begin
+        FPrinter.PrintBarcode2(BarcodeType, Barcode.Data);
+      end;
+      PTR_BCS_TF,
+      PTR_BCS_UPCA_S,
+      PTR_BCS_UPCE_S,
+      PTR_BCS_UPCD1,
+      PTR_BCS_UPCD2,
+      PTR_BCS_UPCD3,
+      PTR_BCS_UPCD4,
+      PTR_BCS_UPCD5,
+      PTR_BCS_EAN8_S,
+      PTR_BCS_EAN13_S,
+      PTR_BCS_EAN128,
+      PTR_BCS_OCRA,
+      PTR_BCS_OCRB,
+      PTR_BCS_Code128_Parsed,
+      PTR_BCS_RSS14,
+      PTR_BCS_RSS_EXPANDED:
+      begin
+        PrintBarcodeAsGraphics(Barcode);
+      end;
+    else
+      RaiseIllegalError('Symbology not supported');
+    end;
   end;
 end;
 
@@ -2456,6 +2503,7 @@ begin
   if FInitialized then Exit;
 
   FPrinter.Initialize;
+  FPrinter.SetLineSpacing(RecLineSpacing);
   FPrinter.WriteKazakhCharacters;
   FPrinter.DisableUserCharacters;
   FPrinter.SetCodePage(CODEPAGE_WCP1251);

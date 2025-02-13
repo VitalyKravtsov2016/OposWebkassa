@@ -25,9 +25,9 @@ type
     FPort: IPrinterPort;
     FPrinter: TPosPrinterPosiflex;
 
+    procedure OpenService;
     procedure ClaimDevice;
     procedure EnableDevice;
-    procedure OpenService;
     procedure PtrCheck(Code: Integer);
     procedure StatusUpdateEvent(ASender: TObject; Data: Integer);
 
@@ -60,6 +60,7 @@ type
     procedure TestCharacterToCodePage;
     procedure TestArrayToString;
     procedure TestDeviceDescription;
+    procedure TestPageMode;
   end;
 
 implementation
@@ -100,6 +101,7 @@ begin
   Printer.FontName := FontNameA;
   Printer.CharacterSet := PTR_CS_UNICODE;
   FPrinter.BarcodeInGraphics := True;
+  FPrinter.PollEnabled := False;
 end;
 
 procedure TPosPrinterPosiflexTest.StatusUpdateEvent(ASender: TObject; Data: Integer);
@@ -109,17 +111,12 @@ end;
 
 function TPosPrinterPosiflexTest.CreateRawPort: TRawPrinterPort;
 begin
-  //Result := TRawPrinterPort.Create(FLogger, 'RONGTA 80mm Series Printer');
-  Result := TRawPrinterPort.Create(FLogger, 'POS-80C');
+  Result := TRawPrinterPort.Create(FLogger, '???');
 end;
 
 function TPosPrinterPosiflexTest.CreateUSBPort: TUSBPrinterPort;
-var
-  Devices: TUsbDevices;
 begin
-  Devices := ReadPosiflexDevices;
-  CheckEquals(1, Length(Devices), 'Length(Devices)');
-  Result := TUSBPrinterPort.Create(FLogger, Devices[0].Path);
+  Result := TUSBPrinterPort.Create(FLogger, ReadPosiflexPortName);
 end;
 
 function TPosPrinterPosiflexTest.CreateSerialPort: TSerialPort;
@@ -187,7 +184,6 @@ begin
   Printer.DeviceEnabled := True;
   PtrCheck(Printer.ResultCode);
   CheckEquals(True, Printer.DeviceEnabled, 'DeviceEnabled <> True');
-  Printer.RecLineChars := 26;
 end;
 
 procedure TPosPrinterPosiflexTest.OpenClaimEnable;
@@ -506,6 +502,42 @@ begin
   ClaimDevice;
   EnableDevice;
   CheckEquals('POSIFLEX PP-6900 1.4 H6DFQ0', Printer.DeviceDescription, 'DeviceDescription.1');
+end;
+
+procedure TPosPrinterPosiflexTest.TestPageMode;
+var
+  PrintArea: TRect;
+const
+  Barcode = 'http://dev.kofd.kz/consumer?i=925871425876&f=211030200207&s=15443.72&t=20220826T210014';
+begin
+  OpenClaimEnable;
+  CheckEquals(512, FPrinter.RecLineWidth, 'RecLineWidth');
+
+  FPrinter.BarcodeInGraphics := False;
+  // Start pagemode
+  Printer.PageModePrint(PTR_PM_PAGE_MODE);
+  // Set PageMode area
+  PrintArea.Left := 0;
+  PrintArea.Top := 0;
+  PrintArea.Right := FPrinter.RecLineWidth;
+  PrintArea.Bottom := 450;
+  Printer.PageModePrintArea := RectToStr(PrintArea);
+  // Barcode
+  PtrCheck(Printer.PrintBarCode(PTR_S_RECEIPT, Barcode + CRLF,
+    PTR_BCS_QRCODE, 0, 0, PTR_BC_CENTER, PTR_BC_TEXT_NONE));
+  // Text
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, '«Õ   “ 00106304241645' + CRLF));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, '–Õ   “ 0000373856050035' + CRLF));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, '»ÕÕ 7725699008' + CRLF));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, '‘Õ 7380440700076549' + CRLF));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, '‘ƒ 41110' + CRLF));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, '‘œ 2026476352' + CRLF));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'œ–»’Œƒ 19.07.24 13:14' + CRLF));
+  // Stop pagemode
+  Printer.PageModePrint(PTR_PM_NORMAL);
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, ' ' + CRLF));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, ' ' + CRLF));
+  Printer.CutPaper(90);
 end;
 
 initialization

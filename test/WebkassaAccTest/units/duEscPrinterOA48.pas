@@ -80,7 +80,7 @@ type
     procedure TestPageModeB;
     procedure TestPrintMaxiCode;
     procedure TestPrintUTF;
-    procedure TestPrintRussianFontB;
+    procedure TestPrintRussianFontA;
     procedure TestPrintFontBMode;
     procedure TestPrintFontBMode2;
     procedure TestCutterError;
@@ -1206,7 +1206,6 @@ var
   QRCode: TQRCode;
   PageSize: TRect;
 begin
-  FPrinter.BeginDocument;
   FPrinter.Initialize;
   FPrinter.SetCodePage(CODEPAGE_WCP1251);
   FPrinter.SetLineSpacing(0);
@@ -1214,31 +1213,27 @@ begin
 
   FPrinter.SetPageMode;
   // Page mode area for text
-  PageSize.Left := 0;
+  PageSize.Left := 100;
   PageSize.Top := 0;
-  PageSize.Right := 576-150;
-  PageSize.Bottom := 450;
+  PageSize.Right := 512;
+  PageSize.Bottom := 300;
   FPrinter.SetPageModeArea(PageSize);
+  // QR code on the right
+  FPrinter.PrintText('                         ');
+  FPrinter.SetPMAbsoluteVerticalPosition(0);
+  QRCode.ECLevel := 0;
+  QRCode.ModuleSize := 4;
+  QRCode.data := Barcode;
+  FPrinter.printQRCode(QRCode);
   // Text on the left
-  FPrinter.PrintText('«Õ   “ 0010630424164528736482764827634872683476287346' + CRLF);
+  FPrinter.SetPMAbsoluteVerticalPosition(0);
+  FPrinter.PrintText('«Õ   “ 00106304241645' + CRLF);
   FPrinter.PrintText('–Õ   “ 0000373856050035' + CRLF);
   FPrinter.PrintText('»ÕÕ 7725699008' + CRLF);
   FPrinter.PrintText('‘Õ 7380440700076549' + CRLF);
   FPrinter.PrintText('‘ƒ 41110' + CRLF);
   FPrinter.PrintText('‘œ 2026476352' + CRLF);
   FPrinter.PrintText('œ–»’Œƒ 19.07.24 13:14        ');
-  // Page mode area for QR code
-  PageSize.Left := 576-150 + 1;
-  PageSize.Top := 0;
-  PageSize.Right := 576;
-  PageSize.Bottom := 450;
-  FPrinter.SetPageModeArea(PageSize);
-  // QR code on the right
-  FPrinter.PrintText(CRLF);
-  QRCode.ECLevel := 0;
-  QRCode.ModuleSize := 4;
-  QRCode.data := Barcode;
-  FPrinter.printQRCode(QRCode);
   FPrinter.PrintAndReturnStandardMode;
 
   FPrinter.PrintText(CRLF);
@@ -1248,7 +1243,6 @@ begin
   FPrinter.PrintText(CRLF);
   FPrinter.PrintText(CRLF);
   FPrinter.PartialCut;
-  FPrinter.EndDocument;
 end;
 
 procedure TEscPrinterOA48Test.TestPageModeB;
@@ -1447,12 +1441,12 @@ var
   S: AnsiString;
 begin
   S := '';
-  for i := $80 to $ff do
+  for i := $00 to $ff do
   begin
     S := S + Chr(i);
-    if Length(S) = 32 then
+    if Length(S) = 16 then
     begin
-      FPrinter.PrintText('0x' + IntToHex(i-$1F, 2) + '  ' + S + CRLF);
+      FPrinter.PrintText('0x' + IntToHex(i-$0F, 2) + '  ' + S + CRLF);
       S := '';
     end;
   end;
@@ -1470,22 +1464,20 @@ begin
   PrintCodePage;
 end;
 
-procedure TEscPrinterOA48Test.TestPrintRussianFontB;
+procedure TEscPrinterOA48Test.TestPrintRussianFontA;
 var
   CodePage: Integer;
 begin
   FPrinter.Initialize;
   FPrinter.UTF8Enable(False);
-  FPrinter.SetCharacterFont(FONT_TYPE_B);
+  FPrinter.SetCharacterFont(FONT_TYPE_A);
 
-  for CodePage := 0 to 20 do
-  begin
-    FPrinter.SelectCodePage(CodePage);
-    FPrinter.PrintText('---------------------------------------------' + CRLF);
-    FPrinter.PrintText('Normal mode, font B, CodePage: ' + IntToStr(CodePage) + CRLF);
-    FPrinter.PrintText('---------------------------------------------' + CRLF);
-    PrintCodePage2;
-  end;
+  CodePage := CODEPAGE_WCP1251;
+  FPrinter.SelectCodePage(CodePage);
+  FPrinter.PrintText('---------------------------------------------' + CRLF);
+  FPrinter.PrintText('Normal mode, font A, CodePage: ' + IntToStr(CodePage) + CRLF);
+  FPrinter.PrintText('---------------------------------------------' + CRLF);
+  PrintCodePage2;
 end;
 
 procedure TEscPrinterOA48Test.TestPrintFontBMode;

@@ -9,7 +9,7 @@ uses
   TntClasses,
   // Opos
   Opos, OposEsc, OposPtr, OposException, OposServiceDevice19, OposEvents,
-  OposPOSPrinter_CCO_TLB, WException, OposPtrUtils,
+  OposPOSPrinter_CCO_TLB, WException, OposPtrUtils, PtrDirectIO,
   // This
   LogFile, DriverError, EscPrinterOA48, PrinterPort, NotifyThread,
   RegExpr, SerialPort, BarcodeUtils, StringUtils,
@@ -1035,8 +1035,35 @@ end;
 function TPosPrinterOA48.DirectIO(Command: Integer; var pData: Integer;
   var pString: WideString): Integer;
 begin
-  Result := ClearResult;
+  try
+    Device.CheckOpened;
+    case Command of
+      DIO_PTR_CHECK_BARCODE:
+      begin
+        case pData of
+          PTR_BCS_UPCA,
+          PTR_BCS_UPCE,
+          PTR_BCS_EAN8,
+          PTR_BCS_EAN13,
+          PTR_BCS_ITF,
+          PTR_BCS_Codabar,
+          PTR_BCS_Code39,
+          PTR_BCS_Code93,
+          PTR_BCS_Code128,
+          PTR_BCS_QRCODE,
+          PTR_BCS_PDF417: pString := '1';
+        else
+          pString := '0';
+        end;
+      end;
+    end;
+    Result := ClearResult;
+  except
+    on E: Exception do
+      Result := HandleException(E);
+  end;
 end;
+
 
 function TPosPrinterOA48.DrawRuledLine(Station: Integer;
   const PositionList: WideString; LineDirection, LineWidth, LineStyle,
