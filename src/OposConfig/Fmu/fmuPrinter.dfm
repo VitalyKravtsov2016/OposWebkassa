@@ -386,7 +386,7 @@ object fmPrinter: TfmPrinter
       end
     end
     object tsUSBPort: TTabSheet
-      Caption = 'USB '#1087#1086#1088#1090
+      Caption = 'USB '#1087#1086#1088#1090' Posiflex'
       ImageIndex = 3
       DesignSize = (
         433
@@ -410,12 +410,12 @@ object fmPrinter: TfmPrinter
         OnChange = ModifiedClick
       end
       object btnReadUsbDevices: TButton
-        Left = 232
+        Left = 160
         Top = 48
-        Width = 185
+        Width = 257
         Height = 33
         Anchors = [akTop, akRight]
-        Caption = #1055#1088#1086#1095#1080#1090#1072#1090#1100' '#1089#1087#1080#1089#1086#1082' '#1091#1089#1090#1088#1086#1081#1089#1090#1074
+        Caption = #1055#1088#1086#1095#1080#1090#1072#1090#1100' '#1089#1087#1080#1089#1086#1082' '#1091#1089#1090#1088#1086#1081#1089#1090#1074' Posiflex'
         TabOrder = 1
         OnClick = btnReadUsbDevicesClick
       end

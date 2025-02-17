@@ -3108,7 +3108,16 @@ begin
     PortTypeSerial: Result := CreateSerialPort;
     PortTypeWindows: Result := TRawPrinterPort.Create(Logger, Params.PrinterName);
     PortTypeNetwork: Result := CreateNetworkPort;
-    PortTypeUSB: Result := CreateUsbPort;
+    PortTypeUSB:
+    begin
+      if Params.EscPrinterType = EscPrinterTypePosiflex then
+      begin
+        Result := CreateUsbPort;
+      end else
+      begin
+        Result := CreateSerialPort;
+      end;
+    end;
   else
     Result := CreateSerialPort;
   end;

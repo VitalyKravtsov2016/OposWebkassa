@@ -197,12 +197,16 @@ begin
     Params.FlowControl := FLOW_CONTROL_NONE;
     Params.ReconnectPort := False;
   *)
-    Params.PrinterType := PrinterTypeEscCommands;
+    Params.PortType := PortTypeWindows;
+    Params.PrinterName := 'RONGTA 80mm Series Printer';
+    Params.PrinterType := PrinterTypeWindows;
+    Params.EscPrinterType := EscPrinterTypeRongta;
+
+    (*
     Params.PortType := PortTypeUsb;
     Params.PrinterName := 'Test';
     Params.EscPrinterType := EscPrinterTypePosiflex;
 
-    (*
     Params.PortType := PortTypeWindows;
     Params.PrinterName := 'RONGTA 80mm Series Printer';
     Params.EscPrinterType := EscPrinterTypeRongta;
@@ -213,7 +217,7 @@ begin
     Params.FontName := FontNameA;
     Params.LineSpacing := 0;
     Params.RecLineChars := 42;
-    Params.RecLineHeight := 24;
+    Params.RecLineHeight := 30;
     Params.Utf8Enabled := True;
     Params.AcceptLanguage := 'kk-KZ';
   end;

@@ -86,11 +86,15 @@ type
     procedure UpdateStopBits;
     procedure UpdateDataBits;
     procedure UpdateParity;
+    procedure UpdatePortTypes;
     procedure UpdateFlowControl;
-
-    function ReadPrinterNames(APrinterType: Integer): WideString;
+    procedure UpdateEscPrinterTypes;
     procedure FptrCheck(Printer: TOPOSFiscalPrinter; Code: Integer);
+
+    function GetPortTypes: string;
+    function GetEscPrinterType: string;
     function ReadFontNames(APrinterType: Integer): WideString;
+    function ReadPrinterNames(APrinterType: Integer): WideString;
   public
     procedure UpdatePage; override;
     procedure UpdateObject; override;
@@ -105,8 +109,6 @@ implementation
 procedure TfmPrinter.UpdatePage;
 begin
   cbPrinterType.ItemIndex := Parameters.PrinterType;
-  cbPortType.ItemIndex := Parameters.PortType;
-  cbEscPrinterType.ItemIndex := Parameters.EscPrinterType;
 
   UpdateDeviceNames;
   cbPrinterName.Text := Parameters.PrinterName;
@@ -120,6 +122,10 @@ begin
   UpdateStopBits;
   UpdateParity;
   UpdateFlowControl;
+  UpdateEscPrinterTypes;
+  cbEscPrinterType.ItemIndex := Parameters.EscPrinterType;
+  UpdatePortTypes;
+  cbPortType.ItemIndex := Parameters.PortType;
 
   edtRemoteHost.Text := Parameters.RemoteHost;
   seRemotePort.Value := Parameters.RemotePort;
@@ -340,6 +346,8 @@ end;
 procedure TfmPrinter.cbPrinterTypeChange(Sender: TObject);
 begin
   UpdateDeviceNames;
+  UpdateEscPrinterTypes;
+  UpdatePortTypes;
   UpdateFontNames;
   Modified;
 end;
@@ -381,6 +389,31 @@ begin
     PrinterTypeOPOS: Result := '';
     PrinterTypeWindows: Result := Printers.Printer.Fonts.GetText;
     PrinterTypeEscCommands: Result := FontNames;
+  end;
+end;
+
+procedure TfmPrinter.UpdateEscPrinterTypes;
+var
+  EscPrinterType: Integer;
+begin
+  EscPrinterType := cbEscPrinterType.ItemIndex;
+  cbEscPrinterType.Items.BeginUpdate;
+  try
+    cbEscPrinterType.Items.Text := GetEscPrinterType;
+    if (EscPrinterType < 0)or(EscPrinterType >= cbEscPrinterType.Items.Count) then
+      EscPrinterType := 0;
+    cbEscPrinterType.ItemIndex := EscPrinterType;
+  finally
+    cbEscPrinterType.Items.EndUpdate;
+  end;
+end;
+
+function TfmPrinter.GetEscPrinterType: string;
+begin
+  Result := '';
+  if cbPrinterType.ItemIndex  = PrinterTypeEscCommands then
+  begin
+    Result := 'Rongta' + CRLF + 'OA-48' + CRLF + 'Posiflex';
   end;
 end;
 
@@ -457,8 +490,40 @@ end;
 procedure TfmPrinter.cbEscPrinterTypeChange(Sender: TObject);
 begin
   Parameters.EscPrinterType := cbEscPrinterType.ItemIndex;
+  UpdatePortTypes;
   UpdateFontNames;
   Modified;
+end;
+
+procedure TfmPrinter.UpdatePortTypes;
+var
+  PortType: Integer;
+begin
+  PortType := cbPortType.ItemIndex;
+  cbPortType.Items.BeginUpdate;
+  try
+    cbPortType.Items.Text := GetPortTypes;
+    if (PortType < 0)or(PortType >= cbPortType.Items.Count) then
+      PortType := 0;
+    cbPortType.ItemIndex := PortType;
+  finally
+    cbPortType.Items.EndUpdate;
+  end;
+end;
+
+function TfmPrinter.GetPortTypes: string;
+begin
+  Result := '';
+  if cbPrinterType.ItemIndex = PrinterTypeEscCommands then
+  begin
+    Result := Result + 'Последовательный порт' + CRLF;
+    Result := Result + 'Порт принтера Windows' + CRLF;
+    Result := Result + 'Сетевое подключение' + CRLF;
+    if cbEscPrinterType.ItemIndex = EscPrinterTypePosiflex then
+    begin
+      Result := Result + 'USB порт';
+    end;
+  end;
 end;
 
 procedure TfmPrinter.btnReadUsbDevicesClick(Sender: TObject);
