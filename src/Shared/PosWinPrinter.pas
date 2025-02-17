@@ -1773,6 +1773,8 @@ procedure TPosWinPrinter.PrintText(Text: WideString);
 var
   Index: Integer;
   Token: TEscToken;
+  TokenText: WideString;
+  TextSize: TSize;
 begin
   while GetToken(Text, Token) do
   begin
@@ -1828,8 +1830,10 @@ begin
       end;
     end else
     begin
-      Printer.Canvas.TextOut(0, FPositionY, Token.Text);
-      Inc(FPositionY, Printer.Canvas.Font.Size + LineSpacing);
+      TokenText := Token.Text;
+      Printer.Canvas.TextOut(0, FPositionY, TokenText);
+      GetTextExtentPointW(Printer.Canvas.Handle, PWideChar(TokenText), Length(TokenText), TextSize);
+      Inc(FPositionY, TextSize.cy + LineSpacing);
     end;
   end;
 end;

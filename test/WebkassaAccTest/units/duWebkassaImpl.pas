@@ -201,6 +201,7 @@ begin
     Params.PrinterName := 'RONGTA 80mm Series Printer';
     Params.PrinterType := PrinterTypeWindows;
     Params.EscPrinterType := EscPrinterTypeRongta;
+    Params.FontName := 'FontA11';
 
     (*
     Params.PortType := PortTypeUsb;
@@ -214,7 +215,6 @@ begin
     Params.EscPrinterType := EscPrinterTypeOA48;
     *)
 
-    Params.FontName := FontNameA;
     Params.LineSpacing := 0;
     Params.RecLineChars := 42;
     Params.RecLineHeight := 30;
