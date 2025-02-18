@@ -11,7 +11,7 @@ uses
   TntClasses, TntSysUtils,
   // This
   DebugUtils, StringUtils, EscPrinterOA48, PrinterPort, SerialPort, LogFile,
-  FileUtils, SocketPort, RawPrinterPort, EscPrinterUtils;
+  FileUtils, SocketPort, RawPrinterPort, EscPrinterUtils, USBPrinterPort;
 
 type
   { TEscPrinterOA48Test }
@@ -31,9 +31,11 @@ type
     procedure PrintCodePageUTF8;
     procedure PrintCodePages(const CodePageName: string);
 
-    function CreateRawPort: TRawPrinterPort;
     function CreateSerialPort: TSerialPort;
     function CreateSocketPort: TSocketPort;
+    function CreateUSBPort: TUSBPrinterPort;
+    function CreateRawPort: TRawPrinterPort;
+
     function GetKazakhText: WideString;
     function GetKazakhChars: AnsiString;
 
@@ -41,7 +43,6 @@ type
   published
     procedure TestBitmap;
     procedure TestPrintRasterBMP;
-    procedure TestReadPrinterID;
     procedure TestInitialize;
     procedure TestPrintText;
     procedure TestReadStatus;
@@ -101,7 +102,8 @@ begin
 
   //FPrinterPort := CreateSocketPort;
   //FPrinterPort := CreateSerialPort;
-  FPrinterPort := CreateRawPort;
+  //FPrinterPort := CreateRawPort;
+  FPrinterPort := CreateUsbPort;
   FPrinterPort.Open;
   FPrinter := TEscPrinterOA48.Create(FPrinterPort, FLogger);
 end;
@@ -111,6 +113,11 @@ begin
   FPrinter.Free;
   FPrinterPort := nil;
   inherited TearDown;
+end;
+
+function TEscPrinterOA48Test.CreateUSBPort: TUSBPrinterPort;
+begin
+  Result := TUSBPrinterPort.Create(FLogger, ReadOA48PortName);
 end;
 
 function TEscPrinterOA48Test.CreateRawPort: TRawPrinterPort;
@@ -533,19 +540,6 @@ _7.03 ESC/POS
 _2013-01-05
 _RONGTA
 *)
-
-procedure TEscPrinterOA48Test.TestReadPrinterID;
-begin
-  CheckEquals('7.03 ESC/POS', FPrinter.ReadPrinterID(65), 'Firmware version');
-
-  CheckEquals('7.03 ESC/POS', FPrinter.ReadFirmwareVersion, 'Firmware version');
-  CheckEquals('EPSON', FPrinter.ReadPrinterID(66), 'Manufacturer');
-  CheckEquals('EPSON', FPrinter.ReadManufacturer, 'Manufacturer');
-  CheckEquals('TM-T88III', FPrinter.ReadPrinterID(67), 'Printer name');
-  CheckEquals('TM-T88III', FPrinter.ReadPrinterName, 'Printer name');
-  CheckEquals('D6KG074561', FPrinter.ReadPrinterID(68), 'Serial number');
-  CheckEquals('D6KG074561', FPrinter.ReadSerialNumber, 'Serial number');
-end;
 
 procedure TEscPrinterOA48Test.PrintTestPage;
 begin

@@ -11,7 +11,7 @@ uses
   TntClasses, TntSysUtils,
   // This
   DebugUtils, StringUtils, EscPrinterRongta, PrinterPort, SerialPort, LogFile,
-  FileUtils, SocketPort, RawPrinterPort, EscPrinterUtils;
+  FileUtils, SocketPort, RawPrinterPort, USBPrinterPort, EscPrinterUtils;
 
 type
   { TEscPrinterRongtaTest }
@@ -31,11 +31,12 @@ type
     procedure PrintCodePageUTF8;
     procedure PrintCodePages(const CodePageName: string);
 
-    function CreateRawPort: TRawPrinterPort;
-    function CreateSerialPort: TSerialPort;
-    function CreateSocketPort: TSocketPort;
     function GetKazakhText: WideString;
     function GetKazakhChars: AnsiString;
+    function CreateSocketPort: TSocketPort;
+    function CreateSerialPort: TSerialPort;
+    function CreateUSBPort: TUSBPrinterPort;
+    function CreateRawPort: TRawPrinterPort;
 
     property Printer: TEscPrinterRongta read FPrinter;
   published
@@ -98,7 +99,9 @@ begin
 
   //FPrinterPort := CreateSocketPort;
   //FPrinterPort := CreateSerialPort;
-  FPrinterPort := CreateRawPort;
+  //FPrinterPort := CreateRawPort;
+  FPrinterPort := CreateUsbPort;
+
   FPrinterPort.Open;
   FPrinter := TEscPrinterRongta.Create(FPrinterPort, FLogger);
 end;
@@ -108,6 +111,11 @@ begin
   FPrinter.Free;
   FPrinterPort := nil;
   inherited TearDown;
+end;
+
+function TEscPrinterRongtaTest.CreateUSBPort: TUSBPrinterPort;
+begin
+  Result := TUSBPrinterPort.Create(FLogger, ReadRongtaPortName);
 end;
 
 function TEscPrinterRongtaTest.CreateRawPort: TRawPrinterPort;

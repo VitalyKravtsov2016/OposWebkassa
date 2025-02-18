@@ -361,7 +361,6 @@ type
     procedure DownloadBMP(Image: TGraphic);
     procedure PrintBmp(Mode: Byte);
     procedure SetWhiteBlackReverse(Value: Boolean);
-    function ReadPrinterID(N: Byte): AnsiString;
     procedure SetHRIPosition(N: Byte);
     procedure SetLeftMargin(N: Word);
     procedure SetCutModeAndCutPaper(M: Byte);
@@ -405,12 +404,6 @@ type
     procedure PrintCounter;
     procedure PrintText(Text: AnsiString);
     procedure SetNormalPrintMode;
-
-    function ReadFirmwareVersion: AnsiString;
-    function ReadManufacturer: AnsiString;
-    function ReadPrinterName: AnsiString;
-    function ReadSerialNumber: AnsiString;
-
     procedure BeginDocument;
     procedure EndDocument;
     procedure WriteUserChar(AChar: WideChar; ACode, AFont: Byte);
@@ -960,51 +953,6 @@ procedure TEscPrinterOA48.SetWhiteBlackReverse(Value: Boolean);
 begin
   Logger.Debug('TEscPrinterOA48.SetWhiteBlackReverse');
   Send(#$1D#$42 + Chr(BoolToInt[Value]));
-end;
-
-function TEscPrinterOA48.ReadPrinterID(N: Byte): AnsiString;
-var
-  S: AnsiString;
-begin
-  Logger.Debug('TEscPrinterOA48.ReadPrinterID');
-  
-  CheckCapRead;
-  FPort.Lock;
-  try
-    Send(#$1D#$49 + Chr(N));
-    S := ReadAnsiString;
-    Result := Copy(S, 2, Length(S)-1);
-  finally
-    FPort.Unlock;
-  end;
-end;
-
-function TEscPrinterOA48.ReadFirmwareVersion: AnsiString;
-begin
-  Logger.Debug('TEscPrinterOA48.ReadFirmwareVersion');
-  CheckCapRead;
-  Result := ReadPrinterID(65);
-end;
-
-function TEscPrinterOA48.ReadManufacturer: AnsiString;
-begin
-  Logger.Debug('TEscPrinterOA48.ReadManufacturer');
-  CheckCapRead;
-  Result := ReadPrinterID(66);
-end;
-
-function TEscPrinterOA48.ReadPrinterName: AnsiString;
-begin
-  Logger.Debug('TEscPrinterOA48.ReadPrinterName');
-  CheckCapRead;
-  Result := ReadPrinterID(67);
-end;
-
-function TEscPrinterOA48.ReadSerialNumber: AnsiString;
-begin
-  Logger.Debug('TEscPrinterOA48.ReadSerialNumber');
-  CheckCapRead;
-  Result := ReadPrinterID(68);
 end;
 
 procedure TEscPrinterOA48.SetHRIPosition(N: Byte);

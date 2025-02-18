@@ -2238,14 +2238,6 @@ begin
         FPort.Open;
         InitializeDevice;
         UpdatePrinterStatus;
-
-        if FPrinter.CapRead then
-        begin
-          FDeviceDescription := WideFormat('%s %s %s %s', [
-            FPrinter.ReadManufacturer, FPrinter.ReadPrinterName,
-            FPrinter.ReadFirmwareVersion, FPrinter.ReadSerialNumber]);
-          StartDeviceThread;
-        end;
       end else
       begin
         StopDeviceThread;

@@ -64,7 +64,7 @@ object fmPrinter: TfmPrinter
     Top = 8
     Width = 441
     Height = 345
-    ActivePage = tsCommonParams
+    ActivePage = tsUSBPort
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 0
     object tsCommonParams: TTntTabSheet
@@ -298,7 +298,7 @@ object fmPrinter: TfmPrinter
         Width = 113
         Height = 21
         Style = csDropDownList
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 0
         OnChange = ModifiedClick
       end
@@ -355,7 +355,7 @@ object fmPrinter: TfmPrinter
         Width = 113
         Height = 21
         Style = csDropDownList
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 4
         OnChange = ModifiedClick
       end
@@ -386,7 +386,7 @@ object fmPrinter: TfmPrinter
       end
     end
     object tsUSBPort: TTabSheet
-      Caption = 'USB '#1087#1086#1088#1090' Posiflex'
+      Caption = 'USB '#1087#1086#1088#1090
       ImageIndex = 3
       DesignSize = (
         433
@@ -415,7 +415,7 @@ object fmPrinter: TfmPrinter
         Width = 257
         Height = 33
         Anchors = [akTop, akRight]
-        Caption = #1055#1088#1086#1095#1080#1090#1072#1090#1100' '#1089#1087#1080#1089#1086#1082' '#1091#1089#1090#1088#1086#1081#1089#1090#1074' Posiflex'
+        Caption = #1055#1088#1086#1095#1080#1090#1072#1090#1100' '#1089#1087#1080#1089#1086#1082' '#1091#1089#1090#1088#1086#1081#1089#1090#1074
         TabOrder = 1
         OnClick = btnReadUsbDevicesClick
       end

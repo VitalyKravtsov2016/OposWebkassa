@@ -527,6 +527,18 @@ begin
 end;
 
 procedure TfmPrinter.btnReadUsbDevicesClick(Sender: TObject);
+
+  function GetPrinterHardwareId: string;
+  begin
+    case cbEscPrinterType.ItemIndex of
+      EscPrinterTypeRongta: Result := RongtaPrinterHardwareId;
+      EscPrinterTypeOA48:  Result := OA48PrinterHardwareId;
+      EscPrinterTypePosiflex: Result := PosiflexPrinterHardwareId;
+    else
+      Result := RongtaPrinterHardwareId;
+    end;
+  end;
+
 var
   i: Integer;
   Device: TUsbDevice;
@@ -535,7 +547,8 @@ begin
   cbUSBPort.Items.BeginUpdate;
   try
     cbUSBPort.Items.Clear;
-    Devices := ReadPosiflexDevices;
+
+    Devices := ReadUsbDevices(GetPrinterHardwareId);
     for i := Low(Devices) to High(Devices) do
     begin
       Device := Devices[i];

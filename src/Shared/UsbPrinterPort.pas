@@ -64,8 +64,16 @@ type
 
   EUsbPortError = class(WideException);
 
-function ReadPosiflexDevices: TUsbDevices;
+function ReadOA48PortName: string;
+function ReadRongtaPortName: string;
 function ReadPosiflexPortName: string;
+function ReadPosiflexDevices: TUsbDevices;
+function ReadUsbDevices(const HardwareIDSubstring: string): TUsbDevices;
+
+const
+  OA48PrinterHardwareId = 'VID_0483&PID_57';
+  RongtaPrinterHardwareId = 'VID_0FE6&PID_81';
+  PosiflexPrinterHardwareId = 'VID_0D3A&PID_03';
 
 implementation
 
@@ -74,10 +82,13 @@ begin
   Result := Tnt_WideFormat(SOSError, [GetLastError, SysErrorMessage(GetLastError)]);
 end;
 
-function ReadPosiflexDevices: TUsbDevices;
+///////////////////////////////////////////////////////////////////////////////
+//
+// PosiflexPrinter6900 = 'VID_0D3A&PID_0369';
+//
+
+function ReadUsbDevices(const HardwareIDSubstring: string): TUsbDevices;
 const
-  PosiflexPrinter = 'VID_0D3A&PID_03';
-  PosiflexPrinter6900 = 'VID_0D3A&PID_0369';
   GUID_DEVINTERFACE_USB_DEVICE: TGUID = '{A5DCBF10-6530-11D2-901F-00C04FB951ED}';
 
   function ReadProperty(DevInfo: HDEVINFO; var DevData: TSPDevInfoData;
@@ -162,7 +173,7 @@ begin
     ODS('DevicePath: ' + DevicePath);
     ODS('HardwareID: ' + HardwareID);
     ODS('DeviceDesc: ' + DeviceDesc);
-    if Pos(PosiflexPrinter, HardwareID) > 0 then
+    if Pos(HardwareIDSubstring, HardwareID) > 0 then
     begin
       SetLength(Result, Length(Result) + 1);
       Device.HardwareId := HardwareId;
@@ -176,14 +187,34 @@ begin
   UnloadSetupApi;
 end;
 
-function ReadPosiflexPortName: string;
+function ReadPosiflexDevices: TUsbDevices;
+begin
+  Result := ReadUsbDevices(PosiflexPrinterHardwareId);
+end;
+
+function ReadUsbDevicePath(const HardwareIDSubstring: string): string;
 var
   Devices: TUsbDevices;
 begin
   Result := '';
-  Devices := ReadPosiflexDevices;
+  Devices := ReadUsbDevices(HardwareIDSubstring);
   if Length(Devices) > 0 then
     Result := Devices[0].Path;
+end;
+
+function ReadPosiflexPortName: string;
+begin
+  Result := ReadUsbDevicePath(PosiflexPrinterHardwareId);
+end;
+
+function ReadRongtaPortName: string;
+begin
+  Result := ReadUsbDevicePath(RongtaPrinterHardwareId);
+end;
+
+function ReadOA48PortName: string;
+begin
+  Result := ReadUsbDevicePath(OA48PrinterHardwareId);
 end;
 
 { TUsbPrinterPort }
