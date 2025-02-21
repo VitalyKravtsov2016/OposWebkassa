@@ -176,7 +176,6 @@ type
       BMPType, Width, Alignment: Integer);
     procedure PrintBarcodeAsGraphics(var Barcode: TPosBarcode);
     procedure PrintWideString(const AText: WideString);
-    procedure PrintUnicode(const AText: WideString);
     function ClearResult: Integer;
     function HandleException(E: Exception): Integer;
     procedure CheckEnabled;
@@ -595,19 +594,7 @@ type
     property OnStatusUpdateEvent: TOPOSPOSPrinterStatusUpdateEvent read FOnStatusUpdateEvent write FOnStatusUpdateEvent;
   end;
 
-procedure CharacterToCodePage(C: WideChar; var CodePage: Integer);
-
 implementation
-
-const
-  SupportedCodePagesB: array [0..11] of Integer = (
-    437,850,852,858,860,863,865,866,997,998,
-    999,1252);
-
-  SupportedCodePagesA: array [0..28] of Integer = (
-    437,737,747,772,774,850,851,852,855,857,
-    858,860,861,862,863,864,865,866,869,874,
-    928,997,998,999,1250,1251,1252,1255,1257);
 
 function IsValidCharacterSet(CharacterSet: Integer): Boolean;
 var
@@ -630,35 +617,6 @@ begin
     Result := CharacterSet;
   end;
 end;
-
-function TextCPToPrinterCP(TextCP: Integer): Integer;
-begin
-  case TextCP of
-    437: Result := CODEPAGE_CP437;
-    737: Result := CODEPAGE_PC737_GREEK;
-    850: Result := CODEPAGE_CP850;
-    852: Result := CODEPAGE_PC852;
-    855: Result := CODEPAGE_PC855_BULGARIAN;
-    857: Result := CODEPAGE_PC857_TURKEY;
-    858: Result := CODEPAGE_PC858;
-    860: Result := CODEPAGE_CP860;
-    862: Result := CODEPAGE_PC862_HEBREW;
-    863: Result := CODEPAGE_CP863;
-    864: Result := CODEPAGE_PC864;
-    865: Result := CODEPAGE_CP865;
-    866: Result := CODEPAGE_CP866;
-    874: Result := CODEPAGE_PC874_THAI;
-
-    1250: Result := CODEPAGE_WCP1250;
-    1251: Result := CODEPAGE_WCP1251;
-    1252: Result := CODEPAGE_WCP1252;
-    1255: Result := CODEPAGE_WCP1255;
-    1257: Result := CODEPAGE_WCP1257;
-  else
-    raise Exception.Create('Code page not supported');
-  end;
-end;
-
 
 { TPosPrinterOA48 }
 
@@ -2765,82 +2723,12 @@ begin
   begin
     case CharacterSet of
       PTR_CS_UNICODE,
-      PTR_CS_WINDOWS: PrintUnicode(AText);
+      PTR_CS_WINDOWS: FPrinter.PrintUnicode(AText);
     else
       CodePage := CharacterSetToCodePage(CharacterSet);
       FPrinter.PrintText(WideStringToAnsiString(CodePage, AText));
     end;
   end;
 end;
-
-function TestCodePage(S: WideString; CodePage: Integer): Boolean;
-var
-  P: PAnsiChar;
-  Count: Integer;
-  UsedDefaultChar: BOOL;
-const
-  DefaultChar: PAnsiChar = '?';
-begin
-  ODS('TestCharCodePage. CodePage: ' + IntToStr(CodePage));
-  Count := WideCharToMultiByte(CodePage, 0, PWideChar(S), Length(S), nil, 0,
-    nil, nil);
-  if Count > 0 then
-  begin
-    P := AllocMem(Count);
-    Count := WideCharToMultiByte(CodePage, 0, PWideChar(S), Length(S),
-      P, Count, DefaultChar, @UsedDefaultChar);
-    FreeMem(P);
-  end;
-  Result := (Count > 0) and(not UsedDefaultChar);
-end;
-
-procedure CharacterToCodePage(C: WideChar; var CodePage: Integer);
-var
-  i: Integer;
-begin
-  if TestCodePage(C, CodePage) then Exit;
-  for i := Low(SupportedCodePagesB) to High(SupportedCodePagesB) do
-  begin
-    CodePage := SupportedCodePagesB[i];
-    if TestCodePage(C, CodePage) then Exit;
-  end;
-  CodePage := 866;
-end;
-
-procedure TPosPrinterOA48.PrintUnicode(const AText: WideString);
-var
-  i: Integer;
-  C: WideChar;
-  CodePage: Integer;
-begin
-  Logger.Debug(WideFormat('TPosPrinterOA48.PrintUnicode(%s)', [AText]));
-  CodePage := FPrinterCodePage;
-  if TestCodePage(AText, CodePage) then
-  begin
-    Logger.Debug(WideFormat('TPosPrinterOA48.PrintText(''%s'')', [AText]));
-    Printer.SetCodePage(CharSetToPrinterCP(CodePage));
-    Printer.PrintText(WideStringToAnsiString(CodePage, AText));
-  end else
-  begin
-    for i := 1 to Length(AText) do
-    begin
-      C := AText[i];
-      Logger.Debug(WideFormat('TPosPrinterOA48.PrintChar(''%s'')', [C]));
-      if Printer.IsUserChar(C) then
-      begin
-        Printer.PrintUserChar(C);
-      end else
-      begin
-        Printer.DisableUserCharacters;
-        CharacterToCodePage(C, CodePage);
-        Printer.SetCodePage(CharSetToPrinterCP(CodePage));
-        Printer.PrintText(WideStringToAnsiString(CodePage, C));
-      end;
-    end;
-  end;
-  Printer.DisableUserCharacters;
-  Logger.Debug('TPosPrinterOA48.PrintUnicode: OK');
-end;
-
 
 end.

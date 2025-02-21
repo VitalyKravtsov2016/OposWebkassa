@@ -132,6 +132,7 @@ type
     function CreatePosEscPrinter(
       PrinterPort: IPrinterPort): IOPOSPOSPrinter;
     procedure SetPrinter(const Value: IOPOSPOSPrinter);
+    procedure StartPageMode;
   public
     procedure PrintDocumentSafe(Document: TTextDocument);
     procedure CheckCanPrint;
@@ -3097,9 +3098,22 @@ function TWebkassaImpl.CreatePrinterPort: IPrinterPort;
     Result := TSocketPort.Create(SocketParams, Logger);
   end;
 
+  function GetUsbPort: string;
+  begin
+    Result := Params.UsbPort;
+    if Result = '' then
+    begin
+      case Params.EscPrinterType of
+        EscPrinterTypeRongta: Result := ReadRongtaPortName;
+        EscPrinterTypeOA48: Result := ReadOA48PortName;
+        EscPrinterTypePosiflex: Result := ReadPosiflexPortName;
+      end;
+    end;
+  end;
+
   function CreateUsbPort: TUsbPrinterPort;
   begin
-    Result := TUsbPrinterPort.Create(Logger, Params.UsbPort);
+    Result := TUsbPrinterPort.Create(Logger, GetUsbPort);
     Result.ReadTimeout := Params.ByteTimeout;
   end;
 
@@ -4436,7 +4450,7 @@ begin
     end;
   end else
   begin
-    PtrPrintNormal(PTR_S_RECEIPT, Text);
+    PtrPrintNormal(PTR_S_RECEIPT, FPrefix + Text);
   end;
 end;
 
@@ -4460,8 +4474,7 @@ begin
   Barcode.Parameter4 := 0;
   Barcode.Parameter5 := 0;
   // Start page mode
-  FPageMode := True;
-  Printer.PageModePrint(PTR_PM_PAGE_MODE);
+  StartPageMode;
   // PageModePrintArea for barcode
   PageModeArea := StrToPoint(Printer.PageModeArea);
   BarcodeSize := GetBarcodeSize(Barcode);
@@ -4502,11 +4515,22 @@ begin
   PrintBarcode2(Barcode);
 end;
 
+procedure TWebkassaImpl.StartPageMode;
+begin
+  if not FPageMode then
+  begin
+    FPageMode := True;
+    FPageBuffer.Clear;
+    Printer.PageModePrint(PTR_PM_PAGE_MODE);
+  end;
+end;
+
 procedure TWebkassaImpl.EndPageMode;
 begin
   if FPageMode then
   begin
     FPageMode := False;
+    FPageBuffer.Clear;
     Printer.PageModePrint(PTR_PM_NORMAL);
   end;
 end;

@@ -190,7 +190,6 @@ type
       BMPType, Width, Alignment: Integer);
     procedure PrintBarcodeAsGraphics(var Barcode: TPosBarcode);
     procedure PrintWideString(const AText: WideString);
-    procedure PrintUnicode(const AText: WideString);
     function ClearResult: Integer;
     function HandleException(E: Exception): Integer;
     procedure CheckEnabled;
@@ -2504,8 +2503,6 @@ begin
 
   FPrinter.Initialize;
   FPrinter.SetLineSpacing(RecLineSpacing);
-  FPrinter.WriteKazakhCharacters;
-  FPrinter.DisableUserCharacters;
   FPrinter.SetCodePage(CODEPAGE_WCP1251);
   FPrinter.SetCharacterFont(FONT_TYPE_A);
   if FontName = FontNameB then
@@ -2920,32 +2917,11 @@ var
 begin
   case CharacterSet of
     PTR_CS_UNICODE,
-    PTR_CS_WINDOWS: PrintUnicode(AText);
+    PTR_CS_WINDOWS: FPrinter.PrintUnicode(AText);
   else
     CodePage := CharacterSetToCodePage(CharacterSet);
     FPrinter.PrintText(WideStringToAnsiString(CodePage, AText));
   end;
-end;
-
-function TestCodePage(S: WideString; CodePage: Integer): Boolean;
-var
-  P: PAnsiChar;
-  Count: Integer;
-  UsedDefaultChar: BOOL;
-const
-  DefaultChar: PAnsiChar = '?';
-begin
-  ODS('TestCharCodePage. CodePage: ' + IntToStr(CodePage));
-  Count := WideCharToMultiByte(CodePage, 0, PWideChar(S), Length(S), nil, 0,
-    nil, nil);
-  if Count > 0 then
-  begin
-    P := AllocMem(Count);
-    Count := WideCharToMultiByte(CodePage, 0, PWideChar(S), Length(S),
-      P, Count, DefaultChar, @UsedDefaultChar);
-    FreeMem(P);
-  end;
-  Result := (Count > 0) and(not UsedDefaultChar);
 end;
 
 procedure CharacterToCodePage(C: WideChar; var CodePage: Integer);
@@ -2959,39 +2935,6 @@ begin
     if TestCodePage(C, CodePage) then Exit;
   end;
   CodePage := 1251;
-end;
-
-procedure TPosPrinterRongta.PrintUnicode(const AText: WideString);
-var
-  i: Integer;
-  C: WideChar;
-  CodePage: Integer;
-begin
-  CodePage := 1251;
-  if TestCodePage(AText, CodePage) then
-  begin
-    Logger.Debug(WideFormat('TPosPrinterRongta.PrintText(''%s'')', [AText]));
-    Printer.SetCodePage(CharacterSetToPrinterCodePage(CodePage));
-    Printer.PrintText(WideStringToAnsiString(CodePage, AText));
-  end else
-  begin
-    for i := 1 to Length(AText) do
-    begin
-      C := AText[i];
-      Logger.Debug(WideFormat('TPosPrinterRongta.PrintChar(''%s'')', [C]));
-      if Printer.IsUserChar(C) then
-      begin
-        Printer.PrintUserChar(C);
-      end else
-      begin
-        Printer.DisableUserCharacters;
-        CharacterToCodePage(C, CodePage);
-        Printer.SetCodePage(CharacterSetToPrinterCodePage(CodePage));
-        Printer.PrintText(WideStringToAnsiString(CodePage, C));
-      end;
-    end;
-  end;
-  Printer.DisableUserCharacters;
 end;
 
 end.

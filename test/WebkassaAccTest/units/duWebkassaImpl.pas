@@ -177,7 +177,31 @@ begin
     VatRate.VatType := VAT_TYPE_NORMAL;
     Params.VatRates.Add(VatRate);
 
-  (*
+    Params.LineSpacing := 0;
+    Params.RecLineChars := 42;
+    Params.RecLineHeight := 30;
+    Params.Utf8Enabled := True;
+    Params.AcceptLanguage := 'kk-KZ';
+
+    Params.USBPort := '';
+    Params.PortType := PortTypeUSB;
+    Params.PrinterName := 'POS-80C';
+    Params.PrinterType := PrinterTypeEscCommands;
+    Params.EscPrinterType := EscPrinterTypeRongta;
+    Params.FontName := FontNameA;
+
+    (*
+    Params.PortType := PortTypeUsb;
+    Params.PrinterName := 'Test';
+    Params.EscPrinterType := EscPrinterTypePosiflex;
+
+    Params.PortType := PortTypeWindows;
+    Params.PrinterName := 'RONGTA 80mm Series Printer';
+    Params.EscPrinterType := EscPrinterTypeRongta;
+    Params.PrinterName := 'POS-80C';
+    Params.EscPrinterType := EscPrinterTypeOA48;
+
+
     // Network
     Params.PrinterType := PrinterTypeEscPrinterNetwork;
     Params.RemoteHost := '10.11.7.176';
@@ -197,29 +221,7 @@ begin
     Params.FlowControl := FLOW_CONTROL_NONE;
     Params.ReconnectPort := False;
   *)
-    Params.PortType := PortTypeWindows;
-    Params.PrinterName := 'RONGTA 80mm Series Printer';
-    Params.PrinterType := PrinterTypeWindows;
-    Params.EscPrinterType := EscPrinterTypeRongta;
-    Params.FontName := 'FontA11';
 
-    (*
-    Params.PortType := PortTypeUsb;
-    Params.PrinterName := 'Test';
-    Params.EscPrinterType := EscPrinterTypePosiflex;
-
-    Params.PortType := PortTypeWindows;
-    Params.PrinterName := 'RONGTA 80mm Series Printer';
-    Params.EscPrinterType := EscPrinterTypeRongta;
-    Params.PrinterName := 'POS-80C';
-    Params.EscPrinterType := EscPrinterTypeOA48;
-    *)
-
-    Params.LineSpacing := 0;
-    Params.RecLineChars := 42;
-    Params.RecLineHeight := 30;
-    Params.Utf8Enabled := True;
-    Params.AcceptLanguage := 'kk-KZ';
   end;
 end;
 
@@ -589,8 +591,8 @@ begin
   CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
 
   FptrCheck(Driver.BeginFiscalReceipt(True));
-  FptrCheck(Driver.PrintRecItem('ТРК 1:АИ-98', 578, 3302, 4, 175, ''));
-  FptrCheck(Driver.PrintRecItem('Киви в корзинке Астана', 620, 1000, 4, 620, 'шт'));
+  FptrCheck(Driver.PrintRecItem('1. Item 1 ' + GetKazakhUnicodeChars, 578, 3302, 4, 175, ''));
+  FptrCheck(Driver.PrintRecItem('2. Item 2 ' + GetKazakhUnicodeChars, 620, 1000, 4, 620, 'шт'));
   FptrCheck(Driver.PrintRecItem('Ананас штучно Астана', 1250, 1000, 4, 1250, 'шт'));
   FptrCheck(Driver.PrintRecItem('Арбуз штучно Астана', 650, 1000, 4, 650, 'шт'));
   FptrCheck(Driver.PrintRecTotal(3098, 2521, '1'));

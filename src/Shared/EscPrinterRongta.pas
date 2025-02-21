@@ -262,22 +262,15 @@ type
 
   TEscPrinterRongta = class
   private
+    FFont: Integer;
     FLogger: ILogFile;
     FPort: IPrinterPort;
     FCodePage: Integer;
-    FUserCharCode: Byte;
     FInTransaction: Boolean;
     FUserCharacterMode: Integer;
     FUserChars: TCharCodes;
     FDeviceMetrics: TDeviceMetrics;
-    procedure CheckUserCharCode(Code: Byte);
-    procedure ClearUserChars;
-  public
-    procedure EnableUserCharacters;
-    procedure DisableUserCharacters;
-    procedure WriteKazakhCharacters2;
-    procedure DrawWideChar(AChar: WideChar; AFont: Byte; Bitmap: TBitmap; X, Y: Integer);
-    function GetFontData(Bitmap: TBitmap): AnsiString;
+    FUserCharLoaded: Boolean;
   public
     constructor Create(APort: IPrinterPort; ALogger: ILogFile);
     destructor Destroy; override;
@@ -377,27 +370,30 @@ type
     procedure PrintCounter;
     procedure PrintText(Text: AnsiString);
     procedure SetNormalPrintMode;
-
     function ReadFirmwareVersion: AnsiString;
     function ReadManufacturer: AnsiString;
     function ReadPrinterName: AnsiString;
     function ReadSerialNumber: AnsiString;
-
     procedure BeginDocument;
     procedure EndDocument;
     procedure WriteUserChar(AChar: WideChar; ACode, AFont: Byte);
     procedure WriteUserChar2(AChar: WideChar; ACode, AFont: Byte);
-    procedure WriteKazakhCharacters;
+    procedure WriteUserCharacters;
     procedure PrintUserChar(Char: WideChar);
     function IsUserChar(Char: WideChar): Boolean;
+    procedure PrintUnicode(const AText: WideString);
+    procedure EnableUserCharacters;
+    procedure DisableUserCharacters;
+    procedure CheckUserCharCode(Code: Byte);
+    procedure DrawWideChar(AChar: WideChar; AFont: Byte; Bitmap: TBitmap; X, Y: Integer);
+    function GetFontData(Bitmap: TBitmap): AnsiString;
 
+    property Font: Integer read FFont;
     property Port: IPrinterPort read FPort;
     property Logger: ILogFile read FLogger;
     property CodePage: Integer read FCodePage;
     property DeviceMetrics: TDeviceMetrics read FDeviceMetrics write FDeviceMetrics;
   end;
-
-function CharacterSetToPrinterCodePage(CharacterSet: Integer): Integer;
 
 implementation
 
@@ -456,6 +452,20 @@ begin
   end;
 end;
 
+procedure CharacterToCodePage(C: WideChar; var CodePage: Integer);
+var
+  i: Integer;
+begin
+  if TestCodePage(C, CodePage) then Exit;
+  for i := Low(SupportedCodePages) to High(SupportedCodePages) do
+  begin
+    CodePage := SupportedCodePages[i];
+    if TestCodePage(C, CodePage) then Exit;
+  end;
+  CodePage := 1251;
+end;
+
+
 { TEscPrinterRongta }
 
 constructor TEscPrinterRongta.Create(APort: IPrinterPort; ALogger: ILogFile);
@@ -465,18 +475,14 @@ begin
   FLogger := ALogger;
   FDeviceMetrics.PrintWidth := 576;
   FUserChars := TCharCodes.Create(TCharCode);
+  FFont := FONT_TYPE_A;
+  FUserCharLoaded := False;
 end;
 
 destructor TEscPrinterRongta.Destroy;
 begin
   FUserChars.Free;
   inherited Destroy;
-end;
-
-procedure TEscPrinterRongta.ClearUserChars;
-begin
-  FUserChars.Clear;
-  FUserCharCode := USER_CHAR_CODE_MIN;
 end;
 
 procedure TEscPrinterRongta.Send(const Data: AnsiString);
@@ -601,23 +607,18 @@ begin
 end;
 
 procedure TEscPrinterRongta.SelectPrintMode(Mode: TPrintMode);
-var
-  B: Byte;
 begin
-  Logger.Debug('TEscPrinterRongta.SelectPrintMode');
-  B := 0;
-  if Mode.CharacterFontB then SetBit(B, 0);
-  if Mode.Emphasized then SetBit(B, 3);
-  if Mode.DoubleHeight then SetBit(B, 4);
-  if Mode.DoubleWidth then SetBit(B, 5);
-  if Mode.Underlined then SetBit(B, 7);
-  Send(#$1B#$21 + Chr(B));
+  SetPrintMode(PrintModeToByte(Mode));
 end;
 
 procedure TEscPrinterRongta.SetPrintMode(Mode: Byte);
 begin
   Logger.Debug('TEscPrinterRongta.SetPrintMode');
   Send(#$1B#$21 + Chr(Mode));
+
+  FFont := FONT_TYPE_A;
+  if TestBit(Mode, 0) then
+    FFont := FONT_TYPE_B;
 end;
 
 procedure TEscPrinterRongta.SetAbsolutePrintPosition(n: Word);
@@ -818,10 +819,13 @@ procedure TEscPrinterRongta.Initialize;
 begin
   Logger.Debug('TEscPrinterRongta.Initialize');
   Send(#$1B#$40);
-  ClearUserChars;
+
   FCodePage := 0;
+  FUserChars.Clear;
   FUserCharacterMode := 0;
   FInTransaction := False;
+  FFont := FONT_TYPE_A;
+  FUserCharLoaded := False;
 end;
 
 procedure TEscPrinterRongta.SetBeepParams(N, T: Byte);
@@ -856,8 +860,14 @@ end;
 
 procedure TEscPrinterRongta.SetCharacterFont(n: Byte);
 begin
+  if n = FFont then Exit;
+
   Logger.Debug('TEscPrinterRongta.SetCharacterFont');
-  Send(#$1B#$4D + Chr(n));
+  if n in [FONT_TYPE_MIN..FONT_TYPE_MAX] then
+  begin
+    Send(#$1B#$4D + Chr(n));
+    FFont := n;
+  end;
 end;
 
 procedure TEscPrinterRongta.SetCharacterSet(N: Byte);
@@ -1374,7 +1384,7 @@ begin
   Port.Flush;
 end;
 
-procedure TEscPrinterRongta.WriteKazakhCharacters;
+procedure TEscPrinterRongta.WriteUserCharacters;
 var
   i: Integer;
   Code: Byte;
@@ -1384,8 +1394,10 @@ var
   FontWidth: Integer;
   BitmapData: AnsiString;
   FontFileName: WideString;
+  AFont: Integer;
 begin
-  Code := FUserCharCode;
+  AFont := Font;
+  Code := USER_CHAR_CODE_MIN;
   try
     EnableUserCharacters;
     Bitmap := TBitmap.Create;
@@ -1405,9 +1417,8 @@ begin
           BitmapData := Chr(FontWidth) + Copy(Data, i*FontWidth*3 + 1, FontWidth*3);
           Send(#$1B#$26#$03 + Chr(Code + i) + Chr(Code + i) + BitmapData);
         end;
-        Inc(FUserCharCode, Count);
+        Inc(Code, Count);
       end;
-      Code := FUserCharCode;
       // FONT_TYPE_B
       FontFileName := GetModulePath + 'Fonts\KazakhFontB.bmp';
       if FileExists(FontFileName) then
@@ -1423,60 +1434,19 @@ begin
           BitmapData := Chr(FontWidth) + Copy(Data, i*FontWidth*3 + 1, FontWidth*3);
           Send(#$1B#$26#$03 + Chr(Code + i) + Chr(Code + i) + BitmapData);
         end;
-        Inc(FUserCharCode, Count);
       end;
     finally
       Bitmap.Free;
     end;
     DisableUserCharacters;
+    SetCharacterFont(AFont);
   except
     on E: Exception do
     begin
       FLogger.Error('Failed to load Kazakh fonts ' + E.Message);
     end;
   end;
-end;
-
-procedure TEscPrinterRongta.WriteKazakhCharacters2;
-var
-  i: Integer;
-  Count: Integer;
-  Bitmap: TBitmap;
-  Data: AnsiString;
-  FontWidth: Integer;
-  BitmapData: AnsiString;
-begin
-  Bitmap := TBitmap.Create;
-  try
-    // FONT_TYPE_A
-    Bitmap.LoadFromFile(GetModulePath + 'Fonts\KazakhFontA.bmp');
-    FontWidth := 12;
-    BitmapData := '';
-    Count := Bitmap.Width div FontWidth;
-    Data := GetBitmapData(Bitmap, 24);
-    for i := 0 to Count-1 do
-    begin
-      FUserChars.Add(FUserCharCode, WideChar(KazakhUnicodeChars[i]), FONT_TYPE_A);
-      BitmapData := Copy(Data, i*FontWidth + 1, FontWidth*3);
-      Send(#$1B#$26#$03 + Chr(FUserCharCode) + Chr(FUserCharCode) + Chr(FontWidth) + BitmapData);
-      Inc(FUserCharCode);
-    end;
-    // FONT_TYPE_B
-    Bitmap.LoadFromFile(GetModulePath + 'Fonts\KazakhFontB.bmp');
-    FontWidth := 9;
-    BitmapData := '';
-    Count := Bitmap.Width div FontWidth;
-    Data := GetBitmapData(Bitmap, 17);
-    for i := 0 to Count-1 do
-    begin
-      FUserChars.Add(FUserCharCode, WideChar(KazakhUnicodeChars[i]), FONT_TYPE_B);
-      BitmapData := BitmapData + Chr(FontWidth) + Copy(Data, i*FontWidth + 1, FontWidth*3);
-      Send(#$1B#$26#$03 + Chr(FUserCharCode) + Chr(FUserCharCode) + BitmapData);
-      Inc(FUserCharCode);
-    end;
-  finally
-    Bitmap.Free;
-  end;
+  FUserCharLoaded := True;
 end;
 
 function TEscPrinterRongta.IsUserChar(Char: WideChar): Boolean;
@@ -1488,12 +1458,45 @@ procedure TEscPrinterRongta.PrintUserChar(Char: WideChar);
 var
   Item: TCharCode;
 begin
-  Item := FUserChars.ItemByChar(Char);
+  if not FUserCharLoaded then
+    WriteUserCharacters;
+
+  Item := FUserChars.ItemByChar(Char, Font);
   if Item <> nil then
   begin
     EnableUserCharacters;
     PrintText(Chr(Item.Code));
   end;
+end;
+
+procedure TEscPrinterRongta.PrintUnicode(const AText: WideString);
+var
+  i: Integer;
+  C: WideChar;
+  CodePage: Integer;
+begin
+  CodePage := 1251;
+  if TestCodePage(AText, CodePage) then
+  begin
+    SetCodePage(CharacterSetToPrinterCodePage(CodePage));
+    PrintText(WideStringToAnsiString(CodePage, AText));
+  end else
+  begin
+    for i := 1 to Length(AText) do
+    begin
+      C := AText[i];
+      if IsKazakhUnicodeChar(C) then
+      begin
+        PrintUserChar(C);
+      end else
+      begin
+        CharacterToCodePage(C, CodePage);
+        SetCodePage(CharacterSetToPrinterCodePage(CodePage));
+        PrintText(WideStringToAnsiString(CodePage, C));
+      end;
+    end;
+  end;
+  DisableUserCharacters;
 end;
 
 end.

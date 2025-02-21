@@ -13,7 +13,7 @@ uses
   // Tnt
   TntClasses, TntSysUtils, DebugUtils, StringUtils, SocketPort, LogFile,
   PrinterPort, PosPrinterRongta, SerialPort, RawPrinterPort, EscPrinterRongta,
-  EscPrinterUtils;
+  EscPrinterUtils, USBPrinterPort;
 
 type
   { TPosPrinterRongtaTest }
@@ -34,11 +34,11 @@ type
 
     property Events: TStrings read FEvents;
     property Printer: TPosPrinterRongta read FPrinter;
-    function GetKazakhUnicodeChars: WideString;
   protected
     procedure SetUp; override;
     procedure TearDown; override;
   public
+    function CreateUSBPort: TUSBPrinterPort;
     function CreateRawPort: TRawPrinterPort;
     function CreateSerialPort: TSerialPort;
     function CreateSocketPort: TSocketPort;
@@ -86,11 +86,20 @@ begin
   FLogger.FilePath := 'Logs';
   FLogger.DeviceName := 'DeviceName';
   FEvents := TStringList.Create;
+
+  //FPrinterPort := CreateSocketPort;
   //FPrinterPort := CreateSerialPort;
-  FPrinterPort := CreateRawPort;
+  //FPrinterPort := CreateRawPort;
+  FPrinterPort := CreateUsbPort;
+
   FPrinter := TPosPrinterRongta.Create(FPrinterPort, FLogger);
   FPrinter.OnStatusUpdateEvent := StatusUpdateEvent;
   FPrinter.BarcodeInGraphics := False;
+end;
+
+function TPosPrinterRongtaTest.CreateUSBPort: TUSBPrinterPort;
+begin
+  Result := TUSBPrinterPort.Create(FLogger, ReadRongtaPortName);
 end;
 
 procedure TPosPrinterRongtaTest.StatusUpdateEvent(ASender: TObject; Data: Integer);
@@ -351,22 +360,29 @@ begin
   end;
 end;
 
-function TPosPrinterRongtaTest.GetKazakhUnicodeChars: WideString;
-var
-  i: Integer;
-begin
-  Result := '';
-  for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
-  begin
-    Result := Result + WideChar(KazakhUnicodeChars[i]);
-  end;
-end;
-
 procedure TPosPrinterRongtaTest.TestPrintNormal;
+
+  procedure PrintUnicodeChars;
+  var
+    Text: WideString;
+  begin
+    Text := 'KAZAKH CHARACTERS: ' + GetKazakhUnicodeChars;
+    PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Text + CRLF));
+    Text := ' ¿«¿’— »≈ —»Ã¬ŒÀ€: ' + GetKazakhUnicodeChars;
+    PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Text + CRLF));
+    Text := 'ARABIC CHARACTERS: ';
+    Text := Text + WideChar($062B) + WideChar($062C) + WideChar($0635);
+    PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Text + CRLF));
+  end;
+
 var
-  Text: WideString;
+  Separator: string;
 begin
   OpenClaimEnable;
+
+  Separator := StringOfChar('-', Printer.RecLineChars) + CRLF;
+  Printer.FontName := FontNameA;
+
   Printer.CharacterSet := PTR_CS_UNICODE;
   if Printer.CapTransaction then
   begin
@@ -376,15 +392,17 @@ begin
   PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'Line 2' + CRLF));
   PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'Line 3' + CRLF));
 
-  Text := 'KAZAKH CHARACTERS A: ' + GetKazakhUnicodeChars;
-  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Text + CRLF));
+  Printer.FontName := FontNameA;
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Separator));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'FONT A' + CRLF));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Separator));
+  PrintUnicodeChars;
 
-  Text := ' ¿«¿’— »≈ —»Ã¬ŒÀ€ A: ' + GetKazakhUnicodeChars;
-  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Text + CRLF));
-
-  Text := 'ARABIC CHARACTERS A: ';
-  Text := Text + WideChar($062B) + WideChar($062C) + WideChar($0635);
-  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Text + CRLF));
+  Printer.FontName := FontNameB;
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Separator));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'FONT B' + CRLF));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Separator));
+  PrintUnicodeChars;
 
   if Printer.CapTransaction then
   begin

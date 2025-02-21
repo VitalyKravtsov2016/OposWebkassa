@@ -33,7 +33,6 @@ type
 
     property Events: TStrings read FEvents;
     property Printer: TPosPrinterPosiflex read FPrinter;
-    function GetKazakhText2: WideString;
   protected
     procedure SetUp; override;
     procedure TearDown; override;
@@ -56,7 +55,6 @@ type
     procedure TestPowerStateEvent;
     procedure TestPrintReceipt;
     procedure TestPrintNormal;
-    procedure TestPrintNormal2;
     procedure TestCharacterToCodePage;
     procedure TestArrayToString;
     procedure TestDeviceDescription;
@@ -404,56 +402,52 @@ begin
 end;
 
 procedure TPosPrinterPosiflexTest.TestPrintNormal;
+
+  procedure PrintUnicodeChars;
+  var
+    Text: WideString;
+  begin
+    Text := 'KAZAKH CHARACTERS: ' + GetKazakhUnicodeChars;
+    PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Text + CRLF));
+    Text := ' ¿«¿’— »≈ —»Ã¬ŒÀ€: ' + GetKazakhUnicodeChars;
+    PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Text + CRLF));
+    Text := 'ARABIC CHARACTERS: ';
+    Text := Text + WideChar($062B) + WideChar($062C) + WideChar($0635);
+    PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Text + CRLF));
+  end;
+
 var
-  Text: WideString;
+  Separator: string;
 begin
   OpenClaimEnable;
+
+  Separator := StringOfChar('-', Printer.RecLineChars) + CRLF;
+  Printer.FontName := FontNameA;
+
+  Printer.CharacterSet := PTR_CS_UNICODE;
   if Printer.CapTransaction then
   begin
     PtrCheck(Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_TRANSACTION));
   end;
-  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, '-------------------------------' + CRLF));
-  Text := 'KAZAKH CHARACTERS A: ' + GetKazakhUnicodeChars;
-  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Text + CRLF));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'Line 1' + CRLF));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'Line 2' + CRLF));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'Line 3' + CRLF));
 
-  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, '-------------------------------' + CRLF));
-  Text := ' ¿«¿’— »≈ —»Ã¬ŒÀ€ A: ' + GetKazakhUnicodeChars;
-  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Text + CRLF));
-  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, '-------------------------------' + CRLF));
+  Printer.FontName := FontNameA;
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Separator));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'FONT A' + CRLF));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Separator));
+  PrintUnicodeChars;
+
+  Printer.FontName := FontNameB;
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Separator));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'FONT B' + CRLF));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Separator));
+  PrintUnicodeChars;
 
   if Printer.CapTransaction then
   begin
     PtrCheck(Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_NORMAL));
-  end;
-end;
-
-function TPosPrinterPosiflexTest.GetKazakhText2: WideString;
-var
-  Strings: TTntStringList;
-begin
-  Result := '';
-  Strings := TTntStringList.Create;
-  try
-    Strings.LoadFromFile('KazakhText2.txt');
-    Result := Strings.Text;
-  finally
-    Strings.Free;
-  end;
-end;
-
-procedure TPosPrinterPosiflexTest.TestPrintNormal2;
-begin
-  OpenClaimEnable;
-
-  PtrCheck(Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_TRANSACTION));
-  try
-    PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'KAZAKH FONT A' + CRLF));
-    PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, GetKazakhText2 + CRLF));
-    Printer.FontName := FontNameB;
-    PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'KAZAKH FONT B' + CRLF));
-    PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, GetKazakhText2 + CRLF));
-  finally
-    Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_NORMAL);
   end;
 end;
 

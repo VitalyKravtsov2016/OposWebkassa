@@ -262,21 +262,19 @@ type
 
   TEscPrinterPosiflex = class
   private
+    FFont: Integer;
     FLogger: ILogFile;
     FPort: IPrinterPort;
     FCodePage: Integer;
-    FUserCharCode: Byte;
     FInTransaction: Boolean;
     FUserCharacterMode: Integer;
     FUserChars: TCharCodes;
     FKazakhChars: TCharCodes;
     FDeviceMetrics: TDeviceMetrics;
     procedure CheckUserCharCode(Code: Byte);
-    procedure ClearUserChars;
   public
     procedure EnableUserCharacters;
     procedure DisableUserCharacters;
-    procedure WriteKazakhCharacters2;
     procedure DrawWideChar(AChar: WideChar; AFont: Byte; Bitmap: TBitmap; X, Y: Integer);
     function GetFontData(Bitmap: TBitmap): AnsiString;
   public
@@ -411,13 +409,12 @@ type
     procedure PrintUnicode(const AText: WideString);
     class procedure CharacterToCodePage(C: WideChar; var CodePage: Integer);
 
+    property Font: Integer read FFont;
     property Port: IPrinterPort read FPort;
     property Logger: ILogFile read FLogger;
     property CodePage: Integer read FCodePage;
     property DeviceMetrics: TDeviceMetrics read FDeviceMetrics write FDeviceMetrics;
   end;
-
-function CharacterSetToPrinterCodePage(CharacterSet: Integer): Integer;
 
 implementation
 
@@ -509,6 +506,7 @@ begin
   FKazakhChars := TCharCodes.Create(TCharCode);
   AddKazakhChars(FONT_TYPE_A);
   AddKazakhChars(FONT_TYPE_B);
+  FFont := FONT_TYPE_A;
 end;
 
 destructor TEscPrinterPosiflex.Destroy;
@@ -516,12 +514,6 @@ begin
   FUserChars.Free;
   FKazakhChars.Free;
   inherited Destroy;
-end;
-
-procedure TEscPrinterPosiflex.ClearUserChars;
-begin
-  FUserChars.Clear;
-  FUserCharCode := USER_CHAR_CODE_MIN;
 end;
 
 procedure TEscPrinterPosiflex.Send(const Data: AnsiString);
@@ -655,23 +647,18 @@ begin
 end;
 
 procedure TEscPrinterPosiflex.SelectPrintMode(Mode: TPrintMode);
-var
-  B: Byte;
 begin
-  Logger.Debug('TEscPrinterPosiflex.SelectPrintMode');
-  B := 0;
-  if Mode.CharacterFontB then SetBit(B, 0);
-  if Mode.Emphasized then SetBit(B, 3);
-  if Mode.DoubleHeight then SetBit(B, 4);
-  if Mode.DoubleWidth then SetBit(B, 5);
-  if Mode.Underlined then SetBit(B, 7);
-  Send(#$1B#$21 + Chr(B));
+  SetPrintMode(PrintModeToByte(Mode));
 end;
 
 procedure TEscPrinterPosiflex.SetPrintMode(Mode: Byte);
 begin
   Logger.Debug('TEscPrinterPosiflex.SetPrintMode');
   Send(#$1B#$21 + Chr(Mode));
+
+  FFont := FONT_TYPE_A;
+  if TestBit(Mode, 0) then
+    FFont := FONT_TYPE_B;
 end;
 
 procedure TEscPrinterPosiflex.SetAbsolutePrintPosition(n: Word);
@@ -872,10 +859,11 @@ procedure TEscPrinterPosiflex.Initialize;
 begin
   Logger.Debug('TEscPrinterPosiflex.Initialize');
   Send(#$1B#$40);
-  ClearUserChars;
   FCodePage := 0;
+  FUserChars.Clear;
   FUserCharacterMode := 0;
   FInTransaction := False;
+  FFont := FONT_TYPE_A;
 end;
 
 procedure TEscPrinterPosiflex.SetBeepParams(N, T: Byte);
@@ -911,7 +899,12 @@ end;
 procedure TEscPrinterPosiflex.SetCharacterFont(n: Byte);
 begin
   Logger.Debug('TEscPrinterPosiflex.SetCharacterFont');
-  Send(#$1B#$4D + Chr(n));
+  if n = FFont then Exit;
+  if n in [FONT_TYPE_MIN..FONT_TYPE_MAX] then
+  begin
+    Send(#$1B#$4D + Chr(n));
+    FFont := n;
+  end;
 end;
 
 procedure TEscPrinterPosiflex.SetCharacterSet(N: Byte);
@@ -1547,6 +1540,7 @@ var
   BitmapData: AnsiString;
   FontFileName: WideString;
 begin
+  Code := USER_CHAR_CODE_MIN;
   try
     EnableUserCharacters;
     Bitmap := TBitmap.Create;
@@ -1559,7 +1553,6 @@ begin
         Bitmap.LoadFromFile(FontFileName);
         FontWidth := 12;
         Count := Bitmap.Width div FontWidth;
-        Code := FUserCharCode;
         Data := GetBitmapData(Bitmap, 24);
         for i := 0 to Count-1 do
         begin
@@ -1567,7 +1560,7 @@ begin
           BitmapData := Chr(FontWidth) + Copy(Data, i*FontWidth*3 + 1, FontWidth*3);
           Send(#$1B#$26#$03 + Chr(Code + i) + Chr(Code + i) + BitmapData);
         end;
-        Inc(FUserCharCode, Count);
+        Inc(Code, Count);
       end;
       // FONT_TYPE_B
       FontFileName := GetModulePath + 'Fonts\KazakhFontB.bmp';
@@ -1577,7 +1570,6 @@ begin
         Bitmap.LoadFromFile(FontFileName);
         FontWidth := 9;
         Count := Bitmap.Width div FontWidth;
-        Code := FUserCharCode;
         Data := GetBitmapData(Bitmap, 16);
         for i := 0 to Count-1 do
         begin
@@ -1585,7 +1577,6 @@ begin
           BitmapData := Chr(FontWidth) + Copy(Data, i*FontWidth*3 + 1, (FontWidth-1)*3);
           Send(#$1B#$26#$03 + Chr(Code + i) + Chr(Code + i) + BitmapData);
         end;
-        Inc(FUserCharCode, Count);
       end;
     finally
       Bitmap.Free;
@@ -1599,51 +1590,6 @@ begin
   end;
 end;
 
-procedure TEscPrinterPosiflex.WriteKazakhCharacters2;
-var
-  i: Integer;
-  Count: Integer;
-  Bitmap: TBitmap;
-  Data: AnsiString;
-  FontWidth: Integer;
-  BitmapData: AnsiString;
-begin
-  Bitmap := TBitmap.Create;
-  try
-    // FONT_TYPE_A
-    Bitmap.LoadFromFile(GetModulePath + 'Fonts\KazakhFontA.bmp');
-    FontWidth := 12;
-    BitmapData := '';
-    Count := Bitmap.Width div FontWidth;
-    Data := GetBitmapData(Bitmap, 24);
-    for i := 0 to Count-1 do
-    begin
-      FUserChars.Add(FUserCharCode, WideChar(KazakhUnicodeChars[i]), FONT_TYPE_A);
-      BitmapData := Copy(Data, i*FontWidth + 1, FontWidth*3);
-      Send(#$1B#$26#$03 + Chr(FUserCharCode) + Chr(FUserCharCode) + Chr(FontWidth) + BitmapData);
-      Inc(FUserCharCode);
-    end;
-(*
-    // FONT_TYPE_B
-    Bitmap.LoadFromFile(GetModulePath + 'Fonts\KazakhFontB.bmp');
-    FontWidth := 9;
-    BitmapData := '';
-    Count := Bitmap.Width div FontWidth;
-    Code := FUserCharCode;
-    Inc(FUserCharCode, Count);
-    Data := GetBitmapData(Bitmap, 17);
-    for i := 0 to Count-1 do
-    begin
-      FUserChars.Add(Code + i, WideChar(KazakhUnicodeChars[i]), FONT_TYPE_B);
-      BitmapData := BitmapData + Chr(FontWidth) + Copy(Data, i*FontWidth + 1, FontWidth*3);
-    end;
-    Send(#$1B#$26#$03 + Chr(Code) + Chr(Code + Count -1) + BitmapData);
-*)
-  finally
-    Bitmap.Free;
-  end;
-end;
-
 function TEscPrinterPosiflex.IsUserChar(Char: WideChar): Boolean;
 begin
   Result := IsKazakhUnicodeChar(Char);
@@ -1653,7 +1599,7 @@ procedure TEscPrinterPosiflex.PrintUserChar(Char: WideChar);
 var
   Item: TCharCode;
 begin
-  Item := FUserChars.ItemByChar(Char);
+  Item := FUserChars.ItemByChar(Char, Font);
   if Item <> nil then
   begin
     EnableUserCharacters;
@@ -1665,7 +1611,7 @@ procedure TEscPrinterPosiflex.PrintKazakhChar(Char: WideChar);
 var
   Item: TCharCode;
 begin
-  Item := FKazakhChars.ItemByChar(Char);
+  Item := FKazakhChars.ItemByChar(Char, Font);
   if Item <> nil then
   begin
     SetCodePage(CODEPAGE_KAZAKH);
@@ -1738,7 +1684,6 @@ begin
       end;
     end;
   end;
-  DisableUserCharacters;
 end;
 
 (*

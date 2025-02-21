@@ -13,7 +13,7 @@ uses
   // Tnt
   TntClasses, TntSysUtils, DebugUtils, StringUtils, SocketPort, LogFile,
   PrinterPort, PosPrinterOA48, SerialPort, RawPrinterPort, EscPrinterOA48,
-  EscPrinterUtils;
+  EscPrinterUtils, USBPrinterPort;
 
 type
   { TPosPrinterOA48Test }
@@ -38,6 +38,7 @@ type
     procedure SetUp; override;
     procedure TearDown; override;
   public
+    function CreateUSBPort: TUSBPrinterPort;
     function CreateRawPort: TRawPrinterPort;
     function CreateSerialPort: TSerialPort;
     function CreateSocketPort: TSocketPort;
@@ -88,11 +89,23 @@ begin
   FLogger.FilePath := 'Logs';
   FLogger.DeviceName := 'DeviceName';
   FEvents := TStringList.Create;
+
+  //FPrinterPort := CreateSocketPort;
   //FPrinterPort := CreateSerialPort;
+  //FPrinterPort := CreateUsbPort;
   FPrinterPort := CreateRawPort;
+
   FPrinter := TPosPrinterOA48.Create(FPrinterPort, FLogger);
   FPrinter.OnStatusUpdateEvent := StatusUpdateEvent;
   FPrinter.BarcodeInGraphics := False;
+end;
+
+procedure TPosPrinterOA48Test.TearDown;
+begin
+  FPrinter.Free;
+  FEvents.Free;
+  FPrinterPort := nil;
+  inherited TearDown;
 end;
 
 procedure TPosPrinterOA48Test.StatusUpdateEvent(ASender: TObject; Data: Integer);
@@ -104,9 +117,13 @@ begin
   Events.Add(EventText);
 end;
 
+function TPosPrinterOA48Test.CreateUSBPort: TUSBPrinterPort;
+begin
+  Result := TUSBPrinterPort.Create(FLogger, ReadOA48PortName);
+end;
+
 function TPosPrinterOA48Test.CreateRawPort: TRawPrinterPort;
 begin
-  //Result := TRawPrinterPort.Create(FLogger, 'RONGTA 80mm Series Printer');
   Result := TRawPrinterPort.Create(FLogger, 'POS-80C');
 end;
 
@@ -136,22 +153,13 @@ begin
   Result := TSocketPort.Create(SocketParams, FLogger);
 end;
 
-procedure TPosPrinterOA48Test.TearDown;
-begin
-  FPrinter.Close;
-  FPrinter.Free;
-  FEvents.Free;
-  FPrinterPort := nil;
-  inherited TearDown;
-end;
-
 procedure TPosPrinterOA48Test.OpenService;
 begin
   PtrCheck(Printer.Open('ThermalU'));
 
   if (FPrinterPort.GetDescription <> 'RawPrinterPort') then
   begin
-    CheckEquals(OPOS_PR_STANDARD, Printer.CapPowerReporting, 'CapPowerReporting');
+    CheckEquals(OPOS_PR_NONE, Printer.CapPowerReporting, 'CapPowerReporting');
     CheckEquals(OPOS_PN_DISABLED, Printer.PowerNotify, 'PowerNotify');
   end;
   CheckEquals(False, Printer.FreezeEvents, 'FreezeEvents');
@@ -362,27 +370,45 @@ begin
 end;
 
 procedure TPosPrinterOA48Test.TestPrintNormal;
+
+  procedure PrintUnicodeChars;
+  var
+    Text: WideString;
+  begin
+    Text := 'KAZAKH CHARACTERS: ' + GetKazakhUnicodeChars;
+    PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Text + CRLF));
+    Text := ' ¿«¿’— »≈ —»Ã¬ŒÀ€: ' + GetKazakhUnicodeChars;
+    PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Text + CRLF));
+  end;
+
 var
-  Text: WideString;
+  Separator: string;
 begin
   OpenClaimEnable;
+
+  Separator := StringOfChar('-', Printer.RecLineChars) + CRLF;
   Printer.FontName := FontNameA;
+
   Printer.CharacterSet := PTR_CS_UNICODE;
   if Printer.CapTransaction then
   begin
     PtrCheck(Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_TRANSACTION));
   end;
-  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, '-------------------------------' + CRLF));
-  Text := 'KAZAKH CHARACTERS A: ' + GetKazakhUnicodeChars;
-  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Text + CRLF));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'Line 1' + CRLF));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'Line 2' + CRLF));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'Line 3' + CRLF));
 
-  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, '-------------------------------' + CRLF));
-  Text := ' ¿«¿’— »≈ —»Ã¬ŒÀ€ A: ' + GetKazakhUnicodeChars;
-  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Text + CRLF));
+  Printer.FontName := FontNameA;
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Separator));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'FONT A' + CRLF));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Separator));
+  PrintUnicodeChars;
 
-  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, '-------------------------------' + CRLF));
-  Text := 'ARABIC CHARACTERS A: ';
-  Text := Text + WideChar($062B) + WideChar($062C) + WideChar($0635);
+  Printer.FontName := FontNameB;
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Separator));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'FONT B' + CRLF));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Separator));
+  PrintUnicodeChars;
 
   if Printer.CapTransaction then
   begin

@@ -4,11 +4,11 @@ interface
 
 uses
   // VCL
-  SysUtils, Graphics,
+  Windows, SysUtils, Graphics,
   // Opos
   OposEsc,
   // This
-  TntGraphics, ByteUtils;
+  TntGraphics, ByteUtils, DebugUtils;
 
 const
   FontNameA = 'Font A (12x24)';
@@ -68,9 +68,46 @@ function GetImageData2(Image: TGraphic): AnsiString;
 procedure DrawImage(Image: TGraphic; Bitmap: TBitmap);
 function GetToken(var Text: WideString; var Token: TEscToken): Boolean;
 function GetKazakhUnicodeChars: WideString;
+function TestCodePage(S: WideString; CodePage: Integer): Boolean;
+function PrintModeToByte(Mode: TPrintMode): Byte;
 
 
 implementation
+
+function PrintModeToByte(Mode: TPrintMode): Byte;
+var
+  B: Byte;
+begin
+  B := 0;
+  if Mode.CharacterFontB then SetBit(B, 0);
+  if Mode.Emphasized then SetBit(B, 3);
+  if Mode.DoubleHeight then SetBit(B, 4);
+  if Mode.DoubleWidth then SetBit(B, 5);
+  if Mode.Underlined then SetBit(B, 7);
+  Result := B;
+end;
+
+function TestCodePage(S: WideString; CodePage: Integer): Boolean;
+var
+  P: PAnsiChar;
+  Count: Integer;
+  UsedDefaultChar: BOOL;
+const
+  DefaultChar: PAnsiChar = '?';
+begin
+  ODS('TestCharCodePage. CodePage: ' + IntToStr(CodePage));
+  Count := WideCharToMultiByte(CodePage, 0, PWideChar(S), Length(S), nil, 0,
+    nil, nil);
+  if Count > 0 then
+  begin
+    P := AllocMem(Count);
+    Count := WideCharToMultiByte(CodePage, 0, PWideChar(S), Length(S),
+      P, Count, DefaultChar, @UsedDefaultChar);
+    FreeMem(P);
+  end;
+  Result := (Count > 0) and(not UsedDefaultChar);
+end;
+
 
 function GetToken(var Text: WideString; var Token: TEscToken): Boolean;
 var

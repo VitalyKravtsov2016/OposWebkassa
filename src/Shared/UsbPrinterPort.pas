@@ -227,9 +227,6 @@ begin
 
   FLogger := ALogger;
   FFileName := Trim(AFileName);
-  if AFileName = '' then
-    FFileName := ReadPosiflexPortName;
-
   if FFileName = '' then
     raise Exception.Create('USB port: Empty file name');
 
@@ -366,7 +363,8 @@ end;
 
 function TUsbPrinterPort.CapRead: Boolean;
 begin
-  Result := True;
+  //Result := True;
+  Result := False;
 end;
 
 procedure TUsbPrinterPort.Close;

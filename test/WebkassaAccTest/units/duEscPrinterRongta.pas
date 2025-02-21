@@ -21,7 +21,6 @@ type
     FLogger: ILogFile;
     FPrinter: TEscPrinterRongta;
     FPrinterPort: IPrinterPort;
-    function GetKazakhChars2: AnsiString;
   protected
     procedure SetUp; override;
     procedure TearDown; override;
@@ -31,8 +30,6 @@ type
     procedure PrintCodePageUTF8;
     procedure PrintCodePages(const CodePageName: string);
 
-    function GetKazakhText: WideString;
-    function GetKazakhChars: AnsiString;
     function CreateSocketPort: TSocketPort;
     function CreateSerialPort: TSerialPort;
     function CreateUSBPort: TUSBPrinterPort;
@@ -70,7 +67,6 @@ type
     procedure TestCoverOpen;
     procedure TestRecoverError;
     procedure TestUserCharacter;
-    procedure TestUserCharacter2;
     procedure TestLineSpacing;
     procedure TestCutDistanceFontA;
     procedure TestCutDistanceFontB;
@@ -80,7 +76,6 @@ type
     procedure TestPageModeA2;
     procedure TestPageModeB;
     procedure TestPrintRussianFontB;
-    procedure TestPrintFontBMode;
     procedure TestCutterError;
   end;
 
@@ -853,144 +848,17 @@ begin
   FPrinter.PartialCut;
 end;
 
-(*
-
-&#1170; 0x0492
-cyrillic capital letter ghe stroke
-&#1171;
-cyrillic small letter ghe stroke
-&#1178;
-cyrillic capital letter ka descender
-&#1179;
-cyrillic small letter ka descender
-&#1186;
-cyrillic capital letter en descender
-&#1187;
-cyrillic small letter en descender
-&#1198;
-cyrillic capital letter straight u
-&#1199;
-cyrillic small letter straight u
-&#1200;
-cyrillic capital letter straight u stroke
-&#1201;
-cyrillic small letter straight u stroke
-&#1210;
-cyrillic capital letter shha
-&#1211;
-cyrillic small letter shha
-&#1240;
-cyrillic capital letter schwa
-&#1241;
-cyrillic small letter schwa
-&#1256;
-cyrillic capital letter barred o
-&#1257;
-cyrillic small letter barred o
-&#64488;
-arabic letter uighur kazakh kirghiz alef maksura initial form
-&#64489;
-arabic letter uighur kazakh kirghiz alef maksura medial form
-????
-&#127472;
-&#127487;
-kazakhstan flag
-*)
-
-function TEscPrinterRongtaTest.GetKazakhChars: AnsiString;
-var
-  i: Integer;
-  Code: Byte;
-begin
-  Result := '';
-  Code := USER_CHAR_CODE_MIN;
-  for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
-  begin
-    Result := Result + Chr(Code);
-    Inc(Code);
-  end;
-end;
-
-function TEscPrinterRongtaTest.GetKazakhChars2: AnsiString;
-var
-  i: Integer;
-  Code: Byte;
-begin
-  Result := '';
-  Code := USER_CHAR_CODE_MIN;
-  for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
-  begin
-    Result := Result + Chr(Code);
-    Inc(Code);
-  end;
-end;
-
 procedure TEscPrinterRongtaTest.TestUserCharacter;
 begin
   FPrinter.Initialize;
-  FPrinter.WriteKazakhCharacters;
   // FONT A
   FPrinter.SetCharacterFont(FONT_TYPE_A);
   FPrinter.PrintText('KAZAKH CHARACTERS A: ');
-  FPrinter.SelectUserCharacter(1);
-  FPrinter.PrintText(GetKazakhChars2 + CRLF);
-  FPrinter.SelectUserCharacter(0);
+  FPrinter.PrintUnicode(GetKazakhUnicodeChars + CRLF);
   // FONT B
   FPrinter.SetCharacterFont(FONT_TYPE_B);
   FPrinter.PrintText('KAZAKH CHARACTERS B: ');
-  FPrinter.SelectUserCharacter(1);
-  FPrinter.PrintText(GetKazakhChars2 + CRLF);
-  FPrinter.SelectUserCharacter(0);
-
-
-  (*
-  // Test that charater printed at full size
-  FPrinter.SelectUserCharacter(1);
-  FPrinter.Send(#$1B#$26#$03 + Chr($7E) + Chr($7E) + Chr(12) + StringOfChar(#$FF, 36));
-  FPrinter.PrintText('KAZAKH CHARACTERS A: ' + Chr($7E) + CRLF);
-  FPrinter.SelectUserCharacter(0);
-
-  FPrinter.SelectUserCharacter(1);
-  FPrinter.WriteUserChar(WideChar(1170), $7E, FONT_TYPE_A);
-  FPrinter.PrintText('KAZAKH CHARACTERS A: ' + Chr($7E) + CRLF);
-  FPrinter.SelectUserCharacter(0);
-
-  FPrinter.WriteKazakhCharacters;
-  for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
-  begin
-    Text2 := Text2 + Chr($20 + i);
-  end;
-  FPrinter.SelectUserCharacter(1);
-  FPrinter.SetCharacterFont(FONT_TYPE_A);
-  FPrinter.PrintText('KAZAKH CHARACTERS A: ' + Text2 + CRLF);
-  FPrinter.SetCharacterFont(FONT_TYPE_B);
-  FPrinter.PrintText('KAZAKH CHARACTERS B: ' + Text2 + CRLF);
-  FPrinter.SelectUserCharacter(0);
-*)
-end;
-
-procedure TEscPrinterRongtaTest.TestUserCharacter2;
-var
-  Bitmap: TBitmap;
-  UserChar: TUserChar;
-begin
-  Bitmap := TBitmap.Create;
-  try
-    Bitmap.LoadFromFile(GetModulePath + 'UserChars/UserChar_0x492.bmp');
-    // Write
-    UserChar.c1 := $7E;
-    UserChar.c2 := $7E;
-    UserChar.Font := FONT_TYPE_A;
-    UserChar.Data := GetBitmapData(Bitmap, Bitmap.Height);
-    UserChar.Width := Bitmap.Width;
-
-    FPrinter.SelectUserCharacter(1);
-    FPrinter.DefineUserCharacter(UserChar);
-    FPrinter.PrintText('KAZAKH CHARACTERS' + Chr($7E) + CRLF);
-    FPrinter.SelectUserCharacter(0);
-  finally
-    Bitmap.Free;
-  end;
+  FPrinter.PrintUnicode(GetKazakhUnicodeChars + CRLF);
 end;
 
 procedure TEscPrinterRongtaTest.TestBitmap2;
@@ -1363,20 +1231,6 @@ begin
   FPrinter.EndDocument;
 end;
 
-function TEscPrinterRongtaTest.GetKazakhText: WideString;
-var
-  Strings: TTntStringList;
-begin
-  Result := '';
-  Strings := TTntStringList.Create;
-  try
-    Strings.LoadFromFile('KazakhText.txt');
-    Result := Strings.Text;
-  finally
-    Strings.Free;
-  end;
-end;
-
 procedure TEscPrinterRongtaTest.PrintCodePage;
 var
   i: Integer;
@@ -1457,23 +1311,6 @@ begin
   end;
 end;
 
-procedure TEscPrinterRongtaTest.TestPrintFontBMode;
-var
-  Text: AnsiString;
-  KazakhText: WideString;
-begin
-  KazakhText := GetKazakhText;
-
-  FPrinter.Initialize;
-  FPrinter.SetCharacterFont(FONT_TYPE_B);
-  FPrinter.SetCodePage(CODEPAGE_CP866);
-
-  Text := WideStringToAnsiString(866, 'Normal mode, font B, CODEPAGE_CP866' + CRLF);
-  FPrinter.PrintText(Text);
-  Text := WideStringToAnsiString(866, 'Казахский текст: ' + KazakhText + CRLF);
-  FPrinter.PrintText(Text);
-end;
-
 procedure TEscPrinterRongtaTest.TestCutterError;
 var
   i: Integer;
@@ -1482,8 +1319,6 @@ var
   Lines: TTntStrings;
 begin
   FPrinter.Initialize;
-  FPrinter.WriteKazakhCharacters;
-  FPrinter.DisableUserCharacters;
   FPrinter.SetCodePage(CODEPAGE_CP866);
   FPrinter.SetCharacterFont(FONT_TYPE_A);
 

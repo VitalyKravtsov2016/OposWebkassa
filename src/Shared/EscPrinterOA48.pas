@@ -13,6 +13,18 @@ uses
 
 const
   /////////////////////////////////////////////////////////////////////////////
+  // Supported code pages
+
+  SupportedCodePagesB: array [0..11] of Integer = (
+    866,437,850,852,858,860,863,865,997,998,
+    999,1252);
+
+  SupportedCodePagesA: array [0..28] of Integer =
+  ( 866,437,737,747,772,774,850,851,852,855,857,
+    858,860,861,862,863,864,865,869,874,
+    928,997,998,999,1250,1252,1255,1256,1257);
+
+  /////////////////////////////////////////////////////////////////////////////
   // QRCode error correction level
 
   OA48_QRCODE_ECL_7   = $48;
@@ -279,16 +291,15 @@ type
 
   TEscPrinterOA48 = class
   private
+    FFont: Integer;
     FLogger: ILogFile;
     FPort: IPrinterPort;
     FCodePage: Integer;
-    FUserCharCode: Byte;
+    FTextCodePage: Integer;
     FInTransaction: Boolean;
     FUserCharacterMode: Integer;
     FUserChars: TCharCodes;
     FDeviceMetrics: TDeviceMetrics;
-    procedure CheckUserCharCode(Code: Byte);
-    procedure ClearUserChars;
   public
     procedure PDF417Print;
     procedure PDF417ReadDataSize;
@@ -307,6 +318,7 @@ type
 
     procedure EnableUserCharacters;
     procedure DisableUserCharacters;
+    procedure CheckUserCharCode(Code: Byte);
   public
     constructor Create(APort: IPrinterPort; ALogger: ILogFile);
     destructor Destroy; override;
@@ -417,14 +429,19 @@ type
     procedure MaxiCodeWriteData(const Data: AnsiString);
     procedure SelectCodePage(B: Byte);
     procedure UTF8Enable(B: Boolean);
+    procedure PrintUnicode(const AText: WideString);
 
+    property Font: Integer read FFont;
     property Port: IPrinterPort read FPort;
     property Logger: ILogFile read FLogger;
     property CodePage: Integer read FCodePage;
     property DeviceMetrics: TDeviceMetrics read FDeviceMetrics write FDeviceMetrics;
   end;
 
+function TextCPToPrinterCP(TextCP: Integer): Integer;
 function IsKazakhUnicodeChar(Char: WideChar): Boolean;
+procedure CharacterToCodePage(C: WideChar; var CodePage: Integer);
+function GetCodepageName(Codepage: Integer): string;
 
 implementation
 
@@ -435,6 +452,7 @@ const
 
 const
   BoolToInt: array [Boolean] of Integer = (0, 1);
+
 
 function IsKazakhUnicodeChar(Char: WideChar): Boolean;
 var
@@ -449,6 +467,127 @@ begin
   end;
 end;
 
+function TextCPToPrinterCP(TextCP: Integer): Integer;
+begin
+  case TextCP of
+    437: Result := CODEPAGE_CP437;
+    737: Result := CODEPAGE_PC737_GREEK;
+    850: Result := CODEPAGE_CP850;
+    852: Result := CODEPAGE_PC852;
+    855: Result := CODEPAGE_PC855_BULGARIAN;
+    857: Result := CODEPAGE_PC857_TURKEY;
+    858: Result := CODEPAGE_PC858;
+    860: Result := CODEPAGE_CP860;
+    862: Result := CODEPAGE_PC862_HEBREW;
+    863: Result := CODEPAGE_CP863;
+    864: Result := CODEPAGE_PC864;
+    865: Result := CODEPAGE_CP865;
+    866: Result := CODEPAGE_CP866;
+    874: Result := CODEPAGE_PC874_THAI;
+
+    1250: Result := CODEPAGE_WCP1250;
+    1251: Result := CODEPAGE_WCP1251;
+    1252: Result := CODEPAGE_WCP1252;
+    1255: Result := CODEPAGE_WCP1255;
+    1256: Result := CODEPAGE_0C1256_ARABIC;
+    1257: Result := CODEPAGE_WCP1257;
+  else
+    raise Exception.Create('Code page not supported');
+  end;
+end;
+
+procedure CharacterToCodePage(C: WideChar; var CodePage: Integer);
+var
+  i: Integer;
+begin
+  if TestCodePage(C, CodePage) then Exit;
+  for i := Low(SupportedCodePagesA) to High(SupportedCodePagesA) do
+  begin
+    CodePage := SupportedCodePagesA[i];
+    if TestCodePage(C, CodePage) then Exit;
+  end;
+  CodePage := 866;
+end;
+
+function GetCodepageName(Codepage: Integer): string;
+begin
+  case Codepage of
+    0: Result := 'CP437';
+    1: Result := 'KATAKANA';
+    2: Result := 'CP850';
+    3: Result := 'CP860';
+    4: Result := 'CP863';
+    5: Result := 'CP865';
+    6: Result := 'WEST_EUROPE';
+    7: Result := 'GREEK';
+    8: Result := 'HEBREW';
+    9: Result := 'EAST_EUROPE';
+    10: Result := 'IRAN';
+    11: Result := 'WCP1252';
+    12: Result := 'CP866';
+    13: Result := 'PC852';
+    14: Result := 'PC858';
+    15: Result := 'IRAN2';
+    16: Result := 'LATVIAN';
+    17: Result := 'ARABIC';
+    18: Result := 'PT1511251';
+    19: Result := 'PC747';
+    20: Result := 'WCP1257';
+    21: Result := 'THAI';
+    22: Result := 'VIETNAM';
+    23: Result := 'PC864';
+    24: Result := 'PC1001';
+    25: Result := 'UIGUR';
+    26: Result := 'HEBREW_2';
+    27: Result := 'WCP1255';
+    28: Result := 'PC437';
+    29: Result := 'KATAKANA2';
+    30: Result := 'PC437_STD_EUROPE';
+    31: Result := 'PC858_MULT';
+    32: Result := 'PC852_LATIN_2';
+    33: Result := 'PC860_PORTUGU';
+    34: Result := 'PC861_ICELANDIC';
+    35: Result := 'PC863_CANADIAN';
+    36: Result := 'PC865_NORDIC';
+    37: Result := 'PC866_RUSSIAN';
+    38: Result := 'PC855_BULGARIAN';
+    39: Result := 'PC857_TURKEY';
+    40: Result := 'PC862_HEBREW';
+    41: Result := 'PC864_ARABIC';
+    42: Result := 'PC737_GREEK';
+    43: Result := 'PC851_GREEK';
+    44: Result := 'PC869_GREEK';
+    45: Result := 'PC928_GREEK';
+    46: Result := 'PC772_LITHUANIAN';
+    47: Result := 'PC774_LITHUAN';
+    48: Result := 'PC874_THAI';
+    49: Result := 'WPC1252_LATINL';
+    50: Result := 'WCP1250';
+    51: Result := 'WCP1251';
+    52: Result := 'PC3840_IBM_RUSSIAN';
+    53: Result := 'PC3841_GOST';
+    54: Result := 'PC3843_POLISH';
+    55: Result := 'PC3844_CS2';
+    56: Result := 'PC3845_HUNGARIAN';
+    57: Result := 'PC3846_TURKISH';
+    58: Result := 'PC3847_BRAZI1_ABNI';
+    59: Result := 'PC3848_BRAZIL';
+    60: Result := 'PC1001_ARABIC';
+    61: Result := 'PC2001_LITHUAN';
+    62: Result := 'PC3001_ESTONIAN_1';
+    63: Result := 'PC3002_ESTON_2';
+    64: Result := 'PC3011_LATVIAN_1';
+    65: Result := 'PC3012_LATV_2';
+    66: Result := 'PC3021_BULGARIAN';
+    67: Result := 'PC3041_MALTESE';
+    68: Result := 'PC852_CROATIA';
+    69: Result := 'VISCII';
+    70: Result := '0C1256_ARABIC';
+  else
+    Result := 'Unknown codepage';
+  end;
+end;
+
 { TEscPrinterOA48 }
 
 constructor TEscPrinterOA48.Create(APort: IPrinterPort; ALogger: ILogFile);
@@ -458,18 +597,13 @@ begin
   FLogger := ALogger;
   FDeviceMetrics.PrintWidth := 576;
   FUserChars := TCharCodes.Create(TCharCode);
+  FFont := FONT_TYPE_A;
 end;
 
 destructor TEscPrinterOA48.Destroy;
 begin
   FUserChars.Free;
   inherited Destroy;
-end;
-
-procedure TEscPrinterOA48.ClearUserChars;
-begin
-  FUserChars.Clear;
-  FUserCharCode := USER_CHAR_CODE_MIN;
 end;
 
 procedure TEscPrinterOA48.Send(const Data: AnsiString);
@@ -591,7 +725,9 @@ end;
 
 procedure TEscPrinterOA48.RecoverError(ClearBuffer: Boolean);
 begin
-  Logger.Debug('TEscPrinterOA48.RecoverError');
+  Logger.Debug(Format('TEscPrinterOA48.RecoverError(ClearBuffer=%s)', [
+    BoolToStr(ClearBuffer)]));
+
   if ClearBuffer then
     Send(#$10#$05#$02)
   else
@@ -600,46 +736,41 @@ end;
 
 procedure TEscPrinterOA48.GeneratePulse(n, m, t: Byte);
 begin
-  Logger.Debug('TEscPrinterOA48.GeneratePulse');
+  Logger.Debug(Format('TEscPrinterOA48.GeneratePulse(%d, %d, %d)', [n, m, t]));
   Send(#$10#$14 + Chr(n) + Chr(m) + Chr(t));
 end;
 
 procedure TEscPrinterOA48.SetRightSideCharacterSpacing(n: Byte);
 begin
-  Logger.Debug('TEscPrinterOA48.SetRightSideCharacterSpacing');
+  Logger.Debug(Format('TEscPrinterOA48.SetRightSideCharacterSpacing(n)', [n]));
   Send(#$1B#$20 + Chr(n));
 end;
 
 procedure TEscPrinterOA48.SelectPrintMode(Mode: TPrintMode);
-var
-  B: Byte;
 begin
-  Logger.Debug('TEscPrinterOA48.SelectPrintMode');
-  B := 0;
-  if Mode.CharacterFontB then SetBit(B, 0);
-  if Mode.Emphasized then SetBit(B, 3);
-  if Mode.DoubleHeight then SetBit(B, 4);
-  if Mode.DoubleWidth then SetBit(B, 5);
-  if Mode.Underlined then SetBit(B, 7);
-  Send(#$1B#$21 + Chr(B));
+  SetPrintMode(PrintModeToByte(Mode));
 end;
 
 procedure TEscPrinterOA48.SetPrintMode(Mode: Byte);
 begin
-  Logger.Debug('TEscPrinterOA48.SetPrintMode');
+  Logger.Debug(Format('TEscPrinterOA48.SetPrintMode(%d)', [Mode]));
   Send(#$1B#$21 + Chr(Mode));
+
+  FFont := FONT_TYPE_A;
+  if TestBit(Mode, 0) then
+    FFont := FONT_TYPE_B;
 end;
 
 procedure TEscPrinterOA48.SetAbsolutePrintPosition(n: Word);
 begin
-  Logger.Debug('TEscPrinterOA48.SetAbsolutePrintPosition');
+  Logger.Debug(Format('TEscPrinterOA48.SetAbsolutePrintPosition(%d)', [n]));
   Send(#$1B#$24 + Chr(Lo(n)) + Chr(Hi(n)));
 end;
 
 procedure TEscPrinterOA48.SelectUserCharacter(n: Byte);
 begin
   if n = FUserCharacterMode then Exit;
-  
+
   Logger.Debug(Format('TEscPrinterOA48.SelectUserCharacter(%d)', [n]));
   Send(#$1B#$25 + Chr(n));
   FUserCharacterMode := n;
@@ -782,10 +913,13 @@ procedure TEscPrinterOA48.Initialize;
 begin
   Logger.Debug('TEscPrinterOA48.Initialize');
   Send(#$1B#$40);
-  ClearUserChars;
+
+  FUserChars.Clear;
   FCodePage := 0;
+  FTextCodePage := 866;
   FUserCharacterMode := 0;
   FInTransaction := False;
+  FFont := FONT_TYPE_A;
 end;
 
 procedure TEscPrinterOA48.SetBeepParams(N, T: Byte);
@@ -820,8 +954,14 @@ end;
 
 procedure TEscPrinterOA48.SetCharacterFont(n: Byte);
 begin
-  Logger.Debug('TEscPrinterOA48.SetCharacterFont');
-  Send(#$1B#$4D + Chr(n));
+  if n = FFont then Exit;
+
+  Logger.Debug(Format('TEscPrinterOA48.SetCharacterFont(%d)', [n]));
+  if n in [FONT_TYPE_MIN..FONT_TYPE_MAX] then
+  begin
+    Send(#$1B#$4D + Chr(n));
+    FFont := n;
+  end;
 end;
 
 procedure TEscPrinterOA48.SetCharacterSet(N: Byte);
@@ -863,8 +1003,9 @@ end;
 procedure TEscPrinterOA48.SetCodePage(CodePage: Integer);
 begin
   if FCodePage = CodePage then Exit;
+  Logger.Debug(Format('TEscPrinterOA48.SetCodePage(%d, %s)', [
+    CodePage, GetCodePageName(CodePage)]));
 
-  Logger.Debug(Format('TEscPrinterOA48.SetCodePage(%d)', [CodePage]));
   Send(#$1B#$74 + Chr(CodePage));
   FCodePage := CodePage;
 end;
@@ -1270,6 +1411,7 @@ var
   BitmapData: AnsiString;
   FontFileName: WideString;
 begin
+  Code := USER_CHAR_CODE_MIN;
   try
     EnableUserCharacters;
     Bitmap := TBitmap.Create;
@@ -1283,7 +1425,6 @@ begin
         FontWidth := 12;
         BitmapData := '';
         Count := Bitmap.Width div FontWidth;
-        Code := FUserCharCode;
         Data := GetBitmapData(Bitmap, 24);
         for i := 0 to Count-1 do
         begin
@@ -1291,6 +1432,7 @@ begin
           BitmapData := BitmapData + Chr(FontWidth) + Copy(Data, i*FontWidth*3 + 1, FontWidth*3);
         end;
         Send(#$1B#$26#$03 + Chr(Code) + Chr(Code + Count -1) + BitmapData);
+        Inc(Code, Count);
       end;
       // FONT_TYPE_B
       FontFileName := GetModulePath + 'Fonts\KazakhFontB.bmp';
@@ -1301,8 +1443,6 @@ begin
         FontWidth := 9;
         BitmapData := '';
         Count := Bitmap.Width div FontWidth;
-        Code := FUserCharCode;
-        Inc(FUserCharCode, Count);
         Data := GetBitmapData(Bitmap, 17);
         for i := 0 to Count-1 do
         begin
@@ -1332,7 +1472,7 @@ procedure TEscPrinterOA48.PrintUserChar(Char: WideChar);
 var
   Item: TCharCode;
 begin
-  Item := FUserChars.ItemByChar(Char);
+  Item := FUserChars.ItemByChar(Char, Font);
   if Item <> nil then
   begin
     EnableUserCharacters;
@@ -1463,10 +1603,33 @@ begin
   Send(#$1F#$1B#$1F#$FF + Chr(B) + #$0A#$00);
 end;
 
-// test start
-// 1F 1B 10 01 02 00 - no utf
-// 1F 1B 10 01 02 01 - utf
-// 1F 1B 1F FF 00 0A 00 ???
-// 1F 1B 1F FF 33 0A 00
+procedure TEscPrinterOA48.PrintUnicode(const AText: WideString);
+var
+  i: Integer;
+  C: WideChar;
+begin
+  if TestCodePage(AText, FTextCodePage) then
+  begin
+    SetCodePage(TextCPToPrinterCP(FTextCodePage));
+    PrintText(WideStringToAnsiString(FTextCodePage, AText));
+  end else
+  begin
+    for i := 1 to Length(AText) do
+    begin
+      C := AText[i];
+      if IsUserChar(C) then
+      begin
+        PrintUserChar(C);
+      end else
+      begin
+        DisableUserCharacters;
+        CharacterToCodePage(C, FTextCodePage);
+        SetCodePage(TextCPToPrinterCP(FTextCodePage));
+        PrintText(WideStringToAnsiString(FTextCodePage, C));
+      end;
+    end;
+  end;
+  DisableUserCharacters;
+end;
 
 end.

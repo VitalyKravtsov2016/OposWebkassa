@@ -21,23 +21,18 @@ type
     FLogger: ILogFile;
     FPrinter: TEscPrinterOA48;
     FPrinterPort: IPrinterPort;
-    function GetKazakhChars2: AnsiString;
   protected
     procedure SetUp; override;
     procedure TearDown; override;
 
-    procedure PrintCodePage;
-    procedure PrintCodePage2;
     procedure PrintCodePageUTF8;
+    procedure PrintCodePage(CodePage: Integer);
     procedure PrintCodePages(const CodePageName: string);
 
     function CreateSerialPort: TSerialPort;
     function CreateSocketPort: TSocketPort;
     function CreateUSBPort: TUSBPrinterPort;
     function CreateRawPort: TRawPrinterPort;
-
-    function GetKazakhText: WideString;
-    function GetKazakhChars: AnsiString;
 
     property Printer: TEscPrinterOA48 read FPrinter;
   published
@@ -63,14 +58,13 @@ type
     procedure TestEmphasized;
     procedure TestDoubleStrikeMode;
     procedure TestCharacterFont;
-    procedure TestCodePage;
+    procedure TestCodePage1;
     procedure TestCodePage2;
     procedure TestCodePages;
     procedure TestNVBitImage;
     procedure TestCoverOpen;
     procedure TestRecoverError;
-    procedure TestUserCharacter;
-    procedure TestUserCharacter2;
+    procedure TestPrintUnicode;
     procedure TestLineSpacing;
     procedure TestCutDistanceFontA;
     procedure TestCutDistanceFontB;
@@ -85,6 +79,7 @@ type
     procedure TestPrintFontBMode;
     procedure TestPrintFontBMode2;
     procedure TestCutterError;
+    procedure TestUnicodeChars;
   end;
 
 implementation
@@ -104,6 +99,7 @@ begin
   //FPrinterPort := CreateSerialPort;
   //FPrinterPort := CreateRawPort;
   FPrinterPort := CreateUsbPort;
+
   FPrinterPort.Open;
   FPrinter := TEscPrinterOA48.Create(FPrinterPort, FLogger);
 end;
@@ -129,7 +125,7 @@ function TEscPrinterOA48Test.CreateSerialPort: TSerialPort;
 var
   SerialParams: TSerialParams;
 begin
-  SerialParams.PortName := 'COM25';
+  SerialParams.PortName := 'COM7';
   SerialParams.BaudRate := 19200;
   SerialParams.DataBits := 8;
   SerialParams.StopBits := ONESTOPBIT;
@@ -637,7 +633,7 @@ begin
   FPrinter.SetCharacterFont(0);
 end;
 
-procedure TEscPrinterOA48Test.TestCodePage;
+procedure TEscPrinterOA48Test.TestCodePage1;
 const
   TextCodePage1251: WideString = 'Кодовая страница 1251';
   TextCodePage866: WideString = 'Кодовая страница 866';
@@ -703,23 +699,68 @@ begin
 end;
 
 procedure TEscPrinterOA48Test.TestCodePages;
+
+  procedure PrintCodePage2(CodePage: Integer);
+  var
+    i: Integer;
+    S: AnsiString;
+  begin
+    FPrinter.SetCodePage(CodePage);
+    FPrinter.PrintText(Format('Codepage %d, %s', [
+      CodePage, GetCodepageName(CodePage)]) + CRLF);
+
+    S := '';
+    for i := $00 to $1f do
+    begin
+      S := S + Chr($80 + i);
+    end;
+    FPrinter.PrintText('0x80  ' + S + CRLF);
+  end;
+
+begin
+  FPrinter.Initialize;
+  FPrinter.UTF8Enable(False);
+  FPrinter.SetCharacterFont(FONT_TYPE_A);
+
+  PrintCodePage2(CODEPAGE_CP866);
+  PrintCodePage2(CODEPAGE_WCP1251);
+  PrintCodePage2(CODEPAGE_CP866);
+  PrintCodePage(CODEPAGE_IRAN);
+  PrintCodePage2(CODEPAGE_CP866);
+(*
+  ////////////////////////////////////////////////////////////////////////////
+  // После включения арабской кодовой страницы для переключения в другую
+  // кодовую страницу нужно инициализировать принтер OA48
+  // Это особенность реализации принтера
+  ////////////////////////////////////////////////////////////////////////////
+
+  PrintCodePage(CODEPAGE_0C1256_ARABIC);
+  FPrinter.Initialize;
+  PrintCodePage(CODEPAGE_CP866);
+*)
+end;
+
+procedure TEscPrinterOA48Test.PrintCodePage(CodePage: Integer);
 var
   i: Integer;
-  Text: AnsiString;
+  S: AnsiString;
 begin
-  Text := '';
-  for i := $80 to $FF do
-    Text := Text + AnsiChar(i);
+  FPrinter.SetCodePage(CodePage);
+  FPrinter.PrintText(Format('Codepage %d, %s', [
+    CodePage, GetCodepageName(CodePage)]) + CRLF);
 
-  //for i := 0 to 70 do
-  for i := 71 to 75 do
+  S := '';
+  for i := $00 to $ff do
   begin
-    FPrinter.Initialize;
-    FPrinter.SetCodePage(i);
-    FPrinter.PrintText(Format('Codepage %d', [i]) + CRLF);
-    FPrinter.PrintText(Text + CRLF);
+    S := S + Chr(i);
+    if Length(S) = 16 then
+    begin
+      FPrinter.PrintText('0x' + IntToHex(i-$0F, 2) + '  ' + S + CRLF);
+      S := '';
+    end;
   end;
 end;
+
 
 procedure TEscPrinterOA48Test.TestNVBitImage;
 var
@@ -839,145 +880,29 @@ begin
   FPrinter.PartialCut;
 end;
 
-(*
-
-&#1170; 0x0492
-cyrillic capital letter ghe stroke
-&#1171;
-cyrillic small letter ghe stroke
-&#1178;
-cyrillic capital letter ka descender
-&#1179;
-cyrillic small letter ka descender
-&#1186;
-cyrillic capital letter en descender
-&#1187;
-cyrillic small letter en descender
-&#1198;
-cyrillic capital letter straight u
-&#1199;
-cyrillic small letter straight u
-&#1200;
-cyrillic capital letter straight u stroke
-&#1201;
-cyrillic small letter straight u stroke
-&#1210;
-cyrillic capital letter shha
-&#1211;
-cyrillic small letter shha
-&#1240;
-cyrillic capital letter schwa
-&#1241;
-cyrillic small letter schwa
-&#1256;
-cyrillic capital letter barred o
-&#1257;
-cyrillic small letter barred o
-&#64488;
-arabic letter uighur kazakh kirghiz alef maksura initial form
-&#64489;
-arabic letter uighur kazakh kirghiz alef maksura medial form
-????
-&#127472;
-&#127487;
-kazakhstan flag
-*)
-
-function TEscPrinterOA48Test.GetKazakhChars: AnsiString;
+procedure TEscPrinterOA48Test.TestPrintUnicode;
 var
-  i: Integer;
-  Code: Byte;
-begin
-  Result := '';
-  Code := USER_CHAR_CODE_MIN;
-  for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
-  begin
-    Result := Result + Chr(Code);
-    Inc(Code);
-  end;
-end;
-
-function TEscPrinterOA48Test.GetKazakhChars2: AnsiString;
-var
-  i: Integer;
-  Code: Byte;
-begin
-  Result := '';
-  Code := USER_CHAR_CODE_MIN;
-  for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
-  begin
-    Result := Result + Chr(Code);
-    Inc(Code);
-  end;
-end;
-
-procedure TEscPrinterOA48Test.TestUserCharacter;
+  Text: WideString;
 begin
   FPrinter.Initialize;
   FPrinter.UTF8Enable(False);
   FPrinter.WriteKazakhCharacters;
   // FONT A
   FPrinter.SetCharacterFont(FONT_TYPE_A);
-  FPrinter.PrintText('KAZAKH CHARACTERS A: ');
-  FPrinter.SelectUserCharacter(1);
-  FPrinter.PrintText(GetKazakhChars2 + CRLF);
-  FPrinter.SelectUserCharacter(0);
+  FPrinter.PrintUnicode('КАЗАХСКИЕ СИМВОЛЫ A: ' + CRLF);
+  FPrinter.PrintUnicode(GetKazakhUnicodeChars + CRLF);
+  FPrinter.PrintUnicode('АРАБСКИЕ СИМВОЛЫ: ' + CRLF);
+  Text := '';
+  Text := Text + WideChar($062B) + WideChar($062C) + WideChar($0635);
+  FPrinter.PrintUnicode(Text + CRLF);
   // FONT B
   FPrinter.SetCharacterFont(FONT_TYPE_B);
-  FPrinter.PrintText('KAZAKH CHARACTERS B: ');
-  FPrinter.SelectUserCharacter(1);
-  FPrinter.PrintText(GetKazakhChars2 + CRLF);
-  FPrinter.SelectUserCharacter(0);
-
-
-  (*
-  // Test that charater printed at full size
-  FPrinter.SelectUserCharacter(1);
-  FPrinter.Send(#$1B#$26#$03 + Chr($7E) + Chr($7E) + Chr(12) + StringOfChar(#$FF, 36));
-  FPrinter.PrintText('KAZAKH CHARACTERS A: ' + Chr($7E) + CRLF);
-  FPrinter.SelectUserCharacter(0);
-
-  FPrinter.SelectUserCharacter(1);
-  FPrinter.WriteUserChar(WideChar(1170), $7E, FONT_TYPE_A);
-  FPrinter.PrintText('KAZAKH CHARACTERS A: ' + Chr($7E) + CRLF);
-  FPrinter.SelectUserCharacter(0);
-
-  FPrinter.WriteKazakhCharacters;
-  for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
-  begin
-    Text2 := Text2 + Chr($20 + i);
-  end;
-  FPrinter.SelectUserCharacter(1);
-  FPrinter.SetCharacterFont(FONT_TYPE_A);
-  FPrinter.PrintText('KAZAKH CHARACTERS A: ' + Text2 + CRLF);
-  FPrinter.SetCharacterFont(FONT_TYPE_B);
-  FPrinter.PrintText('KAZAKH CHARACTERS B: ' + Text2 + CRLF);
-  FPrinter.SelectUserCharacter(0);
-*)
-end;
-
-procedure TEscPrinterOA48Test.TestUserCharacter2;
-var
-  Bitmap: TBitmap;
-  UserChar: TUserChar;
-begin
-  Bitmap := TBitmap.Create;
-  try
-    Bitmap.LoadFromFile(GetModulePath + 'UserChars/UserChar_0x492.bmp');
-    // Write
-    UserChar.c1 := $7E;
-    UserChar.c2 := $7E;
-    UserChar.Font := FONT_TYPE_A;
-    UserChar.Data := GetBitmapData(Bitmap, Bitmap.Height);
-    UserChar.Width := Bitmap.Width;
-
-    FPrinter.SelectUserCharacter(1);
-    FPrinter.DefineUserCharacter(UserChar);
-    FPrinter.PrintText('KAZAKH CHARACTERS' + Chr($7E) + CRLF);
-    FPrinter.SelectUserCharacter(0);
-  finally
-    Bitmap.Free;
-  end;
+  FPrinter.PrintUnicode('КАЗАХСКИЕ СИМВОЛЫ B: ' + CRLF);
+  FPrinter.PrintUnicode(GetKazakhUnicodeChars + CRLF);
+  FPrinter.PrintUnicode('АРАБСКИЕ СИМВОЛЫ: ' + CRLF);
+  Text := '';
+  Text := Text + WideChar($062B) + WideChar($062C) + WideChar($0635);
+  FPrinter.PrintUnicode(Text + CRLF);
 end;
 
 procedure TEscPrinterOA48Test.TestBitmap2;
@@ -1344,25 +1269,11 @@ begin
   FPrinter.MaxiCodePrint;
 end;
 
-function TEscPrinterOA48Test.GetKazakhText: WideString;
-var
-  Strings: TTntStringList;
-begin
-  Result := '';
-  Strings := TTntStringList.Create;
-  try
-    Strings.LoadFromFile('KazakhText.txt');
-    Result := Strings.Text;
-  finally
-    Strings.Free;
-  end;
-end;
-
 procedure TEscPrinterOA48Test.TestPrintUTF;
 var
   Text: WideString;
 begin
-  Text := GetKazakhText;
+  Text := GetKazakhUnicodeChars;
   // Font A
   FPrinter.Initialize;
   FPrinter.UTF8Enable(True);
@@ -1395,23 +1306,6 @@ begin
   FPrinter.PrintText(Text + CRLF);
 end;
 
-procedure TEscPrinterOA48Test.PrintCodePage;
-var
-  i: Integer;
-  S: AnsiString;
-begin
-  S := '';
-  for i := $20 to $ff do
-  begin
-    S := S + Chr(i);
-    if Length(S) = 32 then
-    begin
-      FPrinter.PrintText('0x' + IntToHex(i-$1F, 2) + '  ' + S + CRLF);
-      S := '';
-    end;
-  end;
-end;
-
 procedure TEscPrinterOA48Test.PrintCodePageUTF8;
 var
   i: Integer;
@@ -1429,25 +1323,9 @@ begin
   end;
 end;
 
-procedure TEscPrinterOA48Test.PrintCodePage2;
-var
-  i: Integer;
-  S: AnsiString;
-begin
-  S := '';
-  for i := $00 to $ff do
-  begin
-    S := S + Chr(i);
-    if Length(S) = 16 then
-    begin
-      FPrinter.PrintText('0x' + IntToHex(i-$0F, 2) + '  ' + S + CRLF);
-      S := '';
-    end;
-  end;
-end;
-
 procedure TEscPrinterOA48Test.PrintCodePages(const CodePageName: string);
 begin
+(*
   FPrinter.PrintText('-----------------------------------------' + CRLF);
   FPrinter.PrintText(CodePageName + CRLF);
   FPrinter.SetCharacterFont(FONT_TYPE_A);
@@ -1456,6 +1334,7 @@ begin
   FPrinter.SetCharacterFont(FONT_TYPE_B);
   FPrinter.PrintText('Normal mode, font B' + CRLF);
   PrintCodePage;
+*)
 end;
 
 procedure TEscPrinterOA48Test.TestPrintRussianFontA;
@@ -1471,7 +1350,7 @@ begin
   FPrinter.PrintText('---------------------------------------------' + CRLF);
   FPrinter.PrintText('Normal mode, font A, CodePage: ' + IntToStr(CodePage) + CRLF);
   FPrinter.PrintText('---------------------------------------------' + CRLF);
-  PrintCodePage2;
+  //PrintCodePage2;
 end;
 
 procedure TEscPrinterOA48Test.TestPrintFontBMode;
@@ -1479,7 +1358,7 @@ var
   Text: AnsiString;
   KazakhText: WideString;
 begin
-  KazakhText := GetKazakhText;
+  KazakhText := GetKazakhUnicodeChars;
 
   FPrinter.Initialize;
   FPrinter.SetCharacterFont(FONT_TYPE_B);
@@ -1497,22 +1376,18 @@ begin
 end;
 
 procedure TEscPrinterOA48Test.TestPrintFontBMode2;
-var
-  KazakhText: WideString;
 begin
-  KazakhText := GetKazakhText;
-
   FPrinter.Initialize;
   FPrinter.SetCharacterFont(FONT_TYPE_A);
   FPrinter.UTF8Enable(True);
 
   FPrinter.SelectCodePage(CODEPAGE_CP866);
   FPrinter.PrintText(UTF8Encode('UTF mode, font A, CODEPAGE_CP866' + CRLF));
-  FPrinter.PrintText(UTF8Encode('Казахский текст: ' + KazakhText + CRLF));
+  FPrinter.PrintText(UTF8Encode('Казахский текст: ' + GetKazakhUnicodeChars + CRLF));
 
   FPrinter.SelectCodePage(CODEPAGE_WCP1251);
   FPrinter.PrintText(UTF8Encode('UTF mode, font A, CODEPAGE_WCP1251' + CRLF));
-  FPrinter.PrintText(UTF8Encode('Казахский текст: ' + KazakhText + CRLF));
+  FPrinter.PrintText(UTF8Encode('Казахский текст: ' + GetKazakhUnicodeChars + CRLF));
 end;
 
 procedure TEscPrinterOA48Test.TestCutterError;
@@ -1547,6 +1422,15 @@ begin
     Lines.Free;
     FPrinter.EndDocument;
   end;
+end;
+
+procedure TEscPrinterOA48Test.TestUnicodeChars;
+var
+  Text: WideString;
+begin
+  Text := '';
+  Text := Text + WideChar($062B) + WideChar($062C) + WideChar($0635);
+  CheckEquals(True, TestCodePage(Text, 1256), 'CodePage not 1256');
 end;
 
 initialization
