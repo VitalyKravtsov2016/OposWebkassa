@@ -64,7 +64,7 @@ object fmPrinter: TfmPrinter
     Top = 8
     Width = 441
     Height = 345
-    ActivePage = tsUSBPort
+    ActivePage = tsCommonParams
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 0
     object tsCommonParams: TTntTabSheet
@@ -405,7 +405,7 @@ object fmPrinter: TfmPrinter
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
-        ItemHeight = 13
+        ItemHeight = 0
         TabOrder = 0
         OnChange = ModifiedClick
       end

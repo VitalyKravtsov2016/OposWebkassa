@@ -519,10 +519,7 @@ begin
     Result := Result + 'Последовательный порт' + CRLF;
     Result := Result + 'Порт принтера Windows' + CRLF;
     Result := Result + 'Сетевое подключение' + CRLF;
-    if cbEscPrinterType.ItemIndex = EscPrinterTypePosiflex then
-    begin
-      Result := Result + 'USB порт';
-    end;
+    Result := Result + 'USB порт';
   end;
 end;
 

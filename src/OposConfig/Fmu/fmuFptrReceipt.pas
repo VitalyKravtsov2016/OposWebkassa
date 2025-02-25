@@ -161,6 +161,7 @@ procedure TfmFptrReceipt.UpdatePage;
 begin
   chbTemplateEnabled.Checked := Parameters.TemplateEnabled;
   seTemplate.Lines.Text := Parameters.Template.AsXML;
+  UpdateReceiptText2(Parameters.Template.AsXML);
 end;
 
 procedure TfmFptrReceipt.UpdateObject;
