@@ -303,7 +303,7 @@ begin
   Result := '';
   for i := Low(KazakhUnicodeChars) to High(KazakhUnicodeChars) do
   begin
-    Result := Result + WideChar(KazakhUnicodeChars[i]);
+    Result := Result + WideChar(KazakhUnicodeChars[i]) + ' ';
   end;
 end;
 

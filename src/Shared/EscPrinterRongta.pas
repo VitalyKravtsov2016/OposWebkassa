@@ -1446,7 +1446,6 @@ begin
       FLogger.Error('Failed to load Kazakh fonts ' + E.Message);
     end;
   end;
-  FUserCharLoaded := True;
 end;
 
 function TEscPrinterRongta.IsUserChar(Char: WideChar): Boolean;
@@ -1459,7 +1458,10 @@ var
   Item: TCharCode;
 begin
   if not FUserCharLoaded then
+  begin
     WriteUserCharacters;
+    FUserCharLoaded := True;
+  end;
 
   Item := FUserChars.ItemByChar(Char, Font);
   if Item <> nil then
@@ -1490,6 +1492,7 @@ begin
         PrintUserChar(C);
       end else
       begin
+        DisableUserCharacters;
         CharacterToCodePage(C, CodePage);
         SetCodePage(CharacterSetToPrinterCodePage(CodePage));
         PrintText(WideStringToAnsiString(CodePage, C));
