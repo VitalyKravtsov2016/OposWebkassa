@@ -23,6 +23,8 @@ type
     FItems: TDocItems;
     FLineChars: Integer;
     FLineHeight: Integer;
+    FLineSpacing: Integer;
+    FDuplicateSign: Boolean;
     procedure Add(Index: Integer; const Line: WideString); overload;
     procedure Add2(const ALine: WideString; Style: Integer);
   public
@@ -46,10 +48,13 @@ type
     procedure Assign(Source: TTextDocument);
     procedure Add(const ALine: WideString; Style: Integer); overload;
     procedure AddBarcode(const Barcode: string);
+    procedure AddDuplicateSign;
+    function IsValid: Boolean;
 
     property Items: TDocItems read FItems;
     property LineChars: Integer read FLineChars write FLineChars;
     property LineHeight: Integer read FLineHeight write FLineHeight;
+    property LineSpacing: Integer read FLineSpacing write FLineSpacing;
   end;
 
   { TDocItems }
@@ -111,6 +116,26 @@ destructor TTextDocument.Destroy;
 begin
   FItems.Free;
   inherited Destroy;
+end;
+
+function TTextDocument.IsValid: Boolean;
+begin
+  Result := Items.Count > 1;
+end;
+
+procedure TTextDocument.AddDuplicateSign;
+var
+  Item: TDocItem;
+begin
+  if FDuplicateSign then Exit;
+  // Add duplicate sign
+  Item := Items.Insert(0) as TDocItem;
+  Item.Text := 'ƒ”¡À» ¿“' + CRLF;
+  Item.Style := STYLE_DWIDTH_HEIGHT;
+  Item.LineChars := LineChars;
+  Item.LineHeight := LineHeight;
+  Item.LineSpacing := LineSpacing;
+  FDuplicateSign := True;
 end;
 
 procedure TTextDocument.AddLine(const Line: WideString);
@@ -257,6 +282,7 @@ end;
 procedure TTextDocument.Clear;
 begin
   FItems.Clear;
+  FDuplicateSign := False;
 end;
 
 procedure TTextDocument.Save;
@@ -276,8 +302,11 @@ end;
 
 procedure TTextDocument.Assign(Source: TTextDocument);
 begin
+  FDuplicateSign := False;
   FItems.Assign(Source.Items);
   FLineChars := Source.LineChars;
+  FLineHeight := Source.LineHeight;
+  FLineSpacing := Source.LineSpacing;
 end;
 
 procedure TTextDocument.AddBarcode(const Barcode: string);

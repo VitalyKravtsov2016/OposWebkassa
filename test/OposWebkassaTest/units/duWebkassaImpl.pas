@@ -736,7 +736,7 @@ procedure TWebkassaImplTest.TestDuplicateReceipt;
 begin
   OpenClaimEnable;
   CheckEquals(1, Driver.GetPropertyNumber(PIDXFptr_CapDuplicateReceipt), 'CapDuplicateReceipt');
-  Driver.SetPropertyNumber(PIDXFptr_DuplicateReceipt, 1);
+  //Driver.SetPropertyNumber(PIDXFptr_DuplicateReceipt, 1); !!!
   PrintReceipt3;
   FLines.AddStrings(FPrinter.Lines);
   FLines.Add('ƒ”¡À» ¿“');

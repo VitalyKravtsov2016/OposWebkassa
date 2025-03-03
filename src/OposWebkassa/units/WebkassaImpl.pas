@@ -633,6 +633,7 @@ begin
   Document.Clear;
   Document.LineChars := Params.RecLineChars;
   Document.LineHeight := Params.RecLineHeight;
+  Document.LineSpacing := Params.LineSpacing;
 end;
 
 function TWebkassaImpl.AmountToStr(Value: Currency): AnsiString;
@@ -844,6 +845,8 @@ begin
     CheckEnabled;
     CheckState(FPTR_PS_MONITOR);
     Document.LineChars := Params.RecLineChars;
+    Document.LineHeight := Params.RecLineHeight;
+    Document.LineSpacing := Params.LineSpacing;
 
     SetPrinterState(FPTR_PS_FISCAL_DOCUMENT);
     Result := ClearResult;
@@ -1511,8 +1514,6 @@ begin
 end;
 
 function TWebkassaImpl.EndFiscalReceipt(PrintHeader: WordBool): Integer;
-var
-  Item: TDocItem;
 begin
   try
     FPrinterState.CheckState(FPTR_PS_FISCAL_RECEIPT_ENDING);
@@ -1522,13 +1523,6 @@ begin
     begin
       FDuplicateReceipt := False;
       FDuplicate.Assign(Document);
-      // Add duplicate sign
-      Item := FDuplicate.Items.Insert(0) as TDocItem;
-      Item.Text := 'ÄÓÁËÈÊÀÒ' + CRLF;
-      Item.Style := STYLE_DWIDTH_HEIGHT;
-      Item.LineChars := Document.LineChars;
-      Item.LineHeight := Document.LineHeight;
-      Item.LineSpacing := Params.LineSpacing;
     end;
     ClearCashboxStatus;
 
@@ -2047,8 +2041,9 @@ begin
   try
     CheckEnabled;
     CheckState(FPTR_PS_MONITOR);
-    if FDuplicate.Items.Count > 0 then
+    if FDuplicate.IsValid then
     begin
+      FDuplicate.AddDuplicateSign;
       PrintDocument(FDuplicate);
     end;
     Result := ClearResult;
