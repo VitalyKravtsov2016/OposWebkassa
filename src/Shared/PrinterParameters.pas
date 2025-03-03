@@ -490,12 +490,12 @@ begin
     Lines.Text := Text;
     if Lines.Count = 1 then
     begin
-      Logger.Debug(Format('%s: ''%s''', [Caption, Lines[0]]));
+      Logger.Debug(WideFormat('%s: ''%s''', [Caption, Lines[0]]));
     end else
     begin
       for i := 0 to Lines.Count-1 do
       begin
-        Logger.Debug(Format('%s.%d: ''%s''', [Caption, i, Lines[i]]));
+        Logger.Debug(WideFormat('%s.%d: ''%s''', [Caption, i, Lines[i]]));
       end;
     end;
   finally
@@ -563,7 +563,7 @@ begin
   for i := 0 to VatRates.Count-1 do
   begin
     VatRate := VatRates[i];
-    Logger.Debug(Format('VAT: ID=%d, rate=%.2f, name="%s"', [
+    Logger.Debug(WideFormat('VAT: ID=%d, rate=%.2f, name="%s"', [
       VatRate.ID, VatRate.Rate, VatRate.Name]));
   end;
   Logger.Debug(Logger.Separator);

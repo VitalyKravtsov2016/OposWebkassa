@@ -68,7 +68,8 @@ begin
   if not Assigned(FNotification) then
   begin
     LastError := GetLastError;
-    Logger.Error(Format('Device Notification not assigned: %d, %s', [LastError, SysErrorMessage(LastError)]));
+    Logger.Error(WideFormat('Device Notification not assigned: %d, %s', [
+      LastError, SysErrorMessage(LastError)]));
   end;
 end;
 

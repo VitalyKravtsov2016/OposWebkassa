@@ -415,7 +415,7 @@ end;
 procedure TPosPrinterLog.MethodStart(const AMethodName: string; Params: array of const);
 begin
   FStartTime := GetTickCount;
-  FLogger.Debug(Format('POSPrinter.%s(%s)', [
+  FLogger.Debug(WideFormat('POSPrinter.%s(%s)', [
     AMethodName, TLogFile.ParamsToStr2(Params)]));
 end;
 
@@ -427,7 +427,7 @@ begin
   if P <> '' then
     P := '=' + P;
 
-  FLogger.Debug(Format('POSPrinter.%s()%s, time: %d ms', [
+  FLogger.Debug(WideFormat('POSPrinter.%s()%s, time: %d ms', [
     AMethodName, P, GetTickCount-DWORD(FStartTime)]));
 end;
 

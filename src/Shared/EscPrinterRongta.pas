@@ -631,7 +631,7 @@ procedure TEscPrinterRongta.SelectUserCharacter(n: Byte);
 begin
   if n = FUserCharacterMode then Exit;
   
-  Logger.Debug(Format('TEscPrinterRongta.SelectUserCharacter(%d)', [n]));
+  Logger.Debug(WideFormat('TEscPrinterRongta.SelectUserCharacter(%d)', [n]));
   Send(#$1B#$25 + Chr(n));
   FUserCharacterMode := n;
 end;
@@ -680,7 +680,7 @@ begin
     end;
 
     DrawWideChar(AChar, AFont, Bitmap, 0, 0);
-    //Bitmap.SaveToFile(Format('UnicodeChar_%d_%d.bmp', [AFont, Ord(AChar)]));
+    //Bitmap.SaveToFile(WideFormat('UnicodeChar_%d_%d.bmp', [AFont, Ord(AChar)]));
     // Write
     UserChar.c1 := ACode;
     UserChar.c2 := ACode;
@@ -910,7 +910,7 @@ procedure TEscPrinterRongta.SetCodePage(CodePage: Integer);
 begin
   if FCodePage = CodePage then Exit;
 
-  Logger.Debug(Format('TEscPrinterRongta.SetCodePage(%d)', [CodePage]));
+  Logger.Debug(WideFormat('TEscPrinterRongta.SetCodePage(%d)', [CodePage]));
   Send(#$1B#$74 + Chr(CodePage));
   FCodePage := CodePage;
 end;
@@ -1356,7 +1356,7 @@ end;
 
 procedure TEscPrinterRongta.PrintText(Text: AnsiString);
 begin
-  //Logger.Debug(Format('TEscPrinterRongta.PrintText(''%s'')', [TrimRight(Text)]));
+  //Logger.Debug(WideFormat('TEscPrinterRongta.PrintText(''%s'')', [TrimRight(Text)]));
   Send(Text);
 end;
 

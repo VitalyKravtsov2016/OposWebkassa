@@ -67,6 +67,7 @@ type
 function ReadOA48PortName: string;
 function ReadRongtaPortName: string;
 function ReadPosiflexPortName: string;
+function ReadSewooPortName: string;
 function ReadPosiflexDevices: TUsbDevices;
 function ReadUsbDevices(const HardwareIDSubstring: string): TUsbDevices;
 
@@ -74,6 +75,7 @@ const
   OA48PrinterHardwareId = 'VID_0483&PID_57';
   RongtaPrinterHardwareId = 'VID_0FE6&PID_81';
   PosiflexPrinterHardwareId = 'VID_0D3A&PID_03';
+  SewooPrinterHardwareId = 'VID_0525&PID_A7';
 
 implementation
 
@@ -207,6 +209,11 @@ begin
   Result := ReadUsbDevicePath(PosiflexPrinterHardwareId);
 end;
 
+function ReadSewooPortName: string;
+begin
+  Result := ReadUsbDevicePath(SewooPrinterHardwareId);
+end;
+
 function ReadRongtaPortName: string;
 begin
   Result := ReadUsbDevicePath(RongtaPrinterHardwareId);
@@ -250,7 +257,7 @@ end;
 
 procedure TUsbPrinterPort.CreateHandle;
 var
-  ErrorMessage: string;
+  ErrorMessage: WideString;
 begin
   FHandle := CreateFile(
     PChar(FFileName),
@@ -267,7 +274,7 @@ begin
     if GetLastError = ERROR_ACCESS_DENIED then
       raise EUsbPortError.Create('Port is opened by another application');
 
-    ErrorMessage := Format('CreateFile ERROR: 0x%.8x, %s', [
+    ErrorMessage := WideFormat('CreateFile ERROR: 0x%.8x, %s', [
       GetLastError, SysErrorMessage(GetLastError)]);
     FLogger.Error(ErrorMessage);
     raise EUsbPortError.Create('Failed open port, ' + ErrorMessage);

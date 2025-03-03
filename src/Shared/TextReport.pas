@@ -57,7 +57,7 @@ end;
 
 procedure TTextReport.Add(const Caption: WideString; Value: Variant);
 begin
-  Lines.Add(Format('%-*s : %s', [FCaptionLen, Caption, VarToStr(Value)]));
+  Lines.Add(WideFormat('%-*s : %s', [FCaptionLen, Caption, VarToStr(Value)]));
 end;
 
 

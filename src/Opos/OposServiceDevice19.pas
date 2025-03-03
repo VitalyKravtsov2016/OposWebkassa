@@ -229,7 +229,7 @@ begin
         if Succeeded(TypeInfo.GetDocumentation(FuncDesc.memid, @ItemName,
           @ItemDocString, nil, nil)) then
         begin
-          Logger.Debug(Format('%d, ''%s'', ''%s''', [FuncDesc.memid, ItemName,
+          Logger.Debug(WideFormat('%d, ''%s'', ''%s''', [FuncDesc.memid, ItemName,
             ItemDocString]));
         end;
 
@@ -378,7 +378,7 @@ end;
 procedure TOposServiceDevice19.ErrorEvent(ResultCode, ResultCodeExtended,
   ErrorLocus: Integer);
 begin
-  Logger.Debug(Format('ErrorEvent: %d, %d, %d', [
+  Logger.Debug(WideFormat('ErrorEvent: %d, %d, %d', [
     ResultCode, ResultCodeExtended, ErrorLocus]));
 
   FireEvent(TErrorEvent.Create(ResultCode, ResultCodeExtended, ErrorLocus, Logger));

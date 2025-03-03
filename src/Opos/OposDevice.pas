@@ -90,8 +90,8 @@ begin
   try
     Reg.RootKey:= HKEY_CLASSES_ROOT;
     strCLSID := GUIDToString(CLSID);
-    if Reg.OpenKey(Format('CLSID\%s\InProcServer32', [strCLSID]), False)
-       or Reg.OpenKey(Format('CLSID\%s\LocalServer32', [strCLSID]), False) then
+    if Reg.OpenKey(WideFormat('CLSID\%s\InProcServer32', [strCLSID]), False)
+       or Reg.OpenKey(WideFormat('CLSID\%s\LocalServer32', [strCLSID]), False) then
     begin
       try
         Result := ExtractQuotedStr(Reg.ReadString(''));

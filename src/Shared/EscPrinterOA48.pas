@@ -725,7 +725,7 @@ end;
 
 procedure TEscPrinterOA48.RecoverError(ClearBuffer: Boolean);
 begin
-  Logger.Debug(Format('TEscPrinterOA48.RecoverError(ClearBuffer=%s)', [
+  Logger.Debug(WideFormat('TEscPrinterOA48.RecoverError(ClearBuffer=%s)', [
     BoolToStr(ClearBuffer)]));
 
   if ClearBuffer then
@@ -736,13 +736,13 @@ end;
 
 procedure TEscPrinterOA48.GeneratePulse(n, m, t: Byte);
 begin
-  Logger.Debug(Format('TEscPrinterOA48.GeneratePulse(%d, %d, %d)', [n, m, t]));
+  Logger.Debug(WideFormat('TEscPrinterOA48.GeneratePulse(%d, %d, %d)', [n, m, t]));
   Send(#$10#$14 + Chr(n) + Chr(m) + Chr(t));
 end;
 
 procedure TEscPrinterOA48.SetRightSideCharacterSpacing(n: Byte);
 begin
-  Logger.Debug(Format('TEscPrinterOA48.SetRightSideCharacterSpacing(n)', [n]));
+  Logger.Debug(WideFormat('TEscPrinterOA48.SetRightSideCharacterSpacing(n)', [n]));
   Send(#$1B#$20 + Chr(n));
 end;
 
@@ -753,7 +753,7 @@ end;
 
 procedure TEscPrinterOA48.SetPrintMode(Mode: Byte);
 begin
-  Logger.Debug(Format('TEscPrinterOA48.SetPrintMode(%d)', [Mode]));
+  Logger.Debug(WideFormat('TEscPrinterOA48.SetPrintMode(%d)', [Mode]));
   Send(#$1B#$21 + Chr(Mode));
 
   FFont := FONT_TYPE_A;
@@ -763,7 +763,7 @@ end;
 
 procedure TEscPrinterOA48.SetAbsolutePrintPosition(n: Word);
 begin
-  Logger.Debug(Format('TEscPrinterOA48.SetAbsolutePrintPosition(%d)', [n]));
+  Logger.Debug(WideFormat('TEscPrinterOA48.SetAbsolutePrintPosition(%d)', [n]));
   Send(#$1B#$24 + Chr(Lo(n)) + Chr(Hi(n)));
 end;
 
@@ -771,7 +771,7 @@ procedure TEscPrinterOA48.SelectUserCharacter(n: Byte);
 begin
   if n = FUserCharacterMode then Exit;
 
-  Logger.Debug(Format('TEscPrinterOA48.SelectUserCharacter(%d)', [n]));
+  Logger.Debug(WideFormat('TEscPrinterOA48.SelectUserCharacter(%d)', [n]));
   Send(#$1B#$25 + Chr(n));
   FUserCharacterMode := n;
 end;
@@ -820,7 +820,7 @@ begin
     end;
 
     DrawWideChar(AChar, AFont, Bitmap, 0, 0);
-    //Bitmap.SaveToFile(Format('UnicodeChar_%d_%d.bmp', [AFont, Ord(AChar)]));
+    //Bitmap.SaveToFile(WideFormat('UnicodeChar_%d_%d.bmp', [AFont, Ord(AChar)]));
     // Write
     UserChar.c1 := ACode;
     UserChar.c2 := ACode;
@@ -956,7 +956,7 @@ procedure TEscPrinterOA48.SetCharacterFont(n: Byte);
 begin
   if n = FFont then Exit;
 
-  Logger.Debug(Format('TEscPrinterOA48.SetCharacterFont(%d)', [n]));
+  Logger.Debug(WideFormat('TEscPrinterOA48.SetCharacterFont(%d)', [n]));
   if n in [FONT_TYPE_MIN..FONT_TYPE_MAX] then
   begin
     Send(#$1B#$4D + Chr(n));
@@ -1003,7 +1003,7 @@ end;
 procedure TEscPrinterOA48.SetCodePage(CodePage: Integer);
 begin
   if FCodePage = CodePage then Exit;
-  Logger.Debug(Format('TEscPrinterOA48.SetCodePage(%d, %s)', [
+  Logger.Debug(WideFormat('TEscPrinterOA48.SetCodePage(%d, %s)', [
     CodePage, GetCodePageName(CodePage)]));
 
   Send(#$1B#$74 + Chr(CodePage));
@@ -1372,7 +1372,7 @@ end;
 
 procedure TEscPrinterOA48.PrintText(Text: AnsiString);
 begin
-  //Logger.Debug(Format('TEscPrinterOA48.PrintText(''%s'')', [TrimRight(Text)]));
+  //Logger.Debug(WideFormat('TEscPrinterOA48.PrintText(''%s'')', [TrimRight(Text)]));
   Send(Text);
 end;
 

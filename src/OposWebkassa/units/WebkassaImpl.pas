@@ -3734,9 +3734,9 @@ begin
   Document.AddLine(Document.AlignCenter(Tnt_WideFormat('СМЕНА №%d', [Command.Data.ShiftNumber])));
   Document.AddLine(OperationTypeToText(Command.Request.OperationType));
 
-  //Document.AddLine(AlignCenter(Format('Порядковый номер чека №%d', [Command.Data.DocumentNumber])));
-  //Document.AddLine(Format('Чек №%s', [Command.Data.CheckNumber]));
-  //Document.AddLine(Format('Кассир %s', [Command.Data.EmployeeName]));
+  //Document.AddLine(AlignCenter(WideFormat('Порядковый номер чека №%d', [Command.Data.DocumentNumber])));
+  //Document.AddLine(WideFormat('Чек №%s', [Command.Data.CheckNumber]));
+  //Document.AddLine(WideFormat('Кассир %s', [Command.Data.EmployeeName]));
   //Document.AddLine(UpperCase(Command.Data.OperationTypeText));
   Document.AddSeparator;
 
@@ -3747,7 +3747,7 @@ begin
     if ReceiptItem is TSalesReceiptItem then
     begin
       RecItem := ReceiptItem as TSalesReceiptItem;
-      //Document.AddLine(Format('%3d. %s', [RecItem.Number, RecItem.Description]));
+      //Document.AddLine(WideFormat('%3d. %s', [RecItem.Number, RecItem.Description]));
       Document.AddLine(RecItem.Description);
 
       ItemQuantity := 1;
@@ -4894,7 +4894,7 @@ begin
       if UnitItem <> nil then
         UnitName := UnitItem.NameKz;
 
-      Document.AddLine(Format('   %.3f %s x %s %s', [ItemQuantity,
+      Document.AddLine(WideFormat('   %.3f %s x %s %s', [ItemQuantity,
         UnitName, AmountToStr(Item.Price), Params.CurrencyName]));
 
       // Скидка

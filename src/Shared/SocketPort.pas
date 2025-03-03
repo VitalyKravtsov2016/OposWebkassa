@@ -95,7 +95,7 @@ begin
     while True do
     begin
       try
-        Logger.Debug(Format('TSocketPort.Connect(%s,%d,%d)', [
+        Logger.Debug(WideFormat('TSocketPort.Connect(%s,%d,%d)', [
           FConnection.Host, FConnection.Port, FParameters.ByteTimeout]));
 
         FConnection.Connect();

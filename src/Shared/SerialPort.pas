@@ -378,7 +378,7 @@ begin
 
   if FHandle = INVALID_HANDLE_VALUE then
   begin
-    Logger.Error(Format('CreateFile ERROR: 0x%.8x, %s', [
+    Logger.Error(WideFormat('CreateFile ERROR: 0x%.8x, %s', [
       GetLastError, SysErrorMessage(GetLastError)]));
 
     raise ENoPortError.Create(_('Cannot open port'));
@@ -406,7 +406,7 @@ begin
     RaiseSerialPortError;
   end;
 
-  Logger.Debug(Format('ProvSubType      : 0x%.8x, %s', [
+  Logger.Debug(WideFormat('ProvSubType      : 0x%.8x, %s', [
     CommConfig.dwProviderSubType,
     GetProviderSubTypeText(CommConfig.dwProviderSubType)]));
 end;
@@ -572,7 +572,7 @@ begin
     SetLength(Result, ReadCount);
     if ReadCount <> Count then
     begin
-      Logger.Error(Format('Read data: %d <> %d', [ReadCount, Count]));
+      Logger.Error(WideFormat('Read data: %d <> %d', [ReadCount, Count]));
       Logger.Error('Read error. ' + _('Device not connected'));
       raise ETimeoutError.Create(_('Read data failed'));
     end;

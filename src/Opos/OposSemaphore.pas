@@ -61,7 +61,7 @@ begin
         FHandle := OpenSemaphoreW(SEMAPHORE_MODIFY_STATE, False, PWideChar(AName));
       end;
     end;
-    ODS(Format('%.8x, "%s", CreateSemaphore', [FHandle, AName]));
+    ODS(WideFormat('%.8x, "%s", CreateSemaphore', [FHandle, AName]));
     if FHandle = 0 then
       RaiseLastOsError;
   end;
@@ -71,7 +71,7 @@ function TOposSemaphore.WaitFor(Timeout: Integer): Integer;
 begin
   Result := WaitForSingleObject(FHandle, Timeout);
   if Result <> WAIT_OBJECT_0 then
-    ODS(Format('%.8x, %d, SemaphoreWaitFailed', [FHandle, Result]));
+    ODS(WideFormat('%.8x, %d, SemaphoreWaitFailed', [FHandle, Result]));
 end;
 
 procedure TOposSemaphore.Release;
@@ -79,7 +79,7 @@ begin
   if FClaimed then
   begin
     ReleaseSemaphore(FHandle, 1, nil);
-    ODS(Format('%.8x, ReleaseSemaphore', [FHandle]));
+    ODS(WideFormat('%.8x, ReleaseSemaphore', [FHandle]));
     FClaimed := False;
   end;
 end;

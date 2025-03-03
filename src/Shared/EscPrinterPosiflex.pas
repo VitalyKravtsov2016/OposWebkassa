@@ -671,7 +671,7 @@ procedure TEscPrinterPosiflex.SelectUserCharacter(n: Byte);
 begin
   if n = FUserCharacterMode then Exit;
   
-  Logger.Debug(Format('TEscPrinterPosiflex.SelectUserCharacter(%d)', [n]));
+  Logger.Debug(WideFormat('TEscPrinterPosiflex.SelectUserCharacter(%d)', [n]));
   Send(#$1B#$25 + Chr(n));
   FUserCharacterMode := n;
 end;
@@ -720,7 +720,7 @@ begin
     end;
 
     DrawWideChar(AChar, AFont, Bitmap, 0, 0);
-    //Bitmap.SaveToFile(Format('UnicodeChar_%d_%d.bmp', [AFont, Ord(AChar)]));
+    //Bitmap.SaveToFile(WideFormat('UnicodeChar_%d_%d.bmp', [AFont, Ord(AChar)]));
     // Write
     UserChar.c1 := ACode;
     UserChar.c2 := ACode;
@@ -947,7 +947,7 @@ procedure TEscPrinterPosiflex.SetCodePage(CodePage: Integer);
 begin
   if FCodePage = CodePage then Exit;
 
-  Logger.Debug(Format('TEscPrinterPosiflex.SetCodePage(%d)', [CodePage]));
+  Logger.Debug(WideFormat('TEscPrinterPosiflex.SetCodePage(%d)', [CodePage]));
   Send(#$1B#$74 + Chr(CodePage));
   FCodePage := CodePage;
 end;
@@ -1296,7 +1296,7 @@ end;
 
 procedure TEscPrinterPosiflex.SetPageModeArea(R: TRect);
 begin
-  Logger.Debug(Format('TEscPrinterPosiflex.SetPageModeArea(%d,%d,%d,%d)', [
+  Logger.Debug(WideFormat('TEscPrinterPosiflex.SetPageModeArea(%d,%d,%d,%d)', [
     R.Left, R.Top, R.Right, R.Bottom]));
 
   Send(#$1B#$57 +
@@ -1391,7 +1391,7 @@ end;
 
 procedure TEscPrinterPosiflex.QRCodeSetModel(n: Byte);
 begin
-  Logger.Debug(Format('TEscPrinterPosiflex.QRCodeSetModel(%d)', [n]));
+  Logger.Debug(WideFormat('TEscPrinterPosiflex.QRCodeSetModel(%d)', [n]));
 
   if n < 1 then n := 1;
   if n > 2 then n := 2;
@@ -1400,7 +1400,7 @@ end;
 
 procedure TEscPrinterPosiflex.QRCodeSetErrorCorrectionLevel(n: Byte);
 begin
-  Logger.Debug(Format('TEscPrinterPosiflex.QRCodeSetErrorCorrectionLevel(%d)', [n]));
+  Logger.Debug(WideFormat('TEscPrinterPosiflex.QRCodeSetErrorCorrectionLevel(%d)', [n]));
 
   if n > 3 then n := 3;
   Send(#$1D#$28#$6B#$04#$00#$31#$45 + Chr($30 + n));
@@ -1408,7 +1408,7 @@ end;
 
 procedure TEscPrinterPosiflex.QRCodeSetModuleSize(n: Byte);
 begin
-  Logger.Debug(Format('TEscPrinterPosiflex.QRCodeSetModuleSize(%d)', [n]));
+  Logger.Debug(WideFormat('TEscPrinterPosiflex.QRCodeSetModuleSize(%d)', [n]));
 
   if n < 1 then n := 1;
   if n > 16 then n := 16;
@@ -1419,7 +1419,7 @@ procedure TEscPrinterPosiflex.QRCodeWriteData(Data: AnsiString);
 var
   k: Integer;
 begin
-  Logger.Debug(Format('TEscPrinterPosiflex.QRCodeWriteData(''%s'')', [Data]));
+  Logger.Debug(WideFormat('TEscPrinterPosiflex.QRCodeWriteData(''%s'')', [Data]));
 
   k := Length(Data) + 3;
   Send(#$1D#$28#$6B + Chr(Lo(k)) + Chr(Hi(k)) + #$31#$50#$30 + Data);
@@ -1501,7 +1501,7 @@ end;
 
 procedure TEscPrinterPosiflex.PrintText(Text: AnsiString);
 begin
-  //Logger.Debug(Format('TEscPrinterPosiflex.PrintText(''%s'')', [TrimRight(Text)]));
+  //Logger.Debug(WideFormat('TEscPrinterPosiflex.PrintText(''%s'')', [TrimRight(Text)]));
   Send(Text);
 end;
 
