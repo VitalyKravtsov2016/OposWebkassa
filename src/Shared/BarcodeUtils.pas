@@ -24,11 +24,12 @@ type
 
 
 procedure ScaleGraphic(Graphic: TGraphic; Scale: Integer);
+procedure LoadMemoryGraphic(Graphic: TGraphic; const Data: AnsiString);
 procedure RenderBarcode(Bitmap: TBitmap; Symbol: PZSymbol; Is1D: Boolean);
 procedure RenderBarcodeToBitmap(var Barcode: TPosBarcode; Bitmap: TBitmap);
-function RenderBarcodeRec(var Barcode: TPosBarcode): AnsiString;
+
 function BitmapToStr(Bitmap: TBitmap): AnsiString;
-procedure LoadMemoryGraphic(Graphic: TGraphic; const Data: AnsiString);
+function RenderBarcodeRec(var Barcode: TPosBarcode): AnsiString;
 
 implementation
 

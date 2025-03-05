@@ -16,16 +16,6 @@ uses
   DebugUtils, PtrDirectIO, EscPrinterUtils, ComUtils, OposEventsAdapter;
 
 type
-  { TPageMode }
-
-  TPageMode = record
-    IsActive: Boolean;
-    PrintArea: TRect;
-    PrintDirection: Integer;
-    VerticalPosition: Integer;
-    HorizontalPosition: Integer;
-  end;
-
   { TPosPrinterRongta }
 
   TPosPrinterRongta = class(TDispIntfObject, IOPOSPOSPrinter)
@@ -131,7 +121,7 @@ type
     FPageModeArea: TPoint;
     FPageModeDescriptor: Integer;
     FPageModeHorizontalPosition: Integer;
-    FPageModePrintArea: TRect;
+    FPageModePrintArea: TPageArea;
     FPageModePrintDirection: Integer;
     FPageModeStation: Integer;
     FPageModeVerticalPosition: Integer;
@@ -734,7 +724,7 @@ end;
 procedure TPosPrinterRongta.Initialize;
 const
   DefPageModeArea: TPoint = (X: 576; Y: 832);
-  DefPageModePrintArea: TRect = (Left: 0; Top: 0; Right: 0; Bottom: 0);
+  DefPageModePrintArea: TPageArea = (X: 0; Y: 0; Width: 0; Height: 0);
 begin
   FAsyncMode := False;
   FCapCharacterSet := PTR_CCS_UNICODE;
@@ -1048,6 +1038,7 @@ end;
 function TPosPrinterRongta.CutPaper(Percentage: Integer): Integer;
 begin
   try
+    FPrinter.PrintText(' ' + CRLF);
     FPrinter.PartialCut;
     Result := ClearResult;
   except
@@ -1627,7 +1618,7 @@ end;
 
 function TPosPrinterRongta.Get_PageModePrintArea: WideString;
 begin
-  Result := RectToStr(MapFromDots(FPageModePrintArea, MapMode));
+  Result := PageAreaToStr(PageAreaFromDots(FPageModePrintArea, MapMode));
 end;
 
 function TPosPrinterRongta.Get_PageModePrintDirection: Integer;
@@ -2140,26 +2131,6 @@ begin
   end;
 end;
 
-procedure ScaleGraphic(Graphic: TGraphic; Scale: Integer);
-var
-  P: TPoint;
-  DstBitmap: TBitmap;
-begin
-  DstBitmap := TBitmap.Create;
-  try
-    DstBitmap.Monochrome := True;
-    DstBitmap.PixelFormat := pf1Bit;
-    P.X := Graphic.Width * Scale;
-    P.Y := Graphic.Height * Scale;
-    DstBitmap.Width := P.X;
-    DstBitmap.Height := P.Y;
-    DstBitmap.Canvas.StretchDraw(Rect(0, 0, P.X, P.Y), Graphic);
-    Graphic.Assign(DstBitmap);
-  finally
-    DstBitmap.Free;
-  end;
-end;
-
 procedure TPosPrinterRongta.PrintGraphics(Graphic: TGraphic; Width, Alignment: Integer);
 var
   Scale: Integer;
@@ -2228,7 +2199,7 @@ var
   Count: Integer;
 begin
   if not FPageMode.IsActive then Exit;
-  if not IsEqual(FPageModePrintArea, FPageMode.PrintArea) then
+  if not EscPrinterUtils.IsEqual(FPageModePrintArea, FPageMode.PrintArea) then
   begin
     Printer.SetPageModeArea(FPageModePrintArea);
     FPageMode.PrintArea := FPageModePrintArea;
@@ -2598,7 +2569,7 @@ end;
 procedure TPosPrinterRongta.Set_PageModePrintArea(
   const pPageModePrintArea: WideString);
 begin
-  FPageModePrintArea := MapToDots(StrToRect(pPageModePrintArea), MapMode);
+  FPageModePrintArea := PageAreaToDots(StrToPageArea(pPageModePrintArea), MapMode);
 end;
 
 procedure TPosPrinterRongta.Set_PageModePrintDirection(

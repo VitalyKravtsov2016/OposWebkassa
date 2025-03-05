@@ -1712,26 +1712,6 @@ begin
   Result := ClearResult;
 end;
 
-procedure ScaleGraphic(Graphic: TGraphic; Scale: Integer);
-var
-  P: TPoint;
-  DstBitmap: TBitmap;
-begin
-  DstBitmap := TBitmap.Create;
-  try
-    DstBitmap.Monochrome := True;
-    DstBitmap.PixelFormat := pf1Bit;
-    P.X := Graphic.Width * Scale;
-    P.Y := Graphic.Height * Scale;
-    DstBitmap.Width := P.X;
-    DstBitmap.Height := P.Y;
-    DstBitmap.Canvas.StretchDraw(Rect(0, 0, P.X, P.Y), Graphic);
-    Graphic.Assign(DstBitmap);
-  finally
-    DstBitmap.Free;
-  end;
-end;
-
 procedure TPosWinPrinter.PrintGraphics(Graphic: TGraphic;
   Width, Alignment: Integer);
 var

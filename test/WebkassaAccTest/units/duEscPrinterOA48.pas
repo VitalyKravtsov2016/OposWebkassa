@@ -1026,7 +1026,7 @@ const
   Barcode = 't=20240719T1314&s=460.00&fn=7380440700076549&i=41110&fp=2026476352&n=1';
 var
   QRCode: TQRCode;
-  PageSize: TRect;
+  PageSize: TPageArea;
 begin
   FPrinter.Initialize;
   FPrinter.SetLineSpacing(0);
@@ -1085,10 +1085,10 @@ begin
   FPrinter.PrintText(CRLF);
 
   FPrinter.SetPageMode;
-  PageSize.Left := 0;
-  PageSize.Top := 0;
-  PageSize.Right := 652;
-  PageSize.Bottom := 550;
+  PageSize.X := 0;
+  PageSize.Y := 0;
+  PageSize.Width := 652;
+  PageSize.Height := 550;
   FPrinter.SetPageModeArea(PageSize);
 
   // QR code on the right
@@ -1123,7 +1123,7 @@ const
   Barcode = 'http://dev.kofd.kz/consumer?i=1556041617048&f=768814097419&s=3098.00&t=20241211T151839';
 var
   QRCode: TQRCode;
-  PageSize: TRect;
+  PageSize: TPageArea;
 begin
   FPrinter.Initialize;
   FPrinter.SetCodePage(CODEPAGE_WCP1251);
@@ -1132,10 +1132,10 @@ begin
 
   FPrinter.SetPageMode;
   // Page mode area for text
-  PageSize.Left := 100;
-  PageSize.Top := 0;
-  PageSize.Right := 512;
-  PageSize.Bottom := 300;
+  PageSize.X := 100;
+  PageSize.Y := 0;
+  PageSize.Width := 512;
+  PageSize.Height := 300;
   FPrinter.SetPageModeArea(PageSize);
   // QR code on the right
   FPrinter.PrintText('                         ');
@@ -1170,7 +1170,7 @@ const
   Barcode = 't=20240719T1314&s=460.00&fn=7380440700076549&i=41110&fp=2026476352&n=1';
 var
   QRCode: TQRCode;
-  PageSize: TRect;
+  PageSize: TPageArea;
 begin
   FPrinter.Initialize;
   FPrinter.SetLineSpacing(0);
@@ -1229,10 +1229,10 @@ begin
   FPrinter.PrintText(CRLF);
 
   FPrinter.SetPageMode;
-  PageSize.Left := 0;
-  PageSize.Top := 0;
-  PageSize.Right := 652;
-  PageSize.Bottom := 550;
+  PageSize.X := 0;
+  PageSize.Y := 0;
+  PageSize.Width := 652;
+  PageSize.Height := 550;
   FPrinter.SetPageModeArea(PageSize);
 
   // QR code on the right

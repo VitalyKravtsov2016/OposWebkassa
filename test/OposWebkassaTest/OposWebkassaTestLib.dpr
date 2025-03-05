@@ -85,7 +85,7 @@ uses
   xmlParser in '..\..\src\Shared\XMLParser.pas',
   MockPosPrinter in 'units\MockPosPrinter.pas',
   duWebkassaImpl4 in 'units\duWebkassaImpl4.pas',
-  duOposUtils in 'units\duOposUtils.pas',
+  duPageBuffer in 'units\duPageBuffer.pas',
   duWebkassaImpl2 in 'units\duWebkassaImpl2.pas',
   duPosWinPrinter in 'units\duPosWinPrinter.pas',
   PrinterTypes in '..\..\src\Shared\PrinterTypes.pas',

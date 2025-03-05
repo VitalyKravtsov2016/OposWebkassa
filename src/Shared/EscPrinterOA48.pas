@@ -403,7 +403,7 @@ type
     procedure SetPageMode;
     procedure SetStandardMode;
     procedure SetPageModeDirection(n: Byte);
-    procedure SetPageModeArea(R: TRect);
+    procedure SetPageModeArea(R: TPageArea);
     procedure printQRCode(const Barcode: TQRCode);
     procedure SetKanjiQuadSizeMode(Value: Boolean);
     procedure FeedMarkedPaper;
@@ -1292,14 +1292,16 @@ begin
   Send(#$1B#$54 + Chr(n));
 end;
 
-procedure TEscPrinterOA48.SetPageModeArea(R: TRect);
+procedure TEscPrinterOA48.SetPageModeArea(R: TPageArea);
 begin
-  Logger.Debug('TEscPrinterOA48.SetPageModeArea');
+  Logger.Debug(WideFormat('TEscPrinterOA48.SetPageModeArea(%d,%d,%d,%d)', [
+    R.X, R.Y, R.Width, R.Height]));
+
   Send(#$1B#$57 +
-    Chr(Lo(R.Left)) + Chr(Hi(R.Left)) +
-    Chr(Lo(R.Top)) + Chr(Hi(R.Top)) +
-    Chr(Lo(R.Right)) + Chr(Hi(R.Right)) +
-    Chr(Lo(R.Bottom)) + Chr(Hi(R.Bottom)));
+    Chr(Lo(R.X)) + Chr(Hi(R.X)) +
+    Chr(Lo(R.Y)) + Chr(Hi(R.Y)) +
+    Chr(Lo(R.Width)) + Chr(Hi(R.Width)) +
+    Chr(Lo(R.Height)) + Chr(Hi(R.Height)));
 end;
 
 procedure TEscPrinterOA48.SetKanjiQuadSizeMode(Value: Boolean);

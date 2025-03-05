@@ -59,6 +59,7 @@ type
     procedure TestArrayToString;
     procedure TestDeviceDescription;
     procedure TestPageMode;
+    procedure TestPageMode2;
   end;
 
 implementation
@@ -158,7 +159,7 @@ begin
 
   if (FPort.GetDescription <> 'RawPrinterPort') then
   begin
-    CheckEquals(OPOS_PR_STANDARD, Printer.CapPowerReporting, 'CapPowerReporting');
+    CheckEquals(OPOS_PR_NONE, Printer.CapPowerReporting, 'CapPowerReporting');
     CheckEquals(OPOS_PN_DISABLED, Printer.PowerNotify, 'PowerNotify');
   end;
   CheckEquals(False, Printer.FreezeEvents, 'FreezeEvents');
@@ -500,24 +501,23 @@ end;
 
 procedure TPosPrinterPosiflexTest.TestPageMode;
 var
-  PrintArea: TRect;
+  PrintArea: TPageArea;
 const
-  Barcode = 'http://dev.kofd.kz/consumer?i=925871425876&f=211030200207&s=15443.72&t=20220826T210014';
+  Barcode = 'http://dev.kofd.kz/consumer?i=1556041617048&f=768814097419&s=3098.00&t=20241211T151839';
 begin
   OpenClaimEnable;
   CheckEquals(512, FPrinter.RecLineWidth, 'RecLineWidth');
-
   FPrinter.BarcodeInGraphics := False;
   // Start pagemode
   Printer.PageModePrint(PTR_PM_PAGE_MODE);
   // Set PageMode area
-  PrintArea.Left := 0;
-  PrintArea.Top := 0;
-  PrintArea.Right := FPrinter.RecLineWidth;
-  PrintArea.Bottom := 450;
-  Printer.PageModePrintArea := RectToStr(PrintArea);
+  PrintArea.X := 0;
+  PrintArea.Y := 0;
+  PrintArea.Width := 512;
+  PrintArea.Height := 500;
+  Printer.PageModePrintArea := PageAreaToStr(PrintArea);
   // Barcode
-  PtrCheck(Printer.PrintBarCode(PTR_S_RECEIPT, Barcode + CRLF,
+  PtrCheck(Printer.PrintBarCode(PTR_S_RECEIPT, Barcode,
     PTR_BCS_QRCODE, 0, 0, PTR_BC_CENTER, PTR_BC_TEXT_NONE));
   // Text
   PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, '«Õ   “ 00106304241645' + CRLF));
@@ -529,6 +529,47 @@ begin
   PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'œ–»’Œƒ 19.07.24 13:14' + CRLF));
   // Stop pagemode
   Printer.PageModePrint(PTR_PM_NORMAL);
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, ' ' + CRLF));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, ' ' + CRLF));
+  Printer.CutPaper(90);
+end;
+
+procedure TPosPrinterPosiflexTest.TestPageMode2;
+var
+  PrintArea: TPageArea;
+const
+  Barcode = 'http://dev.kofd.kz/consumer?i=1556041617048&f=768814097419&s=3098.00&t=20241211T151839';
+begin
+  OpenClaimEnable;
+  CheckEquals(512, FPrinter.RecLineWidth, 'RecLineWidth');
+  FPrinter.BarcodeInGraphics := False;
+  // Start pagemode
+  Printer.PageModePrint(PTR_PM_PAGE_MODE);
+  // Barcode PageModeArea
+  PrintArea.X := 380;
+  PrintArea.Y := 0;
+  PrintArea.Width := 512 - PrintArea.X;
+  PrintArea.Height := 250;
+  Printer.PageModePrintArea := PageAreaToStr(PrintArea);
+  // Barcode
+  PtrCheck(Printer.PrintBarCode(PTR_S_RECEIPT, Barcode,
+    PTR_BCS_QRCODE, 0, 0, PTR_BC_CENTER, PTR_BC_TEXT_NONE));
+  // Text PageModeArea
+  PrintArea.X := 0;
+  PrintArea.Y := 0;
+  PrintArea.Width := 370;
+  PrintArea.Height := 250;
+  Printer.PageModePrintArea := PageAreaToStr(PrintArea);
+  // Text
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, '01234567890123456789012345678901234567890123456789' + CRLF));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, '01234567890123456789012345678901234567890123456789' + CRLF));
+  // Stop pagemode
+  Printer.PageModePrint(PTR_PM_NORMAL);
+
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'After page mode 1' + CRLF));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'After page mode 2' + CRLF));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'After page mode 3' + CRLF));
+
   PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, ' ' + CRLF));
   PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, ' ' + CRLF));
   Printer.CutPaper(90);

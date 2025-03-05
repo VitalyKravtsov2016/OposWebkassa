@@ -74,6 +74,8 @@ type
     procedure TestCutterError;
     procedure TestListIndexError;
     procedure TestCutLongHeader;
+
+    procedure TestFiscalReceipt9;
   end;
 
 implementation
@@ -124,10 +126,12 @@ var
   VatRate: TVatRateRec;
 begin
   inherited SetUp;
+  (*
   if Printer = nil then
   begin
     Printer := TMockPOSPrinter.Create;
   end;
+  *)
   if Driver = nil then
   begin
     Driver := ToleFiscalPrinter.Create;
@@ -187,7 +191,7 @@ begin
     Params.PortType := PortTypeUSB;
     Params.PrinterName := 'POS-80C';
     Params.PrinterType := PrinterTypeEscCommands;
-    Params.EscPrinterType := EscPrinterTypeRongta;
+    Params.EscPrinterType := EscPrinterTypePosiflex;
     Params.FontName := FontNameA;
 
     (*
@@ -707,7 +711,6 @@ begin
   FptrCheck(Driver.EndFiscalReceipt(False));
 end;
 
-
 procedure TWebkassaImplTest.TestFiscalReceiptWithVAT;
 var
   VatRate: TVatRateRec;
@@ -1105,6 +1108,28 @@ begin
   FptrCheck(Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 3'));
   FptrCheck(Driver.EndNonFiscal, 'EndNonFiscal');
 end;
+
+procedure TWebkassaImplTest.TestFiscalReceipt9;
+begin
+  //Params.TemplateEnabled := True;
+  Params.TemplateEnabled := False;
+  Params.Template.LoadFromFile('Receipt2.xml');
+
+  OpenClaimEnable;
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+  FptrCheck(Driver.DirectIO2(30, 72, '4'));
+  FptrCheck(Driver.DirectIO2(30, 73, '1'));
+  FptrCheck(Driver.PrintRecItem('ПАКЕТ - МАЙКА', 10, 1000, 4, 10, 'шт'));
+  FptrCheck(Driver.PrintRecTotal(10, 10, '0'));
+  FptrCheck(Driver.PrintRecMessage('Оператор: Плечистая Ирина Николаевна'));
+  FptrCheck(Driver.PrintRecMessage('ID: 2013008'));
+  FptrCheck(Driver.DirectIO2(30, 302, '1'));
+  FptrCheck(Driver.DirectIO2(30, 300, CreateGUIDStr));
+  FptrCheck(Driver.DirectIO2(40, 1203, '780409402215'));
+  FptrCheck(Driver.EndFiscalReceipt(False));
+end;
+
 
 initialization
   RegisterTest('', TWebkassaImplTest.Suite);

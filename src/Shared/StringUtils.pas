@@ -9,6 +9,9 @@ uses
 type
   TSetOfChar = set of char;
 
+const
+  CRLF = #13#10;
+
 function StrToHex(const S: AnsiString): AnsiString;
 function StrToHexText(const S: AnsiString): AnsiString;
 function HexToStr(const Data: AnsiString): AnsiString;

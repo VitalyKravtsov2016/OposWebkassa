@@ -47,6 +47,7 @@ type
 
   TPageBuffer = class
   private
+    FLine: WideString;
     FLines: TPageLines;
     FLineWidth: Integer;
     FLineSpacing: Integer;
@@ -59,6 +60,7 @@ type
     procedure Print(const Text: WideString; Style: TLineStyles);
     function GetHeight: Integer;
 
+    property Line: WideString read FLine;
     property Lines: TPageLines read FLines;
     property LineWidth: Integer read FLineWidth write SetLineWidth;
     property LineSpacing: Integer read FLineSpacing write FLineSpacing;
@@ -93,9 +95,7 @@ end;
 procedure TPageBuffer.Print(const Text: WideString; Style: TLineStyles);
 var
   i: Integer;
-  Line: WideString;
 begin
-  Line := '';
   for i := 1 to Length(Text) do
   begin
     case Text[i] of
@@ -103,21 +103,22 @@ begin
       CR:
       begin
         Lines.Add(Line, Style);
-        Line := '';
+        FLine := '';
       end;
     else
-      if (TPageLine.GetCharWidth(Style) * (Length(Line)+1)) >= LineWidth then
+      if (TPageLine.GetCharWidth(Style) * (Length(Line)+1)) > LineWidth then
       begin
         Lines.Add(Line, Style);
-        Line := '';
+        FLine := '';
       end;
-      Line := Line + Text[i];
+      FLine := FLine + Text[i];
     end;
   end;
 end;
 
 procedure TPageBuffer.Clear;
 begin
+  FLine := '';
   FLines.Clear;
 end;
 

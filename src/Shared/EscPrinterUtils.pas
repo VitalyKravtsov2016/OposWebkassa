@@ -6,9 +6,9 @@ uses
   // VCL
   Windows, SysUtils, Graphics,
   // Opos
-  OposEsc,
+  OposEsc, OposPtrUtils,
   // This
-  TntGraphics, ByteUtils, DebugUtils;
+  TntGraphics, ByteUtils, DebugUtils, StringUtils;
 
 const
   FontNameA = 'Font A (12x24)';
@@ -35,6 +35,24 @@ type
     Underlined: Boolean;
   end;
 
+  { TPageArea }
+
+  TPageArea = record
+    X: Integer;
+    Y: Integer;
+    Width: Integer;
+    Height: Integer;
+  end;
+
+  { TPageMode }
+
+  TPageMode = record
+    IsActive: Boolean;
+    PrintArea: TPageArea;
+    PrintDirection: Integer;
+    VerticalPosition: Integer;
+    HorizontalPosition: Integer;
+  end;
 
 const
   KazakhUnicodeChars: array [0..17] of Integer = (
@@ -71,8 +89,49 @@ function GetKazakhUnicodeChars: WideString;
 function TestCodePage(S: WideString; CodePage: Integer): Boolean;
 function PrintModeToByte(Mode: TPrintMode): Byte;
 
+function PageAreaToStr(const R: TPageArea): string;
+function StrToPageArea(const S: string): TPageArea;
+
+function IsEqual(const P1, P2: TPageArea): Boolean;
+function PageAreaToDots(const R: TPageArea; MapMode: Integer): TPageArea;
+function PageAreaFromDots(const R: TPageArea; MapMode: Integer): TPageArea;
+
 
 implementation
+
+function IsEqual(const P1, P2: TPageArea): Boolean;
+begin
+  Result := (P1.X = P2.X) and (P1.Y = P2.Y);
+end;
+
+function PageAreaToDots(const R: TPageArea; MapMode: Integer): TPageArea;
+begin
+  Result.X := OposPtrUtils.MapToDots(R.X, MapMode);
+  Result.Y := OposPtrUtils.MapToDots(R.Y, MapMode);
+  Result.Width := OposPtrUtils.MapToDots(R.Width, MapMode);
+  Result.Height := OposPtrUtils.MapToDots(R.Height, MapMode);
+end;
+
+function PageAreaFromDots(const R: TPageArea; MapMode: Integer): TPageArea;
+begin
+  Result.X := OposPtrUtils.MapFromDots(R.X, MapMode);
+  Result.Y := OposPtrUtils.MapFromDots(R.Y, MapMode);
+  Result.Width := OposPtrUtils.MapFromDots(R.Width, MapMode);
+  Result.Height := OposPtrUtils.MapFromDots(R.Height, MapMode);
+end;
+
+function StrToPageArea(const S: string): TPageArea;
+begin
+  Result.X := GetInteger(S, 1, [',']);
+  Result.Y := GetInteger(S, 2, [',']);
+  Result.Width := GetInteger(S, 3, [',']);
+  Result.Height := GetInteger(S, 4, [',']);
+end;
+
+function PageAreaToStr(const R: TPageArea): string;
+begin
+  Result := Format('%d,%d,%d,%d', [R.X, R.Y, R.Width, R.Height]);
+end;
 
 function PrintModeToByte(Mode: TPrintMode): Byte;
 var
