@@ -48,6 +48,8 @@ type
 
   TPageMode = record
     IsActive: Boolean;
+    IsValid: Boolean;
+    Station: Integer;
     PrintArea: TPageArea;
     PrintDirection: Integer;
     VerticalPosition: Integer;

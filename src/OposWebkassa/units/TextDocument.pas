@@ -13,6 +13,17 @@ uses
   StringUtils, PrinterTypes;
 
 type
+  { TDocItemRec }
+
+  TDocItemRec = record
+    Style: Integer;
+    Text: WideString;
+    LineChars: Integer;
+    LineHeight: Integer;
+    LineSpacing: Integer;
+    FontName: string;
+  end;
+
   TDocItem = class;
   TDocItems = class;
 
@@ -63,6 +74,7 @@ type
   private
     function GetItem(Index: Integer): TDocItem;
   public
+    function AddItem(const AData: TDocItemRec): TDocItem;
     property Items[Index: Integer]: TDocItem read GetItem; default;
   end;
 
@@ -70,19 +82,17 @@ type
 
   TDocItem = class(TCollectionItem)
   private
-    FStyle: Integer;
-    FText: WideString;
-    FLineChars: Integer;
-    FLineHeight: Integer;
-    FLineSpacing: Integer;
+    FData: TDocItemRec;
   public
+    constructor Create2(Collection: TCollection; const AData: TDocItemRec);
     procedure Assign(Source: TPersistent); override;
 
-    property Style: Integer read FStyle write FStyle;
-    property Text: WideString read FText write FText;
-    property LineChars: Integer read FLineChars write FLineChars;
-    property LineHeight: Integer read FLineHeight write FLineHeight;
-    property LineSpacing: Integer read FLineSpacing write FLineSpacing;
+    property Style: Integer read FData.Style;
+    property Text: WideString read FData.Text;
+    property FontName: string read FData.FontName;
+    property LineChars: Integer read FData.LineChars;
+    property LineHeight: Integer read FData.LineHeight;
+    property LineSpacing: Integer read FData.LineSpacing;
   end;
 
 function AlignCenter2(const Line: WideString; LineWidth: Integer): WideString;
@@ -126,15 +136,17 @@ end;
 procedure TTextDocument.AddDuplicateSign;
 var
   Item: TDocItem;
+  Data: TDocItemRec;
 begin
   if FDuplicateSign then Exit;
   // Add duplicate sign
-  Item := Items.Insert(0) as TDocItem;
-  Item.Text := 'ƒ”¡À» ¿“' + CRLF;
-  Item.Style := STYLE_DWIDTH_HEIGHT;
-  Item.LineChars := LineChars;
-  Item.LineHeight := LineHeight;
-  Item.LineSpacing := LineSpacing;
+  Data.Text := 'ƒ”¡À» ¿“' + CRLF;
+  Data.Style := STYLE_DWIDTH_HEIGHT;
+  Data.LineChars := LineChars;
+  Data.LineHeight := LineHeight;
+  Data.LineSpacing := LineSpacing;
+  Item := Items.AddItem(Data);
+  Item.Index := 0;
   FDuplicateSign := True;
 end;
 
@@ -207,24 +219,23 @@ end;
 
 function TTextDocument.AddItem(const Line: WideString; Style: Integer): TDocItem;
 var
-  Item: TDocItem;
+  Data: TDocItemRec;
 begin
-  Item := TDocItem.Create(Items);
-  Item.FText := Line;
-  Item.FStyle := Style;
-  Item.FLineChars := LineChars;
-  Item.FLineHeight := LineHeight;
-  Item.FLineSpacing := -1;
-  Result := Item;
+  Data.Text := Line;
+  Data.Style := Style;
+  Data.LineChars := LineChars;
+  Data.LineHeight := LineHeight;
+  Data.LineSpacing := -1;
+  Result := Items.AddItem(Data);
 end;
 
 procedure TTextDocument.Add(Index: Integer; const Line: WideString);
 var
-  Item: TDocItem;
+  Data: TDocItemRec;
 begin
-  Item := FItems.Insert(Index) as TDocItem;
-  Item.FText := Line;
-  Item.FStyle := STYLE_NORMAL;
+  Data.Text := Line;
+  Data.Style := STYLE_NORMAL;
+  FItems.AddItem(Data).Index := Index;
 end;
 
 function TTextDocument.ConcatLines(const Line1, Line2: WideString; LineChars: Integer): WideString;
@@ -311,14 +322,19 @@ end;
 
 procedure TTextDocument.AddBarcode(const Barcode: string);
 var
-  Item: TDocItem;
+  Data: TDocItemRec;
 begin
-  Item := TDocItem.Create(Items);
-  Item.FStyle := STYLE_BARCODE;
-  Item.FText := Barcode;
+  Data.Style := STYLE_BARCODE;
+  Data.Text := Barcode;
+  Items.AddItem(Data);
 end;
 
 { TDocItems }
+
+function TDocItems.AddItem(const AData: TDocItemRec): TDocItem;
+begin
+  Result := TDocItem.Create2(Self, AData);
+end;
 
 function TDocItems.GetItem(Index: Integer): TDocItem;
 begin
@@ -327,15 +343,17 @@ end;
 
 { TDocItem }
 
+constructor TDocItem.Create2(Collection: TCollection; const AData: TDocItemRec);
+begin
+  inherited Create(Collection);
+  FData := AData;
+end;
+
 procedure TDocItem.Assign(Source: TPersistent);
-var
-  Src: TDocItem;
 begin
   if Source is TDocItem then
   begin
-    Src := Source as TDocItem;
-    FStyle := Src.Style;
-    FText := Src.Text;
+    FData := (Source as TDocItem).FData;
   end else
     inherited Assign(Source);
 end;

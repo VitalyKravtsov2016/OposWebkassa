@@ -4407,35 +4407,69 @@ begin
 end;
 
 procedure TWebkassaImpl.PrintDocItemText(Item: TDocItem);
+
+  function GetLineStyles(Style: Integer): TLineStyles;
+  begin
+    Result := [];
+    if IsFontB then Result := Result + [lsFontB];
+
+    case Style of
+      STYLE_BOLD:
+        if FCapRecBold then Result := Result + [lsBold];
+
+      STYLE_DWIDTH_HEIGHT:
+        if FCapRecDwideDhigh then
+          Result := Result + [lsDoubleWidth, lsDoubleHeight];
+
+    end;
+  end;
+
+  function GetPrefix(LineStyles: TLineStyles): string;
+  begin
+    Result := '';
+    if lsFontB in LineStyles then
+      Result := Result + ESC + '|2fT';
+
+    if lsBold in LineStyles then
+      Result := Result + ESC_Bold;
+
+    if (lsDoubleWidth in LineStyles)and(lsDoubleHeight in LineStyles) then
+    begin
+      Result := Result + ESC_DoubleHighWide;
+    end else
+    begin
+      if lsDoubleWidth in LineStyles then
+        Result := Result + ESC_DoubleWide;
+      if lsDoubleHeight in LineStyles then
+        Result := Result + ESC_DoubleHigh;
+    end;
+  end;
+
+
+
 var
   Text: WideString;
+  APrefix: WideString;
   LineSpacing: Integer;
   LineStyles: TLineStyles;
 begin
   Text := Item.Text;
 
-  FPrefix := '';
-  LineStyles := [];
-  if IsFontB then
-    LineStyles := [lsFontB];
-  case Item.Style of
-    STYLE_BOLD:
+  LineStyles := GetLineStyles(Item.Style);
+  APrefix := GetPrefix(LineStyles);
+  if APrefix <> FPrefix then
+  begin
+    if APrefix = ESC_Normal then
     begin
-      if FCapRecBold then
-      begin
-        FPrefix := ESC_Bold;
-        LineStyles := LineStyles + [lsBold];
-      end;
-    end;
-    STYLE_DWIDTH_HEIGHT:
+      APrefix := '';
+    end else
     begin
-      if FCapRecDwideDhigh then
-      begin
-        FPrefix := ESC_DoubleHighWide;
-        LineStyles := LineStyles + [lsDoubleWidth, lsDoubleHeight];
-      end;
+      if APrefix = '' then
+        APrefix := ESC_Normal;
     end;
   end;
+  FPrefix := APrefix;
+
   Text := Params.GetTranslationText(Text);
   if FPageMode then
   begin

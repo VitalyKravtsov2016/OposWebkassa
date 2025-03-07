@@ -9,7 +9,7 @@ uses
   TntClasses,
   // Opos
   Opos, OposEsc, OposPtr, OposException, OposServiceDevice19,
-  OposPOSPrinter_CCO_TLB, WException, OposPtrUtils,
+  OposPOSPrinter_CCO_TLB, WException, OposPtrUtils, OposUtils,
   // This
   LogFile, DriverError, CustomPrinter, EscPrinterUtils, BarcodeUtils, ComUtils;
 
@@ -22,14 +22,18 @@ type
     procedure PrintBarcodeAsGraphics(var Barcode: TPosBarcode);
     procedure PrintMemoryGraphic(const Data: WideString; BMPType, Width,
       Alignment: Integer);
+    procedure PrintText2(const Text: WideString);
+    function GetCanvas: TCanvas;
   private
     FLogger: ILogFile;
     FPrinter: TCustomPrinter;
     FDevice: TOposServiceDevice19;
-    FPositionY: Integer;
+    FVerticalPosition: Integer;
+    FHorizontalPosition: Integer;
     FTransaction: Boolean;
     FFontName: WideString;
-
+    FPageMode: TPageMode;
+    FPageModeBitmap: TBitmap;
     FAsyncMode: Boolean;
     FCapCharacterSet: Integer;
     FCapCompareFirmwareVersion: Boolean;
@@ -123,13 +127,8 @@ type
     FJrnNearEnd: Boolean;
     FMapCharacterSet: Boolean;
     FMapMode: Integer;
-    FPageModeArea: WideString;
+    FPageModeArea: TPoint;
     FPageModeDescriptor: Integer;
-    FPageModeHorizontalPosition: Integer;
-    FPageModePrintArea: WideString;
-    FPageModePrintDirection: Integer;
-    FPageModeStation: Integer;
-    FPageModeVerticalPosition: Integer;
     FRecBarCodeRotationList: WideString;
     FRecBitmapRotationList: WideString;
     FRecCartridgeState: Integer;
@@ -554,9 +553,9 @@ type
 
 const
   LineSpacing = 6;
-  NormalFontSize = 12;
-  DoubleFontSize = 18;
-  DefaultFontName = 'MS Sans Serif';
+  NormalFontSize = 9;
+  DoubleFontSize = 14;
+  DefaultFontName = 'Lucida Console';
 
 implementation
 
@@ -567,6 +566,9 @@ begin
   FDevice := TOposServiceDevice19.Create(FLogger);
   FDevice.ErrorEventEnabled := False;
   FPrinter := APrinter;
+  FPageMode.IsActive := False;
+  FPageModeBitmap := TBitmap.Create;
+
   Initialize;
 end;
 
@@ -574,7 +576,16 @@ destructor TPosWinPrinter.Destroy;
 begin
   FDevice.Free;
   FPrinter.Free;
+  FPageModeBitmap.Free;
   inherited Destroy;
+end;
+
+function TPosWinPrinter.GetCanvas: TCanvas;
+begin
+  if FPageMode.IsActive then
+    Result := FPageModeBitmap.Canvas
+  else
+    Result := Printer.Canvas;
 end;
 
 function TPosWinPrinter.GetPrinter: TCustomPrinter;
@@ -585,6 +596,9 @@ begin
 end;
 
 procedure TPosWinPrinter.Initialize;
+const
+  DefPageModeArea: TPoint = (X: 512; Y: 832);
+  DefPageModePrintArea: TPageArea = (X: 0; Y: 0; Width: 0; Height: 0);
 begin
   FAsyncMode := False;
   FCapCharacterSet := PTR_CCS_ASCII;
@@ -622,7 +636,7 @@ begin
   FCapRecLeft90 := True;
   FCapRecMarkFeed := 0;
   FCapRecNearEndSensor := False;
-  FCapRecPageMode := False;
+  FCapRecPageMode := True;
   FCapRecPapercut := True;
   FCapRecPresent := True;
   FCapRecRight90 := True;
@@ -680,13 +694,14 @@ begin
   FJrnNearEnd := False;
   FMapCharacterSet := False;
   FMapMode := PTR_MM_DOTS;
-  FPageModeArea := '512,832';
+  FPageModeArea := DefPageModeArea;
   FPageModeDescriptor := PTR_PM_BARCODE + PTR_PM_BC_ROTATE;
-  FPageModeHorizontalPosition := 0;
-  FPageModePrintArea := '0,0,0,0';
-  FPageModePrintDirection := 0;
-  FPageModeStation := 0;
-  FPageModeVerticalPosition := 0;
+  FPageMode.HorizontalPosition := 0;
+  FPageMode.VerticalPosition := 0;
+  FPageMode.PrintArea := DefPageModePrintArea;
+  FPageMode.PrintDirection := 0;
+  FPageMode.Station := PTR_S_RECEIPT;
+
   FRecBarCodeRotationList := '0';
   FRecBitmapRotationList := '';
   FRecCartridgeState := 0;
@@ -1369,7 +1384,7 @@ end;
 
 function TPosWinPrinter.Get_PageModeArea: WideString;
 begin
-  Result := FPageModeArea;
+  Result := PointToStr(OposPtrUtils.MapFromDots(FPageModeArea, MapMode));
 end;
 
 function TPosWinPrinter.Get_PageModeDescriptor: Integer;
@@ -1379,27 +1394,27 @@ end;
 
 function TPosWinPrinter.Get_PageModeHorizontalPosition: Integer;
 begin
-  Result := FPageModeHorizontalPosition;
+  Result := FPageMode.HorizontalPosition;
 end;
 
 function TPosWinPrinter.Get_PageModePrintArea: WideString;
 begin
-  Result := FPageModePrintArea;
+  Result := PageAreaToStr(PageAreaFromDots(FPageMode.PrintArea, MapMode));
 end;
 
 function TPosWinPrinter.Get_PageModePrintDirection: Integer;
 begin
-  Result := FPageModePrintDirection;
+  Result := FPageMode.PrintDirection;
 end;
 
 function TPosWinPrinter.Get_PageModeStation: Integer;
 begin
-  Result := FPageModeStation;
+  Result := FPageMode.Station;
 end;
 
 function TPosWinPrinter.Get_PageModeVerticalPosition: Integer;
 begin
-  Result := FPageModeVerticalPosition;
+  Result := FPageMode.VerticalPosition;
 end;
 
 function TPosWinPrinter.Get_PowerNotify: Integer;
@@ -1614,6 +1629,8 @@ begin
 
     Printer.PrinterName := DeviceName;
     Printer.Canvas.Font.Name := FontName;
+    Printer.Canvas.Font.Size := NormalFontSize;
+    Printer.Canvas.Font.Style := [];
 
     Result := ClearResult;
   except
@@ -1627,7 +1644,44 @@ end;
 
 function TPosWinPrinter.PageModePrint(Control: Integer): Integer;
 begin
-  Result := ClearResult;
+  try
+    case Control of
+      // Enter Page Mode
+      PTR_PM_PAGE_MODE:
+      begin
+        FPageMode.IsActive := True;
+        FPageMode.IsValid := False;
+        FPageMode.PrintDirection := 0;
+        FPageMode.VerticalPosition := FVerticalPosition;
+        FPageMode.HorizontalPosition := 0;
+      end;
+
+      // Print the print area and destroy the canvas and exit PageMode.
+      PTR_PM_NORMAL:
+      begin
+        if FPageMode.IsActive then
+        begin
+          Printer.Canvas.Draw(FPageMode.PrintArea.X, FPageMode.PrintArea.Y, FPageModeBitmap);
+          Inc(FVerticalPosition, FPageMode.PrintArea.Height);
+
+          FPageMode.IsActive := False;
+          FPageMode.PrintDirection := 0;
+          FPageMode.VerticalPosition := 0;
+          FPageMode.HorizontalPosition := 0;
+        end;
+      end;
+
+      // Clear the page and exit the Page Mode without any printing of any print area.
+      PTR_PM_CANCEL:
+      begin
+        FPageMode.IsActive := False;
+      end;
+    end;
+    Result := ClearResult;
+  except
+    on E: Exception do
+      Result := HandleException(E);
+  end;
 end;
 
 function TPosWinPrinter.PrintBarCode(Station: Integer;
@@ -1715,19 +1769,33 @@ end;
 procedure TPosWinPrinter.PrintGraphics(Graphic: TGraphic;
   Width, Alignment: Integer);
 var
-  PositionX: Integer;
+  OffsetX: Integer;
 begin
-  PositionX := 0;
-  ScaleGraphic(Graphic, 2);
-  if Graphic.Width < RecLineWidth then
+  OffsetX := 0;
+  if FPageMode.IsActive then
   begin
-    if Alignment = PTR_BM_RIGHT then
-      PositionX := RecLineWidth - Graphic.Width;
-    if Alignment = PTR_BM_CENTER then
-      PositionX := (RecLineWidth - Graphic.Width) div 2;
+    if Graphic.Width < FPageMode.PrintArea.Width then
+    begin
+      if Alignment = PTR_BM_RIGHT then
+        OffsetX := FPageMode.PrintArea.Width - Graphic.Width;
+      if Alignment = PTR_BM_CENTER then
+        OffsetX := (FPageMode.PrintArea.Width - Graphic.Width) div 2;
+    end;
+    GetCanvas.Draw(OffsetX, FPageMode.VerticalPosition, Graphic);
+    Inc(FPageMode.VerticalPosition, Graphic.Height + RecLineSpacing);
+    FPageMode.IsValid := True;
+  end else
+  begin
+    if Graphic.Width < RecLineWidth then
+    begin
+      if Alignment = PTR_BM_RIGHT then
+        OffsetX := RecLineWidth - Graphic.Width;
+      if Alignment = PTR_BM_CENTER then
+        OffsetX := (RecLineWidth - Graphic.Width) div 2;
+    end;
+    GetCanvas.Draw(FHorizontalPosition + OffsetX, FVerticalPosition, Graphic);
+    Inc(FVerticalPosition, Graphic.Height + RecLineSpacing);
   end;
-  Printer.Canvas.Draw(PositionX, FPositionY, Graphic);
-  Inc(FPositionY, Graphic.Height + RecLineSpacing);
 end;
 
 function TPosWinPrinter.PrintMemoryBitmap(Station: Integer;
@@ -1753,8 +1821,6 @@ procedure TPosWinPrinter.PrintText(Text: WideString);
 var
   Index: Integer;
   Token: TEscToken;
-  TokenText: WideString;
-  TextSize: TSize;
 begin
   while GetToken(Text, Token) do
   begin
@@ -1763,58 +1829,73 @@ begin
       // Normal Restores printer characteristics to normal condition.
       if Token.Text = ESC + '|N' then
       begin
-        Printer.Canvas.Font.Style := [];
-        Printer.Canvas.Font.Name := DefaultFontName;
+        GetCanvas.Font.Style := [];
+        GetCanvas.Font.Name := DefaultFontName;
       end;
       // Font
       if EscGetFontIndex(Token.Text, Index) then
-        Printer.Canvas.Font.Name := Printers.Printer.Fonts[Index];
+        GetCanvas.Font.Name := Printers.Printer.Fonts[Index];
 
       // Bold
       if Token.Text = ESC + '|bC' then
-        Printer.Canvas.Font.Style := Printer.Canvas.Font.Style + [fsBold];
+        GetCanvas.Font.Style := GetCanvas.Font.Style + [fsBold];
 
       if Token.Text = ESC + '|!bC' then
-        Printer.Canvas.Font.Style := Printer.Canvas.Font.Style - [fsBold];
+        GetCanvas.Font.Style := GetCanvas.Font.Style - [fsBold];
 
       // Underline
       if Token.Text = ESC + '|uC' then
-        Printer.Canvas.Font.Style := Printer.Canvas.Font.Style + [fsUnderline];
+        GetCanvas.Font.Style := GetCanvas.Font.Style + [fsUnderline];
 
       if Token.Text = ESC + '|!uC' then
-        Printer.Canvas.Font.Style := Printer.Canvas.Font.Style - [fsUnderline];
+        GetCanvas.Font.Style := GetCanvas.Font.Style - [fsUnderline];
 
       // Prints normal size.
       if Token.Text = ESC + '|1C' then
-        Printer.Canvas.Font.Size := NormalFontSize;
+        GetCanvas.Font.Size := NormalFontSize;
 
       // Prints double-wide characters.
       if Token.Text = ESC + '|2C' then
       begin
-        Printer.Canvas.Font.Size := DoubleFontSize;
-        Printer.Canvas.Font.Style := Printer.Canvas.Font.Style + [fsBold];
+        GetCanvas.Font.Size := DoubleFontSize;
+        GetCanvas.Font.Style := GetCanvas.Font.Style + [fsBold];
       end;
 
       // Prints double-high characters.
       if Token.Text = ESC + '|3C' then
       begin
-        Printer.Canvas.Font.Size := DoubleFontSize;
-        Printer.Canvas.Font.Style := Printer.Canvas.Font.Style + [fsBold];
+        GetCanvas.Font.Size := DoubleFontSize;
+        GetCanvas.Font.Style := GetCanvas.Font.Style + [fsBold];
       end;
 
       // Prints double-high/double-wide characters.
       if Token.Text = ESC + '|4C' then
       begin
-        Printer.Canvas.Font.Size := DoubleFontSize;
-        Printer.Canvas.Font.Style := Printer.Canvas.Font.Style + [fsBold];
+        GetCanvas.Font.Size := DoubleFontSize;
+        GetCanvas.Font.Style := GetCanvas.Font.Style + [fsBold];
       end;
     end else
     begin
-      TokenText := Token.Text;
-      Printer.Canvas.TextOut(0, FPositionY, TokenText);
-      GetTextExtentPointW(Printer.Canvas.Handle, PWideChar(TokenText), Length(TokenText), TextSize);
-      Inc(FPositionY, TextSize.cy + LineSpacing);
+      PrintText2(Token.Text);
     end;
+  end;
+end;
+
+procedure TPosWinPrinter.PrintText2(const Text: WideString);
+var
+  TextSize: TSize;
+begin
+  if FPageMode.IsActive then
+  begin
+    GetCanvas.TextOut(FPageMode.HorizontalPosition, FPageMode.VerticalPosition, Text);
+    GetTextExtentPointW(GetCanvas.Handle, PWideChar(Text), Length(Text), TextSize);
+    Inc(FPageMode.VerticalPosition, TextSize.cy + LineSpacing);
+    FPageMode.IsValid := True;
+  end else
+  begin
+    GetCanvas.TextOut(FHorizontalPosition, FVerticalPosition, Text);
+    GetTextExtentPointW(GetCanvas.Handle, PWideChar(Text), Length(Text), TextSize);
+    Inc(FVerticalPosition, TextSize.cy + LineSpacing);
   end;
 end;
 
@@ -1941,30 +2022,48 @@ end;
 procedure TPosWinPrinter.Set_PageModeHorizontalPosition(
   pPageModeHorizontalPosition: Integer);
 begin
-  FPageModeHorizontalPosition := pPageModeHorizontalPosition;
+  FPageMode.HorizontalPosition := pPageModeHorizontalPosition;
 end;
 
 procedure TPosWinPrinter.Set_PageModePrintArea(
   const pPageModePrintArea: WideString);
 begin
-  FPageModePrintArea := pPageModePrintArea;
+  if FPageMode.IsActive and FPageMode.isValid then
+  begin
+    Printer.Canvas.Draw(FPageMode.PrintArea.X, FPageMode.PrintArea.Y, FPageModeBitmap);
+  end;
+  FPageMode.IsActive := True;
+  FPageMode.IsValid := False;
+  FPageMode.PrintArea := PageAreaToDots(StrToPageArea(pPageModePrintArea), MapMode);
+  FPageMode.VerticalPosition := FVerticalPosition;
+  FPageMode.HorizontalPosition := FHorizontalPosition;
+
+  FPageModeBitmap.Free;
+  FPageModeBitmap := TBitmap.Create;
+  FPageModeBitmap.Monochrome := True;
+  FPageModeBitmap.PixelFormat := pf1Bit;
+  FPageModeBitmap.Width := FPageMode.PrintArea.Width;
+  FPageModeBitmap.Height := FPageMode.PrintArea.Height;
+  FPageModeBitmap.Canvas.Font.Name := FontName;
+  FPageModeBitmap.Canvas.Font.Size := NormalFontSize;
+  FPageModeBitmap.Canvas.Font.Style := [];
 end;
 
 procedure TPosWinPrinter.Set_PageModePrintDirection(
   pPageModePrintDirection: Integer);
 begin
-  FPageModePrintDirection := pPageModePrintDirection;
+  FPageMode.PrintDirection := pPageModePrintDirection;
 end;
 
 procedure TPosWinPrinter.Set_PageModeStation(pPageModeStation: Integer);
 begin
-  FPageModeStation := pPageModeStation;
+  FPageMode.Station := pPageModeStation;
 end;
 
 procedure TPosWinPrinter.Set_PageModeVerticalPosition(
   pPageModeVerticalPosition: Integer);
 begin
-  FPageModeVerticalPosition := pPageModeVerticalPosition;
+  FPageMode.VerticalPosition := pPageModeVerticalPosition;
 end;
 
 procedure TPosWinPrinter.Set_PowerNotify(pPowerNotify: Integer);
@@ -2083,8 +2182,8 @@ begin
       begin
         if FTransaction then
         begin
-          Printer.EndDoc(FPositionY);
-          FPositionY := 0;
+          Printer.EndDoc(FVerticalPosition);
+          FVerticalPosition := 0;
           FTransaction := False;
         end;
       end;
@@ -2094,7 +2193,7 @@ begin
         begin
           Printer.BeginDoc;
           FTransaction := True;
-          FPositionY := 0;
+          FVerticalPosition := 0;
         end;
       end;
     end;

@@ -11,7 +11,7 @@ uses
   TntClasses, Opos, OposPtr, OposPtrUtils, OposEsc,
   // This
   LogFile, PosWinPrinter, MockPrinterPort, PrinterPort, StringUtils,
-  CustomPrinter, FileUtils;
+  CustomPrinter, FileUtils, EscPrinterUtils;
 
 type
   { TPosWinPrinterTest }
@@ -32,9 +32,12 @@ type
   protected
     procedure SetUp; override;
     procedure TearDown; override;
+
+
+    procedure TestPrintReceipt;
+    procedure TestPageMode;
   published
     procedure TestRecLineChars;
-    procedure TestPrintReceipt;
   end;
 
 implementation
@@ -46,6 +49,7 @@ begin
   FLogger := TLogFile.Create;
   FWinPrinter := TBmpPrinter.Create;
   FPrinter := TPosWinPrinter.Create(FLogger, FWinPrinter);
+  FPrinter.FontName := 'Courier New';
 end;
 
 procedure TPosWinPrinterTest.TearDown;
@@ -131,6 +135,56 @@ begin
   BitmapData2 := ReadFileData(GetModulePath + 'PrintReceipt2.bmp');
   CheckEquals(BitmapData, BitmapData2, 'Receipt bimap differs');
   DeleteFile('PrintReceipt.bmp');
+end;
+
+procedure TPosWinPrinterTest.TestPageMode;
+var
+  PrintArea: TPageArea;
+  BitmapData: string;
+  BitmapData2: string;
+const
+  Barcode = 'http://dev.kofd.kz/consumer?i=1556041617048&f=768814097419&s=3098.00&t=20241211T151839';
+begin
+
+  OpenClaimEnable;
+  CheckEquals(512, FPrinter.RecLineWidth, 'RecLineWidth');
+  // Start pagemode
+  Printer.PageModePrint(PTR_PM_PAGE_MODE);
+  // Barcode PageModeArea
+  PrintArea.X := 380;
+  PrintArea.Y := 0;
+  PrintArea.Width := 512 - PrintArea.X;
+  PrintArea.Height := 120;
+  Printer.PageModePrintArea := PageAreaToStr(PrintArea);
+  // Barcode
+  PtrCheck(Printer.PrintBarCode(PTR_S_RECEIPT, Barcode,
+    PTR_BCS_QRCODE, 0, 0, PTR_BC_CENTER, PTR_BC_TEXT_NONE));
+  // Text PageModeArea
+  PrintArea.X := 0;
+  PrintArea.Y := 0;
+  PrintArea.Width := 370;
+  PrintArea.Height := 100;
+  Printer.PageModePrintArea := PageAreaToStr(PrintArea);
+  // Text
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, '01234567890123456789012345678901234567890123456789' + CRLF));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, '01234567890123456789012345678901234567890123456789' + CRLF));
+  // Stop pagemode
+  Printer.PageModePrint(PTR_PM_NORMAL);
+
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'After page mode 1' + CRLF));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'After page mode 2' + CRLF));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'After page mode 3' + CRLF));
+
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, ' ' + CRLF));
+  PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, ' ' + CRLF));
+  Printer.CutPaper(90);
+
+
+  FWinPrinter.Bitmap.SaveToFile('PageMode.bmp');
+  BitmapData := ReadFileData(GetModulePath + 'PageMode.bmp');
+  BitmapData2 := ReadFileData(GetModulePath + 'PageMode2.bmp');
+  CheckEquals(BitmapData, BitmapData2, 'Receipt bimap differs');
+  DeleteFile('PageMode.bmp');
 end;
 
 initialization

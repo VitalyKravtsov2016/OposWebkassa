@@ -189,10 +189,12 @@ begin
 
     Params.USBPort := '';
     Params.PortType := PortTypeUSB;
-    Params.PrinterName := 'POS-80C';
-    Params.PrinterType := PrinterTypeEscCommands;
+    Params.PrinterName := 'RONGTA 80mm Series Printer';
+    Params.PrinterType := PrinterTypeWindows;
     Params.EscPrinterType := EscPrinterTypePosiflex;
-    Params.FontName := FontNameA;
+    Params.FontName := 'Lucida Console';
+    //«Courier New», Courier, monospace
+    //«Lucida Console», Monaco, monospace
 
     (*
     Params.PortType := PortTypeUsb;
