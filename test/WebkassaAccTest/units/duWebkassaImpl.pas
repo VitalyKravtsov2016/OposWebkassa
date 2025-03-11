@@ -76,6 +76,7 @@ type
     procedure TestCutLongHeader;
 
     procedure TestFiscalReceipt9;
+    procedure TestFiscalReceipt10;
   end;
 
 implementation
@@ -190,8 +191,8 @@ begin
     Params.USBPort := '';
     Params.PortType := PortTypeUSB;
     Params.PrinterName := 'RONGTA 80mm Series Printer';
-    Params.PrinterType := PrinterTypeWindows;
-    Params.EscPrinterType := EscPrinterTypePosiflex;
+    Params.PrinterType := PrinterTypeEscCommands;
+    Params.EscPrinterType := EscPrinterTypeRongta;
     Params.FontName := 'Lucida Console';
     //«Courier New», Courier, monospace
     //«Lucida Console», Monaco, monospace
@@ -1132,6 +1133,25 @@ begin
   FptrCheck(Driver.EndFiscalReceipt(False));
 end;
 
+procedure TWebkassaImplTest.TestFiscalReceipt10;
+begin
+  Params.TemplateEnabled := True;
+  Params.Template.LoadFromFile('Receipt3.xml');
+
+  OpenClaimEnable;
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+  FptrCheck(Driver.DirectIO2(30, 72, '4'));
+  FptrCheck(Driver.DirectIO2(30, 73, '1'));
+  FptrCheck(Driver.PrintRecItem('ПАКЕТ - МАЙКА', 10, 1000, 4, 10, 'шт'));
+  FptrCheck(Driver.PrintRecTotal(10, 10, '0'));
+  FptrCheck(Driver.PrintRecMessage('Оператор: Плечистая Ирина Николаевна'));
+  FptrCheck(Driver.PrintRecMessage('ID: 2013008'));
+  FptrCheck(Driver.DirectIO2(30, 302, '1'));
+  FptrCheck(Driver.DirectIO2(30, 300, CreateGUIDStr));
+  FptrCheck(Driver.DirectIO2(40, 1203, '780409402215'));
+  FptrCheck(Driver.EndFiscalReceipt(False));
+end;
 
 initialization
   RegisterTest('', TWebkassaImplTest.Suite);

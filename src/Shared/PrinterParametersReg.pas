@@ -152,6 +152,8 @@ end;
 
 procedure TPrinterParametersReg.LoadSysParameters(const DeviceName: WideString);
 var
+  i: Integer;
+  RegStrKey: string;
   Reg: TTntRegistry;
   KeyName: WideString;
 begin
@@ -307,6 +309,20 @@ begin
 
       if Reg.ValueExists('ReplaceDataMatrixWithQRCode') then
         Parameters.ReplaceDataMatrixWithQRCode := Reg.ReadBool('ReplaceDataMatrixWithQRCode');
+
+      if Reg.ValueExists('TopLogoFile') then
+        Parameters.TopLogoFile := Reg.ReadString('TopLogoFile');
+
+      if Reg.ValueExists('BottomLogoFile') then
+        Parameters.BottomLogoFile := Reg.ReadString('BottomLogoFile');
+
+      Parameters.BitmapFiles.Clear;
+      for i := 1 to MaxBitmapCount do
+      begin
+        RegStrKey := Format('BitmapFile%d', [i-1]);
+        if Reg.ValueExists(RegStrKey) then
+          Parameters.BitmapFiles.Values[RegStrKey] := Reg.ReadString(RegStrKey);
+      end;
 
       Reg.CloseKey;
     end;

@@ -15,38 +15,19 @@ type
 
   TRegExprTest = class(TTestCase)
   published
-    procedure TestFontNumber;
-    procedure TestFontNumber2;
     procedure TestSplit;
+    procedure TestFontNumber;
+    procedure TestGetTagNumber;
+    procedure TestGetEscTag;
+    procedure TestGetEscTags;
+    procedure TestGetEscTags2;
+    procedure TestGetEscTags3;
+    procedure TestParseOposBarcode;
   end;
 
 implementation
 
 { TRegExprTest }
-
-procedure TRegExprTest.TestFontNumber;
-const
-  Text0 = #$1B'|0fT';
-  Text128 = #$1B'|128fT';
-  RegExprFontIndex = '\'#$1B'\|[0-9]{0,3}fT';
-var
-  R: TRegExpr;
-begin
-  CheckEquals(True, ExecRegExpr(RegExprFontIndex, Text0));
-  CheckEquals(True, ExecRegExpr(RegExprFontIndex, Text128));
-
-  R := TRegExpr.Create;
-  try
-    R.Expression := '[0-9]{0,3}';
-    CheckEquals(True, R.Exec(Text0));
-    CheckEquals('0', R.Match[0], 'R.Match[0]');
-    CheckEquals(True, R.Exec(Text128));
-    CheckEquals('128', R.Match[0], 'R.Match[0]');
-
-  finally
-    R.Free;
-  end;
-end;
 
 procedure TRegExprTest.TestSplit;
 const
@@ -67,109 +48,133 @@ begin
   end;
 end;
 
+procedure TRegExprTest.TestFontNumber;
 const
-  RegExprNumber = '[0-9]{0,3}';
-  RegExprFontIndex      = '\'#$1B'\|[0-9]fT';
-  RegExprPartialCut     = '\'#$1B'\|[0-9]{0,3}P';
-  RegExprFeedCut        = '\'#$1B'\|[0-9]{1,3}fP';
-  RegExprFeedCutStamp   = '\'#$1B'\|[0-9]{1,3}sP';
-  RegExprFireStamp      = '\'#$1B'\|sL'; // ESC |sL
-  RegExprPrintBitmap    = '\'#$1B'\|[0-9]{1,2}B'; // ESC |#B
-
-  /////////////////////////////////////////////////////////////////////////////
-  // Print top logo
-  // Prints the pre-stored top logo
-
-  RegExprPrintTLogo     = '\'#$1B'\|tL';
-
-  /////////////////////////////////////////////////////////////////////////////
-  // Print bottom logo ESC |bL
-  // Prints the pre-stored bottom logo.
-
-  RegExprPrintBLogo    = '\'#$1B'\|bL';
-
-  /////////////////////////////////////////////////////////////////////////////
-  // Feed lines ESC |#lF
-  // Feed the paper forward by lines. The character ‘#’ is
-  // replaced by an ASCII decimal string telling the number of
-  // lines to be fed. If ‘#’ is omitted, then one line is fed.
-
-  RegExprFeedLines    = '\'#$1B'\|[0-9]{0,3}1F';
-
-  /////////////////////////////////////////////////////////////////////////////
-  // Feed units ESC |#uF
-  // Feed the paper forward by mapping mode units. The
-  // character ‘#’ is replaced by an ASCII decimal string
-  // telling the number of units to be fed. If ‘#’ is omitted, then
-  // one unit is fed.
-
-
-function GetTag(var S: string; P: Integer; var Tag: TEscTag): Boolean;
+  Text0 = #$1B'|0fT';
+  Text128 = #$1B'|128fT';
+  RegExprFontIndex = '\'#$1B'\|[0-9]{0,3}fT';
 var
   R: TRegExpr;
 begin
-(*
-  Result := False;
+  CheckEquals(True, ExecRegExpr(RegExprFontIndex, Text0));
+  CheckEquals(True, ExecRegExpr(RegExprFontIndex, Text128));
+
   R := TRegExpr.Create;
   try
-    R.Expression := RegExprNumber;
-    if R.ExecPos(P) then
-    begin
-      R.Match[0]
-        R.MatchPos[0]
-
-      end;
-    end;
-  end;
-    until false;
-
-    R.Expression := RegExprFontIndex;
-    CheckEquals(True, , 'R.ExecPos(1)');
-    //R.Replace()
+    R.InputString := Text0;
+    R.Expression := '[0-9]{0,3}';
+    CheckEquals(True, R.Exec(Text0));
+    CheckEquals(0, R.SubExprMatchCount, 'R.SubExprMatchCount');
     CheckEquals('0', R.Match[0], 'R.Match[0]');
 
-
-
+    R.InputString := Text128;
     CheckEquals(True, R.Exec(Text128));
     CheckEquals('128', R.Match[0], 'R.Match[0]');
-
   finally
     R.Free;
   end;
-*)
-
 end;
 
+procedure TRegExprTest.TestGetTagNumber;
+begin
+  CheckEquals(123, GetTagNumber(#$1B'|123fT'), 'GetTagNumber.0');
+  CheckEquals(75, GetTagNumber(#$1B'|75P'), 'GetTagNumber.1');
+  CheckEquals(50, GetTagNumber(#$1B'|50P'), 'GetTagNumber.1');
+end;
 
-procedure TRegExprTest.TestFontNumber2;
-const
-  Text = '123'#$1B'|123fT456';
-  EscPrefix = '\'#$1B'\|';
+procedure TRegExprTest.TestGetEscTag;
 var
   S: string;
-  P: Integer;
   Tag: TEscTag;
-  Tags: TEscTags;
 begin
-  S := Text;
-  repeat
-    P := Pos(S, EscPrefix);
-    if P >= 1 then
-    begin
-      //Copy(S, 1, P);
-      if GetTag(S, P, Tag) then
-      begin
-        SetLength(Tags, Length(Tags) + 1);
-        Tags[Length(Tags)-1] := Tag;
-      end;
-    end;
-  until P = 0;
-
-  CheckEquals(0, Length(Tags), 'Tags.Count');
+  S := #$1B'|123fT';
+  CheckEquals(True, GetEscTag(S, Tag), 'GetEscTag.0');
+  CheckEquals('', Tag.Text, 'Tag.Text.0');
+  CheckEquals(Ord(ttFontIndex), Ord(Tag.TagType), 'Tag.TagType.0');
+  CheckEquals(123, Tag.Number, 'Tag.Number');
 end;
 
-//initialization
-//  RegisterTest('', TRegExprTest.Suite);
+
+procedure TRegExprTest.TestGetEscTags;
+var
+  Tags: TEscTags;
+const
+  Text = '8273468273468'#$1B'|128fT987987'#$1B'|50P876876';
+begin
+  Tags := GetEscTags(Text);
+  CheckEquals(5, Length(Tags), 'Length(Tags)');
+
+  CheckEquals('8273468273468', Tags[0].Text, 'Tags[0].Text');
+  CheckEquals(Ord(ttText), Ord(Tags[0].TagType), 'Tags[0].TagType');
+  CheckEquals(0, Tags[0].Number, 'Tags[0].Number');
+
+  CheckEquals('', Tags[1].Text, 'Tags[1].Text');
+  CheckEquals(Ord(ttFontIndex), Ord(Tags[1].TagType), 'Tags[1].TagType');
+  CheckEquals(128, Tags[1].Number, 'Tags[1].Number');
+
+  CheckEquals('987987', Tags[2].Text, 'Tags[2].Text');
+  CheckEquals(Ord(ttText), Ord(Tags[2].TagType), 'Tags[2].TagType');
+  CheckEquals(0, Tags[2].Number, 'Tags[2].Number');
+
+  CheckEquals('', Tags[3].Text, 'Tags[3].Text');
+  CheckEquals(Ord(ttPaperCut), Ord(Tags[3].TagType), 'Tags[3].TagType');
+  CheckEquals(50, Tags[3].Number, 'Tags[3].Number');
+
+  CheckEquals('876876', Tags[4].Text, 'Tags[4].Text');
+  CheckEquals(Ord(ttText), Ord(Tags[4].TagType), 'Tags[4].TagType');
+  CheckEquals(0, Tags[4].Number, 'Tags[4].Number');
+end;
+
+procedure TRegExprTest.TestGetEscTags2;
+var
+  Tags: TEscTags;
+const
+  Text = '8273468273468';
+begin
+  Tags := GetEscTags(Text);
+  CheckEquals(1, Length(Tags), 'Length(Tags)');
+  CheckEquals('8273468273468', Tags[0].Text, 'Tags[0].Text');
+  CheckEquals(Ord(ttText), Ord(Tags[0].TagType), 'Tags[0].TagType');
+  CheckEquals(0, Tags[0].Number, 'Tags[0].Number');
+end;
+
+procedure TRegExprTest.TestGetEscTags3;
+var
+  Tags: TEscTags;
+const
+  Text = '8273468273468'#$1B'|33Rs101h200w400a-2t-13d123456789012e2873648273';
+begin
+  Tags := GetEscTags(Text);
+  CheckEquals(3, Length(Tags), 'Length(Tags)');
+
+  CheckEquals('8273468273468', Tags[0].Text, 'Tags[0].Text');
+  CheckEquals(Ord(ttText), Ord(Tags[0].TagType), 'Tags[0].TagType');
+  CheckEquals(0, Tags[0].Number, 'Tags[0].Number');
+
+  CheckEquals('s101h200w400a-2t-13d123456789012e', Tags[1].Text, 'Tags[1].Text');
+  CheckEquals(Ord(ttPrintBarcode), Ord(Tags[1].TagType), 'Tags[1].TagType');
+  CheckEquals(33, Tags[1].Number, 'Tags[1].Number');
+
+  CheckEquals('2873648273', Tags[2].Text, 'Tags[2].Text');
+  CheckEquals(Ord(ttText), Ord(Tags[2].TagType), 'Tags[2].TagType');
+  CheckEquals(0, Tags[2].Number, 'Tags[2].Number');
+end;
+
+procedure TRegExprTest.TestParseOposBarcode;
+var
+  Barcode: TOposBarcode;
+begin
+  Barcode := ParseOposBarcode('s101h200w400a-2t-13d123456789012e');
+  CheckEquals(101, Barcode.Symbology, 'Barcode.Symbology');
+  CheckEquals(200, Barcode.Height, 'Barcode.Height');
+  CheckEquals(400, Barcode.Width, 'Barcode.Width');
+  CheckEquals(-2, Barcode.Alignment, 'Barcode.Alignment');
+  CheckEquals(-13, Barcode.TextPosition, 'Barcode.TextPosition');
+  CheckEquals('123456789012', Barcode.Data, 'Barcode.Data');
+end;
+
+initialization
+  RegisterTest('', TRegExprTest.Suite);
 
 
 end.

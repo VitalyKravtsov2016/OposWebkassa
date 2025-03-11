@@ -1881,6 +1881,107 @@ begin
   end;
 end;
 
+(*
+procedure TPosWinPrinter.PrintText(Text: WideString);
+var
+  i: Integer;
+  Tag: TEscTag;
+  Tags: TEscTags;
+  Barcode: TOposBarcode;
+begin
+  Tags := GetEscTags(Text);
+  for i := 0 to Length(Tags)-1 do
+  begin
+    Tag := Tags[i];
+    case Tag.TagType of
+      ttText:
+      begin
+        PrintText2(Tag.Text);
+      end;
+      ttPrintBarcode:
+      begin
+        Barcode := ParseOposBarcode(Tag.Text);
+        PrintBarcode(PTR_S_RECEIPT, Barcode.Data, Barcode.Symbology,
+          Barcode.Height, Barcode.Width, Barcode.Alignment, Barcode.TextPosition);
+      end;
+      ttFontIndex:
+      begin
+        GetCanvas.Font.Name := Printers.Printer.Fonts[Tag.Number];
+      end;
+      ttBold:
+      begin
+        GetCanvas.Font.Style := GetCanvas.Font.Style + [fsBold];
+      end;
+      ttNoBold:
+      begin
+        GetCanvas.Font.Style := GetCanvas.Font.Style - [fsBold];
+      end;
+      ttUnderline:
+      begin
+        GetCanvas.Font.Style := GetCanvas.Font.Style + [fsUnderline];
+      end;
+      ttNoUnderline:
+      begin
+        GetCanvas.Font.Style := GetCanvas.Font.Style - [fsUnderline];
+      end;
+      ttItalic:
+      begin
+        GetCanvas.Font.Style := GetCanvas.Font.Style + [fsItalic];
+      end;
+      ttNoItalic:
+      begin
+        GetCanvas.Font.Style := GetCanvas.Font.Style - [fsItalic];
+      end;
+      ttNormalSize:
+      begin
+        GetCanvas.Font.Size := NormalFontSize;
+        GetCanvas.Font.Style := GetCanvas.Font.Style - [fsBold];
+      end;
+      ttDoubleWide:
+      begin
+        GetCanvas.Font.Size := DoubleFontSize;
+        GetCanvas.Font.Style := GetCanvas.Font.Style + [fsBold];
+      end;
+      ttDoubleHigh:
+      begin
+        GetCanvas.Font.Size := DoubleFontSize;
+        GetCanvas.Font.Style := GetCanvas.Font.Style + [fsBold];
+      end;
+      ttDoubleHighWide:
+      begin
+        GetCanvas.Font.Size := DoubleFontSize;
+        GetCanvas.Font.Style := GetCanvas.Font.Style + [fsBold];
+      end;
+      ttScaleHorizontally,
+      ttScaleVertically:
+      begin
+        GetCanvas.Font.Size := NormalFontSize * Tag.Number;
+      end;
+      ttNormal:
+      begin
+        GetCanvas.Font.Style := [];
+        GetCanvas.Font.Name := DefaultFontName;
+      end;
+      ttPaperCut:;
+      ttFeedCut:;
+      ttFeedUnits:;
+      ttFeedReverse:;
+      ttPassThrough:;
+      ttAlignCenter:;
+      ttAlignRight:;
+      ttAlignLeft:;
+      ttStrikeThrough:;
+      ttNoStrikeThrough:;
+      //ttPrintBitmap: printBitmapByNumber(Tag.Number);
+      //ttPrintTLogo: PrintBitmap(PTR_S_RECEIPT, Params.TopLogoFile,
+      //FileName: WideString; Width: Integer; Alignment: Integer): Integer; safecall;
+      //ttPrintBLogo: printBottomLogo;
+      //ttFeedLines: FeedLines(Tag.Number);
+    end;
+  end;
+end;
+*)
+
 procedure TPosWinPrinter.PrintText2(const Text: WideString);
 var
   TextSize: TSize;

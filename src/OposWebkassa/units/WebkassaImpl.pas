@@ -4449,27 +4449,13 @@ procedure TWebkassaImpl.PrintDocItemText(Item: TDocItem);
 
 var
   Text: WideString;
-  APrefix: WideString;
   LineSpacing: Integer;
   LineStyles: TLineStyles;
 begin
   Text := Item.Text;
 
   LineStyles := GetLineStyles(Item.Style);
-  APrefix := GetPrefix(LineStyles);
-  if APrefix <> FPrefix then
-  begin
-    if APrefix = ESC_Normal then
-    begin
-      APrefix := '';
-    end else
-    begin
-      if APrefix = '' then
-        APrefix := ESC_Normal;
-    end;
-  end;
-  FPrefix := APrefix;
-
+  FPrefix := GetPrefix(LineStyles);
   Text := Params.GetTranslationText(Text);
   if FPageMode then
   begin
@@ -4515,7 +4501,7 @@ begin
   PageModeArea := StrToPoint(Printer.PageModeArea);
   BarcodeSize := GetBarcodeSize(Barcode);
   BarcodeSize.X := BarcodeSize.X + 50;
-  BarcodeSize.Y := BarcodeSize.Y*3 + 100;
+  BarcodeSize.Y := BarcodeSize.Y*4 + 100;
   LineHeight := FPrinter.RecLineHeight + FPrinter.RecLineSpacing;
   BarcodeSize.Y := ((BarcodeSize.Y + LineHeight-1) div LineHeight)*LineHeight;
   FPrintArea.X := PageModeArea.X - BarcodeSize.X;
@@ -4524,6 +4510,7 @@ begin
   FPrintArea.Height := BarcodeSize.Y;
   Printer.PageModePrintArea := PageAreaToStr(FPrintArea);
   // Print barcode
+  Printer.PrintNormal(FPTR_S_RECEIPT, CRLF);
   PrintBarcodeEsc(Barcode);
   // PageModePrintArea for text
   FPrintArea.X := 0;

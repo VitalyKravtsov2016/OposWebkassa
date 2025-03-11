@@ -2645,7 +2645,6 @@ begin
       // Normal Restores printer characteristics to normal condition.
       if Token.Text = ESC + '|N' then
         FPrinter.Initialize;
-
       // Font
       if Token.Text = ESC + '|0fT' then
         PrintMode := PrintMode - [pmFontB];
