@@ -21,7 +21,7 @@ uses
   WebkassaClient, FiscalPrinterState, CustomReceipt, NonFiscalDoc, ServiceVersion,
   PrinterParameters, CashInReceipt, CashOutReceipt,
   SalesReceipt, TextDocument, ReceiptItem, StringUtils, DebugUtils, VatRate,
-  uZintBarcode, uZintInterface, FileUtils, PosWinPrinter, PosPrinterRongta,
+  uZintBarcode, uZintInterface, FileUtils, PosPrinterWindows, PosPrinterRongta,
   PosPrinterOA48, PosPrinterPosiflex,  ReceiptTemplate,
   SerialPort, PrinterPort, SocketPort, RawPrinterPort, UsbPrinterPort,
   PrinterTypes, DirectIOAPI, BarcodeUtils, PrinterParametersReg, JsonUtils,
@@ -569,10 +569,10 @@ begin
   end;
 end;
 
-function IsCharacterSetSupported(const CharacterSetList: string;
+function IsCharacterSetSupported(const CharacterSetList: WideString;
   CharacterSet: Integer): Boolean;
 begin
-  Result := Pos(IntToStr(CharacterSet), CharacterSetList) <> 0;
+  Result := WideTextPos(IntToStr(CharacterSet), CharacterSetList) <> 0;
 end;
 
 { TWebkassaImpl }
@@ -1021,7 +1021,7 @@ begin
       pData := DIO_BARCODE_QRCODE;
   end;
 
-  if Pos(';', pString) = 0 then
+  if WideTextPos(';', pString) = 0 then
   begin
     Barcode.BarcodeType := pData;
     Barcode.Data := pString;
@@ -1064,7 +1064,7 @@ begin
       pData := DIO_BARCODE_QRCODE;
   end;
 
-  if Pos(';', pString) = 0 then
+  if WideTextPos(';', pString) = 0 then
   begin
     Barcode.BarcodeType := pData;
     Barcode.Data := HexToStr(pString);
@@ -3040,13 +3040,14 @@ function TWebkassaImpl.CreatePrinter: IOPOSPOSPrinter;
     Result := PosPrinter.ControlInterface;
   end;
 
-  function CreateWindowsPrinter: IOPOSPOSPrinter;
-  var
-    PosWinPrinter: TPosWinPrinter;
+  function CreateWindowsPrinter: TPosPrinterWindows;
   begin
-    PosWinPrinter := TPosWinPrinter.Create(Logger, nil);
-    PosWinPrinter.FontName := Params.FontName;
-    Result := PosWinPrinter;
+    Result := TPosPrinterWindows.Create(Logger, nil);
+    Result.PrinterName := Params.PrinterName;
+    Result.FontName := Params.FontName;
+    Result.TopLogoFile := Params.TopLogoFile;
+    Result.BottomLogoFile := Params.BottomLogoFile;
+    Result.BitmapFiles := Params.BitmapFiles;
   end;
 
 begin
@@ -3876,7 +3877,7 @@ begin
     S := FieldName;
     Result := '';
     repeat
-      P := Pos('.', S);
+      P := WideTextPos('.', S);
       if P <> 0 then
       begin
         Field := Copy(S, 1, P-1);
@@ -4112,7 +4113,7 @@ begin
   Result := Line;
   while True do
   begin
-    P := Pos(CRLF, Result);
+    P := WideTextPos(CRLF, Result);
     if P <= 0 then Break;
     Result := Copy(Result, P+2, Length(Result));
   end;
@@ -4502,6 +4503,7 @@ begin
   BarcodeSize := GetBarcodeSize(Barcode);
   BarcodeSize.X := BarcodeSize.X + 50;
   BarcodeSize.Y := BarcodeSize.Y*4 + 100;
+
   LineHeight := FPrinter.RecLineHeight + FPrinter.RecLineSpacing;
   BarcodeSize.Y := ((BarcodeSize.Y + LineHeight-1) div LineHeight)*LineHeight;
   FPrintArea.X := PageModeArea.X - BarcodeSize.X;

@@ -387,7 +387,7 @@ begin
   Result := '';
   case APrinterType of
     PrinterTypeOPOS: Result := '';
-    PrinterTypeWindows: Result := Printers.Printer.Fonts.GetText;
+    PrinterTypeWindows: Result := GetRasterFonts(Printers.Printer.Handle);
     PrinterTypeEscCommands: Result := FontNames;
   end;
 end;

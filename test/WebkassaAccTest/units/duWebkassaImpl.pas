@@ -189,9 +189,9 @@ begin
     Params.AcceptLanguage := 'kk-KZ';
 
     Params.USBPort := '';
-    Params.PortType := PortTypeUSB;
+    Params.PortType := PortTypeWindows;
     Params.PrinterName := 'RONGTA 80mm Series Printer';
-    Params.PrinterType := PrinterTypeEscCommands;
+    Params.PrinterType := PrinterTypeWindows;
     Params.EscPrinterType := EscPrinterTypeRongta;
     Params.FontName := 'Lucida Console';
     //«Courier New», Courier, monospace

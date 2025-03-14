@@ -6,7 +6,7 @@ uses
   // Opos
   Opos, OposFptr, OposException,
   // Tnt
-  TntClasses,
+  TntClasses, TntSysUtils, 
   // This
   gnugettext, StringUtils, DirectIOAPI, PrinterTypes;
 
@@ -346,7 +346,7 @@ begin
       1228: FCustomerINN := pString;
       1008:
       begin
-        if Pos('@', pString) <> 0 then
+        if WideTextPos('@', pString) <> 0 then
           FCustomerEmail := pString
         else
           FCustomerPhone := pString;

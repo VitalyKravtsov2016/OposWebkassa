@@ -11,14 +11,9 @@ uses
   Opos, Oposhi, OposException,
   // This
   WException, LogFile, FileUtils, VatRate, SerialPort, SerialPorts, ReceiptItem,
-  Translation, ReceiptTemplate, WebkassaClient;
+  Translation, ReceiptTemplate, WebkassaClient, PrinterTypes;
 
 const
-  /////////////////////////////////////////////////////////////////////////////
-  // Maximum bitmap count
-
-  MaxBitmapCount = 10;
-
   /////////////////////////////////////////////////////////////////////////////
   // Barcode print mode
 
@@ -235,7 +230,6 @@ type
     FLineSpacing: Integer;
     FPrintEnabled: Boolean;
     FUnits: TUnitItems;
-    FBitmapFiles: TStrings;
 
     procedure LogText(const Caption, Text: WideString);
     procedure SetHeaderText(const Text: WideString);
@@ -275,6 +269,7 @@ type
     USBPort: string;
     TopLogoFile: string;
     BottomLogoFile: string;
+    BitmapFiles: TBitmapFiles;
 
     constructor Create(ALogger: ILogFile);
     destructor Destroy; override;
@@ -341,7 +336,6 @@ type
     property LineSpacing: Integer read FLineSpacing write FLineSpacing;
     property PrintEnabled: Boolean read FPrintEnabled write FPrintEnabled;
     property UnitNames: TUnitNames read FUnitNames;
-    property BitmapFiles: TStrings read FBitmapFiles;
   end;
 
 function QRSizeToWidth(QRSize: Integer): Integer;
@@ -387,7 +381,6 @@ begin
   FTranslations := TTranslations.Create;
   FTemplate := TReceiptTemplate.Create(ALogger);
   FUnits := TUnitItems.Create(TUnitItem);
-  FBitmapFiles := TStringList.Create;
 
   SetDefaults;
   Translations.Load;
@@ -400,7 +393,6 @@ begin
   FUnitNames.Free;
   FTemplate.Free;
   FTranslations.Free;
-  FBitmapFiles.Free;
   inherited Destroy;
 end;
 

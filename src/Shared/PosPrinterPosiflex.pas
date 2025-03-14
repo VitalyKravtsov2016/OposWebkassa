@@ -13,7 +13,7 @@ uses
   // This
   LogFile, DriverError, EscPrinterPosiflex, PrinterPort, NotifyThread,
   RegExpr, SerialPort, Jpeg, GifImage, BarcodeUtils, StringUtils, DebugUtils,
-  PtrDirectIO, EscPrinterUtils, ComUtils, OposEventsAdapter;
+  PtrDirectIO, EscPrinterUtils, ComUtils, OposEventsAdapter, PrinterTypes;
 
 type
   { TPosPrinterPosiflex }
@@ -27,10 +27,8 @@ type
     FPrinter: TEscPrinterPosiflex;
     FDevice: TOposServiceDevice19;
     FLastPrintMode: TPrinterModes;
-
     FFontName: WideString;
     FDevicePollTime: Integer;
-
     FAsyncMode: Boolean;
     FCapCharacterSet: Integer;
     FCapConcurrentJrnRec: Boolean;
@@ -1025,28 +1023,45 @@ end;
 
 function TPosPrinterPosiflex.DirectIO(Command: Integer; var pData: Integer;
   var pString: WideString): Integer;
+
+  function DioCheckBarcode(var pData: Integer; var pString: WideString): string;
+  begin
+    case pData of
+      PTR_BCS_UPCA,
+      PTR_BCS_UPCE,
+      PTR_BCS_EAN8,
+      PTR_BCS_EAN13,
+      PTR_BCS_ITF,
+      PTR_BCS_Codabar,
+      PTR_BCS_Code39,
+      PTR_BCS_Code93,
+      PTR_BCS_Code128,
+      PTR_BCS_QRCODE,
+      PTR_BCS_PDF417: pString := '1';
+    else
+      pString := '0';
+    end;
+  end;
+
+  function DioGetBarcodeSize(var pData: Integer; var pString: WideString): string;
+  var
+    Barcode: TBarcodeRec;
+  begin
+    Barcode := StrToBarcode(pString);
+
+    Result := '';
+  end;
+
 begin
   try
     Device.CheckOpened;
     case Command of
       DIO_PTR_CHECK_BARCODE:
-      begin
-        case pData of
-          PTR_BCS_UPCA,
-          PTR_BCS_UPCE,
-          PTR_BCS_EAN8,
-          PTR_BCS_EAN13,
-          PTR_BCS_ITF,
-          PTR_BCS_Codabar,
-          PTR_BCS_Code39,
-          PTR_BCS_Code93,
-          PTR_BCS_Code128,
-          PTR_BCS_QRCODE,
-          PTR_BCS_PDF417: pString := '1';
-        else
-          pString := '0';
-        end;
-      end;
+        pString := DioCheckBarcode(pData, pString);
+
+      DIO_PTR_GET_BARCODE_SIZE:
+        pString := DioGetBarcodeSize(pData, pString);
+
     end;
     Result := ClearResult;
   except

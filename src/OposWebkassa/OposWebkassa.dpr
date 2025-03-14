@@ -57,7 +57,7 @@ uses
   POSPrinterLog in '..\Opos\POSPrinterLog.pas',
   EscPrinterOA48 in '..\Shared\EscPrinterOA48.pas',
   ByteUtils in '..\Shared\ByteUtils.pas',
-  PosWinPrinter in '..\Shared\PosWinPrinter.pas',
+  PosPrinterWindows in '..\Shared\PosPrinterWindows.pas',
   PrinterPort in '..\Shared\PrinterPort.pas',
   PosPrinterOA48 in '..\Shared\PosPrinterOA48.pas',
   SerialPort in '..\Shared\SerialPort.pas',

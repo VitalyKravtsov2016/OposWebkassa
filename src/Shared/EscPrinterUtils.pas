@@ -4,7 +4,7 @@ interface
 
 uses
   // VCL
-  Windows, SysUtils, Graphics,
+  Windows, SysUtils, Classes, Graphics, Printers,
   // Opos
   OposEsc, OposPtrUtils,
   // This
@@ -98,8 +98,93 @@ function IsEqual(const P1, P2: TPageArea): Boolean;
 function PageAreaToDots(const R: TPageArea; MapMode: Integer): TPageArea;
 function PageAreaFromDots(const R: TPageArea; MapMode: Integer): TPageArea;
 
+function GetDeviceFonts(DC: HDC): string;
+function GetRasterFonts(DC: HDC): string;
 
 implementation
+
+function LogFontToStr(const LogFont: TLogFont): string;
+begin
+  Result := Format(
+    '%.3d x %.3d, PitchAndFamily: %d, Escapement: %d, Orientation: %d, Weight: %d, Italic: %d, Underline: %d, StrikeOut: %d, CharSet: %d, OutPrecision: %d, ClipPrecision: %d, Quality: %d, FaceName: %s',
+  [
+  LogFont.lfWidth,
+  LogFont.lfHeight,
+  LogFont.lfPitchAndFamily,
+  LogFont.lfEscapement,
+  LogFont.lfOrientation,
+  LogFont.lfWeight,
+  LogFont.lfItalic,
+  LogFont.lfUnderline,
+  LogFont.lfStrikeOut,
+  LogFont.lfCharSet,
+  LogFont.lfOutPrecision,
+  LogFont.lfClipPrecision,
+  LogFont.lfQuality,
+  LogFont.lfFaceName]);
+end;
+
+function EnumRasterFontsProc(var LogFont: TLogFont; var TextMetric: TTextMetric;
+  FontType: Integer; Data: Pointer): Integer; stdcall;
+var
+  FontName: string;
+const
+  PitchAndFamily = FIXED_PITCH + FF_MODERN;
+begin
+  if (LogFont.lfWeight = FW_NORMAL)and((LogFont.lfPitchAndFamily and PitchAndFamily) = PitchAndFamily) then
+  begin
+    FontName := LogFont.lfFaceName;
+    if (Length(FontName) > 0)and(FontName[1] <> '@') then
+      TStrings(Data).Add(FontName);
+  end;
+  Result := 1;
+end;
+
+function EnumDeviceFontsProc(var LogFont: TLogFont; var TextMetric: TTextMetric;
+  FontType: Integer; Data: Pointer): Integer; stdcall;
+var
+  FontName: string;
+const
+  FontTypeBits = RASTER_FONTTYPE + DEVICE_FONTTYPE;
+begin
+  if (FontType and FontTypeBits) = FontTypeBits then
+  begin
+    FontName := LogFont.lfFaceName;
+    if (Length(FontName) > 0)and(FontName[1] <> '@') then
+      TStrings(Data).Add(FontName);
+  end;
+  Result := 1;
+end;
+
+function GetRasterFonts(DC: HDC): string;
+var
+  LFont: TLogFont;
+  Fonts: TStringList;
+begin
+  Fonts := TStringList.Create;
+  try
+    FillChar(LFont, sizeof(LFont), 0);
+    EnumFontFamiliesEx(DC, LFont, @EnumRasterFontsProc, LongInt(Fonts), 0);
+    Result := Fonts.Text;
+  finally
+    Fonts.Free;
+  end;
+end;
+
+function GetDeviceFonts(DC: HDC): string;
+var
+  LFont: TLogFont;
+  Fonts: TStringList;
+begin
+  Fonts := TStringList.Create;
+  try
+    FillChar(LFont, sizeof(LFont), 0);
+    EnumFontFamiliesEx(DC, LFont, @EnumDeviceFontsProc, LongInt(Fonts), 0);
+    Result := Fonts.Text;
+  finally
+    Fonts.Free;
+  end;
+end;
 
 function IsEqual(const P1, P2: TPageArea): Boolean;
 begin

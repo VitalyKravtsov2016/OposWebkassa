@@ -4,18 +4,24 @@ interface
 
 uses
   // VCL
-  Graphics, Printers;
+  Graphics, Printers,
+  // Jcl
+  JclPrint;
 
 type
   { TCustomPrinter }
 
   TCustomPrinter = class
   public
+    function Printing: Boolean; virtual;
+    function GetPageWidth: Integer; virtual;
+    function GetPageHeight: Integer; virtual;
     procedure EndDoc(Height: Integer); virtual; abstract;
     procedure BeginDoc; virtual; abstract;
     function GetCanvas: TCanvas; virtual; abstract;
     function GetPrinterName: string; virtual; abstract;
     procedure SetPrinterName(const Value: string); virtual; abstract;
+    procedure Send(const Value: string); virtual;
 
     property Canvas: TCanvas read GetCanvas;
     property PrinterName: string read GetPrinterName write SetPrinterName;
@@ -27,12 +33,16 @@ type
   private
     FPrinterName: string;
   public
+    function Printing: Boolean; override;
     function GetCanvas: TCanvas; override;
     function GetPrinterName: string; override;
 
+    function GetPageHeight: Integer; override;
+    function GetPageWidth: Integer; override;
     procedure EndDoc(Height: Integer); override;
     procedure BeginDoc; override;
     procedure SetPrinterName(const Value: string); override;
+    procedure Send(const Value: string); override;
 
     property Canvas: TCanvas read GetCanvas;
     property PrinterName: string read GetPrinterName write SetPrinterName;
@@ -70,6 +80,8 @@ type
     constructor Create;
     destructor Destroy; override;
 
+    function GetPageHeight: Integer; override;
+    function GetPageWidth: Integer; override;
     function GetCanvas: TCanvas; override;
     function GetPrinterName: string; override;
     procedure EndDoc(Height: Integer); override;
@@ -100,9 +112,29 @@ begin
   Result := Printer.Canvas;
 end;
 
+function TWinPrinter.GetPageHeight: Integer;
+begin
+  Result := Printer.PageHeight;
+end;
+
+function TWinPrinter.GetPageWidth: Integer;
+begin
+  Result := Printer.PageWidth;
+end;
+
 function TWinPrinter.GetPrinterName: string;
 begin
   Result := FPrinterName;
+end;
+
+function TWinPrinter.Printing: Boolean;
+begin
+  Result := Printer.Printing;
+end;
+
+procedure TWinPrinter.Send(const Value: string);
+begin
+  DirectPrint(FPrinterName, Value);
 end;
 
 procedure TWinPrinter.SetPrinterName(const Value: string);
@@ -153,11 +185,12 @@ end;
 
 constructor TBmpPrinter.Create;
 begin
+  inherited Create;
   FBitmap := TBitmap.Create;
   FBitmap.Monochrome := True;
   FBitmap.PixelFormat := pf1Bit;
   FBitmap.Width := 576;
-  FBitmap.Height := 1000;
+  FBitmap.Height := 2000;
 end;
 
 destructor TBmpPrinter.Destroy;
@@ -188,6 +221,38 @@ end;
 procedure TBmpPrinter.SetPrinterName(const Value: string);
 begin
   FPrinterName := Value;
+end;
+
+function TBmpPrinter.GetPageWidth: Integer;
+begin
+  Result := Bitmap.Width;
+end;
+
+function TBmpPrinter.GetPageHeight: Integer;
+begin
+  Result := Bitmap.Height;
+end;
+
+{ TCustomPrinter }
+
+function TCustomPrinter.GetPageHeight: Integer;
+begin
+  Result := 0;
+end;
+
+function TCustomPrinter.GetPageWidth: Integer;
+begin
+  Result := 0;
+end;
+
+function TCustomPrinter.Printing: Boolean;
+begin
+  Result := False;
+end;
+
+procedure TCustomPrinter.Send(const Value: string);
+begin
+
 end;
 
 end.

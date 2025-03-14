@@ -61,7 +61,7 @@ uses
   DeviceNotification in '..\Shared\DeviceNotification.pas',
   PortUtil in '..\Shared\PortUtil.pas',
   TextReport in '..\Shared\TextReport.pas',
-  PosWinPrinter in '..\Shared\PosWinPrinter.pas',
+  PosPrinterWindows in '..\Shared\PosPrinterWindows.pas',
   OposServiceDevice19 in '..\Opos\OposServiceDevice19.pas',
   NotifyThread in '..\Shared\NotifyThread.pas',
   PosPrinterOA48 in '..\Shared\PosPrinterOA48.pas',

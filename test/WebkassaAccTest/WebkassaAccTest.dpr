@@ -61,7 +61,7 @@ uses
   uZintBarcode in '..\..\src\Shared\uZintBarcode.pas',
   uZintInterface in '..\..\src\Shared\uZintInterface.pas',
   POSPrinterLog in '..\..\src\Opos\POSPrinterLog.pas',
-  PosWinPrinter in '..\..\src\Shared\PosWinPrinter.pas',
+  PosPrinterWindows in '..\..\src\Shared\PosPrinterWindows.pas',
   ByteUtils in '..\..\src\Shared\ByteUtils.pas',
   duPosPrinterPosiflex in 'units\duPosPrinterPosiflex.pas',
   PrinterPort in '..\..\src\Shared\PrinterPort.pas',
@@ -87,7 +87,7 @@ uses
   EscPrinterPosiflex in '..\..\src\Shared\EscPrinterPosiflex.pas',
   PosPrinterPosiflex in '..\..\src\Shared\PosPrinterPosiflex.pas',
   OposDevice in '..\..\src\Opos\OposDevice.pas',
-  duPosPrinterRongta in 'units\duPosPrinterRongta.pas',
+  duPosPrinterWindows in 'units\duPosPrinterWindows.pas',
   duEscPrinterPosiflex in 'units\duEscPrinterPosiflex.pas',
   EscPrinterUtils in '..\..\src\Shared\EscPrinterUtils.pas',
   PtrDirectIO in '..\..\src\OposWebkassa\units\PtrDirectIO.pas',
@@ -102,7 +102,8 @@ uses
   duPosPrinterOA48 in 'units\duPosPrinterOA48.pas',
   ComUtils in '..\..\src\Shared\ComUtils.pas',
   OposEventsAdapter in '..\..\src\Opos\OposEventsAdapter.pas',
-  duEscPrinterRongta in 'units\duEscPrinterRongta.pas';
+  duEscPrinterRongta in 'units\duEscPrinterRongta.pas',
+  duPosPrinterRongta in 'units\duPosPrinterRongta.pas';
 
 {$R *.RES}
 {$R ..\..\src\OposWebkassa\OposWebkassa.tlb}

@@ -807,5 +807,16 @@
 			<LineSpacing>0</LineSpacing>
 			<Parameter>0</Parameter>
 		</Item>
+		<Item>
+			<Text></Text>
+			<Enabled>0</Enabled>
+			<ItemType>0</ItemType>
+			<TextStyle>11</TextStyle>
+			<Alignment>0</Alignment>
+			<FormatText></FormatText>
+			<LineChars>0</LineChars>
+			<LineSpacing>0</LineSpacing>
+			<Parameter>0</Parameter>
+		</Item>
 	</Trailer>
 </root>

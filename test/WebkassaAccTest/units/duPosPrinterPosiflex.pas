@@ -549,7 +549,7 @@ begin
   PrintArea.X := 380;
   PrintArea.Y := 0;
   PrintArea.Width := 512 - PrintArea.X;
-  PrintArea.Height := 250;
+  PrintArea.Height := 500;
   Printer.PageModePrintArea := PageAreaToStr(PrintArea);
   // Barcode
   PtrCheck(Printer.PrintBarCode(PTR_S_RECEIPT, Barcode,
@@ -558,7 +558,7 @@ begin
   PrintArea.X := 0;
   PrintArea.Y := 0;
   PrintArea.Width := 370;
-  PrintArea.Height := 250;
+  PrintArea.Height := 500;
   Printer.PageModePrintArea := PageAreaToStr(PrintArea);
   // Text
   PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, '01234567890123456789012345678901234567890123456789' + CRLF));

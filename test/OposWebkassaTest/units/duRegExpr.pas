@@ -76,18 +76,25 @@ begin
 end;
 
 procedure TRegExprTest.TestGetTagNumber;
+var
+  N: Integer;
+  S: WideString;
 begin
-  CheckEquals(123, GetTagNumber(#$1B'|123fT'), 'GetTagNumber.0');
-  CheckEquals(75, GetTagNumber(#$1B'|75P'), 'GetTagNumber.1');
-  CheckEquals(50, GetTagNumber(#$1B'|50P'), 'GetTagNumber.1');
+  S := '123fT';
+  CheckEquals(True, GetTagNumber(S, '#fT', N), 'GetTagNumber.0');
+  CheckEquals(123, N, 'GetTagNumber.0');
+
+  S := '75P';
+  CheckEquals(True, GetTagNumber(S, '#P', N), 'GetTagNumber.1');
+  CheckEquals(75, N, 'GetTagNumber.1');
 end;
 
 procedure TRegExprTest.TestGetEscTag;
 var
-  S: string;
+  S: WideString;
   Tag: TEscTag;
 begin
-  S := #$1B'|123fT';
+  S := '123fT';
   CheckEquals(True, GetEscTag(S, Tag), 'GetEscTag.0');
   CheckEquals('', Tag.Text, 'Tag.Text.0');
   CheckEquals(Ord(ttFontIndex), Ord(Tag.TagType), 'Tag.TagType.0');

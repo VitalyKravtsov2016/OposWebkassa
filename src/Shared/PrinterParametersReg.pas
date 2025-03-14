@@ -9,7 +9,7 @@ uses
   TntClasses, TntStdCtrls, TntRegistry, TntSysUtils,
   // This
   PrinterParameters, LogFile, Oposhi, WException, gnugettext,
-  DriverError, VatRate, WebkassaClient, FileUtils;
+  DriverError, VatRate, WebkassaClient, FileUtils, PrinterTypes;
 
 type
   { TPrinterParametersReg }
@@ -316,12 +316,12 @@ begin
       if Reg.ValueExists('BottomLogoFile') then
         Parameters.BottomLogoFile := Reg.ReadString('BottomLogoFile');
 
-      Parameters.BitmapFiles.Clear;
-      for i := 1 to MaxBitmapCount do
+      for i := 0 to MaxBitmapCount-1 do
       begin
-        RegStrKey := Format('BitmapFile%d', [i-1]);
+        Parameters.BitmapFiles[i] := '';
+        RegStrKey := Format('BitmapFile%d', [i]);
         if Reg.ValueExists(RegStrKey) then
-          Parameters.BitmapFiles.Values[RegStrKey] := Reg.ReadString(RegStrKey);
+          Parameters.BitmapFiles[i] := Reg.ReadString(RegStrKey);
       end;
 
       Reg.CloseKey;
@@ -420,6 +420,7 @@ procedure TPrinterParametersReg.SaveSysParameters(const DeviceName: WideString);
 var
   i: Integer;
   Item: TVatRate;
+  RegStrKey: string;
   Reg: TTntRegistry;
   KeyName: WideString;
   UnitName: TUnitName;
@@ -485,6 +486,13 @@ begin
     Reg.WriteBool('HeaderPrinted', FParameters.HeaderPrinted);
     Reg.WriteBool('ReplaceDataMatrixWithQRCode', FParameters.ReplaceDataMatrixWithQRCode);
     Reg.WriteString('AcceptLanguage', FParameters.AcceptLanguage);
+    Reg.WriteString('TopLogoFile', FParameters.TopLogoFile);
+    Reg.WriteString('BottomLogoFile', FParameters.BottomLogoFile);
+    for i := 0 to MaxBitmapCount-1 do
+    begin
+      RegStrKey := Format('BitmapFile%d', [i]);
+      Reg.WriteString(RegStrKey, Parameters.BitmapFiles[i]);
+    end;
 
     Reg.CloseKey;
     // VatRates

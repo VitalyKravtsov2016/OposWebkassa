@@ -8,7 +8,15 @@ uses
   // This
   StringUtils;
 
+const
+  /////////////////////////////////////////////////////////////////////////////
+  // Maximum bitmap count
+
+  MaxBitmapCount = 10;
+
 type
+  TBitmapFiles = array [0..MaxBitmapCount-1] of string;
+
   { TBarcodeRec }
 
   TBarcodeRec = record

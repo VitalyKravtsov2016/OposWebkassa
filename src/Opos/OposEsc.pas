@@ -5,6 +5,8 @@ interface
 uses
   // VCL
   SysUtils,
+  // Tnt
+  TntSysUtils,
   // This
   RegExpr, DebugUtils;
 
@@ -64,7 +66,7 @@ type
   { TEscTag }
 
   TEscTag = record
-    Text: string;
+    Text: WideString;
     Number: Integer;
     TagType: TTagType;
   end;
@@ -93,7 +95,7 @@ const
   // ‘#’ is omitted, then a full cut is performed. For example:
   // The C string “\x1B|75P” requests a 75% partial cut.
 
-  RegExprPaperCut = '\'#$1B'\|[0-9]{0,3}P';
+  EscStrPaperCut = '#P';
 
   /////////////////////////////////////////////////////////////////////////////
   // Feed and Paper cut ESC |#fP
@@ -102,7 +104,7 @@ const
   // RecLinesToPaperCut lines. The character ‘#’ is defined
   // by the “Paper cut” escape sequence.
 
-  RegExprFeedCut = '\'#$1B'\|[0-9]{1,3}fP';
+  EscStrFeedCut = '#fP';
 
   /////////////////////////////////////////////////////////////////////////////
   // Feed, Paper cut, and Stamp ESC |#sP
@@ -113,13 +115,13 @@ const
   // Fire stamp ESC |sL Fires the stamp solenoid, which usually contains a
   // graphical store emblem.
 
-  RegExprFeedCutStamp = '\'#$1B'\|[0-9]{1,3}sP';
+  EscStrFeedCutStamp = '#sP';
 
   /////////////////////////////////////////////////////////////////////////////
   // Fire stamp ESC |sL Fires the stamp solenoid,
   // which usually contains a graphical store emblem.
 
-  RegExprFireStamp      = '\'#$1B'\|sL';
+  EscStrFireStamp      = '#sL';
 
   /////////////////////////////////////////////////////////////////////////////
   // Print bitmap ESC |#B
@@ -129,21 +131,21 @@ const
   // Print top logo ESC |tL Prints the pre-stored top logo.
   // Print bottom logo ESC |bL Prints the pre-stored bottom logo.
 
-  RegExprPrintBitmap = '\'#$1B'\|[0-9]{1,2}B';
+  EscStrPrintBitmap = '#B';
 
   /////////////////////////////////////////////////////////////////////////////
   // Print top logo
   // ESC |tL
   // Prints the pre-stored top logo.
 
-  RegExprPrintTLogo     = '\'#$1B'\|tL';
+  EscStrPrintTLogo     = '#tL';
 
   /////////////////////////////////////////////////////////////////////////////
   // Print bottom logo
   // ESC |bL
   // Prints the pre-stored bottom logo.
 
-  RegExprPrintBLogo    = '\'#$1B'\|bL';
+  EscStrPrintBLogo    = '#bL';
 
   /////////////////////////////////////////////////////////////////////////////
   // Feed lines ESC |#lF
@@ -152,7 +154,7 @@ const
   // replaced by an ASCII decimal string telling the number of
   // lines to be fed. If ‘#’ is omitted, then one line is fed.
 
-  RegExprFeedLines = '\'#$1B'\|[0-9]{1,2}lF';
+  EscStrFeedLines = '#lF';
 
   /////////////////////////////////////////////////////////////////////////////
   // Feed units ESC |#uF
@@ -162,7 +164,7 @@ const
   // telling the number of units to be fed. If ‘#’ is omitted, then
   // one unit is fed.
 
-  RegExprFeedUnits = '\'#$1B'\|[0-9]{1,2}uF';
+  EscStrFeedUnits = '#uF';
 
   /////////////////////////////////////////////////////////////////////////////
   // Feed reverse ESC |#rF
@@ -170,7 +172,7 @@ const
   // an ASCII decimal string telling the number of lines to be
   // fed. If ‘#’ is omitted, then one line is fed.
 
-  RegExprFeedReverse = '\'#$1B'\|[0-9]{1,2}rF';
+  EscStrFeedReverse = '#rF';
 
   /////////////////////////////////////////////////////////////////////////////
   // Pass through embedded data
@@ -182,7 +184,7 @@ const
   // bytes following the escape sequence that should be
   // passed through as-is to the hardware.
 
-  RegExprPassThrough = '\'#$1B'\|[0-9]{1,2}E';
+  EscStrPassThrough = '#E';
 
   /////////////////////////////////////////////////////////////////////////////
   // Print in-line barcode
@@ -192,7 +194,7 @@ const
   // definition of the characteristics of the barcode to be
   // printed. See details below.
 
-  RegExprPrintBarcode = '\'#$1B'\|[0-9]{1,2}R';
+  EscStrPrintBarcode = '#R';
 
   /////////////////////////////////////////////////////////////////////////////
   // Font typeface selection ESC |#fT
@@ -205,7 +207,7 @@ const
   // FontTypefaceList property.
   // And so on.
 
-  RegExprFontIndex = '\'#$1B'\|[0-9]{0,3}fT';
+  EscStrFontIndex = '#fT';
 
   /////////////////////////////////////////////////////////////////////////////
   // Bold ESC |(!)bC
@@ -215,8 +217,8 @@ const
   ESC_Bold = ESC + '|bC';
   ESC_NoBold = ESC + '|\!bC';
 
-  RegExprBold = '\'#$1B'\|bC';
-  RegExprNoBold = '\'#$1B'\|\!bC';
+  EscStrBold = 'bC';
+  EscStrNoBold = '!bC';
 
   /////////////////////////////////////////////////////////////////////////////
   // Underline ESC |(!)#uC
@@ -230,8 +232,8 @@ const
   ESC_Underline = ESC + '|uC';
   ESC_NoUnderline = ESC + '|!uC';
 
-  RegExprUnderline = '\'#$1B'\|uC';
-  RegExprNoUnderline = '\'#$1B'\|\!uC';
+  EscStrUnderline = 'uC';
+  EscStrNoUnderline = '\!uC';
 
   /////////////////////////////////////////////////////////////////////////////
   // Italic ESC |(!)iC
@@ -240,8 +242,8 @@ const
   ESC_Italic = ESC + '|iC';
   ESC_NoItalic = ESC + '|!iC';
 
-  RegExprItalic = '\'#$1B'\|iC';
-  RegExprNoItalic = '\'#$1B'\|\!iC';
+  EscStrItalic = 'iC';
+  EscStrNoItalic = '\!iC';
 
   /////////////////////////////////////////////////////////////////////////////
   // Alternate color (Custom)
@@ -255,7 +257,7 @@ const
   // color (Custom Color 1) is selected. Custom
   // Color 1 is usually red.
 
-  RegExprSelectColor = '\'#$1B'\|[0-9]{1,2}rC';
+  EscStrSelectColor = '#rC';
 
   /////////////////////////////////////////////////////////////////////////////
   // Reverse video
@@ -266,8 +268,8 @@ const
   EscReverseVideo = ESC + '|rvC';
   EscNoReverseVideo = ESC + '|!rvC';
 
-  RegExprReverseVideo = '\'#$1B'\|rvC';
-  RegExprNoReverseVideo = '\'#$1B'\|\!rvC';
+  EscStrReverseVideo = 'rvC';
+  EscStrNoReverseVideo = '\!rvC';
 
   /////////////////////////////////////////////////////////////////////////////
   // Shading
@@ -277,7 +279,7 @@ const
   // percentage shading desired. If ‘#’ is omitted,
   // then a printer-specific default level of shading is used.
 
-  RegExprShading = '\'#$1B'\|[0-9]{0,2}sC';
+  EscStrShading = '[0-9]{0,2}sC';
 
   /////////////////////////////////////////////////////////////////////////////
   // Single high and wide
@@ -285,7 +287,7 @@ const
   // Prints normal size.
 
   ESC_NormalSize = ESC + '|1C';
-  RegExprNormalSize = '\'#$1B'\|1C';
+  EscStrNormalSize = '1C';
 
   /////////////////////////////////////////////////////////////////////////////
   // Double wide
@@ -293,7 +295,7 @@ const
   // Prints double-wide characters.
 
   ESC_DoubleWide = ESC + '|2C';
-  RegExprDoubleWide = '\'#$1B'\|2C';
+  EscStrDoubleWide = '2C';
 
   /////////////////////////////////////////////////////////////////////////////
   // Double high
@@ -301,7 +303,7 @@ const
   // Prints double-high characters.
 
   ESC_DoubleHigh = ESC + '|3C';
-  RegExprDoubleHigh = '\'#$1B'\|3C';
+  EscStrDoubleHigh = '3C';
 
   /////////////////////////////////////////////////////////////////////////////
   // Double high and wide
@@ -309,7 +311,7 @@ const
   // Prints double-high/double-wide characters.
 
   ESC_DoubleHighWide = ESC + '|4C';
-  RegExprDoubleHighWide = '\'#$1B'\|4C';
+  EscStrDoubleHighWide = '4C';
 
   /////////////////////////////////////////////////////////////////////////////
   // Scale horizontally
@@ -317,7 +319,7 @@ const
   // Prints with the width scaled ‘#’ times the
   // normal size, where ‘#’ is replaced by an ASCII decimal string.
 
-  RegExprScaleHorizontally = '\'#$1B'\|[0-9]{1,2}hC';
+  EscStrScaleHorizontally = '#hC';
 
   /////////////////////////////////////////////////////////////////////////////
   // Scale vertically
@@ -325,7 +327,7 @@ const
   // Prints with the height scaled ‘#’ times the
   // normal size, where ‘#’ is replaced by an ASCII decimal string.
 
-  RegExprScaleVertically = '\'#$1B'\|[0-9]{1,2}vC';
+  EscStrScaleVertically = '#vC';
 
   /////////////////////////////////////////////////////////////////////////////
   // Center
@@ -333,7 +335,7 @@ const
   // Aligns following text in the center.
 
   EscAlignCenter = ESC + '|cA';
-  RegExprAlignCenter = '\'#$1B'\|cA';
+  EscStrAlignCenter = 'cA';
 
   /////////////////////////////////////////////////////////////////////////////
   // Right justify
@@ -341,7 +343,7 @@ const
   // Aligns following text at the right.
 
   EscAlignRight = ESC + '|rA';
-  RegExprAlignRight = '\'#$1B'\|rA';
+  EscStrAlignRight = 'rA';
 
   /////////////////////////////////////////////////////////////////////////////
   // Left justify (see a below)
@@ -349,7 +351,7 @@ const
   // Aligns following text at the left.
 
   EscAlignLeft = ESC + '|lA';
-  RegExprAlignLeft = '\'#$1B'\|lA';
+  EscStrAlignLeft = 'lA';
 
   /////////////////////////////////////////////////////////////////////////////
   // Strike-through
@@ -360,8 +362,8 @@ const
   // thickness is used. If ‘!’ is specified then strike-through mode is
   // switched off.
 
-  RegExprStrikeThrough = '\'#$1B'\|[0-9]{0,2}stC';
-  RegExprNoStrikeThrough = '\'#$1B'\|\!stC';
+  EscStrStrikeThrough = '[0-9]{0,2}stC';
+  EscStrNoStrikeThrough = '\!stC';
 
   /////////////////////////////////////////////////////////////////////////////
   // Normal
@@ -369,50 +371,160 @@ const
   // Restores printer characteristics to normal condition.
 
   ESC_Normal = ESC + '|N';
-  RegExprNormal = '\'#$1B'\|N';
+  EscStrNormal = 'N';
 
-function GetTagNumber(const S: string): Integer;
-function GetEscTags(const Text: string): TEscTags;
-function EscGetFontIndex(const Text: string; var FontIndex: Integer): Boolean;
-function GetEscTag(var Text: string; var Tag: TEscTag): Boolean;
-function ParseOposBarcode(const S: string): TOposBarcode;
+function GetEscTags(const Text: WideString): TEscTags;
+function ParseOposBarcode(const S: WideString): TOposBarcode;
+function GetEscTag(var Text: WideString; var Tag: TEscTag): Boolean;
+function EscGetFontIndex(var Text: WideString; var FontIndex: Integer): Boolean;
+function GetTagNumber(var S: WideString; const T: WideString; var N: Integer): Boolean;
 
 implementation
 
-function EscGetFontIndex(const Text: string; var FontIndex: Integer): Boolean;
+function ReadInteger(var Text: WideString): Integer;
 var
-  R: TRegExpr;
+  S: string;
 begin
-  R := TRegExpr.Create;
-  try
-    R.Expression := RegExprFontIndex;
-    Result := R.Exec(Text);
+  S := '';
+  while Length(Text) > 0 do
+  begin
+    if Text[1] in [WideChar('0')..WideChar('9')] then
+    begin
+      S := S + Text[1];
+      Text := Copy(Text, 2, Length(Text));
+    end else
+    begin
+      Break;
+    end;
+  end;
+  Result := StrToIntDef(S, 0);
+end;
+
+function GetTagNumber(var S: WideString; const T: WideString; var N: Integer): Boolean;
+var
+  SI: Integer;
+  TI: Integer;
+  SN: string;
+begin
+  Result := False;
+  if Length(T) = 0 then
+    raise Exception.Create('Template is empty');
+
+  SI := 1;
+  TI := 1;
+  SN := '';
+  while (SI <= Length(S))and(TI <= Length(T)) do
+  begin
+    if T[TI] = '#' then
+    begin
+      if S[SI] in [WideChar('0')..WideChar('9')] then
+      begin
+        SN := SN + S[SI];
+        Inc(SI);
+      end else
+      begin
+        Inc(TI);
+        N := StrToIntDef(SN, 0);
+      end;
+    end else
+    begin
+      Result := T[TI] = S[SI];
+      if not Result then Break;
+
+      Inc(SI);
+      if TI = Length(T) then Break;
+      Inc(TI);
+    end;
+  end;
+  if Result then
+    S := Copy(S, SI, Length(S));
+end;
+
+function EscGetFontIndex(var Text: WideString; var FontIndex: Integer): Boolean;
+begin
+  Result := GetTagNumber(Text, EscStrFontIndex, FontIndex);
+end;
+
+function GetEscTag(var Text: WideString; var Tag: TEscTag): Boolean;
+
+const
+  EscStrs: array [0..34] of string = (
+    EscStrPaperCut,
+    EscStrFeedCut,
+    EscStrFeedCutStamp,
+    EscStrFireStamp,
+    EscStrPrintBitmap,
+    EscStrPrintTLogo,
+    EscStrPrintBLogo,
+    EscStrFeedLines,
+    EscStrFeedUnits,
+    EscStrFeedReverse,
+    EscStrPassThrough,
+    EscStrPrintBarcode,
+    EscStrFontIndex,
+    EscStrBold,
+    EscStrNoBold,
+    EscStrUnderline,
+    EscStrNoUnderline,
+    EscStrItalic,
+    EscStrNoItalic,
+    EscStrSelectColor,
+    EscStrReverseVideo,
+    EscStrNoReverseVideo,
+    EscStrShading,
+    EscStrNormalSize,
+    EscStrDoubleWide,
+    EscStrDoubleHigh,
+    EscStrDoubleHighWide,
+    EscStrScaleHorizontally,
+    EscStrScaleVertically,
+    EscStrAlignCenter,
+    EscStrAlignRight,
+    EscStrAlignLeft,
+    EscStrStrikeThrough,
+    EscStrNoStrikeThrough,
+    EscStrNormal
+  );
+
+var
+  i: Integer;
+  N: Integer;
+begin
+  for i := 0 to Length(EscStrs)-1 do
+  begin
+    Result := GetTagNumber(Text, EscStrs[i], N);
     if Result then
     begin
-      R.Expression := '[0-9]{0,3}';
-      Result := R.Exec(Text);
-      if Result then
+      Tag.Text := '';
+      Tag.Number := N;
+      Tag.TagType := TTagType(i + 1);
+      if Tag.TagType = ttPassThrough then
       begin
-        FontIndex := StrToInt(R.Match[0]);
+        Tag.Text := Copy(Text, 1, Tag.Number);
+        Text := Copy(Text, Tag.Number+1, Length(Text));
       end;
+      if Tag.TagType = ttPrintBarcode then
+      begin
+        Tag.Text := Copy(Text, 1, Tag.Number);
+        Text := Copy(Text, Tag.Number+1, Length(Text));
+      end;
+      Break;
     end;
-  finally
-    R.Free;
   end;
 end;
 
-function GetEscTags(const Text: string): TEscTags;
+function GetEscTags(const Text: WideString): TEscTags;
 const
   EscPrefix = #$1B'|';
 var
-  S: string;
   P: Integer;
   Tag: TEscTag;
+  S: WideString;
 begin
   S := Text;
   SetLength(Result, 0);
   repeat
-    P := Pos(EscPrefix, S);
+    P := WideTextPos(EscPrefix, S);
     if P = 0 then
     begin
       Tag.Text := S;
@@ -432,116 +544,21 @@ begin
       Result[Length(Result)-1] := Tag;
       S := Copy(S, P, Length(S));
     end;
-    if GetEscTag(S, Tag) then
+    if P = 1 then
     begin
-      SetLength(Result, Length(Result) + 1);
-      Result[Length(Result)-1] := Tag;
-    end else
-    begin
-      Break;
+      S := Copy(S, 3, Length(S));
+      if GetEscTag(S, Tag) then
+      begin
+        SetLength(Result, Length(Result) + 1);
+        Result[Length(Result)-1] := Tag;
+      end else
+      begin
+        Break;
+      end;
     end;
   until P = 0;
 end;
 
-function GetTagNumber(const S: string): Integer;
-const
-  RegExprNumber = '[0-9]{0,3}';
-var
-  R: TRegExpr;
-begin
-  Result := 0;
-  R := TRegExpr.Create;
-  try
-    R.InputString := S;
-    R.Expression := RegExprNumber;
-    if R.ExecPos(1) then
-      Result := StrToIntDef(R.Match[0], 0);
-  finally
-    R.Free;
-  end;
-end;
-
-function GetEscTag(var Text: string; var Tag: TEscTag): Boolean;
-
-const
-  RegExprs: array [0..34] of string = (
-    RegExprPaperCut,
-    RegExprFeedCut,
-    RegExprFeedCutStamp,
-    RegExprFireStamp,
-    RegExprPrintBitmap,
-    RegExprPrintTLogo,
-    RegExprPrintBLogo,
-    RegExprFeedLines,
-    RegExprFeedUnits,
-    RegExprFeedReverse,
-    RegExprPassThrough,
-    RegExprPrintBarcode,
-    RegExprFontIndex,
-    RegExprBold,
-    RegExprNoBold,
-    RegExprUnderline,
-    RegExprNoUnderline,
-    RegExprItalic,
-    RegExprNoItalic,
-    RegExprSelectColor,
-    RegExprReverseVideo,
-    RegExprNoReverseVideo,
-    RegExprShading,
-    RegExprNormalSize,
-    RegExprDoubleWide,
-    RegExprDoubleHigh,
-    RegExprDoubleHighWide,
-    RegExprScaleHorizontally,
-    RegExprScaleVertically,
-    RegExprAlignCenter,
-    RegExprAlignRight,
-    RegExprAlignLeft,
-    RegExprStrikeThrough,
-    RegExprNoStrikeThrough,
-    RegExprNormal
-  );
-
-var
-  i: Integer;
-  R: TRegExpr;
-begin
-  ODS('GetEscTags: ' + Text);
-
-  R := TRegExpr.Create;
-  try
-    for i := 0 to Length(RegExprs)-1 do
-    begin
-      R.Expression := RegExprs[i];
-      R.InputString := Text;
-      Result := R.ExecPos(1);
-      if Result then
-      begin
-        Result := R.MatchPos[0] = 1;
-        if Result then
-        begin
-          ODS('RegExprs: ' + RegExprs[i]);
-          ODS('MatchPos[0]: ' + IntToStr(R.MatchPos[0]));
-          ODS('MatchLen[0]: ' + IntToStr(R.MatchLen[0]));
-
-
-          Tag.Text := '';
-          Tag.TagType := TTagType(i + 1);
-          Tag.Number := GetTagNumber(Text);
-          Text := Copy(Text, R.MatchPos[0] + R.MatchLen[0], Length(Text));
-          if Tag.TagType = ttPrintBarcode then
-          begin
-            Tag.Text := Copy(Text, 1, Tag.Number);
-            Text := Copy(Text, Tag.Number+1, Length(Text));
-          end;
-          Break;
-        end;
-      end;
-    end;
-  finally
-    R.Free;
-  end;
-end;
 
 ///////////////////////////////////////////////////////////////////////////////
 // s symbology
@@ -552,7 +569,7 @@ end;
 // d start of data
 // e end of sequence
 
-function ParseOposBarcode(const S: string): TOposBarcode;
+function ParseOposBarcode(const S: WideString): TOposBarcode;
 
   function GetInteger(const Prefix: Char; const S: string): Integer;
   var
