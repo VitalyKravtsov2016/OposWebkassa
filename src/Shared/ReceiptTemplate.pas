@@ -514,7 +514,7 @@ begin
   Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
   Item.TextStyle := STYLE_QR_CODE_PM;
   Item.Text := 'Data.TicketUrl';
-  Item.Alignment := ALIGN_CENTER;
+  Item.Alignment := ALIGN_RIGHT;
   // Fiscal sign
   Trailer.AddText('то: ');
   Item := Trailer.Add;

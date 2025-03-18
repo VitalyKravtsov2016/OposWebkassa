@@ -18,9 +18,6 @@ uses
   DebugUtils, StringUtils, PrinterTypes, PrinterParameters,
   RawPrinterPort, VatRate;
 
-const
-  CRLF = #13#10;
-
 type
   { TRawPrinterPortTest }
 

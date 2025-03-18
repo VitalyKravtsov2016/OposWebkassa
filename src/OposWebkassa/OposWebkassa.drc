@@ -8,213 +8,213 @@
   resources were bound to the produced executable.
 */
 
-#define JvResources_RsClBtnFace 64736
-#define JvResources_RsClBtnShadow 64737
-#define JvResources_RsClGrayText 64738
-#define JvResources_RsClBtnText 64739
-#define JvResources_RsClInactiveCaptionText 64740
-#define JvResources_RsClBtnHighlight 64741
-#define JvResources_RsCl3DDkShadow 64742
-#define JvResources_RsCl3DLight 64743
-#define JvResources_RsClInfoText 64744
-#define JvResources_RsClInfoBk 64745
-#define JvResources_RsGradientActiveCaption 64746
-#define JvResources_RsGradientInactiveCaption 64747
-#define JvResources_RsHotLight 64748
-#define JvResources_RsMenuBar 64749
-#define JvResources_RsMenuHighlight 64750
-#define JvResources_RsClLavender 64752
-#define JvResources_RsClScrollBar 64753
-#define JvResources_RsClBackground 64754
-#define JvResources_RsClActiveCaption 64755
-#define JvResources_RsClInactiveCaption 64756
-#define JvResources_RsClMenu 64757
-#define JvResources_RsClWindow 64758
-#define JvResources_RsClWindowFrame 64759
-#define JvResources_RsClMenuText 64760
-#define JvResources_RsClWindowText 64761
-#define JvResources_RsClCaptionText 64762
-#define JvResources_RsClActiveBorder 64763
-#define JvResources_RsClInactiveBorder 64764
-#define JvResources_RsClAppWorkSpace 64765
-#define JvResources_RsClHighlight 64766
-#define JvResources_RsClHighlightText 64767
-#define JvResources_RsClSeaGreen 64768
-#define JvResources_RsClLightBlue 64769
-#define JvResources_RsClViolet 64770
-#define JvResources_RsClGray40 64771
-#define JvResources_RsClPink 64772
-#define JvResources_RsClGold 64773
-#define JvResources_RsClBrightGreen 64774
-#define JvResources_RsClTurquoise 64775
-#define JvResources_RsClPlum 64776
-#define JvResources_RsClGray25 64777
-#define JvResources_RsClRose 64778
-#define JvResources_RsClTan 64779
-#define JvResources_RsClLightYellow 64780
-#define JvResources_RsClLightGreen 64781
-#define JvResources_RsClLightTurquoise 64782
-#define JvResources_RsClPaleBlue 64783
-#define JvResources_RsClSkyBlue 64784
-#define JvResources_RsClCream 64785
-#define JvResources_RsClMedGray 64786
-#define JvResources_RsClBrown 64787
-#define JvResources_RsClOliveGreen 64788
-#define JvResources_RsClDarkGreen 64789
-#define JvResources_RsClDarkTeal 64790
-#define JvResources_RsClDarkBlue 64791
-#define JvResources_RsClIndigo 64792
-#define JvResources_RsClGray80 64793
-#define JvResources_RsClDarkRed 64794
-#define JvResources_RsClOrange 64795
-#define JvResources_RsClDarkYellow 64796
-#define JvResources_RsClBlueGray 64797
-#define JvResources_RsClGray50 64798
-#define JvResources_RsClLightOrange 64799
-#define JvResources_RsClMaroon 64800
-#define JvResources_RsClGreen 64801
-#define JvResources_RsClOlive 64802
-#define JvResources_RsClNavy 64803
-#define JvResources_RsClPurple 64804
-#define JvResources_RsClTeal 64805
-#define JvResources_RsClGray 64806
-#define JvResources_RsClSilver 64807
-#define JvResources_RsClRed 64808
-#define JvResources_RsClLime 64809
-#define JvResources_RsClYellow 64810
-#define JvResources_RsClBlue 64811
-#define JvResources_RsClFuchsia 64812
-#define JvResources_RsClAqua 64813
-#define JvResources_RsClWhite 64814
-#define JvResources_RsClMoneyGreen 64815
-#define JclResources_RsIntelCacheDescrF0 64816
-#define JclResources_RsIntelCacheDescrF1 64817
-#define JclResources_RsIntelCacheDescrFF 64818
-#define JclResources_RsOSVersionWin8 64819
-#define JclResources_RsOSVersionWinServer2012 64820
-#define JclResources_RsOSVersionWin81 64821
-#define JclResources_RsOSVersionWinServer2012R2 64822
-#define JclVclResources_RsSpoolerDocName 64823
-#define JclVclResources_RsInvalidPrinter 64824
-#define JclVclResources_RsNAStartDocument 64825
-#define JclVclResources_RsNASendData 64826
-#define JclVclResources_RsNAStartPage 64827
-#define JclVclResources_RsNAEndPage 64828
-#define JclVclResources_RsNAEndDocument 64829
-#define JclVclResources_RsNATransmission 64830
-#define JvResources_RsClBlack 64831
-#define JclResources_RsIntelCacheDescrCA 64832
-#define JclResources_RsIntelCacheDescrD0 64833
-#define JclResources_RsIntelCacheDescrD1 64834
-#define JclResources_RsIntelCacheDescrD2 64835
-#define JclResources_RsIntelCacheDescrD6 64836
-#define JclResources_RsIntelCacheDescrD7 64837
-#define JclResources_RsIntelCacheDescrD8 64838
-#define JclResources_RsIntelCacheDescrDC 64839
-#define JclResources_RsIntelCacheDescrDD 64840
-#define JclResources_RsIntelCacheDescrDE 64841
-#define JclResources_RsIntelCacheDescrE2 64842
-#define JclResources_RsIntelCacheDescrE3 64843
-#define JclResources_RsIntelCacheDescrE4 64844
-#define JclResources_RsIntelCacheDescrEA 64845
-#define JclResources_RsIntelCacheDescrEB 64846
-#define JclResources_RsIntelCacheDescrEC 64847
-#define JclResources_RsIntelCacheDescr7D 64848
-#define JclResources_RsIntelCacheDescr7F 64849
-#define JclResources_RsIntelCacheDescr80 64850
-#define JclResources_RsIntelCacheDescr82 64851
-#define JclResources_RsIntelCacheDescr83 64852
-#define JclResources_RsIntelCacheDescr84 64853
-#define JclResources_RsIntelCacheDescr85 64854
-#define JclResources_RsIntelCacheDescr86 64855
-#define JclResources_RsIntelCacheDescr87 64856
-#define JclResources_RsIntelCacheDescrB0 64857
-#define JclResources_RsIntelCacheDescrB1 64858
-#define JclResources_RsIntelCacheDescrB2 64859
-#define JclResources_RsIntelCacheDescrB3 64860
-#define JclResources_RsIntelCacheDescrB4 64861
-#define JclResources_RsIntelCacheDescrBA 64862
-#define JclResources_RsIntelCacheDescrC0 64863
-#define JclResources_RsIntelCacheDescr5C 64864
-#define JclResources_RsIntelCacheDescr5D 64865
-#define JclResources_RsIntelCacheDescr60 64866
-#define JclResources_RsIntelCacheDescr66 64867
-#define JclResources_RsIntelCacheDescr67 64868
-#define JclResources_RsIntelCacheDescr68 64869
-#define JclResources_RsIntelCacheDescr70 64870
-#define JclResources_RsIntelCacheDescr71 64871
-#define JclResources_RsIntelCacheDescr72 64872
-#define JclResources_RsIntelCacheDescr73 64873
-#define JclResources_RsIntelCacheDescr76 64874
-#define JclResources_RsIntelCacheDescr78 64875
-#define JclResources_RsIntelCacheDescr79 64876
-#define JclResources_RsIntelCacheDescr7A 64877
-#define JclResources_RsIntelCacheDescr7B 64878
-#define JclResources_RsIntelCacheDescr7C 64879
-#define JclResources_RsIntelCacheDescr49 64880
-#define JclResources_RsIntelCacheDescr4A 64881
-#define JclResources_RsIntelCacheDescr4B 64882
-#define JclResources_RsIntelCacheDescr4C 64883
-#define JclResources_RsIntelCacheDescr4D 64884
-#define JclResources_RsIntelCacheDescr4E 64885
-#define JclResources_RsIntelCacheDescr4F 64886
-#define JclResources_RsIntelCacheDescr50 64887
-#define JclResources_RsIntelCacheDescr51 64888
-#define JclResources_RsIntelCacheDescr52 64889
-#define JclResources_RsIntelCacheDescr55 64890
-#define JclResources_RsIntelCacheDescr56 64891
-#define JclResources_RsIntelCacheDescr57 64892
-#define JclResources_RsIntelCacheDescr59 64893
-#define JclResources_RsIntelCacheDescr5A 64894
-#define JclResources_RsIntelCacheDescr5B 64895
-#define JclResources_RsIntelCacheDescr30 64896
-#define JclResources_RsIntelCacheDescr39 64897
-#define JclResources_RsIntelCacheDescr3A 64898
-#define JclResources_RsIntelCacheDescr3B 64899
-#define JclResources_RsIntelCacheDescr3C 64900
-#define JclResources_RsIntelCacheDescr3D 64901
-#define JclResources_RsIntelCacheDescr3E 64902
-#define JclResources_RsIntelCacheDescr40 64903
-#define JclResources_RsIntelCacheDescr41 64904
-#define JclResources_RsIntelCacheDescr42 64905
-#define JclResources_RsIntelCacheDescr43 64906
-#define JclResources_RsIntelCacheDescr44 64907
-#define JclResources_RsIntelCacheDescr45 64908
-#define JclResources_RsIntelCacheDescr46 64909
-#define JclResources_RsIntelCacheDescr47 64910
-#define JclResources_RsIntelCacheDescr48 64911
-#define JclResources_RsIntelCacheDescr04 64912
-#define JclResources_RsIntelCacheDescr05 64913
-#define JclResources_RsIntelCacheDescr06 64914
-#define JclResources_RsIntelCacheDescr08 64915
-#define JclResources_RsIntelCacheDescr09 64916
-#define JclResources_RsIntelCacheDescr0A 64917
-#define JclResources_RsIntelCacheDescr0B 64918
-#define JclResources_RsIntelCacheDescr0C 64919
-#define JclResources_RsIntelCacheDescr0D 64920
-#define JclResources_RsIntelCacheDescr0E 64921
-#define JclResources_RsIntelCacheDescr21 64922
-#define JclResources_RsIntelCacheDescr22 64923
-#define JclResources_RsIntelCacheDescr23 64924
-#define JclResources_RsIntelCacheDescr25 64925
-#define JclResources_RsIntelCacheDescr29 64926
-#define JclResources_RsIntelCacheDescr2C 64927
+#define JvResources_RsHotLight 64736
+#define JvResources_RsMenuBar 64737
+#define JvResources_RsMenuHighlight 64738
+#define JclVclResources_RsSpoolerDocName 64739
+#define JclVclResources_RsInvalidPrinter 64740
+#define JclVclResources_RsNAStartDocument 64741
+#define JclVclResources_RsNASendData 64742
+#define JclVclResources_RsNAStartPage 64743
+#define JclVclResources_RsNAEndPage 64744
+#define JclVclResources_RsNAEndDocument 64745
+#define JclVclResources_RsNATransmission 64746
+#define DBConsts_SBcdOverflow 64747
+#define DBConsts_SInvalidBcdValue 64748
+#define DBConsts_SCouldNotParseTimeStamp 64749
+#define DBConsts_SInvalidSqlTimeStamp 64750
+#define JvResources_RsClInactiveBorder 64752
+#define JvResources_RsClAppWorkSpace 64753
+#define JvResources_RsClHighlight 64754
+#define JvResources_RsClHighlightText 64755
+#define JvResources_RsClBtnFace 64756
+#define JvResources_RsClBtnShadow 64757
+#define JvResources_RsClGrayText 64758
+#define JvResources_RsClBtnText 64759
+#define JvResources_RsClInactiveCaptionText 64760
+#define JvResources_RsClBtnHighlight 64761
+#define JvResources_RsCl3DDkShadow 64762
+#define JvResources_RsCl3DLight 64763
+#define JvResources_RsClInfoText 64764
+#define JvResources_RsClInfoBk 64765
+#define JvResources_RsGradientActiveCaption 64766
+#define JvResources_RsGradientInactiveCaption 64767
+#define JvResources_RsClLightYellow 64768
+#define JvResources_RsClLightGreen 64769
+#define JvResources_RsClLightTurquoise 64770
+#define JvResources_RsClPaleBlue 64771
+#define JvResources_RsClLavender 64772
+#define JvResources_RsClScrollBar 64773
+#define JvResources_RsClBackground 64774
+#define JvResources_RsClActiveCaption 64775
+#define JvResources_RsClInactiveCaption 64776
+#define JvResources_RsClMenu 64777
+#define JvResources_RsClWindow 64778
+#define JvResources_RsClWindowFrame 64779
+#define JvResources_RsClMenuText 64780
+#define JvResources_RsClWindowText 64781
+#define JvResources_RsClCaptionText 64782
+#define JvResources_RsClActiveBorder 64783
+#define JvResources_RsClDarkYellow 64784
+#define JvResources_RsClBlueGray 64785
+#define JvResources_RsClGray50 64786
+#define JvResources_RsClLightOrange 64787
+#define JvResources_RsClSeaGreen 64788
+#define JvResources_RsClLightBlue 64789
+#define JvResources_RsClViolet 64790
+#define JvResources_RsClGray40 64791
+#define JvResources_RsClPink 64792
+#define JvResources_RsClGold 64793
+#define JvResources_RsClBrightGreen 64794
+#define JvResources_RsClTurquoise 64795
+#define JvResources_RsClPlum 64796
+#define JvResources_RsClGray25 64797
+#define JvResources_RsClRose 64798
+#define JvResources_RsClTan 64799
+#define JvResources_RsClFuchsia 64800
+#define JvResources_RsClAqua 64801
+#define JvResources_RsClWhite 64802
+#define JvResources_RsClMoneyGreen 64803
+#define JvResources_RsClSkyBlue 64804
+#define JvResources_RsClCream 64805
+#define JvResources_RsClMedGray 64806
+#define JvResources_RsClBrown 64807
+#define JvResources_RsClOliveGreen 64808
+#define JvResources_RsClDarkGreen 64809
+#define JvResources_RsClDarkTeal 64810
+#define JvResources_RsClDarkBlue 64811
+#define JvResources_RsClIndigo 64812
+#define JvResources_RsClGray80 64813
+#define JvResources_RsClDarkRed 64814
+#define JvResources_RsClOrange 64815
+#define JclResources_RsOSVersionWinServer2012 64816
+#define JclResources_RsOSVersionWin81 64817
+#define JclResources_RsOSVersionWinServer2012R2 64818
+#define JvResources_RsClBlack 64819
+#define JvResources_RsClMaroon 64820
+#define JvResources_RsClGreen 64821
+#define JvResources_RsClOlive 64822
+#define JvResources_RsClNavy 64823
+#define JvResources_RsClPurple 64824
+#define JvResources_RsClTeal 64825
+#define JvResources_RsClGray 64826
+#define JvResources_RsClSilver 64827
+#define JvResources_RsClRed 64828
+#define JvResources_RsClLime 64829
+#define JvResources_RsClYellow 64830
+#define JvResources_RsClBlue 64831
+#define JclResources_RsIntelCacheDescrD6 64832
+#define JclResources_RsIntelCacheDescrD7 64833
+#define JclResources_RsIntelCacheDescrD8 64834
+#define JclResources_RsIntelCacheDescrDC 64835
+#define JclResources_RsIntelCacheDescrDD 64836
+#define JclResources_RsIntelCacheDescrDE 64837
+#define JclResources_RsIntelCacheDescrE2 64838
+#define JclResources_RsIntelCacheDescrE3 64839
+#define JclResources_RsIntelCacheDescrE4 64840
+#define JclResources_RsIntelCacheDescrEA 64841
+#define JclResources_RsIntelCacheDescrEB 64842
+#define JclResources_RsIntelCacheDescrEC 64843
+#define JclResources_RsIntelCacheDescrF0 64844
+#define JclResources_RsIntelCacheDescrF1 64845
+#define JclResources_RsIntelCacheDescrFF 64846
+#define JclResources_RsOSVersionWin8 64847
+#define JclResources_RsIntelCacheDescr83 64848
+#define JclResources_RsIntelCacheDescr84 64849
+#define JclResources_RsIntelCacheDescr85 64850
+#define JclResources_RsIntelCacheDescr86 64851
+#define JclResources_RsIntelCacheDescr87 64852
+#define JclResources_RsIntelCacheDescrB0 64853
+#define JclResources_RsIntelCacheDescrB1 64854
+#define JclResources_RsIntelCacheDescrB2 64855
+#define JclResources_RsIntelCacheDescrB3 64856
+#define JclResources_RsIntelCacheDescrB4 64857
+#define JclResources_RsIntelCacheDescrBA 64858
+#define JclResources_RsIntelCacheDescrC0 64859
+#define JclResources_RsIntelCacheDescrCA 64860
+#define JclResources_RsIntelCacheDescrD0 64861
+#define JclResources_RsIntelCacheDescrD1 64862
+#define JclResources_RsIntelCacheDescrD2 64863
+#define JclResources_RsIntelCacheDescr67 64864
+#define JclResources_RsIntelCacheDescr68 64865
+#define JclResources_RsIntelCacheDescr70 64866
+#define JclResources_RsIntelCacheDescr71 64867
+#define JclResources_RsIntelCacheDescr72 64868
+#define JclResources_RsIntelCacheDescr73 64869
+#define JclResources_RsIntelCacheDescr76 64870
+#define JclResources_RsIntelCacheDescr78 64871
+#define JclResources_RsIntelCacheDescr79 64872
+#define JclResources_RsIntelCacheDescr7A 64873
+#define JclResources_RsIntelCacheDescr7B 64874
+#define JclResources_RsIntelCacheDescr7C 64875
+#define JclResources_RsIntelCacheDescr7D 64876
+#define JclResources_RsIntelCacheDescr7F 64877
+#define JclResources_RsIntelCacheDescr80 64878
+#define JclResources_RsIntelCacheDescr82 64879
+#define JclResources_RsIntelCacheDescr4D 64880
+#define JclResources_RsIntelCacheDescr4E 64881
+#define JclResources_RsIntelCacheDescr4F 64882
+#define JclResources_RsIntelCacheDescr50 64883
+#define JclResources_RsIntelCacheDescr51 64884
+#define JclResources_RsIntelCacheDescr52 64885
+#define JclResources_RsIntelCacheDescr55 64886
+#define JclResources_RsIntelCacheDescr56 64887
+#define JclResources_RsIntelCacheDescr57 64888
+#define JclResources_RsIntelCacheDescr59 64889
+#define JclResources_RsIntelCacheDescr5A 64890
+#define JclResources_RsIntelCacheDescr5B 64891
+#define JclResources_RsIntelCacheDescr5C 64892
+#define JclResources_RsIntelCacheDescr5D 64893
+#define JclResources_RsIntelCacheDescr60 64894
+#define JclResources_RsIntelCacheDescr66 64895
+#define JclResources_RsIntelCacheDescr3C 64896
+#define JclResources_RsIntelCacheDescr3D 64897
+#define JclResources_RsIntelCacheDescr3E 64898
+#define JclResources_RsIntelCacheDescr40 64899
+#define JclResources_RsIntelCacheDescr41 64900
+#define JclResources_RsIntelCacheDescr42 64901
+#define JclResources_RsIntelCacheDescr43 64902
+#define JclResources_RsIntelCacheDescr44 64903
+#define JclResources_RsIntelCacheDescr45 64904
+#define JclResources_RsIntelCacheDescr46 64905
+#define JclResources_RsIntelCacheDescr47 64906
+#define JclResources_RsIntelCacheDescr48 64907
+#define JclResources_RsIntelCacheDescr49 64908
+#define JclResources_RsIntelCacheDescr4A 64909
+#define JclResources_RsIntelCacheDescr4B 64910
+#define JclResources_RsIntelCacheDescr4C 64911
+#define JclResources_RsIntelCacheDescr09 64912
+#define JclResources_RsIntelCacheDescr0A 64913
+#define JclResources_RsIntelCacheDescr0B 64914
+#define JclResources_RsIntelCacheDescr0C 64915
+#define JclResources_RsIntelCacheDescr0D 64916
+#define JclResources_RsIntelCacheDescr0E 64917
+#define JclResources_RsIntelCacheDescr21 64918
+#define JclResources_RsIntelCacheDescr22 64919
+#define JclResources_RsIntelCacheDescr23 64920
+#define JclResources_RsIntelCacheDescr25 64921
+#define JclResources_RsIntelCacheDescr29 64922
+#define JclResources_RsIntelCacheDescr2C 64923
+#define JclResources_RsIntelCacheDescr30 64924
+#define JclResources_RsIntelCacheDescr39 64925
+#define JclResources_RsIntelCacheDescr3A 64926
+#define JclResources_RsIntelCacheDescr3B 64927
 #define GIFImage_sProgressRendering 64928
 #define GIFImage_sProgressCopying 64929
 #define GIFImage_sProgressOptimizing 64930
-#define DBConsts_SBcdOverflow 64931
-#define DBConsts_SInvalidBcdValue 64932
-#define DBConsts_SCouldNotParseTimeStamp 64933
-#define DBConsts_SInvalidSqlTimeStamp 64934
-#define JclResources_RsEReplacementChar 64935
-#define JclResources_RsUnableToOpenKeyRead 64936
-#define JclResources_RsUnableToAccessValue 64937
-#define JclResources_RsWrongDataType 64938
-#define JclResources_RsInconsistentPath 64939
-#define JclResources_RsIntelCacheDescr00 64940
-#define JclResources_RsIntelCacheDescr01 64941
-#define JclResources_RsIntelCacheDescr02 64942
-#define JclResources_RsIntelCacheDescr03 64943
+#define JclResources_RsEReplacementChar 64931
+#define JclResources_RsUnableToOpenKeyRead 64932
+#define JclResources_RsUnableToAccessValue 64933
+#define JclResources_RsWrongDataType 64934
+#define JclResources_RsInconsistentPath 64935
+#define JclResources_RsIntelCacheDescr00 64936
+#define JclResources_RsIntelCacheDescr01 64937
+#define JclResources_RsIntelCacheDescr02 64938
+#define JclResources_RsIntelCacheDescr03 64939
+#define JclResources_RsIntelCacheDescr04 64940
+#define JclResources_RsIntelCacheDescr05 64941
+#define JclResources_RsIntelCacheDescr06 64942
+#define JclResources_RsIntelCacheDescr08 64943
 #define GIFImage_sFailedPaste 64944
 #define GIFImage_sScreenSizeExceeded 64945
 #define GIFImage_sNoColorTable 64946
@@ -809,6 +809,25 @@
 #define SysConst_SIntOverflow 65535
 STRINGTABLE
 BEGIN
+	JvResources_RsHotLight,	"Hot Light"
+	JvResources_RsMenuBar,	"Menu Bar"
+	JvResources_RsMenuHighlight,	"Menu Highlight"
+	JclVclResources_RsSpoolerDocName,	"My Document"
+	JclVclResources_RsInvalidPrinter,	"Invalid printer"
+	JclVclResources_RsNAStartDocument,	"Unable to \"Start document\""
+	JclVclResources_RsNASendData,	"Unable to send data to printer"
+	JclVclResources_RsNAStartPage,	"Unable to \"Start page\""
+	JclVclResources_RsNAEndPage,	"Unable to \"End page\""
+	JclVclResources_RsNAEndDocument,	"Unable to \"End document\""
+	JclVclResources_RsNATransmission,	"Not all chars have been sent correctly to printer"
+	DBConsts_SBcdOverflow,	"BCD overflow"
+	DBConsts_SInvalidBcdValue,	"%s is not a valid BCD value"
+	DBConsts_SCouldNotParseTimeStamp,	"Could not parse SQL TimeStamp string"
+	DBConsts_SInvalidSqlTimeStamp,	"Invalid SQL date/time values"
+	JvResources_RsClInactiveBorder,	"Inactive window border"
+	JvResources_RsClAppWorkSpace,	"Application workspace"
+	JvResources_RsClHighlight,	"Selection background"
+	JvResources_RsClHighlightText,	"Selection text"
 	JvResources_RsClBtnFace,	"Button face"
 	JvResources_RsClBtnShadow,	"Button shadow"
 	JvResources_RsClGrayText,	"Dimmed text"
@@ -821,9 +840,10 @@ BEGIN
 	JvResources_RsClInfoBk,	"Tooltip background"
 	JvResources_RsGradientActiveCaption,	"Gradient Active Caption"
 	JvResources_RsGradientInactiveCaption,	"Gradient Inactive Caption"
-	JvResources_RsHotLight,	"Hot Light"
-	JvResources_RsMenuBar,	"Menu Bar"
-	JvResources_RsMenuHighlight,	"Menu Highlight"
+	JvResources_RsClLightYellow,	"Light Yellow"
+	JvResources_RsClLightGreen,	"Light Green"
+	JvResources_RsClLightTurquoise,	"Light Turquoise"
+	JvResources_RsClPaleBlue,	"Pale Blue"
 	JvResources_RsClLavender,	"Lavender"
 	JvResources_RsClScrollBar,	"Scrollbar"
 	JvResources_RsClBackground,	"Desktop background"
@@ -836,10 +856,10 @@ BEGIN
 	JvResources_RsClWindowText,	"Window text"
 	JvResources_RsClCaptionText,	"Active window title bar text"
 	JvResources_RsClActiveBorder,	"Active window border"
-	JvResources_RsClInactiveBorder,	"Inactive window border"
-	JvResources_RsClAppWorkSpace,	"Application workspace"
-	JvResources_RsClHighlight,	"Selection background"
-	JvResources_RsClHighlightText,	"Selection text"
+	JvResources_RsClDarkYellow,	"Dark Yellow"
+	JvResources_RsClBlueGray,	"Blue Gray"
+	JvResources_RsClGray50,	"Gray 50%"
+	JvResources_RsClLightOrange,	"Light Orange"
 	JvResources_RsClSeaGreen,	"Sea Green"
 	JvResources_RsClLightBlue,	"Light Blue"
 	JvResources_RsClViolet,	"Violet"
@@ -852,10 +872,10 @@ BEGIN
 	JvResources_RsClGray25,	"Gray 25%"
 	JvResources_RsClRose,	"Rose"
 	JvResources_RsClTan,	"Tan"
-	JvResources_RsClLightYellow,	"Light Yellow"
-	JvResources_RsClLightGreen,	"Light Green"
-	JvResources_RsClLightTurquoise,	"Light Turquoise"
-	JvResources_RsClPaleBlue,	"Pale Blue"
+	JvResources_RsClFuchsia,	"Fuchsia"
+	JvResources_RsClAqua,	"Aqua"
+	JvResources_RsClWhite,	"White"
+	JvResources_RsClMoneyGreen,	"Money green"
 	JvResources_RsClSkyBlue,	"Sky blue"
 	JvResources_RsClCream,	"Cream"
 	JvResources_RsClMedGray,	"Medium gray"
@@ -868,10 +888,10 @@ BEGIN
 	JvResources_RsClGray80,	"Gray 80%"
 	JvResources_RsClDarkRed,	"Dark Red"
 	JvResources_RsClOrange,	"Orange"
-	JvResources_RsClDarkYellow,	"Dark Yellow"
-	JvResources_RsClBlueGray,	"Blue Gray"
-	JvResources_RsClGray50,	"Gray 50%"
-	JvResources_RsClLightOrange,	"Light Orange"
+	JclResources_RsOSVersionWinServer2012,	"Windows Server 2012"
+	JclResources_RsOSVersionWin81,	"Windows 8.1"
+	JclResources_RsOSVersionWinServer2012R2,	"Windows Server 2012 R2"
+	JvResources_RsClBlack,	"Black"
 	JvResources_RsClMaroon,	"Maroon"
 	JvResources_RsClGreen,	"Green"
 	JvResources_RsClOlive,	"Olive green"
@@ -884,30 +904,6 @@ BEGIN
 	JvResources_RsClLime,	"Lime"
 	JvResources_RsClYellow,	"Yellow"
 	JvResources_RsClBlue,	"Blue"
-	JvResources_RsClFuchsia,	"Fuchsia"
-	JvResources_RsClAqua,	"Aqua"
-	JvResources_RsClWhite,	"White"
-	JvResources_RsClMoneyGreen,	"Money green"
-	JclResources_RsIntelCacheDescrF0,	"64-Byte Prefetching"
-	JclResources_RsIntelCacheDescrF1,	"128-Byte Prefetching"
-	JclResources_RsIntelCacheDescrFF,	"CPUID leaf 2 does not report cache descriptor information, use CPUID leaf 4 to query cache parameters"
-	JclResources_RsOSVersionWin8,	"Windows 8"
-	JclResources_RsOSVersionWinServer2012,	"Windows Server 2012"
-	JclResources_RsOSVersionWin81,	"Windows 8.1"
-	JclResources_RsOSVersionWinServer2012R2,	"Windows Server 2012 R2"
-	JclVclResources_RsSpoolerDocName,	"My Document"
-	JclVclResources_RsInvalidPrinter,	"Invalid printer"
-	JclVclResources_RsNAStartDocument,	"Unable to \"Start document\""
-	JclVclResources_RsNASendData,	"Unable to send data to printer"
-	JclVclResources_RsNAStartPage,	"Unable to \"Start page\""
-	JclVclResources_RsNAEndPage,	"Unable to \"End page\""
-	JclVclResources_RsNAEndDocument,	"Unable to \"End document\""
-	JclVclResources_RsNATransmission,	"Not all chars have been sent correctly to printer"
-	JvResources_RsClBlack,	"Black"
-	JclResources_RsIntelCacheDescrCA,	"Shared 2nd-Level TLB: 4 KByte pages, 4-way associative, 512 entries"
-	JclResources_RsIntelCacheDescrD0,	"3rd-level cache: 512 KByte, 4-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescrD1,	"3rd-level cache: 1 MByte, 4-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescrD2,	"3rd-level cache: 2 MByte, 4-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescrD6,	"3rd-level cache: 1 MByte, 8-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescrD7,	"3rd-level cache: 2 MByte, 8-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescrD8,	"3rd-level cache: 4 MByte, 8-way set associative, 64 byte line size"
@@ -920,10 +916,10 @@ BEGIN
 	JclResources_RsIntelCacheDescrEA,	"3rd-level cache: 12 MByte, 24-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescrEB,	"3rd-level cache: 18 MByte, 24-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescrEC,	"3rd-level cache: 24 MByte, 24-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescr7D,	"2nd-level cache: 2 MBytes, 8-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescr7F,	"2nd-level cache: 512 KBytes, 2-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescr80,	"2nd-level cache: 512 KBytes, 8-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescr82,	"2nd-level cache: 256 KBytes, 8-way associative, 32 byte line size"
+	JclResources_RsIntelCacheDescrF0,	"64-Byte Prefetching"
+	JclResources_RsIntelCacheDescrF1,	"128-Byte Prefetching"
+	JclResources_RsIntelCacheDescrFF,	"CPUID leaf 2 does not report cache descriptor information, use CPUID leaf 4 to query cache parameters"
+	JclResources_RsOSVersionWin8,	"Windows 8"
 	JclResources_RsIntelCacheDescr83,	"2nd-level cache: 512 KBytes, 8-way associative, 32 byte line size"
 	JclResources_RsIntelCacheDescr84,	"2nd-level cache: 1 MBytes, 8-way associative, 32 byte line size"
 	JclResources_RsIntelCacheDescr85,	"2nd-level cache: 2 MBytes, 8-way associative, 32 byte line size"
@@ -936,10 +932,10 @@ BEGIN
 	JclResources_RsIntelCacheDescrB4,	"Data TLB1: 4 KByte pages, 4-way set associative, 256 entries"
 	JclResources_RsIntelCacheDescrBA,	"Data TLB1: 4 KByte pages, 4-way set associative, 64 entries"
 	JclResources_RsIntelCacheDescrC0,	"Data TLB: 4 KByte and 4 MByte pages, 4-way set associative, 8 entries"
-	JclResources_RsIntelCacheDescr5C,	"Data TLB: 4 KByte and 4 MByte pages, 128 Entries"
-	JclResources_RsIntelCacheDescr5D,	"Data TLB: 4 KByte and 4 MByte pages, 256 Entries"
-	JclResources_RsIntelCacheDescr60,	"1st-level data cache: 16 KByte, 8-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescr66,	"1st-level data cache: 8 KBytes, 4-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescrCA,	"Shared 2nd-Level TLB: 4 KByte pages, 4-way associative, 512 entries"
+	JclResources_RsIntelCacheDescrD0,	"3rd-level cache: 512 KByte, 4-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescrD1,	"3rd-level cache: 1 MByte, 4-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescrD2,	"3rd-level cache: 2 MByte, 4-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr67,	"1st-level data cache: 16 KBytes, 4-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr68,	"1st-level data cache: 32 KBytes, 4-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr70,	"Trace cache: 12 K-Ops, 8-way set associative"
@@ -952,10 +948,10 @@ BEGIN
 	JclResources_RsIntelCacheDescr7A,	"2nd-level cache: 256 KBytes, 8-way set associative, 64 bytes line size, 2 lines per sector"
 	JclResources_RsIntelCacheDescr7B,	"2nd-level cache: 512 KBytes, 8-way set associative, 64 bytes line size, 2 lines per sector"
 	JclResources_RsIntelCacheDescr7C,	"2nd-level cache: 1 MBytes, 8-way set associative, 64 bytes line size, 2 lines per sector"
-	JclResources_RsIntelCacheDescr49,	"2nd-level cache: 4 MBytes, 16-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescr4A,	"3rd-level cache: 6MByte, 12-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescr4B,	"3rd-level cache: 8MByte, 16-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescr4C,	"3rd-level cache: 12MByte, 12-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescr7D,	"2nd-level cache: 2 MBytes, 8-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescr7F,	"2nd-level cache: 512 KBytes, 2-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescr80,	"2nd-level cache: 512 KBytes, 8-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescr82,	"2nd-level cache: 256 KBytes, 8-way associative, 32 byte line size"
 	JclResources_RsIntelCacheDescr4D,	"3rd-level cache: 16MByte, 16-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr4E,	"2nd-level cache: 6MByte, 24-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr4F,	"Instruction TLB: 4 KByte pages, 32 Entries"
@@ -968,10 +964,10 @@ BEGIN
 	JclResources_RsIntelCacheDescr59,	"Data TLB0: 4 KByte pages, fully associative, 16 entries"
 	JclResources_RsIntelCacheDescr5A,	"Data TLB0: 2 MByte or 4 MByte pages, 4-way set associative, 32 entries"
 	JclResources_RsIntelCacheDescr5B,	"Data TLB: 4 KByte and 4 MByte pages, 64 Entries"
-	JclResources_RsIntelCacheDescr30,	"1st level instruction cache: 32 KBytes, 8-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescr39,	"2nd-level cache: 128 KBytes, 4-way set associative, sectored cache, 64-byte line size"
-	JclResources_RsIntelCacheDescr3A,	"2nd-level cache: 192 KBytes, 6-way set associative, sectored cache, 64-byte line size"
-	JclResources_RsIntelCacheDescr3B,	"2nd-level cache: 128 KBytes, 2-way set associative, sectored cache, 64-byte line size"
+	JclResources_RsIntelCacheDescr5C,	"Data TLB: 4 KByte and 4 MByte pages, 128 Entries"
+	JclResources_RsIntelCacheDescr5D,	"Data TLB: 4 KByte and 4 MByte pages, 256 Entries"
+	JclResources_RsIntelCacheDescr60,	"1st-level data cache: 16 KByte, 8-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescr66,	"1st-level data cache: 8 KBytes, 4-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr3C,	"2nd-level cache: 256 KBytes, 4-way set associative, sectored cache, 64-byte line size"
 	JclResources_RsIntelCacheDescr3D,	"2nd-level cache: 384 KBytes, 6-way set associative, sectored cache, 64-byte line size"
 	JclResources_RsIntelCacheDescr3E,	"2nd-level cache: 512 KBytes, 4-way set associative, sectored cache, 64-byte line size"
@@ -984,10 +980,10 @@ BEGIN
 	JclResources_RsIntelCacheDescr46,	"3rd-level cache: 4 MBytes, 4-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr47,	"3rd-level cache: 8 MBytes, 4-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr48,	"3rd-level cache: 8 MByte, 8-way set associative, 64 byte line size"
-	JclResources_RsIntelCacheDescr04,	"Data TLB: 4 MByte pages, 4-way set associative, 8 entries"
-	JclResources_RsIntelCacheDescr05,	"Data TLB1: 4 MByte pages, 4-way set associative, 32 entries"
-	JclResources_RsIntelCacheDescr06,	"1st level instruction cache: 8 KBytes, 4-way set associative, 32 byte line size"
-	JclResources_RsIntelCacheDescr08,	"1st level instruction cache: 16 KBytes, 4-way set associative, 32 byte line size"
+	JclResources_RsIntelCacheDescr49,	"2nd-level cache: 4 MBytes, 16-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescr4A,	"3rd-level cache: 6MByte, 12-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescr4B,	"3rd-level cache: 8MByte, 16-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescr4C,	"3rd-level cache: 12MByte, 12-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr09,	"1st level instruction cache: 32 KBytes, 4-way set associative, 64 byte line size"
 	JclResources_RsIntelCacheDescr0A,	"1st level data cache: 8 KBytes, 2-way set associative, 32 byte line size"
 	JclResources_RsIntelCacheDescr0B,	"Instruction TLB: 4 MByte pages, 4-way set associative, 4 entries"
@@ -1000,13 +996,13 @@ BEGIN
 	JclResources_RsIntelCacheDescr25,	"3rd level cache: 2 MBytes, 8-way set associative, 64 byte line size, 2 lines per sector"
 	JclResources_RsIntelCacheDescr29,	"3rd level cache: 4 MBytes, 8-way set associative, 64 byte line size, 2 lines per sector"
 	JclResources_RsIntelCacheDescr2C,	"1st level data cache: 32 KBytes, 8-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescr30,	"1st level instruction cache: 32 KBytes, 8-way set associative, 64 byte line size"
+	JclResources_RsIntelCacheDescr39,	"2nd-level cache: 128 KBytes, 4-way set associative, sectored cache, 64-byte line size"
+	JclResources_RsIntelCacheDescr3A,	"2nd-level cache: 192 KBytes, 6-way set associative, sectored cache, 64-byte line size"
+	JclResources_RsIntelCacheDescr3B,	"2nd-level cache: 128 KBytes, 2-way set associative, sectored cache, 64-byte line size"
 	GIFImage_sProgressRendering,	"Rendering..."
 	GIFImage_sProgressCopying,	"Copying..."
 	GIFImage_sProgressOptimizing,	"Optimizing..."
-	DBConsts_SBcdOverflow,	"BCD overflow"
-	DBConsts_SInvalidBcdValue,	"%s is not a valid BCD value"
-	DBConsts_SCouldNotParseTimeStamp,	"Could not parse SQL TimeStamp string"
-	DBConsts_SInvalidSqlTimeStamp,	"Invalid SQL date/time values"
 	JclResources_RsEReplacementChar,	"Failed to get ANSI replacement character"
 	JclResources_RsUnableToOpenKeyRead,	"Unable to open key \"%s\\%s\" for read"
 	JclResources_RsUnableToAccessValue,	"Unable to open key \"%s\\%s\" and access value \"%s\""
@@ -1016,6 +1012,10 @@ BEGIN
 	JclResources_RsIntelCacheDescr01,	"Instruction TLB: 4 KByte pages, 4-way set associative, 32 entries"
 	JclResources_RsIntelCacheDescr02,	"Instruction TLB: 4 MByte pages, 4-way set associative, 2 entries"
 	JclResources_RsIntelCacheDescr03,	"Data TLB: 4 KByte pages, 4-way set associative, 64 entries"
+	JclResources_RsIntelCacheDescr04,	"Data TLB: 4 MByte pages, 4-way set associative, 8 entries"
+	JclResources_RsIntelCacheDescr05,	"Data TLB1: 4 MByte pages, 4-way set associative, 32 entries"
+	JclResources_RsIntelCacheDescr06,	"1st level instruction cache: 8 KBytes, 4-way set associative, 32 byte line size"
+	JclResources_RsIntelCacheDescr08,	"1st level instruction cache: 16 KBytes, 4-way set associative, 32 byte line size"
 	GIFImage_sFailedPaste,	"Failed to store GIF on clipboard"
 	GIFImage_sScreenSizeExceeded,	"Image exceeds Logical Screen size"
 	GIFImage_sNoColorTable,	"No global or local color table defined"

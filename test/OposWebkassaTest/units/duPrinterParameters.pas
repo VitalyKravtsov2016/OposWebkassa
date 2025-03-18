@@ -11,7 +11,7 @@ uses
   TntClasses,
   // This
   PrinterParameters, PrinterParametersReg, LogFile, StringUtils, FileUtils,
-  VatRate;
+  VatRate, PrinterTypes;
 
 type
   { TPrinterParametersTest }

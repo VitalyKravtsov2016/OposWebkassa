@@ -20,9 +20,6 @@ uses
   DebugUtils, StringUtils, OposServiceDevice19, PosPrinterRongta, PrinterPort,
   MockPrinterPort, PrinterTypes, PrinterParameters;
 
-const
-  CRLF = #13#10;
-
 type
   { TWebkassaImplTest3 }
 

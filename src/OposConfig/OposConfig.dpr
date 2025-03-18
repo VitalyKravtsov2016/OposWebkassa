@@ -108,7 +108,8 @@ uses
   RawPrinterPort in '..\Shared\RawPrinterPort.pas',
   CharCode in '..\Shared\CharCode.pas',
   ComUtils in '..\Shared\ComUtils.pas',
-  OposEventsAdapter in '..\Opos\OposEventsAdapter.pas';
+  OposEventsAdapter in '..\Opos\OposEventsAdapter.pas',
+  PrinterPage in '..\Shared\PrinterPage.pas';
 
 {$R *.RES}
 {$R WindowsXP.RES}

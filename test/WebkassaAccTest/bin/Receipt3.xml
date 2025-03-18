@@ -382,7 +382,7 @@
 			<Text></Text>
 			<Enabled>0</Enabled>
 			<ItemType>7</ItemType>
-			<TextStyle>0</TextStyle>
+			<TextStyle>5</TextStyle>
 			<Alignment>0</Alignment>
 			<FormatText></FormatText>
 			<LineChars>0</LineChars>
@@ -680,7 +680,7 @@
 			<Enabled>0</Enabled>
 			<ItemType>4</ItemType>
 			<TextStyle>9</TextStyle>
-			<Alignment>1</Alignment>
+			<Alignment>2</Alignment>
 			<FormatText></FormatText>
 			<LineChars>0</LineChars>
 			<LineSpacing>0</LineSpacing>
@@ -801,17 +801,6 @@
 			<Enabled>0</Enabled>
 			<ItemType>7</ItemType>
 			<TextStyle>0</TextStyle>
-			<Alignment>0</Alignment>
-			<FormatText></FormatText>
-			<LineChars>0</LineChars>
-			<LineSpacing>0</LineSpacing>
-			<Parameter>0</Parameter>
-		</Item>
-		<Item>
-			<Text></Text>
-			<Enabled>0</Enabled>
-			<ItemType>0</ItemType>
-			<TextStyle>11</TextStyle>
 			<Alignment>0</Alignment>
 			<FormatText></FormatText>
 			<LineChars>0</LineChars>

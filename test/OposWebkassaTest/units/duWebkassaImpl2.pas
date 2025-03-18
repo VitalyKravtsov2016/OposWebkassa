@@ -19,9 +19,6 @@ uses
   CustomReceipt, uLkJSON, ReceiptTemplate, SalesReceipt, DirectIOAPI,
   DebugUtils, StringUtils, OposServiceDevice19;
 
-const
-  CRLF = #13#10;
-
 type
   { TWebkassaImplTest2 }
 

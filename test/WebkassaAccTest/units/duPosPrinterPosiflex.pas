@@ -201,7 +201,6 @@ end;
 procedure TPosPrinterPosiflexTest.TestPrintBarCode;
 const
   Barcode = 'http://dev.kofd.kz/consumer?i=925871425876&f=211030200207&s=15443.72&t=20220826T210014';
-  CRLF = #13#10;
 var
   i: Integer;
 begin
@@ -232,7 +231,6 @@ end;
 procedure TPosPrinterPosiflexTest.TestPrintBarCode2;
 const
   Barcode = 'http://dev.kofd.kz/consumer?i=925871425876&f=211030200207&s=15443.72&t=20220826T210014';
-  CRLF = #13#10;
 begin
   OpenClaimEnable;
 
@@ -250,7 +248,6 @@ end;
 procedure TPosPrinterPosiflexTest.TestPrintBarCode3;
 const
   Barcode = 'http://dev.kofd.kz/consumer?i=925871425876&f=211030200207&s=15443.72&t=20220826T210014';
-  CRLF = #13#10;
 begin
   OpenClaimEnable;
 
@@ -549,7 +546,7 @@ begin
   PrintArea.X := 380;
   PrintArea.Y := 0;
   PrintArea.Width := 512 - PrintArea.X;
-  PrintArea.Height := 500;
+  PrintArea.Height := 300;
   Printer.PageModePrintArea := PageAreaToStr(PrintArea);
   // Barcode
   PtrCheck(Printer.PrintBarCode(PTR_S_RECEIPT, Barcode,
@@ -558,7 +555,7 @@ begin
   PrintArea.X := 0;
   PrintArea.Y := 0;
   PrintArea.Width := 370;
-  PrintArea.Height := 500;
+  PrintArea.Height := 300;
   Printer.PageModePrintArea := PageAreaToStr(PrintArea);
   // Text
   PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, '01234567890123456789012345678901234567890123456789' + CRLF));

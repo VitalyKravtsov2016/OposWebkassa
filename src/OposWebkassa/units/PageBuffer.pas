@@ -51,6 +51,7 @@ type
     FLines: TPageLines;
     FLineWidth: Integer;
     FLineSpacing: Integer;
+    FHorizontalPosition: Integer;
     procedure SetLineWidth(Value: Integer);
   public
     constructor Create;
@@ -62,6 +63,7 @@ type
 
     property Line: WideString read FLine;
     property Lines: TPageLines read FLines;
+    property HorizontalPosition: Integer read FHorizontalPosition;
     property LineWidth: Integer read FLineWidth write SetLineWidth;
     property LineSpacing: Integer read FLineSpacing write FLineSpacing;
   end;
@@ -95,7 +97,9 @@ end;
 procedure TPageBuffer.Print(const Text: WideString; Style: TLineStyles);
 var
   i: Integer;
+  CharWidth: Integer;
 begin
+  CharWidth := TPageLine.GetCharWidth(Style);
   for i := 1 to Length(Text) do
   begin
     case Text[i] of
@@ -103,15 +107,18 @@ begin
       CR:
       begin
         Lines.Add(Line, Style);
+        FHorizontalPosition := 0;
         FLine := '';
       end;
     else
-      if (TPageLine.GetCharWidth(Style) * (Length(Line)+1)) > LineWidth then
+      FLine := FLine + Text[i];
+      Inc(FHorizontalPosition, CharWidth);
+      if (FHorizontalPosition + CharWidth) > LineWidth then
       begin
         Lines.Add(Line, Style);
+        FHorizontalPosition := 0;
         FLine := '';
       end;
-      FLine := FLine + Text[i];
     end;
   end;
 end;

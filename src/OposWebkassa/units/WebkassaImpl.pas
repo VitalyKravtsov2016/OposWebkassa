@@ -133,6 +133,9 @@ type
       PrinterPort: IPrinterPort): IOPOSPOSPrinter;
     procedure SetPrinter(const Value: IOPOSPOSPrinter);
     procedure StartPageMode;
+    procedure CutPaperEscPrinter;
+    procedure CutPaperOnWindowsPrinter;
+    procedure PrintHeader;
   public
     procedure PrintDocumentSafe(Document: TTextDocument);
     procedure CheckCanPrint;
@@ -4336,6 +4339,7 @@ begin
     begin
       CheckPtr(Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_TRANSACTION));
     end;
+    PrintHeader;
     for i := 0 to Document.Items.Count-1 do
     begin
       PrintDocItem(Document.Items[i]);
@@ -4502,7 +4506,7 @@ begin
   PageModeArea := StrToPoint(Printer.PageModeArea);
   BarcodeSize := GetBarcodeSize(Barcode);
   BarcodeSize.X := BarcodeSize.X + 50;
-  BarcodeSize.Y := BarcodeSize.Y*4 + 100;
+  BarcodeSize.Y := BarcodeSize.Y*3 + 100;
 
   LineHeight := FPrinter.RecLineHeight + FPrinter.RecLineSpacing;
   BarcodeSize.Y := ((BarcodeSize.Y + LineHeight-1) div LineHeight)*LineHeight;
@@ -4512,7 +4516,6 @@ begin
   FPrintArea.Height := BarcodeSize.Y;
   Printer.PageModePrintArea := PageAreaToStr(FPrintArea);
   // Print barcode
-  Printer.PrintNormal(FPTR_S_RECEIPT, CRLF);
   PrintBarcodeEsc(Barcode);
   // PageModePrintArea for text
   FPrintArea.X := 0;
@@ -4616,6 +4619,40 @@ begin
 end;
 
 procedure TWebkassaImpl.CutPaper;
+begin
+  if Params.PrinterType = PrinterTypeWindows then
+  begin
+    CutPaperOnWindowsPrinter;
+  end else
+  begin
+    CutPaperEscPrinter;
+  end;
+end;
+
+procedure TWebkassaImpl.CutPaperOnWindowsPrinter;
+begin
+  if Printer.CapRecPapercut then
+  begin
+    Printer.CutPaper(90);
+  end;
+end;
+
+procedure TWebkassaImpl.PrintHeader;
+var
+  i: Integer;
+  Text: WideString;
+begin
+  if Params.PrinterType = PrinterTypeWindows then
+  begin
+    for i := 0 to FParams.NumHeaderLines-1 do
+    begin
+      Text := TrimRight(Params.Header[i]);
+      PrintLine(Text);
+    end;
+  end;
+end;
+
+procedure TWebkassaImpl.CutPaperEscPrinter;
 var
   i: Integer;
   Count: Integer;

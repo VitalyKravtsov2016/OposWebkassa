@@ -57,9 +57,6 @@ type
 
 implementation
 
-const
-  CRLF = #13#10;
-
 { TWebkassaClientTest }
 
 procedure TWebkassaClientTest.SetUp;

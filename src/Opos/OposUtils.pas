@@ -43,9 +43,6 @@ function OposStrToNibble(const Data: AnsiString): AnsiString;
 function OposNibbleToStr(const Data: AnsiString): AnsiString;
 function IsValidOposStatusUpdateEvent(Code: Integer): Boolean;
 
-const
-  CRLF = #13#10;
-
 implementation
 
 function StrToRect(const S: string): TRect;

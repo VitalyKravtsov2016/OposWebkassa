@@ -9,7 +9,7 @@ uses
   // DUnit
   TestFramework,
   // Opos
-  PageBuffer, StringUtils;
+  PageBuffer, StringUtils, PrinterTypes;
 
 type
   { TPageBufferTest }

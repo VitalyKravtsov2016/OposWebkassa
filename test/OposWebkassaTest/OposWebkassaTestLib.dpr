@@ -107,7 +107,8 @@ uses
   RawPrinterPort in '..\..\src\Shared\RawPrinterPort.pas',
   CharCode in '..\..\src\Shared\CharCode.pas',
   ComUtils in '..\..\src\Shared\ComUtils.pas',
-  OposEventsAdapter in '..\..\src\Opos\OposEventsAdapter.pas';
+  OposEventsAdapter in '..\..\src\Opos\OposEventsAdapter.pas',
+  PrinterPage in '..\..\src\Shared\PrinterPage.pas';
 
 {$R *.RES}
 

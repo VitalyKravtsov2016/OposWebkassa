@@ -812,8 +812,8 @@ begin
   FRecCurrentCartridge := 0;
   FRecEmpty := False;
   FRecLetterQuality := False;
-  FRecLineChars := 48;
-  FRecLineCharsList := '48,64';
+  FRecLineChars := 42;
+  FRecLineCharsList := '42,56';
   FRecLineHeight := 24;
   FRecLineSpacing := 5;
   FRecLineWidth := 512;
@@ -2591,7 +2591,7 @@ end;
 
 procedure TPosPrinterPosiflex.Set_RecLineChars(pRecLineChars: Integer);
 begin
-  if pRecLineChars in [20..48] then
+  if pRecLineChars in [20..42] then
   begin
     FRecLineChars := pRecLineChars;
     FRecLineWidth := FRecLineChars * 12;

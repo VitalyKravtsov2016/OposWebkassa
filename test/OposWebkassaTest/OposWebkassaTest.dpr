@@ -111,7 +111,8 @@ uses
   ComUtils in '..\..\src\Shared\ComUtils.pas',
   duEscPrinter in 'units\duEscPrinter.pas',
   OposEventsAdapter in '..\..\src\Opos\OposEventsAdapter.pas',
-  duOposUtils in 'units\duOposUtils.pas';
+  duOposUtils in 'units\duOposUtils.pas',
+  PrinterPage in '..\..\src\Shared\PrinterPage.pas';
 
 {$R *.RES}
 

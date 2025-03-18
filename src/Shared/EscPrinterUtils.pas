@@ -56,6 +56,7 @@ type
     HorizontalPosition: Integer;
   end;
 
+
 const
   KazakhUnicodeChars: array [0..17] of Integer = (
     1170, // cyrillic capital letter ghe stroke

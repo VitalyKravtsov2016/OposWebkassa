@@ -13,7 +13,7 @@ uses
   TntClasses, Opos, OposPtr, OposPtrUtils, OposEsc,
   // This
   LogFile, PosPrinterWindows, MockPrinterPort, PrinterPort, StringUtils,
-  CustomPrinter, FileUtils, EscPrinterUtils;
+  CustomPrinter, FileUtils, EscPrinterUtils, PrinterTypes;
 
 type
   { TPosPrinterWindowsTest }
@@ -24,10 +24,10 @@ type
     FWinPrinter: TBmpPrinter;
     FPrinter: TPosPrinterWindows;
 
+    procedure OpenService;
     procedure ClaimDevice;
     procedure EnableDevice;
     procedure OpenClaimEnable;
-    procedure OpenService;
     procedure PtrCheck(Code: Integer);
 
     property Printer: TPosPrinterWindows read FPrinter;
@@ -149,7 +149,7 @@ const
   Barcode = 'http://dev.kofd.kz/consumer?i=1556041617048&f=768814097419&s=3098.00&t=20241211T151839';
 begin
   OpenClaimEnable;
-  //PtrCheck(FPrinter.TransactionPrint(PTR_S_RECEIPT, PTR_TP_TRANSACTION));
+  PtrCheck(FPrinter.TransactionPrint(PTR_S_RECEIPT, PTR_TP_TRANSACTION));
 
   CheckEquals(576, FPrinter.RecLineWidth, 'RecLineWidth');
   // Start pagemode
@@ -182,7 +182,7 @@ begin
   PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, ' ' + CRLF));
   PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, ' ' + CRLF));
   Printer.CutPaper(90);
-  //PtrCheck(FPrinter.TransactionPrint(PTR_S_RECEIPT, PTR_TP_NORMAL));
+  PtrCheck(FPrinter.TransactionPrint(PTR_S_RECEIPT, PTR_TP_NORMAL));
 
 
   FWinPrinter.Bitmap.SaveToFile('PageMode.bmp');
@@ -207,13 +207,14 @@ begin
   // Set PageMode area
   PrintArea.X := 0;
   PrintArea.Y := 0;
-  PrintArea.Width := 512;
+  PrintArea.Width := 576;
   PrintArea.Height := 500;
   Printer.PageModePrintArea := PageAreaToStr(PrintArea);
   // Barcode
   PtrCheck(Printer.PrintBarCode(PTR_S_RECEIPT, Barcode,
-    PTR_BCS_QRCODE, 0, 0, PTR_BC_CENTER, PTR_BC_TEXT_NONE));
+    PTR_BCS_QRCODE, 0, 0, PTR_BC_RIGHT, PTR_BC_TEXT_NONE));
   // Text
+  Printer.PageModeVerticalPosition := 0;
   PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, '«Õ   “ 00106304241645' + CRLF));
   PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, '–Õ   “ 0000373856050035' + CRLF));
   PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, '»ÕÕ 7725699008' + CRLF));
@@ -226,7 +227,6 @@ begin
   PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, ' ' + CRLF));
   PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, ' ' + CRLF));
   Printer.CutPaper(90);
-
 
   FWinPrinter.Bitmap.SaveToFile('PageMode_2.bmp');
   BitmapData := ReadFileData(GetModulePath + 'PageMode_2.bmp');
@@ -294,7 +294,7 @@ begin
     Lines.Text := ReceiptText;
     for i := 0 to Lines.Count-1 do
     begin
-      PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Lines[i]));
+      PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, Lines[i] + CRLF));
     end;
   finally
     Lines.Free;
@@ -305,7 +305,7 @@ begin
   // Set PageMode area
   PrintArea.X := 380;
   PrintArea.Y := 0;
-  PrintArea.Width := 512 - PrintArea.X;
+  PrintArea.Width := FPrinter.RecLineWidth - PrintArea.X;
   PrintArea.Height := 400;
   Printer.PageModePrintArea := PageAreaToStr(PrintArea);
   // Barcode
@@ -325,6 +325,7 @@ begin
   PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, '‘ƒ 41110' + CRLF));
   PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, '‘œ 2026476352' + CRLF));
   PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, 'œ–»’Œƒ 19.07.24 13:14' + CRLF));
+
   // Stop pagemode
   Printer.PageModePrint(PTR_PM_NORMAL);
   PtrCheck(Printer.PrintNormal(PTR_S_RECEIPT, ' ' + CRLF));
@@ -338,7 +339,6 @@ begin
   CheckEquals(BitmapData, BitmapData2, 'Receipt bimap differs');
   DeleteFile('PageMode_3.bmp');
 end;
-
 
 procedure TPosPrinterWindowsTest.TestUnicodeCanvas;
 var

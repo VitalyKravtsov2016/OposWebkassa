@@ -14,16 +14,18 @@ uses
   // This
   LogFile, WebkassaImpl, WebkassaClient, MockPosPrinter, PrinterParameters,
   SerialPort, DirectIOAPI, FileUtils, oleFiscalPrinter, StringUtils,
-  PosPrinterRongta, VatRate, EscPrinterUtils;
-
-const
-  CRLF = #13#10;
+  PosPrinterRongta, VatRate, EscPrinterUtils, CustomPrinter,
+  PosPrinterWindows;
 
 type
   { TWebkassaImplTest }
 
   TWebkassaImplTest = class(TTestCase)
   private
+    FLogger: ILogFile;
+    FBmpPrinter: TBmpPrinter;
+    FPrinter: TPosPrinterWindows;
+
     function GetParams: TPrinterParameters;
   private
     FPrintHeader: Boolean;
@@ -85,7 +87,6 @@ implementation
 
 var
   Driver: ToleFiscalPrinter;
-  Printer: TMockPOSPrinter;
 
 function TWebkassaImplTest.GetParams: TPrinterParameters;
 begin
@@ -135,7 +136,14 @@ begin
   *)
   if Driver = nil then
   begin
-    Driver := ToleFiscalPrinter.Create;
+    //FLogger := TLogFile.Create;
+    //FBmpPrinter := TBmpPrinter.Create;
+    //FPrinter := TPosPrinterWindows.Create(FLogger, FBmpPrinter);
+    //FPrinter.FontName := 'Cascadia Mono';
+
+    Driver := ToleFiscalPrinter.Create();
+    //Driver.Driver.Printer := FPrinter; !!!
+
     Driver.Driver.LoadParamsEnabled := False;
     Params.PrintBarcode := PrintBarcodeGraphics;
     Params.LogFileEnabled := True;
@@ -192,8 +200,9 @@ begin
     Params.PortType := PortTypeWindows;
     Params.PrinterName := 'RONGTA 80mm Series Printer';
     Params.PrinterType := PrinterTypeWindows;
-    Params.EscPrinterType := EscPrinterTypeRongta;
-    Params.FontName := 'Lucida Console';
+    Params.EscPrinterType := EscPrinterTypePosiflex;
+    Params.FontName := 'Cascadia Mono';
+    //;
     //«Courier New», Courier, monospace
     //«Lucida Console», Monaco, monospace
 
@@ -522,13 +531,16 @@ const
     '          Ãîðÿ÷àÿ ëèíèÿ 20948802934' + CRLF +
     '            ÑÏÀÑÈÁÎ ÇÀ ÏÎÊÓÏÊÓ';
 
+(*
 var
   i: Integer;
   pData: Integer;
   pString: WideString;
   ReceiptLines: TTntStrings;
   ExternalCheckNumber: WideString;
+*)  
 begin
+(*
   ReceiptLines := TTntStringList.Create;
   try
     ReceiptLines.Text := ReceiptText;
@@ -572,6 +584,7 @@ begin
   finally
     ReceiptLines.Free;
   end;
+*)
 end;
 
 
@@ -1139,6 +1152,8 @@ begin
   Params.Template.LoadFromFile('Receipt3.xml');
 
   OpenClaimEnable;
+  //CheckEquals(48, FPrinter.RecLineChars, 'FPrinter.RecLineChars');
+
   Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
   FptrCheck(Driver.BeginFiscalReceipt(True));
   FptrCheck(Driver.DirectIO2(30, 72, '4'));
@@ -1151,6 +1166,8 @@ begin
   FptrCheck(Driver.DirectIO2(30, 300, CreateGUIDStr));
   FptrCheck(Driver.DirectIO2(40, 1203, '780409402215'));
   FptrCheck(Driver.EndFiscalReceipt(False));
+
+  //FBmpPrinter.Bitmap.SaveToFile('FiscalReceipt10.bmp');
 end;
 
 initialization
@@ -1159,7 +1176,5 @@ initialization
 finalization
   Driver.Free;
   Driver := nil;
-  Printer.Free;
-  Printer := nil;
 
 end.

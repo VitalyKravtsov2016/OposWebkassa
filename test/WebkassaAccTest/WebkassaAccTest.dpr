@@ -87,7 +87,7 @@ uses
   EscPrinterPosiflex in '..\..\src\Shared\EscPrinterPosiflex.pas',
   PosPrinterPosiflex in '..\..\src\Shared\PosPrinterPosiflex.pas',
   OposDevice in '..\..\src\Opos\OposDevice.pas',
-  duPosPrinterWindows in 'units\duPosPrinterWindows.pas',
+  duPrinterWindows in 'units\duPrinterWindows.pas',
   duEscPrinterPosiflex in 'units\duEscPrinterPosiflex.pas',
   EscPrinterUtils in '..\..\src\Shared\EscPrinterUtils.pas',
   PtrDirectIO in '..\..\src\OposWebkassa\units\PtrDirectIO.pas',
@@ -103,7 +103,9 @@ uses
   ComUtils in '..\..\src\Shared\ComUtils.pas',
   OposEventsAdapter in '..\..\src\Opos\OposEventsAdapter.pas',
   duEscPrinterRongta in 'units\duEscPrinterRongta.pas',
-  duPosPrinterRongta in 'units\duPosPrinterRongta.pas';
+  duPosPrinterRongta in 'units\duPosPrinterRongta.pas',
+  PrinterPage in '..\..\src\Shared\PrinterPage.pas',
+  duPosPrinterWindows in 'units\duPosPrinterWindows.pas';
 
 {$R *.RES}
 {$R ..\..\src\OposWebkassa\OposWebkassa.tlb}

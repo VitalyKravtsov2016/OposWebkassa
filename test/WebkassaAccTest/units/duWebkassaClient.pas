@@ -47,9 +47,6 @@ type
 
 implementation
 
-const
-  CRLF = #13#10;
-
 var
   FLogger: ILogFile;
   FShiftNumber: Integer;

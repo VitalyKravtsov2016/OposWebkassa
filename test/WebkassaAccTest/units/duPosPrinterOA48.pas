@@ -202,7 +202,6 @@ end;
 procedure TPosPrinterOA48Test.TestPrintBarCode;
 const
   Barcode = 'http://dev.kofd.kz/consumer?i=925871425876&f=211030200207&s=15443.72&t=20220826T210014';
-  CRLF = #13#10;
 var
   i: Integer;
 begin
@@ -233,7 +232,6 @@ end;
 procedure TPosPrinterOA48Test.TestPrintBarCode2;
 const
   Barcode = 'http://dev.kofd.kz/consumer?i=925871425876&f=211030200207&s=15443.72&t=20220826T210014';
-  CRLF = #13#10;
 begin
   OpenClaimEnable;
 

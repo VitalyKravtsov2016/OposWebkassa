@@ -104,7 +104,10 @@ end;
 
 procedure TWinPrinter.EndDoc(Height: Integer);
 begin
-  Printer.EndDoc;
+  if Printer.Printing then
+  begin
+    Printer.EndDoc;
+  end;
 end;
 
 function TWinPrinter.GetCanvas: TCanvas;
@@ -247,7 +250,7 @@ end;
 
 function TCustomPrinter.Printing: Boolean;
 begin
-  Result := False;
+  Result := True;
 end;
 
 procedure TCustomPrinter.Send(const Value: string);

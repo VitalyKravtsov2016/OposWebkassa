@@ -10,11 +10,6 @@ uses
   // This
   WException, TntSysUtils;
 
-const
-  CRLF = #13#10;
-  MAX_FILES_COUNT     = 10;
-  MAX_FILE_SIZE_IN_KB = 4194240;
-
 type
   TVariantArray = array of Variant;
 
@@ -155,6 +150,11 @@ type
   end;
 
 implementation
+
+const
+  CRLF = #13#10;
+  MAX_FILES_COUNT     = 10;
+  MAX_FILE_SIZE_IN_KB = 4194240;
 
 const
   SDefaultSeparator   = '------------------------------------------------------------';

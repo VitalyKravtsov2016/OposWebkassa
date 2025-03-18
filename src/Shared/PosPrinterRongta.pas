@@ -1925,6 +1925,7 @@ end;
 
 procedure TPosPrinterRongta.PrintBarCodePageMode(Barcode: TPosBarcode);
 begin
+  PrintNormal(PTR_S_RECEIPT, CRLF);
   if Barcode.Symbology = PTR_BCS_QRCODE then
   begin
     PrintBarCodeEscQRCode(Barcode.Data);

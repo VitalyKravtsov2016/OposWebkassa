@@ -18,9 +18,6 @@ uses
   CustomReceipt, uLkJSON, ReceiptTemplate, SalesReceipt, DirectIOAPI,
   DebugUtils, StringUtils, PrinterTypes, PrinterParameters, VatRate;
 
-const
-  CRLF = #13#10;
-
 type
   { TWebkassaImplTest }
 

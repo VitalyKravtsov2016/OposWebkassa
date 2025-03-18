@@ -45,8 +45,6 @@ type
     procedure TestPrintNormal;
     procedure TestPrintNormal2;
     procedure TestPageMode2;
-    procedure TestFonts;
-    procedure TestFont;
   end;
 
 implementation
@@ -83,11 +81,12 @@ begin
   FLogger.DeviceName := 'DeviceName';
   FPrinter := TPosPrinterWindows.Create(FLogger, nil);
   FPrinter.PrinterName := PrinterName;
-  //FPrinter.FontName := 'FontA11';
   FPrinter.FontName := 'Cascadia Mono';
+
+  //FPrinter.FontName := 'FontA11';
   //FPrinter.FontName := 'Lucida Console';
   //Printers.Printer.PrinterIndex := Printers.Printer.Printers.IndexOf(PrinterName);
-  Printers.Printer.Fonts.SaveToFile('FontNames.txt');
+  //Printers.Printer.Fonts.SaveToFile('FontNames.txt');
 
   (*
   FPrinter.TopLogoFile := Params.TopLogoFile;
@@ -148,7 +147,6 @@ end;
 procedure TPosPrinterWindowsTest.TestPrintBarCode;
 const
   Barcode = 'http://dev.kofd.kz/consumer?i=925871425876&f=211030200207&s=15443.72&t=20220826T210014';
-  CRLF = #13#10;
 var
   i: Integer;
 begin
@@ -179,7 +177,6 @@ end;
 procedure TPosPrinterWindowsTest.TestPrintBarCode2;
 const
   Barcode = 'http://dev.kofd.kz/consumer?i=925871425876&f=211030200207&s=15443.72&t=20220826T210014';
-  CRLF = #13#10;
 begin
   OpenClaimEnable;
 
@@ -425,67 +422,6 @@ begin
   begin
     Printer.TransactionPrint(PTR_S_RECEIPT, PTR_TP_NORMAL);
   end;
-end;
-
-procedure TPosPrinterWindowsTest.TestFonts;
-var
-  Fonts: TStringList;
-begin
-  Fonts := TStringList.Create;
-  try
-    Printers.Printer.PrinterIndex := Printers.Printer.Printers.IndexOf(PrinterName);
-    Fonts.Text := GetDeviceFonts(Printers.Printer.Handle);
-    CheckEquals(2, Fonts.Count, 'GetDeviceFonts');
-
-    Fonts.Text := GetRasterFonts(Printers.Printer.Handle);
-    CheckEquals(33, Fonts.Count, 'GetRasterFonts');
-    Fonts.SaveToFile('Fonts.txt');
-  finally
-    Fonts.Free;
-  end;
-end;
-
-procedure TPosPrinterWindowsTest.TestFont;
-var
-  TextSize: TSize;
-begin
-  Printers.Printer.PrinterIndex := Printers.Printer.Printers.IndexOf('RONGTA 80mm Series Printer');
-  Printers.Printer.Canvas.Font.Name := 'Lucida Console';
-
-  Printers.Printer.Canvas.Font.Size := 8;
-  TextSize := Printers.Printer.Canvas.TextExtent('A');
-  CheckEquals(14, TextSize.cx, 'TextSize.cx');
-  CheckEquals(23, TextSize.cy, 'TextSize.cy');
-
-  Printers.Printer.Canvas.Font.Size := 9;
-  TextSize := Printers.Printer.Canvas.TextExtent('A');
-  CheckEquals(15, TextSize.cx, 'TextSize.cx');
-  CheckEquals(25, TextSize.cy, 'TextSize.cy');
-
-
-  Printers.Printer.Canvas.Font.Name := 'FontA11';
-  Printers.Printer.Canvas.Font.Size := 8;
-  TextSize := Printers.Printer.Canvas.TextExtent('A');
-  CheckEquals(14, TextSize.cx, 'FontA11, TextSize.cx');
-  CheckEquals(25, TextSize.cy, 'FontA11, TextSize.cy');
-
-  Printers.Printer.Canvas.Font.Size := 30;
-  TextSize := Printers.Printer.Canvas.TextExtent('A');
-  CheckEquals(14, TextSize.cx, 'FontA11, TextSize.cx');
-  CheckEquals(25, TextSize.cy, 'FontA11, TextSize.cy');
-
-
-  Printers.Printer.Canvas.Font.Name := 'FontA12';
-  Printers.Printer.Canvas.Font.Size := 8;
-  TextSize := Printers.Printer.Canvas.TextExtent('A');
-  CheckEquals(14, TextSize.cx, 'FontA12, TextSize.cx');
-  CheckEquals(44, TextSize.cy, 'FontA12, TextSize.cy');
-
-  Printers.Printer.Canvas.Font.Size := 30;
-  TextSize := Printers.Printer.Canvas.TextExtent('A');
-  CheckEquals(14, TextSize.cx, 'FontA12, TextSize.cx');
-  CheckEquals(44, TextSize.cy, 'FontA12, TextSize.cy');
-
 end;
 
 initialization

@@ -10,9 +10,6 @@ uses
   // Opos
   OposPOSPrinter_CCO_TLB, DebugUtils, ComUtils;
 
-const
-  CRLF = #13#10;
-
 type
   { TMockPOSPrinter }
 
