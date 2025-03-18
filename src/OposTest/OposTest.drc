@@ -44,14 +44,14 @@
 #define ComStrs_sFailSetCalMinMaxRange 65236
 #define ComStrs_sFailsetCalSelRange 65237
 #define WinHelpViewer_hNoKeyword 65238
-#define ComConst_SOleError 65239
-#define ComConst_SNoMethod 65240
-#define ComConst_SVarNotObject 65241
-#define ComConst_STooManyParams 65242
-#define ComConst_SDCOMNotInstalled 65243
-#define TntSystem_SBufferOverflow 65244
-#define TntSystem_SInvalidUTF7 65245
-#define TntFormatStrUtils_SInvalidFormatSpecifier 65246
+#define TntFormatStrUtils_SInvalidFormatSpecifier 65239
+#define TntSystem_SBufferOverflow 65240
+#define TntSystem_SInvalidUTF7 65241
+#define ComConst_SOleError 65242
+#define ComConst_SNoMethod 65243
+#define ComConst_SVarNotObject 65244
+#define ComConst_STooManyParams 65245
+#define ComConst_SDCOMNotInstalled 65246
 #define OleConst_SCannotActivate 65247
 #define ExtCtrls_clName3DLight 65248
 #define ExtCtrls_clNameWindow 65249
@@ -379,14 +379,14 @@ BEGIN
 	ComStrs_sFailSetCalMinMaxRange,	"Failed to set calendar min/max range"
 	ComStrs_sFailsetCalSelRange,	"Failed to set calendar selected range"
 	WinHelpViewer_hNoKeyword,	"No help keyword specified."
+	TntFormatStrUtils_SInvalidFormatSpecifier,	"Invalid Format Specifier: %s"
+	TntSystem_SBufferOverflow,	"Buffer overflow"
+	TntSystem_SInvalidUTF7,	"Invalid UTF7"
 	ComConst_SOleError,	"OLE error %.8x"
 	ComConst_SNoMethod,	"Method '%s' not supported by automation object"
 	ComConst_SVarNotObject,	"Variant does not reference an automation object"
 	ComConst_STooManyParams,	"Dispatch methods do not support more than 64 parameters"
 	ComConst_SDCOMNotInstalled,	"DCOM not installed"
-	TntSystem_SBufferOverflow,	"Buffer overflow"
-	TntSystem_SInvalidUTF7,	"Invalid UTF7"
-	TntFormatStrUtils_SInvalidFormatSpecifier,	"Invalid Format Specifier: %s"
 	OleConst_SCannotActivate,	"OLE control activation failed"
 	ExtCtrls_clName3DLight,	"3D Light"
 	ExtCtrls_clNameWindow,	"Window Background"

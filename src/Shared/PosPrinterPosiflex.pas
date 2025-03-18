@@ -163,7 +163,6 @@ type
     FOnStatusUpdateEvent: TOPOSPOSPrinterStatusUpdateEvent;
     FBarcodeInGraphics: Boolean;
     FPrintRasterGraphics: Boolean;
-    FInitialized: Boolean;
     FPageMode: TPageMode;
 
     property Device: TOposServiceDevice19 read FDevice;
@@ -2454,8 +2453,6 @@ end;
 
 procedure TPosPrinterPosiflex.InitializeDevice;
 begin
-  if FInitialized then Exit;
-
   FPrinter.Initialize;
   FPrinter.SetCodePage(CODEPAGE_WCP1251);
   FPrinter.SetCharacterFont(FONT_TYPE_A);
@@ -2465,7 +2462,6 @@ begin
     FPrinter.SetCharacterFont(FONT_TYPE_B);
   end;
   UpdateLineSpacing;
-  FInitialized := True;
 end;
 
 procedure TPosPrinterPosiflex.DeviceProc(Sender: TObject);

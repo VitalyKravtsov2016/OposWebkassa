@@ -87,7 +87,8 @@ begin
     edtOpenResult.Text := GetResultCodeText(FiscalPrinter.OpenResult);
     UpdateDeviceEnabled;
 
-    FiscalPrinter.PowerNotify := OPOS_PN_ENABLED;
+    if FiscalPrinter.CapPowerReporting <> OPOS_PR_NONE then
+      FiscalPrinter.PowerNotify := OPOS_PN_ENABLED;
     FiscalPrinter.CheckTotal := False;
   finally
     EnableButtons(True);

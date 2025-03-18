@@ -70,7 +70,8 @@ begin
   try
     PosPrinter.Open(cbPrinterDeviceName.Text);
     edtOpenResult.Text := GetResultCodeText(PosPrinter.OpenResult);
-    PosPrinter.PowerNotify := OPOS_PN_ENABLED;
+    if PosPrinter.CapPowerReporting <> OPOS_PR_NONE then
+      PosPrinter.PowerNotify := OPOS_PN_ENABLED;
   finally
     EnableButtons(True);
   end;

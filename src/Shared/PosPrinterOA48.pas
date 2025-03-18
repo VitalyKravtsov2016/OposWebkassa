@@ -167,7 +167,6 @@ type
     FPrintRasterGraphics: Boolean;
     FUtf8Enabled: Boolean;
     FPrinterCodePage: Integer;
-    FInitialized: Boolean;
 
     property Device: TOposServiceDevice19 read FDevice;
     function CharSetToPrinterCP(CharacterSet: Integer): Integer;
@@ -2306,8 +2305,6 @@ end;
 
 procedure TPosPrinterOA48.InitializeDevice;
 begin
-  if FInitialized then Exit;
-
   FPrinter.Initialize;
   if Utf8Enabled then
   begin
@@ -2326,7 +2323,6 @@ begin
     FLastPrintMode := [pmFontB];
     FPrinter.SetCharacterFont(FONT_TYPE_B);
   end;
-  FInitialized := True;
 end;
 
 procedure TPosPrinterOA48.DeviceProc(Sender: TObject);

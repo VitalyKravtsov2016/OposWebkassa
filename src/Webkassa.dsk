@@ -1,40 +1,25 @@
 [Closed Files]
-File_0=SourceModule,'c:\program files (x86)\borland\delphi7\source\rtl\Win\Windows.pas',0,1,12084,1,12100,0,0
-File_1=SourceModule,'D:\Projects\OposWebkassa\test\WebkassaAccTest\units\duPosPrinterRongta.pas',0,1,430,1,441,0,0
-File_2=SourceModule,'D:\Projects\OposWebkassa\src\Shared\CustomPrinter.pas',0,1,170,1,192,0,0
-File_3=SourceModule,'D:\Projects\OposWebkassa\test\OposWebkassaTest\units\duWebkassaImpl.pas',0,1,612,1,612,0,0
-File_4=SourceModule,'D:\Projects\OposWebkassa\test\OposWebkassaTest\units\duPosPrinterRongta.pas',0,1,1,1,1,0,0
-File_5=SourceModule,'D:\Projects\OposWebkassa\test\WebkassaAccTest\units\duPosPrinterWindows.pas',0,1,76,17,84,0,0
-File_6=SourceModule,'D:\Projects\OposWebkassa\test\WebkassaAccTest\units\duPosPrinterPosiflex.pas',0,1,512,1,536,0,0
-File_7=SourceModule,'D:\Projects\OposWebkassa\test\WebkassaAccTest\units\duPosPrinterOA48.pas',0,1,52,17,61,0,0
-File_8=SourceModule,'D:\Projects\OposWebkassa\test\WebkassaAccTest\units\duWebkassaImpl.pas',0,1,188,31,206,0,0
+File_0=SourceModule,'D:\Projects\OposWebkassa\test\WebkassaAccTest\units\duPosPrinterRongta.pas',0,1,57,15,57,0,0
+File_1=SourceModule,'D:\Projects\OposWebkassa\test\WebkassaAccTest\units\duPrinterWindows.pas',0,1,13,1,20,0,0
+File_2=SourceModule,'D:\Projects\OposWebkassa\test\WebkassaAccTest\units\duWebkassaImpl.pas',0,1,1125,100,1148,0,0
+File_3=SourceModule,'D:\Projects\OposWebkassa\src\Shared\PrinterParameters.pas',0,1,1,26,20,0,0
+File_4=SourceModule,'D:\Projects\OposWebkassa\src\Opos\OposException.pas',0,1,78,8,93,0,0
+File_5=SourceModule,'D:\Projects\OposWebkassa\src\OposWebkassa\units\WebkassaImpl.pas',0,1,3253,84,3260,0,0
+File_6=SourceModule,'D:\Projects\OposWebkassa\src\Opos\POSPrinterLog.pas',0,1,1532,1,1552,0,0
+File_7=SourceModule,'D:\Projects\OposWebkassa\src\Shared\PosPrinterRongta.pas',0,1,1,1,1,0,0
+File_8=SourceModule,'D:\Projects\OposWebkassa\src\OposWebkassa\units\TextDocument.pas',0,1,140,1,153,0,0
+File_9=SourceModule,'D:\Projects\OposWebkassa\src\Shared\EscPrinterUtils.pas',0,1,354,28,364,0,0
 
 [Modules]
-Module0=D:\Projects\OposWebkassa\src\Shared\PosPrinterWindows.pas
-Module1=D:\Projects\OposWebkassa\test\OposWebkassaTest\units\duPosPrinterWindows.pas
-Module2=D:\Projects\OposWebkassa\test\OposWebkassaTest\OposWebkassaTest.dpr
-Module3=c:\program files (x86)\borland\delphi7\source\vcl\Graphics.pas
-Count=4
-EditWindowCount=1
+Count=0
+EditWindowCount=0
 TypeLibWindowCount=1
 
-[D:\Projects\OposWebkassa\src\Shared\PosPrinterWindows.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[D:\Projects\OposWebkassa\test\OposWebkassaTest\units\duPosPrinterWindows.pas]
-ModuleType=SourceModule
+[D:\Projects\OposWebkassa\test\WebkassaAccTest\WebkassaAccTest.dpr]
 FormState=0
 FormOnTop=0
 
 [D:\Projects\OposWebkassa\test\OposWebkassaTest\OposWebkassaTest.dpr]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[c:\program files (x86)\borland\delphi7\source\vcl\Graphics.pas]
-ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
@@ -65,68 +50,6 @@ FormOnTop=0
 [D:\Projects\OposWebkassa\test\OposWebkassaTest\OposWebkassaTestLib.dpr]
 FormState=0
 FormOnTop=0
-
-[D:\Projects\OposWebkassa\test\WebkassaAccTest\WebkassaAccTest.dpr]
-FormState=0
-FormOnTop=0
-
-[EditWindow0]
-ViewCount=4
-CurrentView=2
-View0=0
-View1=1
-View2=2
-View3=3
-CodeExplorer=CodeExplorer@EditWindow0
-MessageView=MessageView@EditWindow0
-Create=1
-Visible=1
-State=2
-Left=469
-Top=148
-Width=1302
-Height=682
-MaxLeft=-8
-MaxTop=115
-MaxWidth=1936
-MaxHeight=933
-ClientWidth=1920
-ClientHeight=894
-LeftPanelSize=0
-LeftPanelClients=CodeExplorer@EditWindow0
-LeftPanelData=00000400010000000C000000436F64654578706C6F7265720000000000000000000000000000000000FFFFFFFF
-RightPanelSize=0
-BottomPanelSize=85
-BottomPanelClients=MessageView@EditWindow0
-BottomPanelData=000004000000000000000000000000000000000000000000000100000000000000000B0000004D65737361676556696577FFFFFFFF
-
-[View0]
-Module=D:\Projects\OposWebkassa\test\OposWebkassaTest\units\duPosPrinterWindows.pas
-CursorX=27
-CursorY=335
-TopLine=308
-LeftCol=1
-
-[View1]
-Module=D:\Projects\OposWebkassa\test\OposWebkassaTest\OposWebkassaTest.dpr
-CursorX=1
-CursorY=118
-TopLine=102
-LeftCol=1
-
-[View2]
-Module=D:\Projects\OposWebkassa\src\Shared\PosPrinterWindows.pas
-CursorX=121
-CursorY=7
-TopLine=1
-LeftCol=1
-
-[View3]
-Module=c:\program files (x86)\borland\delphi7\source\vcl\Graphics.pas
-CursorX=14
-CursorY=10
-TopLine=1
-LeftCol=1
 
 [TypeLibEditWindow0]
 Create=1
@@ -164,8 +87,7 @@ LRDockWidth=426
 Dockable=1
 
 [Breakpoints]
-Count=1
-Breakpoint0='D:\Projects\OposWebkassa\src\Shared\PosPrinterWindows.pas',2092,'',0,1,'',1,0,0,'',1,'','',''
+Count=0
 
 [AddressBreakpoints]
 Count=0
@@ -259,14 +181,14 @@ Column5Width=75
 Create=1
 Visible=0
 State=0
-Left=704
-Top=263
+Left=781
+Top=47
 Width=984
-Height=688
+Height=596
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=968
-ClientHeight=649
+ClientHeight=557
 TBDockHeight=161
 LRDockWidth=294
 Dockable=1
@@ -303,38 +225,6 @@ TBDockHeight=1
 LRDockWidth=417
 Dockable=1
 
-[CodeExplorer@EditWindow0]
-Create=1
-Visible=0
-State=0
-Left=-273
-Top=-17
-Width=140
-Height=305
-MaxLeft=-1
-MaxTop=-1
-ClientWidth=140
-ClientHeight=305
-TBDockHeight=305
-LRDockWidth=140
-Dockable=1
-
-[MessageView@EditWindow0]
-Create=1
-Visible=1
-State=0
-Left=12
-Top=0
-Width=1908
-Height=85
-MaxLeft=-1
-MaxTop=-1
-ClientWidth=1908
-ClientHeight=85
-TBDockHeight=85
-LRDockWidth=443
-Dockable=1
-
 [DockHosts]
 DockHostCount=1
 
@@ -358,5 +248,5 @@ DockClients=ProjectManager,PropertyInspector
 DockSiteData=00000400000000006F0300000000000001B6010000000000000100000000010200001200000050726F6A6563744D616E61676572466F726D01000000006F0300001100000050726F7065727479496E73706563746F72FFFFFFFF
 
 [ActiveProject]
-ActiveProject=4
+ActiveProject=6
 

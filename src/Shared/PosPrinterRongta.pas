@@ -165,7 +165,6 @@ type
     FOnStatusUpdateEvent: TOPOSPOSPrinterStatusUpdateEvent;
     FBarcodeInGraphics: Boolean;
     FPrintRasterGraphics: Boolean;
-    FInitialized: Boolean;
     FPageMode: TPageMode;
 
     property Device: TOposServiceDevice19 read FDevice;
@@ -2471,8 +2470,6 @@ end;
 
 procedure TPosPrinterRongta.InitializeDevice;
 begin
-  if FInitialized then Exit;
-
   FPrinter.Initialize;
   FPrinter.SetLineSpacing(RecLineSpacing);
   FPrinter.SetCodePage(CODEPAGE_WCP1251);
@@ -2482,7 +2479,6 @@ begin
     FLastPrintMode := [pmFontB];
     FPrinter.SetCharacterFont(FONT_TYPE_B);
   end;
-  FInitialized := True;
 end;
 
 procedure TPosPrinterRongta.DeviceProc(Sender: TObject);

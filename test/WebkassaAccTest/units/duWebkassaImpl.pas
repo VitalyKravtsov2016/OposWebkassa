@@ -22,10 +22,6 @@ type
 
   TWebkassaImplTest = class(TTestCase)
   private
-    FLogger: ILogFile;
-    FBmpPrinter: TBmpPrinter;
-    FPrinter: TPosPrinterWindows;
-
     function GetParams: TPrinterParameters;
   private
     FPrintHeader: Boolean;
@@ -145,7 +141,7 @@ begin
     //Driver.Driver.Printer := FPrinter; !!!
 
     Driver.Driver.LoadParamsEnabled := False;
-    Params.PrintBarcode := PrintBarcodeGraphics;
+    Params.PrintBarcode := PrintBarcodeESCCommands;
     Params.LogFileEnabled := True;
     Params.LogMaxCount := 10;
     Params.LogFilePath := GetModulePath + 'Logs';
@@ -199,9 +195,10 @@ begin
     Params.USBPort := '';
     Params.PortType := PortTypeWindows;
     Params.PrinterName := 'RONGTA 80mm Series Printer';
-    Params.PrinterType := PrinterTypeWindows;
-    Params.EscPrinterType := EscPrinterTypePosiflex;
-    Params.FontName := 'Cascadia Mono';
+    Params.PrinterType := PrinterTypeEscCommands;
+    Params.EscPrinterType := EscPrinterTypeRongta;
+    Params.FontName := FontNameA;
+    //'Cascadia Mono';
     //;
     //«Courier New», Courier, monospace
     //«Lucida Console», Monaco, monospace
@@ -1148,11 +1145,10 @@ end;
 
 procedure TWebkassaImplTest.TestFiscalReceipt10;
 begin
-  Params.TemplateEnabled := True;
+  Params.TemplateEnabled := False;
   Params.Template.LoadFromFile('Receipt3.xml');
 
   OpenClaimEnable;
-  //CheckEquals(48, FPrinter.RecLineChars, 'FPrinter.RecLineChars');
 
   Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
   FptrCheck(Driver.BeginFiscalReceipt(True));
@@ -1166,8 +1162,6 @@ begin
   FptrCheck(Driver.DirectIO2(30, 300, CreateGUIDStr));
   FptrCheck(Driver.DirectIO2(40, 1203, '780409402215'));
   FptrCheck(Driver.EndFiscalReceipt(False));
-
-  //FBmpPrinter.Bitmap.SaveToFile('FiscalReceipt10.bmp');
 end;
 
 initialization
