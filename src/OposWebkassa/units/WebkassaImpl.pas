@@ -3308,7 +3308,7 @@ begin
   Printer.RecLineSpacing := Printer.RecLineHeight;
   if Params.LineSpacing > 0 then
   begin
-    Printer.RecLineSpacing := Printer.RecLineSpacing + Params.LineSpacing;
+    Printer.RecLineSpacing := Printer.RecLineHeight + Params.LineSpacing;
   end;
   FOposDevice.DeviceEnabled := True;
 end;

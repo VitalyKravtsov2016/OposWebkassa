@@ -12,6 +12,8 @@ uses
   EscPrinterUtils, CharCode, DebugUtils;
 
 const
+  MinLineSpacing = 5;
+
   /////////////////////////////////////////////////////////////////////////////
   // Params constants
 

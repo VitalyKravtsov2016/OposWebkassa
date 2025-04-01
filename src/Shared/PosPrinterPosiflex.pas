@@ -814,7 +814,7 @@ begin
   FRecLineChars := 42;
   FRecLineCharsList := '42,56';
   FRecLineHeight := 24;
-  FRecLineSpacing := 5;
+  FRecLineSpacing := FRecLineHeight + 5;
   FRecLineWidth := 512;
   FRecNearEnd := False;
   FRecSidewaysMaxChars := 69;
@@ -2616,8 +2616,11 @@ begin
   RecLineSpacingInDots := MapToDots(pRecLineSpacing, MapMode);
   if RecLineSpacingInDots <> FRecLineSpacing then
   begin
-    FRecLineSpacing := RecLineSpacingInDots;
-    UpdateLineSpacing;
+    if (RecLineSpacingInDots >= RecLineHeight + MinLineSpacing) then
+    begin
+      FRecLineSpacing := RecLineSpacingInDots;
+      UpdateLineSpacing;
+    end;
   end;
 end;
 
