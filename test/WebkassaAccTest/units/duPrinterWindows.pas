@@ -99,9 +99,8 @@ procedure TPrinterWindowsTest.TestEndDoc;
 var
   Size: TSize;
   Line: string;
-  i, x, y: Integer;
+  i, y: Integer;
 begin
-  x := 0;
   y := 0;
   Printer.BeginDoc;
   for i := 1 to 10 do

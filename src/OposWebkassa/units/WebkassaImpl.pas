@@ -22,7 +22,7 @@ uses
   PrinterParameters, CashInReceipt, CashOutReceipt,
   SalesReceipt, TextDocument, ReceiptItem, StringUtils, DebugUtils, VatRate,
   uZintBarcode, uZintInterface, FileUtils, PosPrinterWindows, PosPrinterRongta,
-  PosPrinterOA48, PosPrinterPosiflex,  ReceiptTemplate,
+  PosPrinterOA48, PosPrinterPosiflex,  PosPrinterXPrinter, ReceiptTemplate,
   SerialPort, PrinterPort, SocketPort, RawPrinterPort, UsbPrinterPort,
   PrinterTypes, DirectIOAPI, BarcodeUtils, PrinterParametersReg, JsonUtils,
   EscPrinterRongta, PtrDirectIO, PageBuffer, EscPrinterUtils, ComUtils;
@@ -3171,11 +3171,26 @@ function TWebkassaImpl.CreatePosEscPrinter(PrinterPort: IPrinterPort): IOPOSPOSP
     Result := Printer;
   end;
 
+  function CreatePosPrinterXPrinter(PrinterPort: IPrinterPort): IOPOSPOSPrinter;
+  var
+    Printer: TPosPrinterXPrinter;
+  begin
+    Printer := TPosPrinterXPrinter.Create(PrinterPort, Logger);
+    Printer.OnStatusUpdateEvent := PrinterStatusUpdateEvent;
+    Printer.OnErrorEvent := PrinterErrorEvent;
+    Printer.OnDirectIOEvent := PrinterDirectIOEvent;
+    Printer.OnOutputCompleteEvent := PrinterOutputCompleteEvent;
+    Printer.FontName := Params.FontName;
+    Printer.DevicePollTime := Params.DevicePollTime;
+    Result := Printer;
+  end;
+
 begin
   case Params.EscPrinterType of
     EscPrinterTypeRongta: Result := CreatePosPrinterRongta(PrinterPort);
     EscPrinterTypeOA48: Result := CreatePosPrinterOA48(PrinterPort);
     EscPrinterTypePosiflex: Result := CreatePosPrinterPosiflex(PrinterPort);
+    EscPrinterTypeXPrinter: Result := CreatePosPrinterXPrinter(PrinterPort);
   else
     Result := CreatePosPrinterOA48(PrinterPort);
   end;

@@ -61,12 +61,12 @@ uses
   OposPtrhi in '..\..\src\Opos\OposPtrhi.pas',
   RCSEvents in 'units\RCSEvents.pas',
   RCSEvents_TLB in 'units\RCSEvents_TLB.pas',
-  PosPrinterOA48 in '..\..\src\Shared\PosPrinterOA48.pas',
+  PosPrinterXPrinter in '..\..\src\Shared\PosPrinterXPrinter.pas',
   uZintBarcode in '..\..\src\Shared\uZintBarcode.pas',
   uZintInterface in '..\..\src\Shared\uZintInterface.pas',
   POSPrinterLog in '..\..\src\Opos\POSPrinterLog.pas',
   duRegExpr in 'units\duRegExpr.pas',
-  EscPrinterOA48 in '..\..\src\Shared\EscPrinterOA48.pas',
+  EscPrinterXPrinter in '..\..\src\Shared\EscPrinterXPrinter.pas',
   ByteUtils in '..\..\src\Shared\ByteUtils.pas',
   PosPrinterWindows in '..\..\src\Shared\PosPrinterWindows.pas',
   PrinterPort in '..\..\src\Shared\PrinterPort.pas',
@@ -112,7 +112,9 @@ uses
   duEscPrinter in 'units\duEscPrinter.pas',
   OposEventsAdapter in '..\..\src\Opos\OposEventsAdapter.pas',
   duOposUtils in 'units\duOposUtils.pas',
-  PrinterPage in '..\..\src\Shared\PrinterPage.pas';
+  PrinterPage in '..\..\src\Shared\PrinterPage.pas',
+  PosPrinterOA48 in '..\..\src\Shared\PosPrinterOA48.pas',
+  EscPrinterOA48 in '..\..\src\Shared\EscPrinterOA48.pas';
 
 {$R *.RES}
 

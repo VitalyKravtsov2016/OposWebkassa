@@ -413,7 +413,7 @@ begin
   Result := '';
   if cbPrinterType.ItemIndex  = PrinterTypeEscCommands then
   begin
-    Result := 'Rongta' + CRLF + 'OA-48' + CRLF + 'Posiflex';
+    Result := 'Rongta' + CRLF + 'OA-48' + CRLF + 'Posiflex' + CRLF + 'XPrinter';
   end;
 end;
 

@@ -57,7 +57,7 @@ uses
   OposPtrhi in '..\..\src\Opos\OposPtrhi.pas',
   duPrinterTest in 'units\duPrinterTest.pas',
   MockPosPrinter2 in '..\OposWebkassaTest\units\MockPosPrinter2.pas',
-  PosPrinterOA48 in '..\..\src\Shared\PosPrinterOA48.pas',
+  PosPrinterXPrinter in '..\..\src\Shared\PosPrinterXPrinter.pas',
   uZintBarcode in '..\..\src\Shared\uZintBarcode.pas',
   uZintInterface in '..\..\src\Shared\uZintInterface.pas',
   POSPrinterLog in '..\..\src\Opos\POSPrinterLog.pas',
@@ -83,7 +83,7 @@ uses
   BarcodeUtils in '..\..\src\Shared\BarcodeUtils.pas',
   MockPosPrinter in '..\OposWebkassaTest\units\MockPosPrinter.pas',
   oleFiscalPrinter in '..\..\src\OposWebkassa\Units\oleFiscalPrinter.pas',
-  EscPrinterOA48 in '..\..\src\Shared\EscPrinterOA48.pas',
+  EscPrinterXPrinter in '..\..\src\Shared\EscPrinterXPrinter.pas',
   EscPrinterPosiflex in '..\..\src\Shared\EscPrinterPosiflex.pas',
   PosPrinterPosiflex in '..\..\src\Shared\PosPrinterPosiflex.pas',
   OposDevice in '..\..\src\Opos\OposDevice.pas',
@@ -105,7 +105,9 @@ uses
   duEscPrinterRongta in 'units\duEscPrinterRongta.pas',
   duPosPrinterRongta in 'units\duPosPrinterRongta.pas',
   PrinterPage in '..\..\src\Shared\PrinterPage.pas',
-  duPosPrinterWindows in 'units\duPosPrinterWindows.pas';
+  duPosPrinterWindows in 'units\duPosPrinterWindows.pas',
+  PosPrinterOA48 in '..\..\src\Shared\PosPrinterOA48.pas',
+  EscPrinterOA48 in '..\..\src\Shared\EscPrinterOA48.pas';
 
 {$R *.RES}
 {$R ..\..\src\OposWebkassa\OposWebkassa.tlb}

@@ -61,6 +61,7 @@ const
   EscPrinterTypeRongta    = 0;
   EscPrinterTypeOA48      = 1;
   EscPrinterTypePosiflex  = 2;
+  EscPrinterTypeXPrinter  = 3;
 
 
   DefLogMaxCount = 10;

@@ -64,8 +64,8 @@ uses
   PosPrinterWindows in '..\Shared\PosPrinterWindows.pas',
   OposServiceDevice19 in '..\Opos\OposServiceDevice19.pas',
   NotifyThread in '..\Shared\NotifyThread.pas',
-  PosPrinterOA48 in '..\Shared\PosPrinterOA48.pas',
-  EscPrinterOA48 in '..\Shared\EscPrinterOA48.pas',
+  PosPrinterXPrinter in '..\Shared\PosPrinterXPrinter.pas',
+  EscPrinterXPrinter in '..\Shared\EscPrinterXPrinter.pas',
   ByteUtils in '..\Shared\ByteUtils.pas',
   Semaphore in '..\Opos\Semaphore.pas',
   WebkassaImpl in '..\OposWebkassa\units\WebkassaImpl.pas',
@@ -109,7 +109,9 @@ uses
   CharCode in '..\Shared\CharCode.pas',
   ComUtils in '..\Shared\ComUtils.pas',
   OposEventsAdapter in '..\Opos\OposEventsAdapter.pas',
-  PrinterPage in '..\Shared\PrinterPage.pas';
+  PrinterPage in '..\Shared\PrinterPage.pas',
+  PosPrinterOA48 in '..\Shared\PosPrinterOA48.pas',
+  EscPrinterOA48 in '..\Shared\EscPrinterOA48.pas';
 
 {$R *.RES}
 {$R WindowsXP.RES}

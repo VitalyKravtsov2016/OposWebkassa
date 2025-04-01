@@ -222,7 +222,8 @@ object fmPrinter: TfmPrinter
         Items.Strings = (
           'Rongta'
           'OA-48'
-          'Posiflex')
+          'Posiflex'
+          'XPrinter')
       end
       object cbPortType: TTntComboBox
         Left = 120
