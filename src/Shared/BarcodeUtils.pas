@@ -25,7 +25,7 @@ type
 
 procedure ScaleGraphic(Graphic: TGraphic; Scale: Integer);
 procedure LoadMemoryGraphic(Graphic: TGraphic; const Data: AnsiString);
-procedure RenderBarcode(Bitmap: TBitmap; Symbol: PZSymbol; Is1D: Boolean);
+procedure RenderBarcode(Bitmap: TBitmap; Symbol: PZintSymbol; Is1D: Boolean);
 procedure RenderBarcodeToBitmap(var Barcode: TPosBarcode; Bitmap: TBitmap);
 
 function BitmapToStr(Bitmap: TBitmap): AnsiString;
@@ -70,7 +70,7 @@ begin
   end;
 end;
 
-procedure RenderBarcode(Bitmap: TBitmap; Symbol: PZSymbol; Is1D: Boolean);
+procedure RenderBarcode(Bitmap: TBitmap; Symbol: PZintSymbol; Is1D: Boolean);
 var
   B: Byte;
   X, Y: Integer;
@@ -79,51 +79,51 @@ begin
   Bitmap.PixelFormat := pf1Bit;
   Bitmap.Width := Symbol.width;
   if Is1D then
-    Bitmap.Height := Symbol.Height
+    Bitmap.Height := Round(Symbol.Height)
   else
-    Bitmap.Height := Symbol.rows;
+    Bitmap.Height := Round(Symbol.rows);
 
-  for X := 0 to Symbol.width-1 do
-  for Y := 0 to Symbol.Height-1 do
+  for X := 0 to Bitmap.width-1 do
+  for Y := 0 to Bitmap.Height-1 do
   begin
     Bitmap.Canvas.Pixels[X, Y] := clWhite;
     if Is1D then
-      B := Byte(Symbol.encoded_data[0][X div 7])
+      B := Byte(Symbol.encoded_data[0][X div 8])
     else
-      B := Byte(Symbol.encoded_data[Y][X div 7]);
+      B := Byte(Symbol.encoded_data[Y][X div 8]);
 
-    if (B and (1 shl (X mod 7))) <> 0 then
+    if (B and (1 shl (X mod 8))) <> 0 then
       Bitmap.Canvas.Pixels[X, Y] := clBlack;
   end;
 end;
 
-function BTypeToZBType(BarcodeType: Integer): TZBType;
+function BTypeToZBType(BarcodeType: Integer): Integer;
 begin
   case BarcodeType of
-    PTR_BCS_UPCA: Result := tBARCODE_UPCA;
-    PTR_BCS_UPCE: Result := tBARCODE_UPCE;
-    PTR_BCS_EAN8: Result := tBARCODE_EANX;
-    PTR_BCS_EAN13: Result := tBARCODE_EANX;
-    PTR_BCS_TF: Result := tBARCODE_C25INTER;
-    PTR_BCS_ITF: Result := tBARCODE_C25INTER;
-    PTR_BCS_Codabar: Result := tBARCODE_CODABAR;
-    PTR_BCS_Code39: Result := tBARCODE_CODE39;
-    PTR_BCS_Code93: Result := tBARCODE_CODE93;
-    PTR_BCS_Code128: Result := tBARCODE_CODE128;
-    PTR_BCS_UPCA_S: Result := tBARCODE_UPCA_CC;
-    PTR_BCS_UPCE_S: Result := tBARCODE_UPCE_CC;
-    PTR_BCS_EAN8_S: Result := tBARCODE_EANX;
-    PTR_BCS_EAN13_S: Result := tBARCODE_EANX;
-    PTR_BCS_EAN128: Result := tBARCODE_EANX;
-    PTR_BCS_RSS14: Result := tBARCODE_RSS14;
-    PTR_BCS_RSS_EXPANDED: Result := tBARCODE_RSS_EXP;
-    PTR_BCS_PDF417: Result := tBARCODE_PDF417;
-    PTR_BCS_MAXICODE: Result := tBARCODE_MAXICODE;
-    PTR_BCS_DATAMATRIX: Result := tBARCODE_DATAMATRIX;
-    PTR_BCS_QRCODE: Result := tBARCODE_QRCODE;
-    PTR_BCS_UQRCODE: Result := tBARCODE_MICROQR;
-    PTR_BCS_AZTEC: Result := tBARCODE_AZTEC;
-    PTR_BCS_UPDF417: Result := tBARCODE_MICROPDF417;
+    PTR_BCS_UPCA: Result := BARCODE_UPCA;
+    PTR_BCS_UPCE: Result := BARCODE_UPCE;
+    PTR_BCS_EAN8: Result := BARCODE_EANX;
+    PTR_BCS_EAN13: Result := BARCODE_EANX;
+    PTR_BCS_TF: Result := BARCODE_C25INTER;
+    PTR_BCS_ITF: Result := BARCODE_C25INTER;
+    PTR_BCS_Codabar: Result := BARCODE_CODABAR;
+    PTR_BCS_Code39: Result := BARCODE_CODE39;
+    PTR_BCS_Code93: Result := BARCODE_CODE93;
+    PTR_BCS_Code128: Result := BARCODE_CODE128;
+    PTR_BCS_UPCA_S: Result := BARCODE_UPCA_CC;
+    PTR_BCS_UPCE_S: Result := BARCODE_UPCE_CC;
+    PTR_BCS_EAN8_S: Result := BARCODE_EANX;
+    PTR_BCS_EAN13_S: Result := BARCODE_EANX;
+    PTR_BCS_EAN128: Result := BARCODE_EANX;
+    PTR_BCS_RSS14: Result := BARCODE_RSS14;
+    PTR_BCS_RSS_EXPANDED: Result := BARCODE_RSS_EXP;
+    PTR_BCS_PDF417: Result := BARCODE_PDF417;
+    PTR_BCS_MAXICODE: Result := BARCODE_MAXICODE;
+    PTR_BCS_DATAMATRIX: Result := BARCODE_DATAMATRIX;
+    PTR_BCS_QRCODE: Result := BARCODE_QRCODE;
+    PTR_BCS_UQRCODE: Result := BARCODE_MICROQR;
+    PTR_BCS_AZTEC: Result := BARCODE_AZTEC;
+    PTR_BCS_UPDF417: Result := BARCODE_MICROPDF417;
   else
     raise Exception.CreateFmt('Barcode type not supported, %d', [BarcodeType]);
   end;
