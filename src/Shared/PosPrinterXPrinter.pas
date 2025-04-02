@@ -2306,6 +2306,7 @@ end;
 procedure TPosPrinterXPrinter.InitializeDevice;
 begin
   FPrinter.Initialize;
+  FPrinter.CancelKanjiCharacter;
   if Utf8Enabled then
   begin
     FPrinter.UTF8Enable(True);

@@ -2471,6 +2471,7 @@ end;
 procedure TPosPrinterRongta.InitializeDevice;
 begin
   FPrinter.Initialize;
+  FPrinter.CancelKanjiCharacter;
   FPrinter.SetLineSpacing(RecLineSpacing);
   FPrinter.SetCodePage(CODEPAGE_WCP1251);
   FPrinter.SetCharacterFont(FONT_TYPE_A);

@@ -510,77 +510,74 @@ end;
 function GetCodepageName(Codepage: Integer): string;
 begin
   case Codepage of
-    0: Result := 'CP437';
-    1: Result := 'KATAKANA';
-    2: Result := 'CP850';
-    3: Result := 'CP860';
-    4: Result := 'CP863';
-    5: Result := 'CP865';
-    6: Result := 'WEST_EUROPE';
-    7: Result := 'GREEK';
-    8: Result := 'HEBREW';
-    9: Result := 'EAST_EUROPE';
-    10: Result := 'IRAN';
-    11: Result := 'WCP1252';
-    12: Result := 'CP866';
-    13: Result := 'PC852';
-    14: Result := 'PC858';
-    15: Result := 'IRAN2';
-    16: Result := 'LATVIAN';
-    17: Result := 'ARABIC';
-    18: Result := 'PT1511251';
-    19: Result := 'PC747';
-    20: Result := 'WCP1257';
-    21: Result := 'THAI';
-    22: Result := 'VIETNAM';
-    23: Result := 'PC864';
-    24: Result := 'PC1001';
-    25: Result := 'UIGUR';
-    26: Result := 'HEBREW_2';
-    27: Result := 'WCP1255';
-    28: Result := 'PC437';
-    29: Result := 'KATAKANA2';
-    30: Result := 'PC437_STD_EUROPE';
-    31: Result := 'PC858_MULT';
-    32: Result := 'PC852_LATIN_2';
-    33: Result := 'PC860_PORTUGU';
-    34: Result := 'PC861_ICELANDIC';
-    35: Result := 'PC863_CANADIAN';
-    36: Result := 'PC865_NORDIC';
-    37: Result := 'PC866_RUSSIAN';
-    38: Result := 'PC855_BULGARIAN';
-    39: Result := 'PC857_TURKEY';
-    40: Result := 'PC862_HEBREW';
-    41: Result := 'PC864_ARABIC';
-    42: Result := 'PC737_GREEK';
-    43: Result := 'PC851_GREEK';
-    44: Result := 'PC869_GREEK';
-    45: Result := 'PC928_GREEK';
-    46: Result := 'PC772_LITHUANIAN';
-    47: Result := 'PC774_LITHUAN';
-    48: Result := 'PC874_THAI';
-    49: Result := 'WPC1252_LATINL';
-    50: Result := 'WCP1250';
-    51: Result := 'WCP1251';
-    52: Result := 'PC3840_IBM_RUSSIAN';
-    53: Result := 'PC3841_GOST';
-    54: Result := 'PC3843_POLISH';
-    55: Result := 'PC3844_CS2';
-    56: Result := 'PC3845_HUNGARIAN';
-    57: Result := 'PC3846_TURKISH';
-    58: Result := 'PC3847_BRAZI1_ABNI';
-    59: Result := 'PC3848_BRAZIL';
-    60: Result := 'PC1001_ARABIC';
-    61: Result := 'PC2001_LITHUAN';
-    62: Result := 'PC3001_ESTONIAN_1';
-    63: Result := 'PC3002_ESTON_2';
-    64: Result := 'PC3011_LATVIAN_1';
-    65: Result := 'PC3012_LATV_2';
-    66: Result := 'PC3021_BULGARIAN';
-    67: Result := 'PC3041_MALTESE';
-    68: Result := 'PC852_CROATIA';
-    69: Result := 'VISCII';
-    70: Result := '0C1256_ARABIC';
+    CODEPAGE_CP437: Result := 'CODEPAGE_CP437';
+    CODEPAGE_KATAKANA: Result := 'KATAKANA';
+    CODEPAGE_CP850: Result := 'CP850';
+    CODEPAGE_CP860: Result := 'CP860';
+    CODEPAGE_CP863: Result := 'CP863';
+    CODEPAGE_CP865: Result := 'CP865';
+    CODEPAGE_WEST_EUROPE: Result := 'WEST_EUROPE';
+    CODEPAGE_GREEK: Result := 'GREEK';
+    CODEPAGE_HEBREW: Result := 'HEBREW';
+    CODEPAGE_EAST_EUROPE: Result := 'EAST_EUROPE';
+    CODEPAGE_IRAN: Result := 'IRAN';
+    CODEPAGE_WCP1252: Result := 'WCP1252';
+    CODEPAGE_CP866: Result := 'CP866';
+    CODEPAGE_PC852: Result := 'PC852';
+    CODEPAGE_PC858: Result := 'PC858';
+    CODEPAGE_IRAN2: Result := 'IRAN2';
+    CODEPAGE_LATVIAN: Result := 'LATVIAN';
+    CODEPAGE_ARABIC: Result := 'ARABIC';
+    CODEPAGE_PT1511251: Result := 'PT1511251';
+    CODEPAGE_PC747: Result := 'PC747';
+    CODEPAGE_WCP1257: Result := 'WCP1257';
+    CODEPAGE_VIETNAM: Result := 'VIETNAM';
+    CODEPAGE_PC864: Result := 'PC864';
+    CODEPAGE_PC1001: Result := 'PC1001';
+    CODEPAGE_UIGUR: Result := 'UIGUR';
+    CODEPAGE_HEBREW_2: Result := 'HEBREW_2';
+    CODEPAGE_WCP1255: Result := 'WCP1255';
+    CODEPAGE_WCP1256: Result := 'WCP1256';
+    CODEPAGE_PC437: Result := 'PC437';
+    CODEPAGE_KATAKANA2: Result := 'KATAKANA2';
+    CODEPAGE_PC437_STD_EUROPE: Result := 'PC437_STD_EUROPE';
+    CODEPAGE_PC858_MULT: Result := 'PC858_MULT';
+    CODEPAGE_PC852_LATIN_2: Result := 'PC852_LATIN_2';
+    CODEPAGE_PC860_PORTUGU: Result := 'PC860_PORTUGU';
+    CODEPAGE_PC861_ICELANDIC: Result := 'PC861_ICELANDIC';
+    CODEPAGE_PC863_CANADIAN: Result := 'PC863_CANADIAN';
+    CODEPAGE_PC865_NORDIC: Result := 'PC865_NORDIC';
+    CODEPAGE_PC866_RUSSIAN: Result := 'PC866_RUSSIAN';
+    CODEPAGE_PC855_BULGARIAN: Result := 'PC855_BULGARIAN';
+    CODEPAGE_PC857_TURKEY: Result := 'PC857_TURKEY';
+    CODEPAGE_PC862_HEBREW: Result := 'PC862_HEBREW';
+    CODEPAGE_PC864_ARABIC: Result := 'PC864_ARABIC';
+    CODEPAGE_PC737_GREEK: Result := 'PC737_GREEK';
+    CODEPAGE_PC851_GREEK: Result := 'PC851_GREEK';
+    CODEPAGE_PC869_GREEK: Result := 'PC869_GREEK';
+    CODEPAGE_PC928_GREEK: Result := 'PC928_GREEK';
+    CODEPAGE_PC772_LITHUANIAN: Result := 'PC772_LITHUANIAN';
+    CODEPAGE_PC774_LITHUAN: Result := 'PC774_LITHUAN';
+    CODEPAGE_PC874_THAI: Result := 'PC874_THAI';
+    CODEPAGE_WPC1252_LATINL: Result := 'WPC1252_LATINL';
+    CODEPAGE_WCP1250: Result := 'WCP1250';
+    CODEPAGE_WCP1251: Result := 'WCP1251';
+    CODEPAGE_PC3840_IBM_RUSSIAN: Result := 'PC3840_IBM_RUSSIAN';
+    CODEPAGE_PC3841_GOST: Result := 'PC3841_GOST';
+    CODEPAGE_PC3843_POLISH: Result := 'PC3843_POLISH';
+    CODEPAGE_PC3844_CS2: Result := 'PC3844_CS2';
+    CODEPAGE_PC3845_HUNGARIAN: Result := 'PC3845_HUNGARIAN';
+    CODEPAGE_PC3846_TURKISH: Result := 'PC3846_TURKISH';
+    CODEPAGE_PC3847_BRAZI1_ABNI: Result := 'PC3847_BRAZI1_ABNI';
+    CODEPAGE_PC3848_BRAZIL: Result := 'PC3848_BRAZIL';
+    CODEPAGE_PC1001_ARABIC: Result := 'PC1001_ARABIC';
+    CODEPAGE_PC2001_LITHUAN: Result := 'PC2001_LITHUAN';
+    CODEPAGE_PC3001_ESTONIAN_1: Result := 'PC3001_ESTONIAN_1';
+    CODEPAGE_PC3002_ESTON_2: Result := 'PC3002_ESTON_2';
+    CODEPAGE_PC3011_LATVIAN_1: Result := 'PC3011_LATVIAN_1';
+    CODEPAGE_PC3012_LATV_2: Result := 'PC3012_LATV_2';
+    CODEPAGE_PC3021_BULGARIAN: Result := 'PC3021_BULGARIAN';
+    CODEPAGE_PC3041_MALTESE: Result := 'PC3041_MALTESE';
   else
     Result := 'Unknown codepage';
   end;
@@ -1631,5 +1628,23 @@ begin
   end;
   DisableUserCharacters;
 end;
+
+(*
+// 27, 116, this.m_printerFont.getCharacterSetByteCommand() });
+// 27, 77, this.m_printerFont.getFontSelect() });
+// 27, 32, this.m_printerFont.getRightSideCharacterSpacing() });
+// 27, 69, 0
+// 27, 45, 48
+// 29, 66, 0
+// 29, 33, 0
+// 27, 97, 48
+
+SetRightSideCharacterSpacing
+SetEmphasizedMode(False);
+SetUnderlineMode(False);
+SetWhiteBlackReverse(False);
+SetCharacterSize(0)
+SetJustification(0)
+*)
 
 end.

@@ -2454,6 +2454,7 @@ end;
 procedure TPosPrinterPosiflex.InitializeDevice;
 begin
   FPrinter.Initialize;
+  FPrinter.CancelKanjiCharacter;
   FPrinter.SetCodePage(CODEPAGE_WCP1251);
   FPrinter.SetCharacterFont(FONT_TYPE_A);
   if FontName = FontNameB then
