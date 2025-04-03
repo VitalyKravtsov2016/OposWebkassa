@@ -981,7 +981,6 @@ end;
 function TPosPrinterXPrinter.CutPaper(Percentage: Integer): Integer;
 begin
   try
-    FPrinter.PrintText(' ' + CRLF);
     FPrinter.PartialCut;
     Result := ClearResult;
   except
@@ -1642,9 +1641,9 @@ end;
 
 function TPosPrinterXPrinter.Get_RecLinesToPaperCut: Integer;
 const
-  DistanceToCutterInDots = 128;
+  DistanceToCutterInDots = 90;
 begin
-  Result := (DistanceToCutterInDots div (RecLineSpacing + RecLineHeight + 10))-1;
+  Result := DistanceToCutterInDots div RecLineSpacing;
 end;
 
 function TPosPrinterXPrinter.Get_RecLineWidth: Integer;

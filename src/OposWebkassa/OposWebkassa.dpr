@@ -55,7 +55,7 @@ uses
   uZintInterface in '..\Shared\uZintInterface.pas',
   OposDevice in '..\Opos\OposDevice.pas',
   POSPrinterLog in '..\Opos\POSPrinterLog.pas',
-  EscPrinterXPrinter in '..\Shared\EscPrinterXPrinter.pas',
+  EscCommand in '..\Shared\EscCommand.pas',
   ByteUtils in '..\Shared\ByteUtils.pas',
   PosPrinterWindows in '..\Shared\PosPrinterWindows.pas',
   PrinterPort in '..\Shared\PrinterPort.pas',
@@ -88,7 +88,8 @@ uses
   OposEventsAdapter in '..\Opos\OposEventsAdapter.pas',
   PrinterPage in '..\Shared\PrinterPage.pas',
   EscPrinterOA48 in '..\Shared\EscPrinterOA48.pas',
-  PosPrinterOA48 in '..\Shared\PosPrinterOA48.pas';
+  PosPrinterOA48 in '..\Shared\PosPrinterOA48.pas',
+  EscPrinterXPrinter in '..\Shared\EscPrinterXPrinter.pas';
 
 exports
   DllGetClassObject,

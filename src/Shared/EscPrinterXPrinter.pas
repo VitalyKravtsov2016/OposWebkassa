@@ -1211,7 +1211,7 @@ end;
 procedure TEscPrinterXPrinter.PrintTestPage;
 begin
   Logger.Debug('TEscPrinterXPrinter.PrintTestPage');
-  Send(#$12#$54);
+  Send(#$1F#$1B#$1F#$67#$00);
 end;
 
 procedure TEscPrinterXPrinter.SetKanjiMode(m: Byte);
@@ -1629,22 +1629,15 @@ begin
   DisableUserCharacters;
 end;
 
-(*
-// 27, 116, this.m_printerFont.getCharacterSetByteCommand() });
-// 27, 77, this.m_printerFont.getFontSelect() });
-// 27, 32, this.m_printerFont.getRightSideCharacterSpacing() });
-// 27, 69, 0
-// 27, 45, 48
-// 29, 66, 0
-// 29, 33, 0
-// 27, 97, 48
 
-SetRightSideCharacterSpacing
-SetEmphasizedMode(False);
-SetUnderlineMode(False);
-SetWhiteBlackReverse(False);
-SetCharacterSize(0)
-SetJustification(0)
+(*
+
+1b 70 00 1e ff 00 - OpenCashDrawer
+1f 1b 1f 11 11 00 - Reset Factory settings
+1f 1b 1f ff 00 0a 00 - set code page 0
+1f 1b 1f ff 11 0a 00 - set code page 17
+1f 1b 1f 67 00 - print test page
+
 *)
 
 end.

@@ -136,6 +136,7 @@ type
     procedure CutPaperEscPrinter;
     procedure CutPaperOnWindowsPrinter;
     procedure PrintHeader;
+    procedure PrintTrailerGap;
   public
     procedure PrintDocumentSafe(Document: TTextDocument);
     procedure CheckCanPrint;
@@ -4667,6 +4668,14 @@ begin
   end;
 end;
 
+procedure TWebkassaImpl.PrintTrailerGap;
+var
+  pData: Integer;
+  pString: WideString;
+begin
+  Printer.DirectIO(DIO_PTR_PRINT_TRAILER_GAP, pData, pString);
+end;
+
 procedure TWebkassaImpl.CutPaperEscPrinter;
 var
   i: Integer;
@@ -4674,7 +4683,7 @@ var
   Text: WideString;
 begin
   PrintLine(' ');
-  PrintLine(' ');
+  PrintTrailerGap;
   if Printer.CapRecPapercut then
   begin
     Count := Min(FParams.NumHeaderLines, Printer.RecLinesToPaperCut);

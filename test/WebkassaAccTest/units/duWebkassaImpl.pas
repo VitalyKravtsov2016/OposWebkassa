@@ -156,7 +156,7 @@ begin
     Params.ConnectTimeout := 10;
     Params.WebkassaAddress := 'https://devkkm.webkassa.kz';
 
-    Params.NumHeaderLines := 4;
+    Params.NumHeaderLines := 3;
     Params.NumTrailerLines := 3;
     Params.RoundType := RoundTypeNone;
 
@@ -197,7 +197,7 @@ begin
     Params.PortType := PortTypeUSB;
     Params.PrinterName := 'RONGTA 80mm Series Printer';
     Params.PrinterType := PrinterTypeEscCommands;
-    Params.EscPrinterType := EscPrinterTypePosiflex;
+    Params.EscPrinterType := EscPrinterTypeOA48;
     Params.FontName := FontNameA;
     //'Cascadia Mono';
     //;

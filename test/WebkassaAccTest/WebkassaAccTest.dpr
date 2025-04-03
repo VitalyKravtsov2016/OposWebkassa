@@ -83,7 +83,7 @@ uses
   BarcodeUtils in '..\..\src\Shared\BarcodeUtils.pas',
   MockPosPrinter in '..\OposWebkassaTest\units\MockPosPrinter.pas',
   oleFiscalPrinter in '..\..\src\OposWebkassa\Units\oleFiscalPrinter.pas',
-  EscPrinterXPrinter in '..\..\src\Shared\EscPrinterXPrinter.pas',
+  EscCommand in '..\..\src\Shared\EscCommand.pas',
   EscPrinterPosiflex in '..\..\src\Shared\EscPrinterPosiflex.pas',
   PosPrinterPosiflex in '..\..\src\Shared\PosPrinterPosiflex.pas',
   OposDevice in '..\..\src\Opos\OposDevice.pas',
@@ -107,7 +107,8 @@ uses
   PrinterPage in '..\..\src\Shared\PrinterPage.pas',
   duPosPrinterWindows in 'units\duPosPrinterWindows.pas',
   PosPrinterOA48 in '..\..\src\Shared\PosPrinterOA48.pas',
-  EscPrinterOA48 in '..\..\src\Shared\EscPrinterOA48.pas';
+  EscPrinterOA48 in '..\..\src\Shared\EscPrinterOA48.pas',
+  EscPrinterXPrinter in '..\..\src\Shared\EscPrinterXPrinter.pas';
 
 {$R *.RES}
 {$R ..\..\src\OposWebkassa\OposWebkassa.tlb}

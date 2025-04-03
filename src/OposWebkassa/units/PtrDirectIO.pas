@@ -10,6 +10,7 @@ const
 
   DIO_PTR_CHECK_BARCODE = 1;
   DIO_PTR_GET_BARCODE_SIZE = 2;
+  DIO_PTR_PRINT_TRAILER_GAP = 3;
 
 implementation
 

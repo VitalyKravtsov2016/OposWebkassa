@@ -1037,7 +1037,6 @@ end;
 function TPosPrinterRongta.CutPaper(Percentage: Integer): Integer;
 begin
   try
-    FPrinter.PrintText(' ' + CRLF);
     FPrinter.PartialCut;
     Result := ClearResult;
   except
@@ -1069,6 +1068,10 @@ begin
         else
           pString := '0';
         end;
+      end;
+      DIO_PTR_PRINT_TRAILER_GAP:
+      begin
+        Printer.PrintText(' ' + CRLF);
       end;
     end;
     Result := ClearResult;
@@ -1697,9 +1700,9 @@ end;
 
 function TPosPrinterRongta.Get_RecLinesToPaperCut: Integer;
 const
-  DistanceToCutterInDots = 128;
+  DistanceToCutterInDots = 90;
 begin
-  Result := DistanceToCutterInDots div (RecLineSpacing + RecLineHeight + 10);
+  Result := DistanceToCutterInDots div RecLineSpacing;
 end;
 
 function TPosPrinterRongta.Get_RecLineWidth: Integer;

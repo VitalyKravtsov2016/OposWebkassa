@@ -64,7 +64,7 @@ uses
   uZintInterface in '..\..\src\Shared\uZintInterface.pas',
   POSPrinterLog in '..\..\src\Opos\POSPrinterLog.pas',
   duRegExpr in 'units\duRegExpr.pas',
-  EscPrinterXPrinter in '..\..\src\Shared\EscPrinterXPrinter.pas',
+  EscCommand in '..\..\src\Shared\EscCommand.pas',
   ByteUtils in '..\..\src\Shared\ByteUtils.pas',
   PosPrinterWindows in '..\..\src\Shared\PosPrinterWindows.pas',
   PrinterPort in '..\..\src\Shared\PrinterPort.pas',
@@ -110,7 +110,8 @@ uses
   OposEventsAdapter in '..\..\src\Opos\OposEventsAdapter.pas',
   PrinterPage in '..\..\src\Shared\PrinterPage.pas',
   PosPrinterOA48 in '..\..\src\Shared\PosPrinterOA48.pas',
-  EscPrinterOA48 in '..\..\src\Shared\EscPrinterOA48.pas';
+  EscPrinterOA48 in '..\..\src\Shared\EscPrinterOA48.pas',
+  EscPrinterXPrinter in '..\..\src\Shared\EscPrinterXPrinter.pas';
 
 {$R *.RES}
 
