@@ -1013,6 +1013,10 @@ begin
           pString := '0';
         end;
       end;
+      DIO_PTR_PRINT_TRAILER_GAP:
+      begin
+        Printer.PrintText(' ' + CRLF);
+      end;
     end;
     Result := ClearResult;
   except
