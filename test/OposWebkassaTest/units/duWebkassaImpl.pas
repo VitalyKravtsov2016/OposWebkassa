@@ -590,7 +590,6 @@ const
 
 procedure TWebkassaImplTest.TestFiscalReceipt3;
 var
-  Json: TlkJSON;
   Text: WideString;
   Doc: TlkJSONbase;
   PaymentType: Integer;
@@ -599,9 +598,8 @@ begin
   OpenClaimEnable;
   PrintReceipt3;
   // Check
-  Json := TlkJSON.Create;
+  Doc := TlkJSON.ParseText(FDriver.Client.CommandJson);
   try
-    Doc := Json.ParseText(FDriver.Client.CommandJson);
     Text := Doc.Field['Positions'].Child[0].Field['Mark'].Value;
     CheckEquals(ItemBarcode, Text, 'ItemBarcode');
 
@@ -626,7 +624,7 @@ begin
     CheckEquals(4, PaymentType, 'PaymentType3');
     CheckEquals(30, PaymentAmount, 0.001, 'PaymentAmount3');
   finally
-    Json.Free;
+    Doc.Free;
   end;
 
   FLines.Text := Receipt3Text;
@@ -1376,16 +1374,14 @@ end;
 procedure TWebkassaImplTest.TestGetJsonField;
 var
   V: Variant;
-  Json: TlkJSON;
-  JsonText: WideString;
-  JsonRoot: TlkJSONbase;
+  Doc: TlkJSONbase;
   Item: TlkJSONbase;
+  JsonText: WideString;
 begin
-  Json := TlkJSON.Create;
+  JsonText := ReadFileData(GetModulePath + 'SendReceiptAnswer.txt');
+  Doc := TlkJSON.ParseText(JsonText);
   try
-    JsonText := ReadFileData(GetModulePath + 'SendReceiptAnswer.txt');
-    JsonRoot := Json.ParseText(JsonText);
-    Item := JsonRoot.Field['Data'];
+    Item := Doc.Field['Data'];
     Check(Item <> nil, 'Data');
     CheckEquals('923956785162', Item.Field['CheckNumber'].Value, 'CheckNumber');
     Item := Item.Field['CashBox'];
@@ -1395,7 +1391,7 @@ begin
     V := Driver.GetJsonField(JsonText, 'Data.Cashbox.UniqueNumber');
     CheckEquals('SWK00032685', V, 'UniqueNumber');
   finally
-    Json.Free;
+    Doc.Free;
   end;
 end;
 

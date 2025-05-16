@@ -1794,13 +1794,11 @@ end;
 
 function ChangeTokenInJson(const Request, Token: WideString): WideString;
 var
-  Json: TlkJSON;
   Doc: TlkJSONbase;
   Node: TlkJSONbase;
 begin
-  Json := TlkJSON.Create;
+  Doc := TlkJSON.ParseText(Request);
   try
-    Doc := Json.ParseText(Request);
     if Doc = nil then
     begin
       //WriteFileData('InvalidRequest.txt', Request);
@@ -1809,9 +1807,9 @@ begin
     Node := Doc.Field['Token'];
     if Node <> nil then
       Node.Value := Token;
-    Result := Json.GenerateText(Doc);
+    Result := TlkJSON.GenerateText(Doc);
   finally
-    Json.Free;
+    Doc.Free;
   end;
 end;
 

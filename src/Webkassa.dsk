@@ -1,58 +1,59 @@
 [Closed Files]
-File_0=SourceModule,'D:\Projects\OposWebkassa\src\Shared\PosPrinterOA48.pas',0,1,2288,26,2309,0,0
-File_1=SourceModule,'D:\Projects\OposWebkassa\src\Shared\EscPrinterOA48.pas',0,1,1227,35,1240,0,0
-File_2=SourceModule,'D:\Projects\OposWebkassa\src\Shared\PosPrinterXPrinter.pas',0,1,1,1,1,0,0
-File_3=SourceModule,'D:\Projects\OposWebkassa\src\Shared\PosPrinterPosiflex.pas',0,1,2436,33,2457,0,0
-File_4=SourceModule,'D:\Projects\OposWebkassa\src\Shared\PosPrinterRongta.pas',0,1,2453,33,2474,0,0
-File_5=SourceModule,'D:\Projects\OposWebkassa\src\Shared\BarcodeUtils.pas',0,1,94,32,126,0,0
-File_6=SourceModule,'D:\Projects\OposWebkassa\src\OposWebkassa\units\WebkassaImpl.pas',0,1,4722,27,4738,0,0
-File_7=SourceModule,'D:\Projects\OposWebkassa\src\Shared\EscPrinterPosiflex.pas',0,1,1,3,14,0,0
-File_8=SourceModule,'D:\Projects\OposWebkassa\src\OposWebkassa\units\PageBuffer.pas',0,1,44,19,68,0,0
+File_0=SourceModule,'D:\IBTS\WebKassa\src\OposWebkassa\Units\WebkassaImpl.pas',0,1,3962,43,3985,0,0
+File_1=SourceModule,'D:\IBTS\WebKassa\src\OposWebkassa\units\SalesReceipt.pas',0,1,328,34,343,0,0
+File_2=SourceModule,'D:\IBTS\WebKassa\src\Shared\ReceiptTemplate.pas',0,1,342,20,346,0,0
+File_3=SourceModule,'D:\IBTS\WebKassa\src\Shared\PosPrinterRongta.pas',0,1,1048,7,1074,0,0
+File_4=SourceModule,'D:\IBTS\WebKassa\src\Shared\PosPrinterXPrinter.pas',0,1,1,46,11,0,0
+File_5=SourceModule,'D:\IBTS\WebKassa\test\OposWebkassaTest\units\duWebkassaImpl2.pas',0,1,530,55,543,0,0
+File_6=SourceModule,'D:\IBTS\WebKassa\test\OposWebkassaTest\units\duPosPrinterWindows.pas',0,1,114,128,133,0,0
+File_7=SourceModule,'D:\Projects\OposWebkassa\src\Shared\PosPrinterOA48.pas',0,1,2288,26,2309,0,0
+File_8=SourceModule,'D:\Projects\OposWebkassa\src\Shared\EscPrinterOA48.pas',0,1,1227,35,1240,0,0
+File_9=SourceModule,'D:\Projects\OposWebkassa\src\Shared\PosPrinterXPrinter.pas',0,1,1,1,1,0,0
 
 [Modules]
-Module0=D:\Projects\OposWebkassa\src\Shared\EscPrinterXPrinter.pas
+Module0=D:\IBTS\WebKassa\src\OposConfig\Fmu\fmuFptrReceipt.pas
 Count=1
 EditWindowCount=1
 TypeLibWindowCount=1
 
-[D:\Projects\OposWebkassa\src\Shared\EscPrinterXPrinter.pas]
+[D:\IBTS\WebKassa\src\OposConfig\Fmu\fmuFptrReceipt.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[D:\Projects\OposWebkassa\src\Webkassa.bpg]
+[D:\IBTS\WebKassa\src\Webkassa.bpg]
 FormState=0
 FormOnTop=0
 
-[D:\Projects\OposWebkassa\src\OposConfig\OposConfig.dpr]
+[D:\IBTS\WebKassa\src\OposConfig\OposConfig.dpr]
 FormState=0
 FormOnTop=0
 
-[D:\Projects\OposWebkassa\src\OposTest\OposTest.dpr]
+[D:\IBTS\WebKassa\src\OposTest\OposTest.dpr]
 FormState=0
 FormOnTop=0
 
-[D:\Projects\OposWebkassa\src\OposWebkassa\OposWebkassa.dpr]
+[D:\IBTS\WebKassa\src\OposWebkassa\OposWebkassa.dpr]
 FormState=0
 FormOnTop=0
 
-[D:\Projects\OposWebkassa\src\OposWebkassa\OposWebkassa.tlb]
+[D:\IBTS\WebKassa\src\OposWebkassa\OposWebkassa.tlb]
 FormState=0
 FormOnTop=0
 
-[D:\Projects\OposWebkassa\test\OposWebkassaTest\OposWebkassaTest.dpr]
+[D:\IBTS\WebKassa\test\OposWebkassaTest\OposWebkassaTest.dpr]
 FormState=0
 FormOnTop=0
 
-[D:\Projects\OposWebkassa\test\OposWebkassaTest\OposWebkassaTest.todo]
+[D:\IBTS\WebKassa\test\OposWebkassaTest\OposWebkassaTest.todo]
 FormState=0
 FormOnTop=0
 
-[D:\Projects\OposWebkassa\test\OposWebkassaTest\OposWebkassaTestLib.dpr]
+[D:\IBTS\WebKassa\test\OposWebkassaTest\OposWebkassaTestLib.dpr]
 FormState=0
 FormOnTop=0
 
-[D:\Projects\OposWebkassa\test\WebkassaAccTest\WebkassaAccTest.dpr]
+[D:\IBTS\WebKassa\test\WebkassaAccTest\WebkassaAccTest.dpr]
 FormState=0
 FormOnTop=0
 
@@ -65,8 +66,8 @@ MessageView=MessageView@EditWindow0
 Create=1
 Visible=1
 State=2
-Left=322
-Top=152
+Left=484
+Top=140
 Width=1302
 Height=682
 MaxLeft=-8
@@ -84,10 +85,10 @@ BottomPanelClients=MessageView@EditWindow0
 BottomPanelData=00000400010000000B0000004D657373616765566965770000000000000000000000000000000000FFFFFFFF
 
 [View0]
-Module=D:\Projects\OposWebkassa\src\Shared\EscPrinterXPrinter.pas
-CursorX=29
-CursorY=1646
-TopLine=1633
+Module=D:\IBTS\WebKassa\src\OposConfig\Fmu\fmuFptrReceipt.pas
+CursorX=49
+CursorY=26
+TopLine=1
 LeftCol=1
 
 [TypeLibEditWindow0]
@@ -95,14 +96,14 @@ Create=1
 Visible=0
 State=0
 Left=200
-Top=590
+Top=582
 Width=647
 Height=458
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=631
 ClientHeight=419
-Module=D:\Projects\OposWebkassa\src\OposWebkassa\OposWebkassa.tlb
+Module=D:\IBTS\WebKassa\src\OposWebkassa\OposWebkassa.tlb
 
 [Watches]
 Count=0

@@ -2514,111 +2514,115 @@ begin
 
     ClearCashboxStatus;
     Doc := TlkJSON.ParseText(FClient.AnswerJson);
-    if Doc = nil then
-      raise Exception.Create('Doc parse failed');
+    try
+      if Doc = nil then
+        raise Exception.Create('Doc parse failed');
 
-    Total :=
-      (Command.Data.EndNonNullable.Sell - Command.Data.StartNonNullable.Sell) -
-      (Command.Data.EndNonNullable.Buy - Command.Data.StartNonNullable.Buy) -
-      (Command.Data.EndNonNullable.ReturnSell - Command.Data.StartNonNullable.ReturnSell) +
-      (Command.Data.EndNonNullable.ReturnBuy - Command.Data.StartNonNullable.ReturnBuy);
+      Total :=
+        (Command.Data.EndNonNullable.Sell - Command.Data.StartNonNullable.Sell) -
+        (Command.Data.EndNonNullable.Buy - Command.Data.StartNonNullable.Buy) -
+        (Command.Data.EndNonNullable.ReturnSell - Command.Data.StartNonNullable.ReturnSell) +
+        (Command.Data.EndNonNullable.ReturnBuy - Command.Data.StartNonNullable.ReturnBuy);
 
-    BeginDocument;
-    if Command.Data.OfflineMode then
-    begin
-      Document.AddLine(Document.AlignCenter(Params.OfflineText));
-    end;
-    Separator := StringOfChar('-', Document.LineChars);
-    Document.AddLines('хмм/ахм', IntToStr(Command.Data.CashboxIN));
-    Document.AddLines('гмл', Command.Data.CashboxSN);
-    Document.AddLines('йНД ййл йцд (пмл)', Command.Data.CashboxRN);
-    if IsZReport then
-      Document.AddLine(Document.AlignCenter('Z-нрвер'))
-    else
-      Document.AddLine(Document.AlignCenter('X-нрвер'));
-    Document.AddLine(Document.AlignCenter(Tnt_WideFormat('ялемю ╧%d', [Command.Data.ShiftNumber])));
-    Document.AddLine(Document.AlignCenter(Tnt_WideFormat('%s-%s', [Command.Data.StartOn, Command.Data.ReportOn])));
-    Node := Doc.GetField('Data');
-    if Node <> nil then
-    begin
-      Node := Node.GetField('Sections');
-      if (Node <> nil)and(Node.Count > 0) then
+      BeginDocument;
+      if Command.Data.OfflineMode then
       begin
-        Document.AddLine(Separator);
-        Document.AddLine(Document.AlignCenter('нрвер он яейжхъл'));
-        Document.AddLine(Separator);
-        for i := 0 to Node.Count-1 do
+        Document.AddLine(Document.AlignCenter(Params.OfflineText));
+      end;
+      Separator := StringOfChar('-', Document.LineChars);
+      Document.AddLines('хмм/ахм', IntToStr(Command.Data.CashboxIN));
+      Document.AddLines('гмл', Command.Data.CashboxSN);
+      Document.AddLines('йНД ййл йцд (пмл)', Command.Data.CashboxRN);
+      if IsZReport then
+        Document.AddLine(Document.AlignCenter('Z-нрвер'))
+      else
+        Document.AddLine(Document.AlignCenter('X-нрвер'));
+      Document.AddLine(Document.AlignCenter(Tnt_WideFormat('ялемю ╧%d', [Command.Data.ShiftNumber])));
+      Document.AddLine(Document.AlignCenter(Tnt_WideFormat('%s-%s', [Command.Data.StartOn, Command.Data.ReportOn])));
+      Node := Doc.GetField('Data');
+      if Node <> nil then
+      begin
+        Node := Node.GetField('Sections');
+        if (Node <> nil)and(Node.Count > 0) then
         begin
-          SectionNode := Node.Child[i];
-          if SectionNode <> nil then
+          Document.AddLine(Separator);
+          Document.AddLine(Document.AlignCenter('нрвер он яейжхъл'));
+          Document.AddLine(Separator);
+          for i := 0 to Node.Count-1 do
           begin
-            Count := SectionNode.Get('Code').Value;
-            Document.AddLines('яейжхъ', IntToStr(Count + 1));
-            OperationsNode := SectionNode.Field['Operations'];
-            if OperationsNode <> nil then
+            SectionNode := Node.Child[i];
+            if SectionNode <> nil then
             begin
-              SellNode := OperationsNode.Field['Sell'];
-              if SellNode <> nil then
+              Count := SectionNode.Get('Code').Value;
+              Document.AddLines('яейжхъ', IntToStr(Count + 1));
+              OperationsNode := SectionNode.Field['Operations'];
+              if OperationsNode <> nil then
               begin
-                Count := SellNode.Get('Count').Value;
-                Amount := SellNode.Get('Amount').Value;
-                Document.AddLines(Tnt_WideFormat('%.4d опндюф', [Count]), AmountToStr(Amount));
+                SellNode := OperationsNode.Field['Sell'];
+                if SellNode <> nil then
+                begin
+                  Count := SellNode.Get('Count').Value;
+                  Amount := SellNode.Get('Amount').Value;
+                  Document.AddLines(Tnt_WideFormat('%.4d опндюф', [Count]), AmountToStr(Amount));
+                end;
               end;
             end;
           end;
         end;
       end;
+      Document.AddLine(Separator);
+      if IsZReport then
+        Document.AddLine(Document.AlignCenter('нрвер я цюьемхел'))
+      else
+        Document.AddLine(Document.AlignCenter('нрвер аег цюьемхъ'));
+      Document.AddLine(Separator);
+      Document.AddLine('менамск. ясллш мю мювюкн ялемш');
+      Document.AddLines('опндюф', AmountToStr(Command.Data.StartNonNullable.Sell));
+      Document.AddLines('онйсонй', AmountToStr(Command.Data.StartNonNullable.Buy));
+      Document.AddLines('бнгбпюрнб опндюф', AmountToStr(Command.Data.StartNonNullable.ReturnSell));
+      Document.AddLines('бнгбпюрнб онйсонй', AmountToStr(Command.Data.StartNonNullable.ReturnBuy));
+
+      Document.AddLine('вейнб опндюф');
+      Line1 := Tnt_WideFormat('%.4d', [Command.Data.Sell.Count]);
+      Line2 := AmountToStr(Total);
+      Text := Line1 + StringOfChar(' ', (Document.LineChars div 2)-Length(Line1)-Length(Line2)) + Line2;
+      Document.AddLine(Text, STYLE_DWIDTH_HEIGHT);
+      AddPayments(Document, Command.Data.Sell.PaymentsByTypesApiModel);
+
+      Document.AddLine('вейнб онйсонй');
+      Line1 := Tnt_WideFormat('%.4d', [Command.Data.Buy.Count]);
+      Line2 := AmountToStr(Command.Data.Buy.Taken);
+      Text := Line1 + StringOfChar(' ', (Document.LineChars div 2)-Length(Line1)-Length(Line2)) + Line2;
+      Document.AddLine(Text, STYLE_DWIDTH_HEIGHT);
+      AddPayments(Document, Command.Data.Buy.PaymentsByTypesApiModel);
+
+      Document.AddLine('вейнб бнгбпюрнб опндюф');
+      Line1 := Tnt_WideFormat('%.4d', [Command.Data.ReturnSell.Count]);
+      Line2 := AmountToStr(Command.Data.ReturnSell.Taken);
+      Text := Line1 + StringOfChar(' ', (Document.LineChars div 2)-Length(Line1)-Length(Line2)) + Line2;
+      Document.AddLine(Text, STYLE_DWIDTH_HEIGHT);
+      AddPayments(Document, Command.Data.ReturnSell.PaymentsByTypesApiModel);
+
+      Document.AddLine('вейнб бнгбпюрнб онйсонй');
+      Line1 := Tnt_WideFormat('%.4d', [Command.Data.ReturnBuy.Count]);
+      Line2 := AmountToStr(Command.Data.ReturnBuy.Taken);
+      Text := Line1 + StringOfChar(' ', (Document.LineChars div 2)-Length(Line1)-Length(Line2)) + Line2;
+      Document.AddLine(Text, STYLE_DWIDTH_HEIGHT);
+      AddPayments(Document, Command.Data.ReturnBuy.PaymentsByTypesApiModel);
+      Document.AddLines('ясллю бмеяемхи', AmountToStr(Command.Data.PutMoneySum));
+      Document.AddLines('ясллю хгзърхи', AmountToStr(Command.Data.TakeMoneySum));
+      Document.AddLines('мюкхвмшу б йюяяе', AmountToStr(Command.Data.SumInCashbox));
+      Document.AddLines('бшпсвйю', AmountToStr(Total));
+      Document.AddLine('менамск. ясллш мю йнмеж ялемш');
+      Document.AddLines('опндюф', AmountToStr(Command.Data.EndNonNullable.Sell));
+      Document.AddLines('онйсонй', AmountToStr(Command.Data.EndNonNullable.Buy));
+      Document.AddLines('бнгбпюрнб опндюф', AmountToStr(Command.Data.EndNonNullable.ReturnSell));
+      Document.AddLines('бнгбпюрнб онйсонй', AmountToStr(Command.Data.EndNonNullable.ReturnBuy));
+      Document.AddLines('ятНПЛХПНБЮМН нтд: ', Command.Data.Ofd.Name);
+      PrintDocumentSafe(Document);
+    finally
+      Doc.Free;
     end;
-    Document.AddLine(Separator);
-    if IsZReport then
-      Document.AddLine(Document.AlignCenter('нрвер я цюьемхел'))
-    else
-      Document.AddLine(Document.AlignCenter('нрвер аег цюьемхъ'));
-    Document.AddLine(Separator);
-    Document.AddLine('менамск. ясллш мю мювюкн ялемш');
-    Document.AddLines('опндюф', AmountToStr(Command.Data.StartNonNullable.Sell));
-    Document.AddLines('онйсонй', AmountToStr(Command.Data.StartNonNullable.Buy));
-    Document.AddLines('бнгбпюрнб опндюф', AmountToStr(Command.Data.StartNonNullable.ReturnSell));
-    Document.AddLines('бнгбпюрнб онйсонй', AmountToStr(Command.Data.StartNonNullable.ReturnBuy));
-
-    Document.AddLine('вейнб опндюф');
-    Line1 := Tnt_WideFormat('%.4d', [Command.Data.Sell.Count]);
-    Line2 := AmountToStr(Total);
-    Text := Line1 + StringOfChar(' ', (Document.LineChars div 2)-Length(Line1)-Length(Line2)) + Line2;
-    Document.AddLine(Text, STYLE_DWIDTH_HEIGHT);
-    AddPayments(Document, Command.Data.Sell.PaymentsByTypesApiModel);
-
-    Document.AddLine('вейнб онйсонй');
-    Line1 := Tnt_WideFormat('%.4d', [Command.Data.Buy.Count]);
-    Line2 := AmountToStr(Command.Data.Buy.Taken);
-    Text := Line1 + StringOfChar(' ', (Document.LineChars div 2)-Length(Line1)-Length(Line2)) + Line2;
-    Document.AddLine(Text, STYLE_DWIDTH_HEIGHT);
-    AddPayments(Document, Command.Data.Buy.PaymentsByTypesApiModel);
-
-    Document.AddLine('вейнб бнгбпюрнб опндюф');
-    Line1 := Tnt_WideFormat('%.4d', [Command.Data.ReturnSell.Count]);
-    Line2 := AmountToStr(Command.Data.ReturnSell.Taken);
-    Text := Line1 + StringOfChar(' ', (Document.LineChars div 2)-Length(Line1)-Length(Line2)) + Line2;
-    Document.AddLine(Text, STYLE_DWIDTH_HEIGHT);
-    AddPayments(Document, Command.Data.ReturnSell.PaymentsByTypesApiModel);
-
-    Document.AddLine('вейнб бнгбпюрнб онйсонй');
-    Line1 := Tnt_WideFormat('%.4d', [Command.Data.ReturnBuy.Count]);
-    Line2 := AmountToStr(Command.Data.ReturnBuy.Taken);
-    Text := Line1 + StringOfChar(' ', (Document.LineChars div 2)-Length(Line1)-Length(Line2)) + Line2;
-    Document.AddLine(Text, STYLE_DWIDTH_HEIGHT);
-    AddPayments(Document, Command.Data.ReturnBuy.PaymentsByTypesApiModel);
-    Document.AddLines('ясллю бмеяемхи', AmountToStr(Command.Data.PutMoneySum));
-    Document.AddLines('ясллю хгзърхи', AmountToStr(Command.Data.TakeMoneySum));
-    Document.AddLines('мюкхвмшу б йюяяе', AmountToStr(Command.Data.SumInCashbox));
-    Document.AddLines('бшпсвйю', AmountToStr(Total));
-    Document.AddLine('менамск. ясллш мю йнмеж ялемш');
-    Document.AddLines('опндюф', AmountToStr(Command.Data.EndNonNullable.Sell));
-    Document.AddLines('онйсонй', AmountToStr(Command.Data.EndNonNullable.Buy));
-    Document.AddLines('бнгбпюрнб опндюф', AmountToStr(Command.Data.EndNonNullable.ReturnSell));
-    Document.AddLines('бнгбпюрнб онйсонй', AmountToStr(Command.Data.EndNonNullable.ReturnBuy));
-    Document.AddLines('ятНПЛХПНБЮМН нтд: ', Command.Data.Ofd.Name);
-    PrintDocumentSafe(Document);
   finally
     Command.Free;
   end;
@@ -3881,41 +3885,44 @@ function TWebkassaImpl.GetJsonField(JsonText: WideString;
 var
   P: Integer;
   S: WideString;
+  Doc: TlkJSONbase;
   Root: TlkJSONbase;
-  Json: TlkJSONbase;
   Field: WideString;
 begin
   Result := '';
   if JsonText = '' then Exit;
   if FieldName = '' then Exit;
 
-  Json := TlkJSON.ParseText(JsonText);
-  if Json <> nil then
-  begin
-    Root := Json;
-    S := FieldName;
-    Result := '';
-    repeat
-      P := WideTextPos('.', S);
-      if P <> 0 then
-      begin
-        Field := Copy(S, 1, P-1);
-        S := Copy(S, P+1, Length(S));
-      end else
-      begin
-        Field := S;
-      end;
-      Root := Root.Field[Field];
-      if Root = nil then
-      begin
-        Result := '';
-        Exit;
-        { !!! }
-        //raise Exception.CreateFmt('Field %s not found', [FieldName]);
-      end;
-    until P = 0;
-    Result := Root.Value;
-    Json.Free;
+  Doc := TlkJSON.ParseText(JsonText);
+  try
+    if Doc <> nil then
+    begin
+      Root := Doc;
+      S := FieldName;
+      Result := '';
+      repeat
+        P := WideTextPos('.', S);
+        if P <> 0 then
+        begin
+          Field := Copy(S, 1, P-1);
+          S := Copy(S, P+1, Length(S));
+        end else
+        begin
+          Field := S;
+        end;
+        Root := Root.Field[Field];
+        if Root = nil then
+        begin
+          Result := '';
+          Exit;
+          { !!! }
+          //raise Exception.CreateFmt('Field %s not found', [FieldName]);
+        end;
+      until P = 0;
+      Result := Root.Value;
+    end;
+  finally
+    Doc.Free;
   end;
 end;
 
