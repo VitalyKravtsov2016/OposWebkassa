@@ -1418,6 +1418,7 @@ type
     procedure SaveParams;
     procedure LoadParams;
     procedure RaiseLastError;
+    procedure CheckSSLLibrary;
     function GetAddress: WideString;
     function Post(URL, Request: WideString): WideString;
     function Authenticate(Command: TAuthCommand): Boolean;
@@ -1726,10 +1727,19 @@ begin
   Result := FTransport;
 end;
 
+procedure TWebkassaClient.CheckSSLLibrary;
+begin
+  if not LoadOpenSSLLibrary then
+  begin
+    raise Exception.CreateFmt('%.4X, %s', [GetLastError, SysErrorMessage(GetLastError)]);
+  end;
+end;
+
 procedure TWebkassaClient.Connect;
 var
   Command: TAuthCommand;
 begin
+  CheckSSLLibrary;
   if Token = '' then
   begin
     Command := TAuthCommand.Create;

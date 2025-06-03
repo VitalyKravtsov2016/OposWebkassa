@@ -28,12 +28,15 @@ type
       AResponseInfo: TIdHTTPResponseInfo);
     procedure ClientHeadersAvailable(Sender: TObject;
       AHeaders: TIdHeaderList; var VContinue: Boolean);
+
   protected
     procedure SetUp; override;
     procedure TearDown; override;
     // !!!
     procedure TestAlternativeDomainNames;
     procedure TestIdHeaderList;
+    
+    property Client: TWebkassaClient read FClient;
   published
     procedure TestAuthenticate;
     procedure TestChangeToken;
@@ -53,6 +56,7 @@ type
     procedure TestMoneyOperation;
     procedure TestSendReceipt;
     procedure TestSendReceipt2;
+    procedure CheckSSLLibrary;
   end;
 
 implementation
@@ -773,6 +777,11 @@ begin
     Lines.Free;
     Headers.Free;
   end;
+end;
+
+procedure TWebkassaClientTest.CheckSSLLibrary;
+begin
+  FClient.CheckSSLLibrary;
 end;
 
 initialization

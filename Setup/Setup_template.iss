@@ -24,36 +24,36 @@ OutputBaseFilename=Setup
 [Components]
 Name: "main"; Description: "Driver files"; Types: full compact custom; Flags: fixed
 [Dirs]
-Name: "{app}\Bin\Logs"; components: main;
+Name: "{app}\Logs"; components: main;
 [Files]
 ; OpenSSL
-Source: "Setup\libeay32.dll"; DestDir: "{app}\Bin"; Flags: ignoreversion; Components: main
-Source: "Setup\ssleay32.dll"; DestDir: "{app}\Bin"; Flags: ignoreversion; Components: main
+Source: "Setup\libeay32.dll"; DestDir: "{app}"; Flags: ignoreversion; Components: main
+Source: "Setup\ssleay32.dll"; DestDir: "{app}"; Flags: ignoreversion; Components: main
 ; Barcode render
-Source: "Setup\zint.dll"; DestDir: "{app}\Bin"; Flags: ignoreversion; components: main;
-Source: "Setup\Translation\OposWebkassa.RUS"; DestDir: "{app}\Bin\Translation"; Flags: ignoreversion; components: main;
-Source: "Setup\Translation\OposWebkassa.KAZ"; DestDir: "{app}\Bin\Translation"; Flags: ignoreversion; components: main;
+Source: "Setup\zint.dll"; DestDir: "{app}"; Flags: ignoreversion; components: main;
+Source: "Setup\Translation\OposWebkassa.RUS"; DestDir: "{app}\Translation"; Flags: ignoreversion; components: main;
+Source: "Setup\Translation\OposWebkassa.KAZ"; DestDir: "{app}\Translation"; Flags: ignoreversion; components: main;
 ; Fonts
-Source: "Setup\Fonts\KazakhFontA.bmp"; DestDir: "{app}\Bin\Fonts"; Flags: ignoreversion; components: main;
-Source: "Setup\Fonts\KazakhFontB.bmp"; DestDir: "{app}\Bin\Fonts"; Flags: ignoreversion; components: main;
+Source: "Setup\Fonts\KazakhFontA.bmp"; DestDir: "{app}\Fonts"; Flags: ignoreversion; components: main;
+Source: "Setup\Fonts\KazakhFontB.bmp"; DestDir: "{app}\Fonts"; Flags: ignoreversion; components: main;
 ; Version history
 Source: "History.txt"; DestDir: "{app}"; Flags: ignoreversion; components: main;
 ; Drivers
-Source: "Bin\OposWebkassa.dll"; DestDir: "{app}\Bin"; Flags: ignoreversion regserver; components: main;
+Source: "Bin\OposWebkassa.dll"; DestDir: "{app}"; Flags: ignoreversion regserver; components: main;
 ; Configuration utility
-Source: "Bin\OposConfig.exe"; DestDir: "{app}\Bin"; Flags: ignoreversion; components: main;
+Source: "Bin\OposConfig.exe"; DestDir: "{app}"; Flags: ignoreversion; components: main;
 ; Test utility
-Source: "Bin\OposTest.exe"; DestDir: "{app}\Bin"; Flags: ignoreversion; components: main;
+Source: "Bin\OposTest.exe"; DestDir: "{app}"; Flags: ignoreversion; components: main;
 [Icons]
 Name: "{group}\Version history"; Filename: "{app}\History.txt"; WorkingDir: "{app}";
-Name: "{group}\Opos setup"; Filename: "{app}\Bin\OposConfig.exe"; WorkingDir: "{app}";
-Name: "{group}\Opos test"; Filename: "{app}\Bin\OposTest.exe"; WorkingDir: "{app}";
+Name: "{group}\Opos setup"; Filename: "{app}\OposConfig.exe"; WorkingDir: "{app}";
+Name: "{group}\Opos test"; Filename: "{app}\OposTest.exe"; WorkingDir: "{app}";
 Name: "{group}\Uninstall"; Filename: "{uninstallexe}"
 [Registry]
 ; FiscalPrinter default device
 Root: HKLM; Subkey: "SOFTWARE\OLEforRetail\ServiceOPOS\FiscalPrinter\SHTRIH-M-OPOS-1"; ValueType: string; ValueName: ""; ValueData: "OposWebkassa.FiscalPrinter"; 
 [UninstallDelete]
-Type: files; Name: "{app}\*.log"
+Type: files; Name: "{app}\Logs\*.log"
 
 
 

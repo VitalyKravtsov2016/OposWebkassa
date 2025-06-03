@@ -16,7 +16,8 @@ uses
   // This
   LogFile, WebkassaImpl, WebkassaClient, MockPosPrinter, FileUtils,
   CustomReceipt, uLkJSON, ReceiptTemplate, SalesReceipt, DirectIOAPI,
-  DebugUtils, StringUtils, PrinterTypes, PrinterParameters, VatRate;
+  DebugUtils, StringUtils, PrinterTypes, PrinterParameters, VatRate,
+  JsonUtils;
 
 type
   { TWebkassaImplTest }
@@ -97,6 +98,8 @@ type
     procedure TestPrintDuplicate;
     procedure TestPrintDuplicate2;
     procedure TestRecLineChars;
+    procedure TestParseJson;
+    procedure TestParseJson2;
   end;
 
 implementation
@@ -1544,6 +1547,34 @@ begin
   Driver.Params.RecLineChars := 20;
   OpenClaimEnable;
   CheckEquals(20, Driver.GetPropertyNumber(PIDXFptr_DescriptionLength), 'DescriptionLength');
+end;
+
+procedure TWebkassaImplTest.TestParseJson;
+var
+  Doc: TlkJSONbase;
+  JsonText: WideString;
+begin
+  JsonText := ReadFileData(GetModulePath + 'CashboxState.json');
+  Doc := TlkJSON.ParseText(JsonText);
+  Doc.Free;
+end;
+
+procedure TWebkassaImplTest.TestParseJson2;
+var
+  Doc: TlkJSONbase;
+  JsonText: WideString;
+  Data: TSendReceiptCommandResponse;
+begin
+  JsonText := ReadFileData(GetModulePath + 'ReceiptAnswer5.json');
+  Data := TSendReceiptCommandResponse.Create;
+  try
+    JsonToObject(JsonText, Data);
+  finally
+    Data.Free;
+  end;
+
+  Doc := TlkJSON.ParseText(JsonText);
+  Doc.Free;
 end;
 
 initialization
