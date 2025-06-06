@@ -5120,6 +5120,7 @@ begin
       end;
     end;
     // Print
+    Document.AddDuplicateSign;
     PrintDocumentSafe(Document);
   finally
     Command.Free;

@@ -283,13 +283,13 @@ begin
   FSeparator := SDefaultSeparator;
   SetDefaults;
 
-  JclAddExceptNotifier(LogException);
+  //JclAddExceptNotifier(LogException);
 end;
 
 destructor TLogFile.Destroy;
 begin
   ODS('TLogFile.Destroy');
-  JclRemoveExceptNotifier(LogException);
+  //JclRemoveExceptNotifier(LogException);
 
   CloseFile;
   FLock.Free;

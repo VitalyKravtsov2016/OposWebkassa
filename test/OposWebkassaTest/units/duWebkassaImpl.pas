@@ -1524,7 +1524,7 @@ begin
   FptrCheck(Driver.ResetPrinter);
   CheckEquals(0, FPrinter.Lines.Count, 'Lines.Count.0');
   FptrCheck(Driver.DirectIO2(DIO_PRINT_RECEIPT_DUPLICATE, 0, '{29FA3A2F-5A60-47E4-872B-6AE8C3893CC7}'));
-  CheckEquals(41, FPrinter.Lines.Count, 'Lines.Count.1');
+  CheckEquals(42, FPrinter.Lines.Count, 'Lines.Count.1');
   FLines.LoadFromFile('DuplicateReceipt.txt');
   CheckLines;
 end;
