@@ -28,7 +28,7 @@ uses
   FileUtils in '..\Shared\FileUtils.pas',
   LogFile in '..\Shared\LogFile.pas',
   FiscalPrinterDevice in 'Units\FiscalPrinterDevice.pas',
-  WException in '..\Shared\WException.pas',
+  UserError in '..\Opos\UserError.pas',
   fmuFptrLog in 'Fmu\fmuFptrLog.pas' {fmFptrLog},
   PrinterParameters in '..\Shared\PrinterParameters.pas',
   DriverContext in '..\Shared\DriverContext.pas',

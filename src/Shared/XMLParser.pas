@@ -5,8 +5,9 @@ interface
 uses
   // VCL
   Classes, SysUtils, ActiveX, ComObj,
+  XMLDoc, XMLIntf, MSXML, 
   // This
-  XMLDoc, XMLIntf, MSXML, WException, gnugettext;
+  UserError, gnugettext;
 
 type
   TXmlItem = class;
@@ -237,7 +238,7 @@ begin
   OleStream := TStreamAdapter.Create(stream);
   if not xmlDoc.load(OleStream) then
   begin
-    raise Exception.Create(_('Xml document reading error'));
+    raise UserException.Create(_('Xml document reading error'));
   end;
   UpdateItems;
 end;
@@ -275,7 +276,7 @@ begin
   SetOwner(AOwner);
 
   if AxmlNode = nil then
-    raise Exception.Create('AxmlNode = nil');
+    raise UserException.Create('AxmlNode = nil');
 end;
 
 destructor TXmlItem.Destroy;
@@ -460,7 +461,7 @@ begin
   inherited Create;
   FxmlNode := AxmlNode;
   if AxmlNode = nil then
-    raise Exception.Create('AxmlNode = nil');
+    raise UserException.Create('AxmlNode = nil');
 end;
 
 function TXmlItemParams.GetCount: Integer;

@@ -9,7 +9,7 @@ uses
   TntGraphics,
   // This
   ByteUtils, PrinterPort, RegExpr, StringUtils, LogFile, FileUtils,
-  EscPrinterUtils, CharCode;
+  EscPrinterUtils, CharCode, UserError;
 
 const
   /////////////////////////////////////////////////////////////////////////////
@@ -448,7 +448,7 @@ begin
     28599: Result := CODEPAGE_ISO_8859_9;
     28605: Result := CODEPAGE_ISO_8859_15;
   else
-    raise Exception.Create('Character set not supported');
+    raise UserException.Create('Character set not supported');
   end;
 end;
 
@@ -649,7 +649,7 @@ end;
 procedure TEscPrinterRongta.CheckUserCharCode(Code: Byte);
 begin
   if (not Code in [USER_CHAR_CODE_MIN..USER_CHAR_CODE_MAX]) then
-    raise Exception.CreateFmt('Invalid character code, 0x%.2X', [Code]);
+    raise UserException.CreateFmt('Invalid character code, 0x%.2X', [Code]);
 end;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1371,7 +1371,7 @@ procedure TEscPrinterRongta.CheckCapRead;
 begin
   if not Port.CapRead then
   begin
-    raise Exception.Create('Порт не поддерживает чтение');
+    raise UserException.Create('Порт не поддерживает чтение');
   end;
 end;
 

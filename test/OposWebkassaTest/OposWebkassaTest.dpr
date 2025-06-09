@@ -18,7 +18,7 @@ uses
   OposSemaphore in '..\..\src\Opos\OposSemaphore.pas',
   OposFptrUtils in '..\..\src\Opos\OposFptrUtils.pas',
   OPOSException in '..\..\src\Opos\OposException.pas',
-  WException in '..\..\src\Shared\WException.pas',
+  UserError in '..\..\src\Opos\UserError.pas',
   WebkassaClient in '..\..\src\OposWebkassa\units\WebkassaClient.pas',
   JsonUtils in '..\..\src\Shared\JsonUtils.pas',
   FileUtils in '..\..\src\Shared\FileUtils.pas',

@@ -7,7 +7,7 @@ uses
   OposUtils in '..\Opos\OposUtils.pas',
   OposFptrhi in '..\Opos\OposFptrhi.pas',
   OposException in '..\Opos\OposException.pas',
-  WException in '..\Shared\WException.pas',
+  UserError in '..\Opos\UserError.pas',
   oleFiscalPrinter in 'Units\oleFiscalPrinter.pas',
   LogFile in '..\Shared\LogFile.pas',
   OposFptrUtils in '..\Opos\OposFptrUtils.pas',

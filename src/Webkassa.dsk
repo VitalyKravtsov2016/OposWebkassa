@@ -1,23 +1,21 @@
 [Closed Files]
-File_0=SourceModule,'D:\IBTS\WebKassa\test\OposWebkassaTest\units\duWebkassaClient.pas',0,1,23,5,38,0,0
-File_1=SourceModule,'D:\IBTS\WebKassa\src\Shared\LogFile.pas',0,1,256,12,286,0,0
-File_2=SourceModule,'c:\program files (x86)\borland\delphi7\Comp\jcl\source\windows\JclHookExcept.pas',0,1,1,1,1,0,0
-File_3=SourceModule,'c:\program files (x86)\borland\delphi7\Comp\jcl\source\windows\JclDebug.pas',0,1,6859,1,6889,0,0
-File_4=SourceModule,'C:\Program Files (x86)\Borland\Delphi7\Comp\FastMM\FastMM4.pas',0,1,11681,1,11696,0,0
-File_5=SourceModule,'C:\Program Files (x86)\Borland\Delphi7\Comp\FastMM\FastMM4Options.inc',0,1,222,17,417,0,0
-File_6=SourceModule,'D:\IBTS\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas',0,1,572,8,604,0,0
-File_7=SourceModule,'D:\IBTS\WebKassa\test\WebkassaAccTest\units\duWebkassaClient.pas',0,1,1,50,2,0,0
-File_8=SourceModule,'D:\IBTS\WebKassa\src\OposWebkassa\units\WebkassaClient.pas',0,1,1713,31,1732,0,0
-File_9=SourceModule,'c:\program files (x86)\borland\delphi7\source\rtl\common\SyncObjs.pas',0,1,198,1,223,0,0
+File_0=SourceModule,'D:\IBTS\WebKassa\test\OposWebkassaTest\units\duLogFile.pas',0,1,95,66,107,0,0
+File_1=SourceModule,'D:\IBTS\WebKassa\src\Shared\LogFile.pas',0,1,299,162,313,0,0
+File_2=SourceModule,'C:\Program Files (x86)\Borland\Delphi7\Source\Indy\winerror.pas',0,1,21625,10,21637,0,0
+File_3=SourceModule,'C:\Program Files (x86)\Borland\Delphi7\Source\Rtl\Common\RTLConsts.pas',0,1,49,25,61,0,0
+File_4=SourceModule,'C:\Program Files (x86)\Borland\Delphi7\Source\Indy7\winerror.pas',0,1,15628,9,15640,0,0
+File_5=SourceModule,'c:\program files (x86)\borland\delphi7\Comp\FastMM\FastMM4.pas',0,1,11678,17,11692,0,0
+File_6=SourceModule,'c:\program files (x86)\borland\delphi7\source\rtl\Sys\SysUtils.pas',0,1,251,54,277,0,0
+File_7=SourceModule,'c:\program files (x86)\borland\delphi7\source\rtl\Sys\system.pas',0,1,1,1,10,0,0
+File_8=SourceModule,'c:\program files (x86)\borland\delphi7\Comp\jcl\source\windows\JclDebug.pas',0,1,6871,29,6880,0,0
+File_9=SourceModule,'D:\IBTS\WebKassa\test\OposWebkassaTest\units\duWebkassaClient.pas',0,1,23,5,38,0,0
 
 [Modules]
-Module0=D:\IBTS\WebKassa\test\WebkassaAccTest\WebkassaAccTest.dpr
-Count=1
-EditWindowCount=1
+Count=0
+EditWindowCount=0
 TypeLibWindowCount=1
 
 [D:\IBTS\WebKassa\test\WebkassaAccTest\WebkassaAccTest.dpr]
-ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
@@ -52,38 +50,6 @@ FormOnTop=0
 [D:\IBTS\WebKassa\test\OposWebkassaTest\OposWebkassaTestLib.dpr]
 FormState=0
 FormOnTop=0
-
-[EditWindow0]
-ViewCount=1
-CurrentView=0
-View0=0
-CodeExplorer=CodeExplorer@EditWindow0
-MessageView=MessageView@EditWindow0
-Create=1
-Visible=1
-State=0
-Left=484
-Top=147
-Width=1302
-Height=682
-MaxLeft=-1
-MaxTop=-1
-ClientWidth=1286
-ClientHeight=643
-LeftPanelSize=0
-LeftPanelClients=CodeExplorer@EditWindow0
-LeftPanelData=00000400010000000C000000436F64654578706C6F7265720000000000000000000000000000000000FFFFFFFF
-RightPanelSize=0
-BottomPanelSize=0
-BottomPanelClients=MessageView@EditWindow0
-BottomPanelData=00000400010000000B0000004D657373616765566965770000000000000000000000000000000000FFFFFFFF
-
-[View0]
-Module=D:\IBTS\WebKassa\test\WebkassaAccTest\WebkassaAccTest.dpr
-CursorX=51
-CursorY=16
-TopLine=1
-LeftCol=1
 
 [TypeLibEditWindow0]
 Create=1
@@ -121,10 +87,7 @@ LRDockWidth=320
 Dockable=1
 
 [Breakpoints]
-Count=3
-Breakpoint0='c:\program files (x86)\borland\delphi7\Comp\jcl\source\windows\JclDebug.pas',6867,'',0,1,'',1,0,0,'',1,'','',''
-Breakpoint1='c:\program files (x86)\borland\delphi7\Comp\jcl\source\windows\JclDebug.pas',6889,'',0,1,'',1,0,0,'',1,'','',''
-Breakpoint2='C:\Program Files (x86)\Borland\Delphi7\Comp\FastMM\FastMM4.pas',11696,'',0,1,'',1,0,0,'',1,'','',''
+Count=0
 
 [AddressBreakpoints]
 Count=0
@@ -137,11 +100,11 @@ Left=571
 Top=27
 Width=1349
 Height=123
-MaxLeft=-8
-MaxTop=-8
-MaxWidth=1932
+MaxLeft=-1
+MaxTop=-1
+MaxWidth=1936
 MaxHeight=123
-ClientWidth=1916
+ClientWidth=1920
 ClientHeight=84
 
 [ProjectManager]
@@ -391,38 +354,6 @@ ClientWidth=367
 ClientHeight=156
 TBDockHeight=151
 LRDockWidth=383
-Dockable=1
-
-[CodeExplorer@EditWindow0]
-Create=1
-Visible=0
-State=0
-Left=-288
-Top=-16
-Width=140
-Height=305
-MaxLeft=-1
-MaxTop=-1
-ClientWidth=140
-ClientHeight=305
-TBDockHeight=305
-LRDockWidth=140
-Dockable=1
-
-[MessageView@EditWindow0]
-Create=1
-Visible=0
-State=0
-Left=-294
-Top=-714
-Width=443
-Height=85
-MaxLeft=-1
-MaxTop=-1
-ClientWidth=443
-ClientHeight=85
-TBDockHeight=85
-LRDockWidth=443
 Dockable=1
 
 [DockHosts]

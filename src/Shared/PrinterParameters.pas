@@ -10,7 +10,7 @@ uses
   // Opos
   Opos, Oposhi, OposException,
   // This
-  WException, LogFile, FileUtils, VatRate, SerialPort, SerialPorts, ReceiptItem,
+  UserError, LogFile, FileUtils, VatRate, SerialPort, SerialPorts, ReceiptItem,
   Translation, ReceiptTemplate, WebkassaClient, PrinterTypes;
 
 const
@@ -698,7 +698,7 @@ end;
 procedure TPrinterParameters.SetBaudRate(const Value: Integer);
 begin
   if BaudRateIndex(Value) = -1 then
-    raise Exception.CreateFmt('Invalid baudrate value, %d', [Value]);
+    raise UserException.CreateFmt('Invalid baudrate value, %d', [Value]);
 
   FBaudRate := Value;
 end;
@@ -854,11 +854,11 @@ var
   Data: TUnitNameRec;
 begin
   if AppName = '' then
-    raise Exception.Create('Ќазвание единицы приложени€ не может быть пустым');
+    raise UserException.Create('Ќазвание единицы приложени€ не может быть пустым');
 
   if FUnitNames.
   ItemByAppName(AppName) <> nil then
-    raise Exception.CreateFmt('—оответствие дл€ единицы "%s" уже задано', [AppName]);
+    raise UserException.CreateFmt('—оответствие дл€ единицы "%s" уже задано', [AppName]);
 
   Data.AppName := AppName;
   Data.SrvName := SrvName;

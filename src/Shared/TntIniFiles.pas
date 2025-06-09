@@ -16,10 +16,12 @@ interface
 uses
   SysUtils, Classes,
   // Tnt
-  TntClasses, TntWideStrUtils, TntSysUtils, WException;
+  TntClasses, TntWideStrUtils, TntSysUtils,
+  // This
+  UserError;
 
 type
-  EIniFileException = class(WideException);
+  EIniFileException = class(UserException);
 
   TCustomIniFile = class(TObject)
   private

@@ -6,7 +6,7 @@ uses
   // VCL
   Windows, Types, Classes, SysUtils, Graphics,
   // This
-  EscPrinterUtils;
+  EscPrinterUtils, UserError;
 
 const
   CR    = #13;
@@ -375,7 +375,7 @@ end;
 procedure TEscCommand.CheckUserCharCode(Code: Byte);
 begin
   if (not Code in [USER_CHAR_CODE_MIN..USER_CHAR_CODE_MAX]) then
-    raise Exception.CreateFmt('Invalid character code, 0x%.2X', [Code]);
+    raise UserException.CreateFmt('Invalid character code, 0x%.2X', [Code]);
 end;
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -8,7 +8,7 @@ uses
   // Opos
   OposEsc, OposPtrUtils,
   // This
-  TntGraphics, ByteUtils, DebugUtils, StringUtils;
+  TntGraphics, ByteUtils, DebugUtils, StringUtils, UserError;
 
 const
   FontNameA = 'Font A (12x24)';
@@ -351,7 +351,7 @@ var
 begin
   Result := '';
   if Bitmap.Height < FontHeight then
-    raise Exception.CreateFmt('Bitmap height < Font height, %d < %d', [
+    raise UserException.CreateFmt('Bitmap height < Font height, %d < %d', [
     Bitmap.Height, FontHeight]);
 
   mx := (Bitmap.Width + 7) div 8;

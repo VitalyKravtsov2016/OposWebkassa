@@ -4,7 +4,9 @@ interface
 
 Uses
   // VCL
-  Classes, SysUtils, WException, gnugettext, Math;
+  Classes, SysUtils, Math, 
+  // This
+  UserError, gnugettext;
 
 const
   /////////////////////////////////////////////////////////////////////////////
@@ -73,7 +75,7 @@ end;
 function TVatRates.Add(const AData: TVatRateRec): TVatRate;
 begin
   if ItemById(AData.ID) <> nil then
-    raise Exception.CreateFmt('Ќалогова€ ставка с кодом %d уже существует', [AData.ID]);
+    raise UserException.CreateFmt('Ќалогова€ ставка с кодом %d уже существует', [AData.ID]);
 
   Result := TVatRate.Create2(Self, AData);
 end;
@@ -102,10 +104,10 @@ begin
   inherited Create(AOwner);
 
   if (AData.Rate < 0)or(AData.Rate > 100) then
-    raise Exception.CreateFmt('Invalid VAT rate value, %.2f', [AData.Rate]);
+    raise UserException.CreateFmt('Invalid VAT rate value, %.2f', [AData.Rate]);
 
   if not(AData.VatType in [VAT_TYPE_NORMAL, VAT_TYPE_ZERO_TAX, VAT_TYPE_NO_TAX]) then
-    raise Exception.CreateFmt('Invalid VAT type value, %d', [AData.VatType]);
+    raise UserException.CreateFmt('Invalid VAT type value, %d', [AData.VatType]);
 
   FData := AData;
 end;

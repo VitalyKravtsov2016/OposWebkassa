@@ -4,7 +4,7 @@ uses
   // VCL
   Windows, SysUtils, Dialogs,
   // JVCL
-  JvSetupAPI, WException;
+  JvSetupAPI, UserError;
 
 procedure EnableComPort(PortName: string; AEnabled: Boolean);
 

@@ -6,12 +6,12 @@ uses
   // VCL
   SysUtils,
   // This
-  WException, GNUGetText;
+  UserError, GNUGetText;
 
 type
   { EDriverError }
 
-  EDriverError = class(WideException)
+  EDriverError = class(UserException)
   private
    FErrorCode: Integer;
   public

@@ -10,7 +10,7 @@ uses
   // Tnt
   TntClasses,
   // This
-  CustomReceipt, ReceiptItem, gnugettext, WException, MathUtils,
+  CustomReceipt, ReceiptItem, gnugettext, UserError, MathUtils,
   TextDocument, PrinterTypes, VatRate;
 
 const
@@ -212,7 +212,7 @@ begin
   FRoundType := ARoundType;
 
   if not(AAmountDecimalPlaces in [0..4]) then
-    raise Exception.Create('Invalid AmountDecimalPlaces');
+    raise UserException.Create('Invalid AmountDecimalPlaces');
 
   FAmountDecimalPlaces := AAmountDecimalPlaces;
 

@@ -8,9 +8,9 @@ uses
   // Jcl
   JclDebug, JclHookExcept,
   // 3'd
-  TntClasses, TntStdCtrls, TntRegistry,
+  TntClasses, TntStdCtrls, TntRegistry, TntSysUtils,
   // This
-  WException, TntSysUtils;
+  UserError, DriverError;
 
 type
   TVariantArray = array of Variant;
@@ -306,6 +306,8 @@ var
   HandlerLocation: Pointer;
   ExceptFrame: TJclExceptFrame;
 begin
+  if ExceptObj is UserException then Exit;
+
   Lines := TStringList.Create;
   try
     TmpS := 'Exception ' + ExceptObj.ClassName;

@@ -177,6 +177,8 @@ See http://www.suigeneris.org/want/ for details.
       <exeoutput path="${bin}" />
       <dcuoutput path="${dcu}" />
 
+      <arg value="-V" />
+      <debug     value="true" />
       <console   value="false" />
       <hugestrings value="true" />
       <writeableconst value="true" />

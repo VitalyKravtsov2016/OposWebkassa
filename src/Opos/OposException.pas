@@ -6,7 +6,7 @@ uses
   // VCL
   SysUtils,
   // This
-  OPOS, OPOShi, WException, TntSysUtils, gnugettext;
+  OPOS, OPOShi, UserError, TntSysUtils, gnugettext;
 
 type
   { TOPOSError }
@@ -19,7 +19,7 @@ type
 
   { EOPOSException }
 
-  EOPOSException = class(WideException)
+  EOPOSException = class(UserException)
   private
     FResultCode: Integer;
     FResultCodeExtended: Integer;
@@ -35,7 +35,7 @@ type
 
   { EOPOSDeviceException }
 
-  EOPOSDeviceException = class(WideException)
+  EOPOSDeviceException = class(UserException)
   private
     FResultCode: Integer;
     FResultCodeExtended: Integer;

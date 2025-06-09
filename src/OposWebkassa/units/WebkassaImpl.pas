@@ -17,7 +17,7 @@ uses
   // gnugettext
   gnugettext,
   // This
-  OPOSWebkassaLib_TLB, LogFile, WException, VersionInfo, DriverError,
+  OPOSWebkassaLib_TLB, LogFile, UserError, VersionInfo, DriverError,
   WebkassaClient, FiscalPrinterState, CustomReceipt, NonFiscalDoc, ServiceVersion,
   PrinterParameters, CashInReceipt, CashOutReceipt,
   SalesReceipt, TextDocument, ReceiptItem, StringUtils, DebugUtils, VatRate,
@@ -569,7 +569,7 @@ begin
     DIO_BARCODE_CODEONE: Result := BARCODE_CODEONE;
     DIO_BARCODE_GRIDMATRIX: Result := BARCODE_GRIDMATRIX;
   else
-    raise Exception.CreateFmt('Barcode type not supported, %d', [BarcodeType]);
+    raise UserException.CreateFmt('Barcode type not supported, %d', [BarcodeType]);
   end;
 end;
 
@@ -664,7 +664,7 @@ end;
 function TWebkassaImpl.GetPrinter: IOPOSPOSPrinter;
 begin
   if FPrinter = nil then
-    raise Exception.Create('Not opened');
+    raise UserException.Create('Not opened');
   Result := FPrinter;
 end;
 
@@ -2516,7 +2516,7 @@ begin
     Doc := TlkJSON.ParseText(FClient.AnswerJson);
     try
       if Doc = nil then
-        raise Exception.Create('Doc parse failed');
+        raise UserException.Create('Doc parse failed');
 
       Total :=
         (Command.Data.EndNonNullable.Sell - Command.Data.StartNonNullable.Sell) -
@@ -3463,7 +3463,7 @@ procedure TWebkassaImpl.Print(Receipt: TSalesReceipt);
       rtSell   : Result := OperationTypeSell;
       rtRetSell: Result := OperationTypeRetSell;
     else
-      raise Exception.CreateFmt('Invalid receipt type, %d', [Ord(RecType)]);
+      raise UserException.CreateFmt('Invalid receipt type, %d', [Ord(RecType)]);
     end;
   end;
 
@@ -3916,7 +3916,7 @@ begin
           Result := '';
           Exit;
           { !!! }
-          //raise Exception.CreateFmt('Field %s not found', [FieldName]);
+          //raise UserException.CreateFmt('Field %s not found', [FieldName]);
         end;
       until P = 0;
       Result := Root.Value;
@@ -4027,7 +4027,7 @@ begin
       Result := Tnt_WideFormat('%.2f', [Amount]);
     Exit;
   end;
-  raise Exception.CreateFmt('Receipt item %s not found', [Item.Text]);
+  raise UserException.CreateFmt('Receipt item %s not found', [Item.Text]);
 end;
 
 function TWebkassaImpl.ReceiptFieldByText(Receipt: TSalesReceipt;
@@ -4041,7 +4041,7 @@ function TWebkassaImpl.ReceiptFieldByText(Receipt: TSalesReceipt;
       rtSell   : Result := 'ÏÐÎÄÀÆÀ';
       rtRetSell: Result := 'ÂÎÇÂÐÀÒ ÏÐÎÄÀÆÈ';
     else
-      raise Exception.CreateFmt('Invalid receipt type, %d', [Ord(RecType)]);
+      raise UserException.CreateFmt('Invalid receipt type, %d', [Ord(RecType)]);
     end;
   end;
 
@@ -4129,7 +4129,7 @@ begin
     Exit;
   end;
 
-  raise Exception.CreateFmt('Receipt field %s not found', [Item.Text]);
+  raise UserException.CreateFmt('Receipt field %s not found', [Item.Text]);
 end;
 
 function GetLastLine(const Line: WideString): WideString;
@@ -4630,7 +4630,7 @@ var
   Line: WideString;
 begin
   if RecLineChars = 0 then
-    raise Exception.Create('RecLineChars = 0');
+    raise UserException.Create('RecLineChars = 0');
 
   while True do
   begin
@@ -4906,7 +4906,7 @@ procedure TWebkassaImpl.PrintBarcodeEsc(Barcode: TBarcodeRec);
       DIO_BARCODE_AZTEC: Result := PTR_BCS_AZTEC;
       DIO_BARCODE_MICROQR: Result := PTR_BCS_UQRCODE;
     else
-      raise Exception.CreateFmt('Invalid barcode type, %d', [BarcodeType]);
+      raise UserException.CreateFmt('Invalid barcode type, %d', [BarcodeType]);
     end;
   end;
 

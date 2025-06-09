@@ -9,7 +9,7 @@ uses
   TntClasses, TntSysUtils,
   DBT,
   // This
-  LogFile, PrinterPort, WException, gnugettext,
+  LogFile, PrinterPort, UserError, gnugettext,
   DeviceNotification, PortUtil, TextReport, StringUtils;
 
 const

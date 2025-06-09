@@ -9,7 +9,7 @@ uses
   TntGraphics,
   // This
   ByteUtils, PrinterPort, RegExpr, StringUtils, LogFile, FileUtils,
-  EscPrinterUtils, CharCode;
+  EscPrinterUtils, CharCode, UserError;
 
 const
   /////////////////////////////////////////////////////////////////////////////
@@ -490,7 +490,7 @@ begin
     1255: Result := CODEPAGE_WCP1255;
     1257: Result := CODEPAGE_WCP1257;
   else
-    raise Exception.Create('Code page not supported');
+    raise UserException.Create('Code page not supported');
   end;
 end;
 
@@ -784,7 +784,7 @@ end;
 procedure TEscPrinterXPrinter.CheckUserCharCode(Code: Byte);
 begin
   if (not Code in [USER_CHAR_CODE_MIN..USER_CHAR_CODE_MAX]) then
-    raise Exception.CreateFmt('Invalid character code, 0x%.2X', [Code]);
+    raise UserException.CreateFmt('Invalid character code, 0x%.2X', [Code]);
 end;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1382,7 +1382,7 @@ procedure TEscPrinterXPrinter.CheckCapRead;
 begin
   if not Port.CapRead then
   begin
-    raise Exception.Create('Порт не поддерживает чтение');
+    raise UserException.Create('Порт не поддерживает чтение');
   end;
 end;
 

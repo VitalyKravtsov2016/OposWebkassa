@@ -9,7 +9,7 @@ uses
   TntClasses,
   // Opos
   Opos, OposEsc, OposPtr, OposException, OposServiceDevice19, OposEvents,
-  OposPOSPrinter_CCO_TLB, WException, OposPtrUtils, PtrDirectIO,
+  OposPOSPrinter_CCO_TLB, UserError, OposPtrUtils, PtrDirectIO,
   // This
   LogFile, DriverError, EscPrinterXPrinter, PrinterPort, NotifyThread,
   RegExpr, SerialPort, BarcodeUtils, StringUtils,

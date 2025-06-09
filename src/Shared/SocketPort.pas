@@ -8,7 +8,7 @@ uses
   // Indy
   IdTCPClient, IdGlobal, IdStack, IdWinsock2,
   // This
-  PrinterPort, DriverError, StringUtils, LogFile, WException;
+  PrinterPort, DriverError, StringUtils, LogFile, UserError;
 
 const
   MaxRetryCountInfinite = 0;

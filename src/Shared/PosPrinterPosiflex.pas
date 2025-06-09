@@ -9,7 +9,7 @@ uses
   TntClasses,
   // Opos
   Opos, OposEsc, OposPtr, OposException, OposServiceDevice19, OposEvents,
-  OposPOSPrinter_CCO_TLB, WException, OposPtrUtils, OposUtils,
+  OposPOSPrinter_CCO_TLB, UserError, OposPtrUtils, OposUtils,
   // This
   LogFile, DriverError, EscPrinterPosiflex, PrinterPort, NotifyThread,
   RegExpr, SerialPort, Jpeg, GifImage, BarcodeUtils, StringUtils, DebugUtils,
@@ -630,7 +630,7 @@ begin
     1256: Result := CODEPAGE_WCP1256;
     1257: Result := CODEPAGE_WCP1257;
   else
-    raise Exception.Create('Character set not supported');
+    raise UserException.Create('Character set not supported');
   end;
 end;
 

@@ -6,7 +6,7 @@ uses
   // VCL
   Windows,
   // This
-  WException;
+  UserError;
 
 type
   { IPrinterPort }
@@ -26,7 +26,7 @@ type
     function ReadString: AnsiString;
   end;
 
-  ESerialError = class(WideException);
+  ESerialError = class(UserException);
   ENoPortError = class(ESerialError);
   ETimeoutError = class(ESerialError);
 

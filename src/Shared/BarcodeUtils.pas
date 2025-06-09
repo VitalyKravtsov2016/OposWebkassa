@@ -8,7 +8,7 @@ uses
   // Opos
   OposPtr,
   // This
-  uZintBarcode, uZintInterface;
+  uZintBarcode, uZintInterface, UserError;
 
 type
   { TPosBarcode }
@@ -125,7 +125,7 @@ begin
     PTR_BCS_AZTEC: Result := BARCODE_AZTEC;
     PTR_BCS_UPDF417: Result := BARCODE_MICROPDF417;
   else
-    raise Exception.CreateFmt('Barcode type not supported, %d', [BarcodeType]);
+    raise UserException.CreateFmt('Barcode type not supported, %d', [BarcodeType]);
   end;
 end;
 

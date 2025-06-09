@@ -5,7 +5,7 @@ interface
 uses
   Classes, SysUtils, Variants, XMLDoc, XMLIntf, ActiveX,
   // This
-  LogFile, PrinterTypes;
+  LogFile, PrinterTypes, UserError;
 
 type
   TTemplateItem = class;
@@ -147,7 +147,7 @@ begin
   Logger.Debug('TReceiptTemplate.LoadFromFile, ' + FileName);
   try
     if not FileExists(FileName) then
-      raise Exception.Create('File not found, ' + FileName);
+      raise UserException.Create('File not found, ' + FileName);
 
     Clear;
     Doc := LoadXMLDocument(FileName);
@@ -259,7 +259,7 @@ var
   i: Integer;
 begin
   if Root = nil then
-    raise Exception.Create('Root must not be null');
+    raise UserException.Create('Root must not be null');
 
   for i := 0 to Items.Count-1 do
   begin

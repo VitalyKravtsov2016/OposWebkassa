@@ -27,7 +27,7 @@ uses
   DriverError in '..\Shared\DriverError.pas',
   OposFiscalPrinter_1_13_Lib_TLB in '..\Opos\OposFiscalPrinter_1_13_Lib_TLB.pas',
   OposFiscalPrinter in '..\Opos\OposFiscalPrinter.pas',
-  WException in '..\Shared\WException.pas',
+  UserError in '..\Opos\UserError.pas',
   TntIniFiles in '..\Shared\TntIniFiles.pas',
   RegExpr in '..\Shared\RegExpr.pas',
   OposWebkassaLib_TLB in '..\OposWebkassa\OposWebkassaLib_TLB.pas',

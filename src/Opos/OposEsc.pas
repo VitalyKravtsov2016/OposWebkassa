@@ -8,7 +8,7 @@ uses
   // Tnt
   TntSysUtils,
   // This
-  RegExpr, DebugUtils;
+  RegExpr, DebugUtils, UserError;
 
 type
   { TOposBarcode }
@@ -408,7 +408,7 @@ var
 begin
   Result := False;
   if Length(T) = 0 then
-    raise Exception.Create('Template is empty');
+    raise UserException.Create('Template is empty');
 
   SI := 1;
   TI := 1;

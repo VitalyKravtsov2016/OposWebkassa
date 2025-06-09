@@ -1,4 +1,4 @@
-unit WException;
+unit UserError;
 
 interface
 
@@ -9,9 +9,9 @@ uses
   TntSysUtils;
 
 type
-  { WideException }
+  { UserException }
 
-  WideException = class(Exception)
+  UserException = class(Exception)
   private
     FMessage: WideString;
   public
@@ -28,27 +28,27 @@ implementation
 
 procedure raiseException(const AMessage: WideString);
 begin
-  raise WideException.Create(AMessage);
+  raise UserException.Create(AMessage);
 end;
 
 procedure raiseExceptionFmt(const AFormat: WideString; const Args: array of const);
 begin
-  raise WideException.Create(Tnt_WideFormat(AFormat, Args));
+  raise UserException.Create(Tnt_WideFormat(AFormat, Args));
 end;
 
 function GetExceptionMessage(E: Exception): WideString;
 begin
   Result := E.Message;
-  if E is WideException then
-    Result := (E as WideException).Message;
+  if E is UserException then
+    Result := (E as UserException).Message;
 
   if Result = '' then
     Result := E.ClassName;
 end;
 
-{ WideException }
+{ UserException }
 
-constructor WideException.Create(const AMessage: WideString);
+constructor UserException.Create(const AMessage: WideString);
 begin
   inherited Create(AMessage);
   FMessage := AMessage;

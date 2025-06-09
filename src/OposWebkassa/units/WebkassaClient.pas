@@ -12,7 +12,7 @@ uses
   // Indy
   IdHTTP, IdSSLOpenSSL, IdHeaderList,
   // This
-  LogFile, JsonUtils, DriverError, FileUtils;
+  LogFile, JsonUtils, DriverError, FileUtils, UserError;
 
 (*
  Ардак настоятельно рекомендует по возможности исключить команды Cashboxes и Employee/List, насколько я понял
@@ -1731,7 +1731,7 @@ procedure TWebkassaClient.CheckSSLLibrary;
 begin
   if not LoadOpenSSLLibrary then
   begin
-    raise Exception.CreateFmt('%.4X, %s', [GetLastError, SysErrorMessage(GetLastError)]);
+    raise UserException.CreateFmt('%.4X, %s', [GetLastError, SysErrorMessage(GetLastError)]);
   end;
 end;
 
@@ -3326,7 +3326,7 @@ function TUnitItems.AddItem(Code: Integer; const NameRu, NameKz,
   NameEn: WideString): TUnitItem;
 begin
   if ItemByCode(Code) <> nil then
-    raise Exception.CreateFmt('Code %d is not unique.', [Code]);
+    raise UserException.CreateFmt('Code %d is not unique.', [Code]);
   Result := TUnitItem.Create(Self);
   Result.FCode := Code;
   Result.FNameRu := NameRu;

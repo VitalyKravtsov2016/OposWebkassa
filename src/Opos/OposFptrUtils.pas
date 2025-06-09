@@ -7,7 +7,7 @@ uses
   SysUtils,
   // This
   Opos, OposUtils, Oposhi, OposFptr, OposFptrhi, OposException, TntSysUtils,
-  gnugettext;
+  gnugettext, UserError;
 
 function PrinterStateToStr(Value: Integer): WideString;
 function EncodeOposDate(const Date: TOposDate): WideString;
@@ -62,7 +62,7 @@ end;
 procedure OposFptrCheck(Driver: OleVariant; ResultCode: Integer);
 begin
   if Driver.ResultCode <> OPOS_SUCCESS then
-    raise Exception.Create(OposFptrGetErrorText(Driver));
+    raise UserException.Create(OposFptrGetErrorText(Driver));
 end;
 
 function GetFptrPropertyName(const ID: Integer): WideString;

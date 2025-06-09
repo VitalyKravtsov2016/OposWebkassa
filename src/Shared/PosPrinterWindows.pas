@@ -11,7 +11,7 @@ uses
   JvUnicodeCanvas,
   // Opos
   Opos, OposEsc, OposPtr, OposException, OposServiceDevice19,
-  OposPOSPrinter_CCO_TLB, WException, OposPtrUtils, OposUtils,
+  OposPOSPrinter_CCO_TLB, UserError, OposPtrUtils, OposUtils,
   // This
   LogFile, DriverError, CustomPrinter, EscPrinterUtils, BarcodeUtils, ComUtils,
   PrinterTypes, PrinterPage;

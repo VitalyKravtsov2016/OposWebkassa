@@ -8,7 +8,7 @@ uses
   // 3'd
   TntClasses, TntStdCtrls, TntRegistry, TntSysUtils,
   // This
-  PrinterParameters, LogFile, Oposhi, WException, gnugettext,
+  PrinterParameters, LogFile, Oposhi, UserError, gnugettext,
   DriverError, VatRate, WebkassaClient, FileUtils, PrinterTypes;
 
 type

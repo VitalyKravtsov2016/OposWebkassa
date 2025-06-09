@@ -10,7 +10,7 @@ uses
   // 3'd
   TntClasses, TntSysUtils,
   // This
-  PrinterPort, LogFile, StringUtils, WException, DebugUtils;
+  PrinterPort, LogFile, StringUtils, UserError, DebugUtils;
 
 type
   { TUsbDevice }
@@ -62,7 +62,7 @@ type
     property ReadTimeout: Integer read FReadTimeout write FReadTimeout;
   end;
 
-  EUsbPortError = class(WideException);
+  EUsbPortError = class(UserException);
 
 function ReadOA48PortName: string;
 function ReadRongtaPortName: string;
@@ -157,7 +157,7 @@ var
   DevicePath: string;
 begin
   if not LoadSetupApi then
-    raise Exception.Create('Failed load SetupAPI');
+    raise UserException.Create('Failed load SetupAPI');
 
   DevInfo := SetupDiGetClassDevs(@GUID_DEVINTERFACE_USB_DEVICE, nil, 0,
     DIGCF_PRESENT or DIGCF_DEVICEINTERFACE );
@@ -235,7 +235,7 @@ begin
   FLogger := ALogger;
   FFileName := Trim(AFileName);
   if FFileName = '' then
-    raise Exception.Create('USB port: Empty file name');
+    raise UserException.Create('USB port: Empty file name');
 
   FHandle := INVALID_HANDLE_VALUE;
   FReadTimeout := 3000;

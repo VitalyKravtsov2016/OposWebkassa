@@ -6,7 +6,7 @@ uses
   // VCL
   Classes, SysUtils,
   // This
-  OPOSException, OposFptr, WException, gnugettext;
+  OPOSException, OposFptr, UserError, gnugettext;
 
 type
   { TFiscalPrinterState }
