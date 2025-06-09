@@ -283,13 +283,13 @@ begin
   FSeparator := SDefaultSeparator;
   SetDefaults;
 
-  //JclAddExceptNotifier(LogException);
+  JclAddExceptNotifier(LogException);
 end;
 
 destructor TLogFile.Destroy;
 begin
   ODS('TLogFile.Destroy');
-  //JclRemoveExceptNotifier(LogException);
+  JclRemoveExceptNotifier(LogException);
 
   CloseFile;
   FLock.Free;
@@ -306,8 +306,6 @@ var
   HandlerLocation: Pointer;
   ExceptFrame: TJclExceptFrame;
 begin
-  if not IsOS then Exit;
-
   Lines := TStringList.Create;
   try
     TmpS := 'Exception ' + ExceptObj.ClassName;

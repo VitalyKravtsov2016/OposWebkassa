@@ -18,12 +18,14 @@ type
   TLogFileTest = class(TTestCase)
   private
     FLogger: ILogFile;
+    procedure DeleteLogFile;
   protected
     procedure SetUp; override;
     procedure TearDown; override;
   published
     procedure WriteUnicode;
     procedure WriteUnicode2;
+    procedure TestOutOfMemory;
   end;
 
 implementation
@@ -41,17 +43,21 @@ begin
   FLogger := nil;
 end;
 
-procedure TLogFileTest.WriteUnicode;
-var
-  Text: WideString;
-  Strings: TTntStrings;
+procedure TLogFileTest.DeleteLogFile;
 begin
   if FileExists(FLogger.FileName) then
   begin
     if not DeleteFile(FLogger.FileName) then
       RaiseLastOSError;
   end;
+end;
 
+procedure TLogFileTest.WriteUnicode;
+var
+  Text: WideString;
+  Strings: TTntStrings;
+begin
+  DeleteLogFile;
   Strings := TTntStringList.Create;
   try
     Strings.LoadFromFile('UnicodeText.txt');
@@ -72,11 +78,7 @@ var
   Text: WideString;
   Strings: TTntStrings;
 begin
-  if FileExists(FLogger.FileName) then
-  begin
-    if not DeleteFile(FLogger.FileName) then
-      RaiseLastOSError;
-  end;
+  DeleteLogFile;
 
   Strings := TTntStringList.Create;
   try
@@ -93,6 +95,47 @@ begin
     Strings.Free;
   end;
 end;
+
+var
+  EOutOfMemoryOccured: Boolean;  // ???
+
+procedure TLogFileTest.TestOutOfMemory;
+var
+  P: Pointer;
+  Strings: TTntStrings;
+begin
+  DeleteLogFile;
+
+  EOutOfMemoryOccured := False;
+  try
+    while True do
+    begin
+      P := nil;
+      GetMem(P, MaxInt);
+    end;
+  except
+    on E: EOutOfMemory do
+    begin
+      CheckEquals('Out of memory', E.Message, 'E.Message <> Out of memory');
+      EOutOfMemoryOccured := True;
+    end;
+  end;
+  // Check that Exception not stealed by logger
+  Check(EOutOfMemoryOccured, 'EOutOfMemory not occured');
+
+  FLogger.CloseFile;
+  Check(FileExists(FLogger.FileName), 'File not exists, ' + FLogger.FileName);
+
+  Strings := TTntStringList.Create;
+  try
+    Strings.LoadFromFile(FLogger.FileName);
+    Check(Strings.Count <> 0, 'Strings.Count = 0');
+  finally
+    Strings.Free;
+  end;
+
+end;
+
 
 initialization
   RegisterTest('', TLogFileTest.Suite);
