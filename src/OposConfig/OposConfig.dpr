@@ -112,7 +112,8 @@ uses
   PrinterPage in '..\Shared\PrinterPage.pas',
   PosPrinterOA48 in '..\Shared\PosPrinterOA48.pas',
   EscPrinterOA48 in '..\Shared\EscPrinterOA48.pas',
-  EscPrinterXPrinter in '..\Shared\EscPrinterXPrinter.pas';
+  EscPrinterXPrinter in '..\Shared\EscPrinterXPrinter.pas',
+  StringConst in '..\Shared\StringConst.pas';
 
 {$R *.RES}
 {$R WindowsXP.RES}

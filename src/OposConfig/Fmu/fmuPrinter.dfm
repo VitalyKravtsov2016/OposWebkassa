@@ -1,6 +1,6 @@
 object fmPrinter: TfmPrinter
-  Left = 583
-  Top = 257
+  Left = 975
+  Top = 225
   Width = 471
   Height = 502
   Caption = #1055#1088#1080#1085#1090#1077#1088
@@ -23,7 +23,7 @@ object fmPrinter: TfmPrinter
     Height = 13
     Caption = #1056#1077#1079#1091#1083#1100#1090#1072#1090':'
   end
-  object memResult: TMemo
+  object memResult: TTntMemo
     Left = 8
     Top = 376
     Width = 441
@@ -59,7 +59,7 @@ object fmPrinter: TfmPrinter
     TabOrder = 3
     OnClick = btnPrintReceiptClick
   end
-  object PageControl1: TPageControl
+  object PageControl1: TTntPageControl
     Left = 8
     Top = 8
     Width = 441
@@ -386,7 +386,7 @@ object fmPrinter: TfmPrinter
         OnChange = ModifiedClick
       end
     end
-    object tsUSBPort: TTabSheet
+    object tsUSBPort: TTntTabSheet
       Caption = 'USB '#1087#1086#1088#1090
       ImageIndex = 3
       DesignSize = (
@@ -410,7 +410,7 @@ object fmPrinter: TfmPrinter
         TabOrder = 0
         OnChange = ModifiedClick
       end
-      object btnReadUsbDevices: TButton
+      object btnReadUsbDevices: TTntButton
         Left = 160
         Top = 48
         Width = 257

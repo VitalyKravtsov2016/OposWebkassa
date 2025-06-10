@@ -17,7 +17,7 @@ type
   TfmMain = class(TBaseForm)
     btnAbout: TTntButton;
     btnClose: TTntButton;
-    PageControl1: TPageControl;
+    PageControl1: TTntPageControl;
     tsFiscalPrinter: TTntTabSheet;
     tsPosPrinter: TTntTabSheet;
     procedure FormCreate(Sender: TObject);

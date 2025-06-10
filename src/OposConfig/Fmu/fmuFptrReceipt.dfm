@@ -19,7 +19,7 @@ object fmFptrReceipt: TfmFptrReceipt
     450)
   PixelsPerInch = 96
   TextHeight = 13
-  object PageControl1: TPageControl
+  object PageControl1: TTntPageControl
     Left = 0
     Top = 0
     Width = 581
@@ -83,7 +83,7 @@ object fmFptrReceipt: TfmFptrReceipt
     Caption = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1092#1086#1088#1084#1072#1090' '#1095#1077#1082#1072
     TabOrder = 1
   end
-  object btnUpdate: TButton
+  object btnUpdate: TTntButton
     Left = 472
     Top = 408
     Width = 99

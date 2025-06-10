@@ -89,7 +89,8 @@ uses
   PrinterPage in '..\Shared\PrinterPage.pas',
   EscPrinterOA48 in '..\Shared\EscPrinterOA48.pas',
   PosPrinterOA48 in '..\Shared\PosPrinterOA48.pas',
-  EscPrinterXPrinter in '..\Shared\EscPrinterXPrinter.pas';
+  EscPrinterXPrinter in '..\Shared\EscPrinterXPrinter.pas',
+  StringConst in '..\Shared\StringConst.pas';
 
 exports
   DllGetClassObject,

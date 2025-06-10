@@ -7,23 +7,23 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ComCtrls, Spin, ActiveX, ComObj, ExtCtrls, Printers,
   // Tnt
-  TntStdCtrls, TntSysUtils, TntComCtrls,
+  TntClasses, TntStdCtrls, TntSysUtils, TntComCtrls,
   // Opos
   Opos, OposPtr, Oposhi, OposUtils, OposDevice, OposFptrUtils,
   // This
   untUtil, PrinterParameters, FptrTypes, FiscalPrinterDevice, FileUtils,
   WebkassaImpl, OposFiscalPrinter_1_13_Lib_TLB, SerialPort, DirectIOAPI,
-  PosPrinterOA48, TntClasses, EscPrinterUtils, UsbPrinterPort;
+  PosPrinterOA48, EscPrinterUtils, UsbPrinterPort;
 
 type
   { TfmPrinter }
 
   TfmPrinter = class(TFptrPage)
-    memResult: TMemo;
+    memResult: TTntMemo;
     lblResultCode: TTntLabel;
     btnTestConnection: TTntButton;
     btnPrintReceipt: TTntButton;
-    PageControl1: TPageControl;
+    PageControl1: TTntPageControl;
     tsCommonParams: TTntTabSheet;
     tsSocketParams: TTntTabSheet;
     lblRemoteHost: TTntLabel;
@@ -65,10 +65,10 @@ type
     cbEscPrinterType: TTntComboBox;
     lblPortType: TTntLabel;
     cbPortType: TTntComboBox;
-    tsUSBPort: TTabSheet;
+    tsUSBPort: TTntTabSheet;
     TntLabel1: TTntLabel;
     cbUSBPort: TTntComboBox;
-    btnReadUsbDevices: TButton;
+    btnReadUsbDevices: TTntButton;
     procedure btnTestConnectionClick(Sender: TObject);
     procedure btnPrintReceiptClick(Sender: TObject);
     procedure cbPrinterTypeChange(Sender: TObject);
@@ -91,8 +91,8 @@ type
     procedure UpdateEscPrinterTypes;
     procedure FptrCheck(Printer: TOPOSFiscalPrinter; Code: Integer);
 
-    function GetPortTypes: string;
-    function GetEscPrinterType: string;
+    function GetPortTypes: WideString;
+    function GetEscPrinterType: WideString;
     function ReadFontNames(APrinterType: Integer): WideString;
     function ReadPrinterNames(APrinterType: Integer): WideString;
   public
@@ -103,6 +103,9 @@ type
 implementation
 
 {$R *.dfm}
+
+const
+  SError: WideString = 'Ошибка';
 
 { TfmFptrConnection }
 
@@ -306,7 +309,7 @@ begin
   except
     on E: Exception do
     begin
-      memResult.Text := 'Ошибка: ' + E.Message;
+      memResult.Text := SError + ': ' + E.Message;
     end;
   end;
   EnableButtons(True);
@@ -337,7 +340,7 @@ begin
   except
     on E: Exception do
     begin
-      memResult.Text := 'Ошибка: ' + E.Message;
+      memResult.Text := SError + ': ' + E.Message;
     end;
   end;
   EnableButtons(True);
@@ -408,7 +411,7 @@ begin
   end;
 end;
 
-function TfmPrinter.GetEscPrinterType: string;
+function TfmPrinter.GetEscPrinterType: WideString;
 begin
   Result := '';
   if cbPrinterType.ItemIndex  = PrinterTypeEscCommands then
@@ -511,7 +514,7 @@ begin
   end;
 end;
 
-function TfmPrinter.GetPortTypes: string;
+function TfmPrinter.GetPortTypes: WideString;
 begin
   Result := '';
   if cbPrinterType.ItemIndex = PrinterTypeEscCommands then
@@ -571,5 +574,7 @@ begin
 end;
 
 end.
+
+
 
 

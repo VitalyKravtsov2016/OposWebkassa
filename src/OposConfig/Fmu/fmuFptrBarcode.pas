@@ -21,7 +21,7 @@ type
     rbBarcodeGraphics: TTntRadioButton;
     rbBarcodeText: TTntRadioButton;
     rbBarcodeNone: TTntRadioButton;
-    chbReplaceDataMatrixWithQRCode: TCheckBox;
+    chbReplaceDataMatrixWithQRCode: TTntCheckBox;
     procedure ModifiedClick(Sender: TObject);
   public
     procedure UpdatePage; override;
@@ -62,5 +62,6 @@ begin
 end;
 
 end.
+
 
 

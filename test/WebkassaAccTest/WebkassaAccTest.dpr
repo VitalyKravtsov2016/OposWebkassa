@@ -108,7 +108,8 @@ uses
   duPosPrinterWindows in 'units\duPosPrinterWindows.pas',
   PosPrinterOA48 in '..\..\src\Shared\PosPrinterOA48.pas',
   EscPrinterOA48 in '..\..\src\Shared\EscPrinterOA48.pas',
-  EscPrinterXPrinter in '..\..\src\Shared\EscPrinterXPrinter.pas';
+  EscPrinterXPrinter in '..\..\src\Shared\EscPrinterXPrinter.pas',
+  StringConst in '..\..\src\Shared\StringConst.pas';
 
 {$R *.RES}
 {$R ..\..\src\OposWebkassa\OposWebkassa.tlb}

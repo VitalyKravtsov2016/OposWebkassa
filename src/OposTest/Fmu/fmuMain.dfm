@@ -41,7 +41,7 @@ object fmMain: TfmMain
     TabOrder = 2
     OnClick = btnCloseClick
   end
-  object PageControl1: TPageControl
+  object PageControl1: TTntPageControl
     Left = 8
     Top = 8
     Width = 569

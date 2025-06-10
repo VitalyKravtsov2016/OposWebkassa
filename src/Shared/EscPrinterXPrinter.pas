@@ -9,7 +9,7 @@ uses
   TntGraphics,
   // This
   ByteUtils, PrinterPort, RegExpr, StringUtils, LogFile, FileUtils,
-  EscPrinterUtils, CharCode, UserError;
+  EscPrinterUtils, CharCode, UserError, StringConst;
 
 const
   /////////////////////////////////////////////////////////////////////////////
@@ -1382,7 +1382,7 @@ procedure TEscPrinterXPrinter.CheckCapRead;
 begin
   if not Port.CapRead then
   begin
-    raise UserException.Create('Порт не поддерживает чтение');
+    raise UserException.Create(SReadNotSupported);
   end;
 end;
 

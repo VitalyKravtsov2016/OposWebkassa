@@ -298,23 +298,32 @@ end;
 
 procedure TLogFile.LogException(ExceptObj: TObject; ExceptAddr: Pointer; IsOS: Boolean);
 var
-  TmpS: string;
-  Lines: TStringList;
+  S: WideString;
+  TmpS: WideString;
+  Lines2: TStrings;
+  Lines: TTntStrings;
   ModInfo: TJclLocationInfo;
+  (*
   I: Integer;
   ExceptionHandled: Boolean;
   HandlerLocation: Pointer;
   ExceptFrame: TJclExceptFrame;
+  *)
 begin
-  if ExceptObj is UserException then Exit;
+  //if ExceptObj is UserException then Exit;
 
-  Lines := TStringList.Create;
+  Lines := TTntStringList.Create;
+  Lines2 := TStringList.Create;
   try
-    TmpS := 'Exception ' + ExceptObj.ClassName;
+    S := 'Exception ' + ExceptObj.ClassName;
     if ExceptObj is Exception then
-      TmpS := TmpS + ': ' + Exception(ExceptObj).Message;
+      TmpS := S + ': ' + Exception(ExceptObj).Message;
+    if ExceptObj is UserException then
+      TmpS := S + ': ' + UserException(ExceptObj).Message;
+
     if IsOS then
       TmpS := TmpS + ' (OS Exception)';
+
     Lines.Add(TmpS);
     ModInfo := GetLocationInfo(ExceptAddr);
     Lines.Add(Format(
@@ -324,6 +333,8 @@ begin
        ModInfo.ProcedureName,
        ModInfo.SourceName,
        ModInfo.LineNumber]));
+
+    (*
     if stExceptFrame in JclStackTrackingOptions then
     begin
       Lines.Add('  Except frame-dump:');
@@ -366,13 +377,16 @@ begin
       end;
     end;
     Lines.Add('');
+    *)
 
-    JclLastExceptStackList.AddToStrings(Lines, True, True, True, True);
+    JclLastExceptStackList.AddToStrings(Lines2, True, True, True, True);
+
+    Lines.AddStrings(Lines2);
     Lines.Add('');
-
     Write(Lines.Text);
   finally
     Lines.Free;
+    Lines2.Free;
   end;
 end;
 

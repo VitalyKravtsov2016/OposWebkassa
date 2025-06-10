@@ -22,13 +22,13 @@ type
 
   TfmFptrReceipt = class(TFptrPage)
     SynXMLSyn: TSynXMLSyn;
-    PageControl1: TPageControl;
+    PageControl1: TTntPageControl;
     tsReceipt: TTntTabSheet;
     tsXmlTemplate: TTntTabSheet;
     reReceipt: TTntRichEdit;
     seTemplate: TSynEdit;
     chbTemplateEnabled: TTntCheckBox;
-    btnUpdate: TButton;
+    btnUpdate: TTntButton;
     procedure ReceiptChange(Sender: TObject);
     procedure btnUpdateClick(Sender: TObject);
   public

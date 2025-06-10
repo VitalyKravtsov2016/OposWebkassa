@@ -60,7 +60,7 @@ object fmFptrBarcode: TfmFptrBarcode
     TabOrder = 4
     OnClick = ModifiedClick
   end
-  object chbReplaceDataMatrixWithQRCode: TCheckBox
+  object chbReplaceDataMatrixWithQRCode: TTntCheckBox
     Left = 8
     Top = 176
     Width = 393
