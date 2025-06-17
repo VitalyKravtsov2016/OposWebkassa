@@ -1739,7 +1739,7 @@ procedure TWebkassaClient.Connect;
 var
   Command: TAuthCommand;
 begin
-  CheckSSLLibrary;
+  //CheckSSLLibrary; !!!
   if Token = '' then
   begin
     Command := TAuthCommand.Create;

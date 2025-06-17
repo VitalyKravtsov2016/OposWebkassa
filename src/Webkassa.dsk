@@ -1,61 +1,34 @@
 [Closed Files]
-File_0=SourceModule,'D:\IBTS\WebKassa\src\Shared\StringConst.pas',0,1,1,20,6,0,0
-File_1=SourceModule,'D:\IBTS\WebKassa\src\Shared\StringUtils.pas',0,1,1,1,11,0,0
-File_2=SourceModule,'D:\IBTS\WebKassa\src\OposConfig\Fmu\fmuPrinter.dfm',0,1,1,1,1,0,0
-File_3=SourceModule,'D:\IBTS\WebKassa\src\OposConfig\Fmu\fmuFptrLog.pas',0,1,1,35,17,0,0
-File_4=SourceModule,'D:\IBTS\WebKassa\src\OposConfig\Fmu\fmuFptrBarcode.pas',0,1,1,28,5,1,0
-File_5=SourceModule,'D:\IBTS\WebKassa\src\OposConfig\Fmu\fmuDevice.pas',0,1,1,55,18,1,1
-File_6=SourceModule,'D:\IBTS\WebKassa\src\Shared\LogFile.pas',0,1,299,5,309,0,0
-File_7=SourceModule,'D:\IBTS\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas',0,1,3250,97,3255,0,0
-File_8=SourceModule,'D:\IBTS\WebKassa\src\Opos\UserError.pas',0,1,2,1,14,0,0
-File_9=SourceModule,'D:\IBTS\WebKassa\src\Shared\EscPrinterUtils.pas',0,1,1,61,11,0,0
+File_0=SourceModule,'c:\program files (x86)\borland\delphi7\source\rtl\Sys\sysutils.pas',0,1,13255,1,13259,0,0
+File_1=SourceModule,'D:\IBTS\WebKassa\src\Shared\LogFile.pas',0,1,309,40,320,0,0
+File_2=SourceModule,'D:\IBTS\WebKassa\src\Shared\PrinterParameters.pas',0,1,413,58,423,0,0
+File_3=SourceModule,'D:\IBTS\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas',0,1,435,88,448,0,0
+File_4=SourceModule,'c:\program files (x86)\borland\delphi7\Comp\jcl\source\windows\JclDebug.pas',0,1,5153,1,5165,0,0
+File_5=SourceModule,'c:\program files (x86)\borland\delphi7\Comp\TntUnicodeControls_2.3.0\Source\TntClasses.pas',0,1,104,31,116,0,0
+File_6=SourceModule,'c:\program files (x86)\borland\delphi7\Comp\TntUnicodeControls_2.3.0\Source\TntWideStrings.pas',0,1,47,1,59,0,0
+File_7=SourceModule,'D:\IBTS\WebKassa\src\OposConfig\Fmu\fmuPrinter.pas',0,1,330,35,339,1,0
+File_8=SourceModule,'D:\IBTS\WebKassa\src\Shared\EscPrinterPosiflex.pas',0,1,1,31,10,0,0
 
 [Modules]
-Module0=D:\IBTS\WebKassa\src\Shared\EscPrinterXPrinter.pas
-Module1=D:\IBTS\WebKassa\src\Shared\EscPrinterOA48.pas
-Module2=D:\IBTS\WebKassa\src\Shared\EscPrinterRongta.pas
-Module3=D:\IBTS\WebKassa\src\Shared\EscPrinterPosiflex.pas
-Module4=D:\IBTS\WebKassa\src\Shared\PrinterParameters.pas
-Module5=D:\IBTS\WebKassa\src\OposConfig\Fmu\fmuPrinter.pas
-Count=6
+Module0=D:\IBTS\WebKassa\src\OposWebkassa\units\WebkassaClient.pas
+Module1=D:\IBTS\WebKassa\src\Opos\UserError.pas
+Module2=D:\IBTS\WebKassa\test\OposWebkassaTest\units\duWebkassaClient.pas
+Count=3
 EditWindowCount=1
 TypeLibWindowCount=1
 
-[D:\IBTS\WebKassa\src\Shared\EscPrinterXPrinter.pas]
+[D:\IBTS\WebKassa\src\OposWebkassa\units\WebkassaClient.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[D:\IBTS\WebKassa\src\Shared\EscPrinterOA48.pas]
+[D:\IBTS\WebKassa\src\Opos\UserError.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[D:\IBTS\WebKassa\src\Shared\EscPrinterRongta.pas]
+[D:\IBTS\WebKassa\test\OposWebkassaTest\units\duWebkassaClient.pas]
 ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[D:\IBTS\WebKassa\src\Shared\EscPrinterPosiflex.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[D:\IBTS\WebKassa\src\Shared\PrinterParameters.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[D:\IBTS\WebKassa\src\OposConfig\Fmu\fmuPrinter.pas]
-ModuleType=SourceModule
-FormState=1
-FormOnTop=0
-
-[D:\IBTS\WebKassa\src\OposWebkassa\OposWebkassa.dpr]
-FormState=0
-FormOnTop=0
-
-[D:\IBTS\WebKassa\test\WebkassaAccTest\WebkassaAccTest.dpr]
 FormState=0
 FormOnTop=0
 
@@ -68,6 +41,10 @@ FormState=0
 FormOnTop=0
 
 [D:\IBTS\WebKassa\src\OposTest\OposTest.dpr]
+FormState=0
+FormOnTop=0
+
+[D:\IBTS\WebKassa\src\OposWebkassa\OposWebkassa.dpr]
 FormState=0
 FormOnTop=0
 
@@ -87,77 +64,55 @@ FormOnTop=0
 FormState=0
 FormOnTop=0
 
+[D:\IBTS\WebKassa\test\WebkassaAccTest\WebkassaAccTest.dpr]
+FormState=0
+FormOnTop=0
+
 [EditWindow0]
-ViewCount=6
-CurrentView=5
+ViewCount=3
+CurrentView=0
 View0=0
 View1=1
 View2=2
-View3=3
-View4=4
-View5=5
 CodeExplorer=CodeExplorer@EditWindow0
 MessageView=MessageView@EditWindow0
 Create=1
 Visible=1
-State=2
+State=0
 Left=493
 Top=140
 Width=1302
 Height=682
-MaxLeft=-8
-MaxTop=107
-MaxWidth=1936
-MaxHeight=941
-ClientWidth=1920
-ClientHeight=902
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=1286
+ClientHeight=643
 LeftPanelSize=0
 LeftPanelClients=CodeExplorer@EditWindow0
 LeftPanelData=00000400010000000C000000436F64654578706C6F7265720000000000000000000000000000000000FFFFFFFF
 RightPanelSize=0
-BottomPanelSize=244
+BottomPanelSize=260
 BottomPanelClients=MessageView@EditWindow0
 BottomPanelData=000004000000000000000000000000000000000000000000000100000000000000000B0000004D65737361676556696577FFFFFFFF
 
 [View0]
-Module=D:\IBTS\WebKassa\src\OposConfig\Fmu\fmuPrinter.pas
-CursorX=37
-CursorY=337
-TopLine=330
+Module=D:\IBTS\WebKassa\src\OposWebkassa\units\WebkassaClient.pas
+CursorX=40
+CursorY=1740
+TopLine=1730
 LeftCol=1
 
 [View1]
-Module=D:\IBTS\WebKassa\src\Shared\PrinterParameters.pas
-CursorX=58
-CursorY=423
-TopLine=413
+Module=D:\IBTS\WebKassa\test\OposWebkassaTest\units\duWebkassaClient.pas
+CursorX=27
+CursorY=784
+TopLine=782
 LeftCol=1
 
 [View2]
-Module=D:\IBTS\WebKassa\src\Shared\EscPrinterPosiflex.pas
-CursorX=31
-CursorY=10
-TopLine=1
-LeftCol=1
-
-[View3]
-Module=D:\IBTS\WebKassa\src\Shared\EscPrinterRongta.pas
-CursorX=52
-CursorY=12
-TopLine=1
-LeftCol=1
-
-[View4]
-Module=D:\IBTS\WebKassa\src\Shared\EscPrinterOA48.pas
-CursorX=52
-CursorY=12
-TopLine=1
-LeftCol=1
-
-[View5]
-Module=D:\IBTS\WebKassa\src\Shared\EscPrinterXPrinter.pas
-CursorX=148
-CursorY=8
+Module=D:\IBTS\WebKassa\src\Opos\UserError.pas
+CursorX=49
+CursorY=9
 TopLine=1
 LeftCol=1
 
@@ -265,7 +220,7 @@ ClientHeight=60
 
 [PropertyInspector]
 Create=1
-Visible=1
+Visible=0
 State=0
 Left=-4
 Top=120
@@ -280,7 +235,7 @@ LRDockWidth=291
 Dockable=1
 SplitPos=153
 ArrangeBy=Name
-SelectedItem=Name
+SelectedItem=
 ExpandedItems=Anchors,Attributes,BorderIcons,Constraints,Font.Style,Greeting,Options,ProviderFlags,TestModeInfo,Title,Title.Font,VisibleButtons
 HiddenCategories=
 
@@ -488,13 +443,13 @@ Visible=1
 State=0
 Left=12
 Top=0
-Width=1908
-Height=244
+Width=1274
+Height=260
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1908
-ClientHeight=244
-TBDockHeight=244
+ClientWidth=1274
+ClientHeight=260
+TBDockHeight=260
 LRDockWidth=443
 Dockable=1
 
@@ -521,5 +476,5 @@ DockClients=CallStackWindow
 DockSiteData=0000040000000000F001000000000000015803000000000000010000000087000000000000000100000002F0010000000000000200000000580300000F00000043616C6C537461636B57696E646F770200000000F7010000000000000100000000080100000000000001000000008C010000000000000100000000100200000000000001000000009802000000000000FFFFFFFF
 
 [ActiveProject]
-ActiveProject=1
+ActiveProject=4
 

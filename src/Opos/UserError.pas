@@ -16,6 +16,8 @@ type
     FMessage: WideString;
   public
     constructor Create(const AMessage: WideString);
+    constructor CreateFmt(const Msg: WideString; const Args: array of const);
+
     property Message: WideString read FMessage;
   end;
 
@@ -33,7 +35,7 @@ end;
 
 procedure raiseExceptionFmt(const AFormat: WideString; const Args: array of const);
 begin
-  raise UserException.Create(Tnt_WideFormat(AFormat, Args));
+  raise UserException.Create(WideFormat(AFormat, Args));
 end;
 
 function GetExceptionMessage(E: Exception): WideString;
@@ -52,6 +54,11 @@ constructor UserException.Create(const AMessage: WideString);
 begin
   inherited Create(AMessage);
   FMessage := AMessage;
+end;
+
+constructor UserException.CreateFmt(const Msg: WideString; const Args: array of const);
+begin
+  FMessage := WideFormat(Msg, Args);
 end;
 
 end.
