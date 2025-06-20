@@ -111,7 +111,6 @@ begin
   end;
 end;
 
-
 { TTextDocument }
 
 constructor TTextDocument.Create;
@@ -137,11 +136,13 @@ procedure TTextDocument.AddDuplicateSign;
 var
   Item: TDocItem;
   Data: TDocItemRec;
+const
+  SText: WideString = 'ƒ”¡À» ¿“';
 begin
   if FDuplicateSign then Exit;
   // Add duplicate sign
-  Data.Text := 'ƒ”¡À» ¿“' + CRLF;
-  Data.Style := STYLE_DWIDTH_HEIGHT;
+  Data.Text := StringOfChar(' ', (LineChars-Length(SText)) div 2) + SText + CRLF;
+  Data.Style := STYLE_NORMAL;
   Data.LineChars := LineChars;
   Data.LineHeight := LineHeight;
   Data.LineSpacing := LineSpacing;

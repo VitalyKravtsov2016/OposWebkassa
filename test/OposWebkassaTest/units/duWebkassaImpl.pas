@@ -737,7 +737,7 @@ begin
   //Driver.SetPropertyNumber(PIDXFptr_DuplicateReceipt, 1); !!!
   PrintReceipt3;
   FLines.AddStrings(FPrinter.Lines);
-  FLines.Add('ƒ”¡À» ¿“');
+  FLines.Add('                    ƒ”¡À» ¿“');
   FLines.AddStrings(FPrinter.Lines);
   FPrinter.Lines.Clear;
   CheckEquals(OPOS_SUCCESS, Driver.PrintDuplicateReceipt, 'PrintDuplicateReceipt');

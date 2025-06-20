@@ -4276,7 +4276,7 @@ begin
       end;
 
       if Item.FormatText <> '' then
-        Item.Value := Tnt_WideFormat(Item.FormatText, [Item.Value]);
+        Item.Value := WideFormat(Item.FormatText, [Item.Value]);
 
       case Item.Alignment of
         ALIGN_RIGHT:
