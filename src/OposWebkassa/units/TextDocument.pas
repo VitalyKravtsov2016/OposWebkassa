@@ -142,7 +142,7 @@ begin
   if FDuplicateSign then Exit;
   // Add duplicate sign
   Data.Text := StringOfChar(' ', (LineChars-Length(SText)) div 2) + SText + CRLF;
-  Data.Style := STYLE_NORMAL;
+  Data.Style := STYLE_BOLD;
   Data.LineChars := LineChars;
   Data.LineHeight := LineHeight;
   Data.LineSpacing := LineSpacing;
