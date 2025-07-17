@@ -1,6 +1,7 @@
 library OposWebkassa;
 
 uses
+  ExceptionLog,
   Opos in '..\Opos\Opos.pas',
   Oposhi in '..\Opos\Oposhi.pas',
   OposFptr in '..\Opos\OposFptr.pas',
@@ -103,4 +104,9 @@ exports
 {$R *.RES}
 
 begin
+{$IFDEF EUREKALOG}
+WriteLn('DLL Compiled with EurekaLog.');
+{$ELSE}
+WriteLn('DLL Compiled without EurekaLog.');
+{$ENDIF}
 end.

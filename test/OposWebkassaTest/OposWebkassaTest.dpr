@@ -96,7 +96,7 @@ uses
   PosPrinterPosiflex in '..\..\src\Shared\PosPrinterPosiflex.pas',
   EscPrinterPosiflex in '..\..\src\Shared\EscPrinterPosiflex.pas',
   OposDevice in '..\..\src\Opos\OposDevice.pas',
-  duWebkassaImpl in 'units\duWebkassaImpl.pas',
+  duMemory in 'units\duMemory.pas',
   EscPrinterUtils in '..\..\src\Shared\EscPrinterUtils.pas',
   PtrDirectIO in '..\..\src\OposWebkassa\units\PtrDirectIO.pas',
   PageBuffer in '..\..\src\OposWebkassa\units\PageBuffer.pas',
@@ -115,7 +115,9 @@ uses
   PosPrinterOA48 in '..\..\src\Shared\PosPrinterOA48.pas',
   EscPrinterOA48 in '..\..\src\Shared\EscPrinterOA48.pas',
   EscPrinterXPrinter in '..\..\src\Shared\EscPrinterXPrinter.pas',
-  StringConst in '..\..\src\Shared\StringConst.pas';
+  StringConst in '..\..\src\Shared\StringConst.pas',
+  duWebkassaImpl in 'units\duWebkassaImpl.pas',
+  MemoryUtils in '..\..\src\OposWebkassa\units\MemoryUtils.pas';
 
 {$R *.RES}
 

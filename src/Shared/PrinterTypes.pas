@@ -5,6 +5,8 @@ interface
 uses
   // VCL
   SysUtils,
+  // Tnt
+  TntSysUtils,
   // This
   StringUtils;
 
@@ -107,7 +109,7 @@ end;
 
 function BarcodeToStr(const Barcode: TBarcodeRec): string;
 begin
-  Result := WideFormat('%s;%s;%d;%d;%d;%d;%d;%d;%d',[
+  Result := Tnt_WideFormat('%s;%s;%d;%d;%d;%d;%d;%d;%d',[
     Barcode.Data,
     Barcode.Text,
     Barcode.Height,

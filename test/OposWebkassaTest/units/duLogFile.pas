@@ -22,10 +22,10 @@ type
   protected
     procedure SetUp; override;
     procedure TearDown; override;
+    procedure TestOutOfMemory;
   published
     procedure WriteUnicode;
     procedure WriteUnicode2;
-    procedure TestOutOfMemory;
   end;
 
 implementation

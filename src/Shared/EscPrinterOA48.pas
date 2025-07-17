@@ -6,7 +6,7 @@ uses
   // VCL
   Windows, Types, SysUtils, Graphics, Classes,
   // Tnt
-  TntGraphics,
+  TntGraphics, TntSysUtils,
   // This
   ByteUtils, PrinterPort, RegExpr, StringUtils, LogFile, FileUtils,
   EscPrinterUtils, CharCode, UserError, StringConst;
@@ -843,7 +843,7 @@ begin
   CheckUserCharCode(ACode);
   Bitmap := TBitmap.Create;
   try
-    FileName := GetModulePath + WideFormat('UserChars\UnicodeChar_%d_%d.bmp', [AFont, Ord(AChar)]);
+    FileName := GetModulePath + Tnt_WideFormat('UserChars\UnicodeChar_%d_%d.bmp', [AFont, Ord(AChar)]);
     Bitmap.LoadFromFile(FileName);
     // Write
     UserChar.c1 := ACode;

@@ -391,7 +391,6 @@ begin
 
   FDriver.Client.TestMode := True;
   FDriver.Client.AnswerJson := ReadFileData(GetModulePath + 'SendReceiptAnswer.txt');
-  FDriver.ReceiptJson := ReadFileData(GetModulePath + 'ReadReceiptAnswer.txt');
   FDriver.Params.VATSeries := 'VATSeries';
   FDriver.Params.VATNumber := 'VATNumber';
 

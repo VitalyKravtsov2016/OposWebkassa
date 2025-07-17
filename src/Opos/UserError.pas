@@ -58,7 +58,7 @@ end;
 
 constructor UserException.CreateFmt(const Msg: WideString; const Args: array of const);
 begin
-  FMessage := WideFormat(Msg, Args);
+  FMessage := Tnt_WideFormat(Msg, Args);
 end;
 
 end.

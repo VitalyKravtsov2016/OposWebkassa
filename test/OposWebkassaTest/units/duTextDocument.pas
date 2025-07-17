@@ -13,7 +13,7 @@ uses
   // Tnt
   TntClasses, TntSysUtils,
   // This
-  TextDocument, PrinterTypes;
+  TextDocument, PrinterTypes, MemoryUtils;
 
 type
   { TTextDocumentTest }
@@ -36,12 +36,14 @@ implementation
 procedure TTextDocumentTest.SetUp;
 begin
   inherited SetUp;
+  MemCheckStart;
   FDocument := TTextDocument.Create;
 end;
 
 procedure TTextDocumentTest.TearDown;
 begin
   FDocument.Free;
+  MemCheckStop;
   inherited TearDown;
 end;
 

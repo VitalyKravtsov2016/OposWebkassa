@@ -6,7 +6,7 @@ uses
   // VCL
   Windows, Classes, SysUtils, Graphics, Math,
   // Tnt
-  TntClasses,
+  TntClasses, TntSysUtils,
   // Opos
   Opos, OposEsc, OposPtr, OposException, OposServiceDevice19, OposEvents,
   OposPOSPrinter_CCO_TLB, UserError, OposPtrUtils, OposUtils,
@@ -2339,7 +2339,7 @@ begin
 
         if FPrinter.CapRead then
         begin
-          FDeviceDescription := WideFormat('%s %s %s %s', [
+          FDeviceDescription := Tnt_WideFormat('%s %s %s %s', [
             FPrinter.ReadManufacturer, FPrinter.ReadPrinterName,
             FPrinter.ReadFirmwareVersion, FPrinter.ReadSerialNumber]);
           StartDeviceThread;

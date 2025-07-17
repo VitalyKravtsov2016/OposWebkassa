@@ -1,0 +1,343 @@
+EurekaLog is installed
+EurekaLog is active
+Compiled with EurekaLog.
+An error has occurred during program execution.
+Please read the following information for further details.
+
+EurekaLog 6.1.01 RC 1
+
+Application:
+-------------------------------------------------------
+  1.1 Start Date      : Thu, 17 Jul 2025 12:56:24 +0300
+  1.2 Name/Description: EurekaLogTest.exe
+  1.3 Version Number  : 
+  1.4 Parameters      : 
+  1.5 Compilation Date: Thu, 17 Jul 2025 12:55:32 +0300
+  1.6 Up Time         : 0 second
+
+Exception:
+-----------------------------------------------------
+  2.1 Date          : Thu, 17 Jul 2025 12:56:24 +0300
+  2.2 Address       : 004702CE
+  2.3 Module Name   : EurekaLogTest.exe
+  2.4 Module Version: 
+  2.5 Type          : Exception
+  2.6 Message       : EurekaLog test.
+  2.7 ID            : 302B
+  2.8 Count         : 1
+  2.9 Status        : New
+  2.10 Note         : 
+
+User:
+-------------------------------------------------------
+  3.1 ID        : Виталий
+  3.2 Name      : Userman
+  3.3 Email     : 
+  3.4 Company   : 
+  3.5 Privileges: SeLockMemoryPrivilege           - OFF
+                  SeIncreaseQuotaPrivilege        - OFF
+                  SeSecurityPrivilege             - OFF
+                  SeTakeOwnershipPrivilege        - OFF
+                  SeLoadDriverPrivilege           - OFF
+                  SeSystemProfilePrivilege        - OFF
+                  SeSystemtimePrivilege           - OFF
+                  SeProfileSingleProcessPrivilege - OFF
+                  SeIncreaseBasePriorityPrivilege - OFF
+                  SeCreatePagefilePrivilege       - OFF
+                  SeBackupPrivilege               - OFF
+                  SeRestorePrivilege              - OFF
+                  SeShutdownPrivilege             - OFF
+                  SeDebugPrivilege                - OFF
+                  SeSystemEnvironmentPrivilege    - OFF
+                  SeChangeNotifyPrivilege         - ON
+                  SeRemoteShutdownPrivilege       - OFF
+                  SeUndockPrivilege               - OFF
+                  SeManageVolumePrivilege         - OFF
+                  SeImpersonatePrivilege          - ON
+                  SeCreateGlobalPrivilege         - ON
+                  SeIncreaseWorkingSetPrivilege   - OFF
+                  SeTimeZonePrivilege             - OFF
+                  SeCreateSymbolicLinkPrivilege   - OFF
+
+Computer:
+-------------------------------------------------------------------------------
+  5.1 Name          : PC1
+  5.2 Total Memory  : 16332 Mb
+  5.3 Free Memory   : 11974 Mb
+  5.4 Total Disk    : 416,97 Gb
+  5.5 Free Disk     : 79,16 Gb
+  5.6 System Up Time: 8 days, 14 hours, 2 minutes, 48 seconds
+  5.7 Processor     : Intel(R) Core(TM) i3-4160 CPU @ 3.60GHz
+  5.8 Display Mode  : 1920 x 1080, 32 bit
+  5.9 Display DPI   : 96
+  5.10 Video Card   : NVIDIA GeForce GT 720 (driver 9.18.13.3292 - RAM 2048 MB)
+  5.11 Printer      : Samsung M2070 Series (driver 3.13.12.05)
+
+Operating System:
+----------------------------------------------
+  6.1 Type    : Microsoft Windows 6.2 (64 bit)
+  6.2 Build # : 9200
+  6.3 Update  : 
+  6.4 Language: Russian
+  6.5 Charset : 204
+
+Network:
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  7.1 IP Address: 000.000.000.000 - 010.020.128.106 - 000.000.000.000 - 000.000.000.000 - 000.000.000.000 - 000.000.000.000 - 000.000.000.000 - 192.168.001.115 - 169.254.098.065 - 192.168.056.001
+  7.2 Submask   : 000.000.000.000 - 255.255.255.252 - 000.000.000.000 - 000.000.000.000 - 000.000.000.000 - 000.000.000.000 - 000.000.000.000 - 255.255.255.000 - 255.255.000.000 - 255.255.255.000
+  7.3 Gateway   : 000.000.000.000 - 000.000.000.000 - 000.000.000.000 - 000.000.000.000 - 000.000.000.000 - 000.000.000.000 - 000.000.000.000 - 192.168.001.001 - 000.000.000.000 - 000.000.000.000
+  7.4 DNS 1     : 000.000.000.000 - 010.020.128.001 - 000.000.000.000 - 000.000.000.000 - 000.000.000.000 - 000.000.000.000 - 000.000.000.000 - 192.168.001.001 - 000.000.000.000 - 000.000.000.000
+  7.5 DNS 2     : 000.000.000.000 - 000.000.000.000 - 000.000.000.000 - 000.000.000.000 - 000.000.000.000 - 000.000.000.000 - 000.000.000.000 - 000.000.000.000 - 000.000.000.000 - 000.000.000.000
+  7.6 DHCP      : OFF             - ON              - ON              - ON              - ON              - ON              - ON              - ON              - OFF             - OFF            
+
+Call Stack Information:
+----------------------------------------------------------------------------
+|Address |Module           |Unit             |Class|Procedure/Method|Line  |
+----------------------------------------------------------------------------
+|*Exception Thread: ID=4832; Priority=0; Class=; [Main]                    |
+|--------------------------------------------------------------------------|
+|004702CE|EurekaLogTest.exe|EurekaLogTest.dpr|     |                |19[10]|
+|750D6A22|KERNEL32.DLL     |                 |     |LoadResource    |      |
+----------------------------------------------------------------------------
+
+Modules Information:
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|Handle  |Name                |Description                                     |Version        |Size    |Modified           |Path                                                                                                          |
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|00400000|EurekaLogTest.exe   |                                                |               |574976  |2025-07-17 12:55:34|d:\IBTS\WebKassa\test\EurekaLogTest                                                                           |
+|6ED30000|wsock32.dll         |Windows Socket 32-Bit DLL                       |6.3.9600.17415 |16384   |2014-11-21 11:14:30|C:\WINDOWS\SYSTEM32                                                                                           |
+|6F120000|apphelp.dll         |Application Compatibility Client Library        |6.3.9600.19841 |642560  |2020-09-10 23:51:30|C:\WINDOWS\system32                                                                                           |
+|6FCA0000|mswsock.dll         |Microsoft Windows Sockets 2.0 Service Provider  |6.3.9600.18340 |286208  |2016-05-14 00:35:18|C:\WINDOWS\SYSTEM32                                                                                           |
+|73550000|version.dll         |Version Checking and File Installation Libraries|6.3.9600.17415 |26304   |2014-11-21 11:14:32|C:\WINDOWS\SYSTEM32                                                                                           |
+|735E0000|comctl32.dll        |Common Controls Library                         |5.82.9600.17810|549888  |2015-04-25 05:33:22|C:\WINDOWS\WinSxS\x86_microsoft.windows.common-controls_6595b64144ccf1df_5.82.9600.17810_none_7c5b6194aa0716f1|
+|75040000|bcryptPrimitives.dll|Windows Cryptographic Primitives Library        |6.3.9600.20517 |342344  |2022-07-26 10:36:44|C:\WINDOWS\SYSTEM32                                                                                           |
+|750A0000|CRYPTBASE.dll       |Base cryptographic API DLL                      |6.3.9600.17415 |30984   |2014-11-21 11:14:26|C:\WINDOWS\SYSTEM32                                                                                           |
+|750C0000|KERNEL32.DLL        |Windows NT BASE API Client DLL                  |6.3.9600.20778 |1044480 |2023-01-06 06:27:34|C:\WINDOWS\SYSTEM32                                                                                           |
+|75210000|MSCTF.dll           |MSCTF Server DLL                                |6.3.9600.19724 |1124800 |2020-05-20 14:45:00|C:\WINDOWS\SYSTEM32                                                                                           |
+|75490000|shell32.dll         |Windows Shell Common Dll                        |6.3.9600.20617 |19794816|2022-09-15 08:43:14|C:\WINDOWS\SYSTEM32                                                                                           |
+|76750000|PSAPI.DLL           |Process Status Helper                           |6.3.9600.17415 |16504   |2014-11-21 11:14:20|C:\WINDOWS\SYSTEM32                                                                                           |
+|767C0000|IMM32.DLL           |Multi-User Windows IMM32 API Client DLL         |6.3.9600.17415 |141312  |2014-11-21 11:13:06|C:\WINDOWS\system32                                                                                           |
+|76890000|KERNELBASE.dll      |Windows NT BASE API Client DLL                  |6.3.9600.20772 |861184  |2022-12-15 09:10:28|C:\WINDOWS\SYSTEM32                                                                                           |
+|769B0000|oleaut32.dll        |                                                |6.3.9600.20016 |614064  |2021-04-15 09:01:02|C:\WINDOWS\SYSTEM32                                                                                           |
+|76BC0000|user32.dll          |Multi-User Windows USER API Client DLL          |6.3.9600.20564 |1377792 |2022-08-09 21:03:06|C:\WINDOWS\SYSTEM32                                                                                           |
+|76D30000|RPCRT4.dll          |Remote Procedure Call Runtime                   |6.3.9600.20778 |749568  |2023-01-06 05:59:00|C:\WINDOWS\SYSTEM32                                                                                           |
+|76FB0000|gdi32.dll           |GDI Client DLL                                  |6.3.9600.20716 |1093632 |2022-11-08 08:38:50|C:\WINDOWS\SYSTEM32                                                                                           |
+|77280000|SHLWAPI.dll         |Shell Light-weight Utility Library              |6.3.9600.20616 |279344  |2022-09-13 08:24:14|C:\WINDOWS\SYSTEM32                                                                                           |
+|772D0000|WS2_32.dll          |Windows Socket 2.0 32-Bit DLL                   |6.3.9600.18340 |320720  |2016-05-14 23:01:28|C:\WINDOWS\SYSTEM32                                                                                           |
+|77320000|advapi32.dll        |Advanced Windows 32 Base API                    |6.3.9600.20618 |515912  |2022-09-17 08:24:50|C:\WINDOWS\SYSTEM32                                                                                           |
+|773A0000|msvcrt.dll          |Windows NT CRT DLL                              |7.0.9600.17415 |800008  |2014-11-21 11:14:56|C:\WINDOWS\SYSTEM32                                                                                           |
+|77470000|SspiCli.dll         |Security Support Provider Interface             |6.3.9600.20616 |104960  |2022-09-13 06:59:58|C:\WINDOWS\SYSTEM32                                                                                           |
+|77490000|sechost.dll         |Host for SCM/SDDL/LSA Lookup APIs               |6.3.9600.20295 |257680  |2022-02-06 08:14:46|C:\WINDOWS\SYSTEM32                                                                                           |
+|774E0000|combase.dll         |Microsoft COM for Windows                       |6.3.9600.20772 |1566008 |2022-12-15 10:04:58|C:\WINDOWS\SYSTEM32                                                                                           |
+|77660000|NSI.dll             |NSI User-mode interface DLL                     |6.3.9600.17415 |20120   |2014-11-21 11:12:46|C:\WINDOWS\SYSTEM32                                                                                           |
+|77870000|ntdll.dll           |NT Layer DLL                                    |6.3.9600.20718 |1502952 |2022-11-12 09:54:18|C:\WINDOWS\SYSTEM32                                                                                           |
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Processes Information:
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|ID   |Name                             |Description                                                     |Version       |Memory|Priority    |Threads|Path                                                         |
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|0    |[System Process]                 |                                                                |              |0     |            |4      |                                                             |
+|4    |System                           |                                                                |              |0     |Normal      |148    |                                                             |
+|80   |fbguard.exe                      |                                                                |              |0     |Normal      |4      |                                                             |
+|428  |smss.exe                         |                                                                |              |0     |Above-Normal|2      |                                                             |
+|516  |svchost.exe                      |Host Process for Windows Services                               |6.3.9600.20300|0     |Normal      |24     |                                                             |
+|604  |svchost.exe                      |Host Process for Windows Services                               |6.3.9600.20300|0     |Normal      |29     |                                                             |
+|616  |csrss.exe                        |                                                                |              |0     |High        |9      |                                                             |
+|696  |wininit.exe                      |                                                                |              |0     |High        |1      |                                                             |
+|800  |services.exe                     |                                                                |              |0     |Normal      |4      |                                                             |
+|808  |lsass.exe                        |                                                                |              |0     |Normal      |6      |                                                             |
+|892  |svchost.exe                      |Host Process for Windows Services                               |6.3.9600.20300|0     |Normal      |17     |                                                             |
+|936  |svchost.exe                      |Host Process for Windows Services                               |6.3.9600.20300|0     |Normal      |8      |                                                             |
+|1020 |nvvsvc.exe                       |                                                                |              |0     |Normal      |2      |                                                             |
+|1032 |svchost.exe                      |Host Process for Windows Services                               |6.3.9600.20300|0     |Normal      |43     |                                                             |
+|1060 |IpOverUsbSvc.exe                 |                                                                |              |0     |Normal      |5      |                                                             |
+|1080 |svchost.exe                      |Host Process for Windows Services                               |6.3.9600.20300|0     |Normal      |18     |                                                             |
+|1196 |DSAUpdateService.exe             |                                                                |              |0     |Normal      |9      |                                                             |
+|1296 |svchost.exe                      |Host Process for Windows Services                               |6.3.9600.20300|0     |Normal      |16     |                                                             |
+|1316 |nssm.exe                         |                                                                |              |0     |Normal      |1      |                                                             |
+|1344 |notepad++.exe                    |Notepad++                                                       |8.8.3.0       |0     |Normal      |2      |C:\Program Files (x86)\Notepad++                             |
+|1416 |vmnat.exe                        |VMware NAT Service                                              |11.0.0.54843  |0     |Normal      |4      |                                                             |
+|1580 |ftusbmon.exe                     |                                                                |              |0     |Normal      |4      |                                                             |
+|1648 |conhost.exe                      |                                                                |              |0     |Normal      |2      |                                                             |
+|1652 |expressvpnd.exe                  |                                                                |              |0     |Normal      |12     |                                                             |
+|1680 |spoolsv.exe                      |                                                                |              |0     |Normal      |15     |                                                             |
+|1700 |FoxitPDFReaderUpdateService.exe  |                                                                |              |0     |Normal      |2      |                                                             |
+|1728 |svchost.exe                      |Host Process for Windows Services                               |6.3.9600.20300|0     |Normal      |22     |                                                             |
+|1848 |svchost.exe                      |Host Process for Windows Services                               |6.3.9600.20300|0     |Normal      |8      |                                                             |
+|1864 |dasHost.exe                      |                                                                |              |0     |Normal      |2      |                                                             |
+|1880 |nssm.exe                         |                                                                |              |0     |Normal      |1      |                                                             |
+|1916 |conhost.exe                      |                                                                |              |0     |Normal      |2      |                                                             |
+|1932 |DSAService.exe                   |                                                                |              |0     |Normal      |15     |                                                             |
+|1968 |proxy-server.exe                 |                                                                |              |0     |Normal      |8      |                                                             |
+|1976 |ss_conn_service.exe              |                                                                |              |0     |Normal      |5      |                                                             |
+|2068 |msedgewebview2.exe               |                                                                |              |0     |Low         |14     |                                                             |
+|2268 |NokiaSuite.exe                   |Nokia Suite                                                     |3.8.54.0      |0     |Normal      |62     |C:\Program Files (x86)\Nokia\Nokia Suite                     |
+|2304 |taskhostex.exe                   |                                                                |              |0     |Below-Normal|6      |                                                             |
+|2308 |GoogleCrashHandler.exe           |                                                                |              |0     |Below-Normal|3      |                                                             |
+|2412 |GoogleCrashHandler64.exe         |                                                                |              |0     |Below-Normal|3      |                                                             |
+|2424 |vsvnhttpsvc.exe                  |VisualSVN HTTP Service                                          |5.0.2.0       |0     |Normal      |1      |                                                             |
+|2452 |NCROdometerStartupService.exe    |Loads and initializes the NCR Persistent Memory dynamic library.|1.0.1.1       |0     |Normal      |3      |                                                             |
+|2520 |OutlineService.exe               |                                                                |              |0     |Normal      |5      |                                                             |
+|2600 |pdf24.exe                        |                                                                |              |0     |Normal      |5      |                                                             |
+|2716 |TGitCache.exe                    |TortoiseGit status cache                                        |2.17.0.0      |0     |Normal      |9      |                                                             |
+|2796 |NCRLoader.exe                    |Loads NCRRetailCommon Library and configured runnable modules   |2.0.0.6329    |0     |Normal      |87     |                                                             |
+|2828 |SACSRV.exe                       |SafeNet Authentication Client Service                           |10.8.259.0    |0     |Normal      |6      |                                                             |
+|2848 |SecUPDUtilSvc.exe                |SecUPDUtil Service                                              |1.0.0.2       |0     |Normal      |2      |                                                             |
+|2892 |sqlwriter.exe                    |                                                                |              |0     |Normal      |2      |                                                             |
+|2932 |ssh-agent.exe                    |                                                                |9.2.2.0       |0     |Normal      |2      |                                                             |
+|2988 |TeamViewer_Service.exe           |                                                                |              |0     |Normal      |21     |                                                             |
+|3052 |sshd.exe                         |                                                                |9.2.2.0       |0     |Normal      |2      |                                                             |
+|3064 |msedgewebview2.exe               |                                                                |              |0     |Normal      |7      |                                                             |
+|3120 |Updater.exe                      |                                                                |              |0     |Normal      |4      |                                                             |
+|3188 |chrome.exe                       |                                                                |              |0     |Low         |15     |                                                             |
+|3208 |chrome.exe                       |                                                                |              |0     |Normal      |7      |                                                             |
+|3232 |vsvnhttpsvc.exe                  |VisualSVN HTTP Service                                          |5.0.2.0       |0     |Normal      |3      |                                                             |
+|3416 |RSMDesktopAgent.exe              |                                                                |              |0     |Normal      |1      |C:\Program Files\NCR\RSM                                     |
+|3484 |conhost.exe                      |                                                                |              |0     |Below-Normal|1      |                                                             |
+|3604 |SearchFilterHost.exe             |Microsoft Windows Search Filter Host                            |7.0.9600.19913|0     |Low         |2      |                                                             |
+|3612 |msedgewebview2.exe               |                                                                |              |0     |Normal      |34     |                                                             |
+|3724 |pdf24.exe                        |                                                                |              |0     |Normal      |7      |                                                             |
+|3768 |SurSvc.exe                       |                                                                |              |0     |Low         |8      |                                                             |
+|3848 |TGitCache.exe                    |TortoiseGit status cache                                        |2.17.0.0      |0     |Normal      |14     |                                                             |
+|3852 |explorer.exe                     |Windows Explorer                                                |6.3.9600.18460|0     |Normal      |48     |                                                             |
+|3876 |ServiceLayer.exe                 |ServiceLayer Module                                             |12.0.109.0    |0     |Normal      |12     |                                                             |
+|3932 |vsvnjobsvc.exe                   |VisualSVN Background Job Service                                |5.0.2.0       |0     |Normal      |2      |                                                             |
+|4012 |msedgewebview2.exe               |                                                                |              |0     |Normal      |10     |                                                             |
+|4092 |svchost.exe                      |Host Process for Windows Services                               |6.3.9600.20300|0     |Normal      |6      |                                                             |
+|4196 |chrome.exe                       |                                                                |              |0     |Low         |14     |                                                             |
+|4236 |ExpressVPNNotificationService.exe|ExpressVPN Notifications                                        |10.43.0.6     |0     |Normal      |20     |C:\Program Files (x86)\ExpressVPN\expressvpn-ui              |
+|4272 |vmware-authd.exe                 |                                                                |              |0     |Normal      |6      |                                                             |
+|4288 |chrome.exe                       |                                                                |              |0     |Low         |15     |                                                             |
+|4432 |vmnetdhcp.exe                    |VMware VMnet DHCP service                                       |11.0.0.54843  |0     |Normal      |2      |                                                             |
+|4460 |vmware-usbarbitrator64.exe       |                                                                |              |0     |Normal      |3      |                                                             |
+|5244 |alg.exe                          |                                                                |              |0     |Normal      |2      |                                                             |
+|5328 |SearchIndexer.exe                |Microsoft Windows Search Indexer                                |7.0.9600.19913|0     |Normal      |11     |                                                             |
+|5372 |chrome.exe                       |                                                                |              |0     |Low         |20     |                                                             |
+|5552 |svchost.exe                      |Host Process for Windows Services                               |6.3.9600.20300|0     |Normal      |15     |                                                             |
+|5600 |fbserver.exe                     |                                                                |              |0     |Normal      |6      |                                                             |
+|5812 |svchost.exe                      |Host Process for Windows Services                               |6.3.9600.20300|0     |Normal      |3      |                                                             |
+|6004 |chrome.exe                       |                                                                |              |0     |Low         |18     |                                                             |
+|6036 |tv_w32.exe                       |                                                                |              |0     |Normal      |2      |                                                             |
+|6140 |msedgewebview2.exe               |                                                                |              |0     |Above-Normal|13     |                                                             |
+|6228 |uTorrent.exe                     |µTorrent                                                        |3.6.0.47196   |0     |Normal      |36     |C:\Users\Виталий\AppData\Roaming\uTorrent                    |
+|6408 |AdobeARM.exe                     |Adobe Reader and Acrobat Manager                                |1.824.45.8876 |0     |Below-Normal|4      |C:\Program Files (x86)\Common Files\Adobe\ARM\1.0            |
+|6412 |chrome.exe                       |                                                                |              |0     |Normal      |8      |                                                             |
+|6500 |taskhostex.exe                   |                                                                |              |0     |Normal      |9      |                                                             |
+|6672 |conhost.exe                      |                                                                |              |0     |Below-Normal|1      |                                                             |
+|6688 |audiodg.exe                      |                                                                |              |0     |Normal      |2      |                                                             |
+|6804 |TeamViewer.exe                   |TeamViewer                                                      |15.55.3.0     |0     |Normal      |13     |C:\Program Files (x86)\TeamViewer                            |
+|6912 |msedgewebview2.exe               |                                                                |              |0     |Normal      |7      |                                                             |
+|7188 |tv_x64.exe                       |                                                                |              |0     |Normal      |2      |                                                             |
+|7320 |TSVNCache.exe                    |TortoiseSVN status cache                                        |1.14.0.28885  |0     |Normal      |15     |                                                             |
+|7564 |chrome.exe                       |                                                                |              |0     |Normal      |30     |                                                             |
+|7616 |chrome.exe                       |                                                                |              |0     |Low         |11     |                                                             |
+|7788 |RuntimeBroker.exe                |                                                                |              |0     |Normal      |2      |                                                             |
+|8056 |nvvsvc.exe                       |                                                                |              |0     |Normal      |4      |                                                             |
+|8228 |chrome.exe                       |                                                                |              |0     |Low         |22     |                                                             |
+|8288 |cmd.exe                          |Windows Command Processor                                       |6.3.9600.17415|0     |Normal      |1      |C:\Windows\SysWOW64                                          |
+|8376 |chrome.exe                       |                                                                |              |0     |Above-Normal|22     |                                                             |
+|8520 |chrome.exe                       |                                                                |              |0     |Normal      |7      |                                                             |
+|8604 |conhost.exe                      |                                                                |              |0     |Normal      |2      |                                                             |
+|8780 |nvxdsync.exe                     |                                                                |              |0     |Normal      |7      |                                                             |
+|8796 |utorrentie.exe                   |WebHelper                                                       |1.0.0.47196   |0     |Normal      |6      |C:\Users\Виталий\AppData\Roaming\uTorrent\updates\3.6.0_47196|
+|8812 |SACMonitor.exe                   |SafeNet Authentication Client                                   |10.8.259.0    |0     |Normal      |6      |                                                             |
+|8920 |xray.exe                         |                                                                |              |0     |Below-Normal|11     |                                                             |
+|8996 |winlogon.exe                     |                                                                |              |0     |High        |2      |                                                             |
+|9004 |csrss.exe                        |                                                                |              |0     |High        |12     |                                                             |
+|9164 |msedgewebview2.exe               |                                                                |              |0     |Low         |13     |                                                             |
+|9556 |RAVCpl64.exe                     |                                                                |              |0     |Normal      |6      |                                                             |
+|9652 |taskhost.exe                     |                                                                |              |0     |Normal      |4      |                                                             |
+|9744 |SkyDrive.exe                     |                                                                |              |0     |Normal      |20     |                                                             |
+|9820 |TSVNCache.exe                    |TortoiseSVN status cache                                        |1.14.0.28885  |0     |Normal      |11     |                                                             |
+|9888 |chrome.exe                       |                                                                |              |0     |Low         |15     |                                                             |
+|10040|EurekaLogTest.exe                |                                                                |              |0     |Normal      |2      |d:\IBTS\WebKassa\test\EurekaLogTest                          |
+|10188|chrome.exe                       |                                                                |              |0     |Low         |19     |                                                             |
+|10196|dwm.exe                          |                                                                |              |0     |High        |7      |                                                             |
+|10368|chrome.exe                       |                                                                |              |0     |Low         |14     |                                                             |
+|10444|WUDFHost.exe                     |                                                                |              |0     |Normal      |6      |                                                             |
+|10988|cmd.exe                          |Windows Command Processor                                       |6.3.9600.17415|0     |Below-Normal|1      |C:\WINDOWS\SysWOW64                                          |
+|11008|SearchProtocolHost.exe           |Microsoft Windows Search Protocol Host                          |7.0.9600.19913|0     |Low         |4      |                                                             |
+|11184|Telegram.exe                     |Telegram Desktop                                                |5.16.4.0      |0     |Normal      |38     |C:\Users\Виталий\AppData\Roaming\Telegram Desktop            |
+|11204|chrome.exe                       |                                                                |              |0     |Normal      |10     |                                                             |
+|11536|crashpad_handler.exe             |                                                                |              |0     |Normal      |6      |C:\Program Files (x86)\TeamViewer                            |
+|11660|chrome.exe                       |                                                                |              |0     |Low         |15     |                                                             |
+|11744|NclMSBTSrvEx.exe                 |Microsoft Bluetooth Media Server                                |12.0.109.0    |0     |High        |3      |C:\Program Files (x86)\PC Connectivity Solution\Transports   |
+|11864|utorrentie.exe                   |WebHelper                                                       |1.0.0.47196   |0     |Normal      |5      |C:\Users\Виталий\AppData\Roaming\uTorrent\updates\3.6.0_47196|
+|11876|TOTALCMD.EXE                     |Total Commander 32 bit                                          |9.0.1.0       |0     |Normal      |12     |C:\Program Files (x86)\totalcmd                              |
+|12008|openvpn.exe                      |                                                                |              |0     |Below-Normal|1      |                                                             |
+|12124|ZoogVPN.exe                      |ZoogVPN                                                         |6.9.1.2       |0     |Below-Normal|17     |C:\Program Files (x86)\ZoogVPN                               |
+|12456|NclUSBSrv64.exe                  |                                                                |              |0     |High        |4      |                                                             |
+|12492|helper.exe                       |µTorrent Helper                                                 |2.1.9.3145    |0     |Below-Normal|12     |C:\Users\Виталий\AppData\Roaming\uTorrent\helper             |
+|12540|crashpad_handler.exe             |                                                                |              |0     |Normal      |6      |C:\Program Files (x86)\TeamViewer                            |
+|12696|conhost.exe                      |                                                                |              |0     |Normal      |4      |                                                             |
+|13044|chrome.exe                       |                                                                |              |0     |Normal      |15     |                                                             |
+|13200|chrome.exe                       |                                                                |              |0     |Normal      |8      |                                                             |
+|13464|SettingSyncHost.exe              |Host Process for Setting Synchronization                        |6.3.9600.18231|0     |Below-Normal|5      |                                                             |
+|13656|delphi32.exe                     |Delphi-32 Development Environment                               |7.0.8.1       |0     |Normal      |4      |C:\Program Files (x86)\Borland\Delphi7\Bin                   |
+|13816|chrome.exe                       |                                                                |              |0     |Low         |14     |                                                             |
+|14124|chrome.exe                       |                                                                |              |0     |Low         |15     |                                                             |
+|14212|msedgewebview2.exe               |                                                                |              |0     |Low         |14     |                                                             |
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Assembler Information:
+-------------------------------------------------------------------------------------
+; EurekaLogTest (Line=13 - Offset=4)
+; ----------------------------------
+0047029F  call    system.__IOTest
+;
+; Line=16 - Offset=7
+; ------------------
+004702A4  mov     eax, dword ptr [$477F2C]
+004702A9  mov     edx, $0047031C                         ; 'Compiled with EurekaLog.'
+004702AE  call    system._Write0LString
+004702B3  call    system._WriteLn
+004702B8  call    system.__IOTest
+;
+; Line=19 - Offset=10
+; -------------------
+004702BD  mov     ecx, $00470340                         ; 'EurekaLog test'
+004702C2  mov     dl, $01
+004702C4  mov     eax, dword ptr [Exception]
+004702C9  call    sysutils.Exception.Create
+004702CE  call    system._RaiseExcept                    ; <-- EXCEPTION
+004702D3  call    system._Halt0
+;
+; EurekaLogTest.EurekaLogTest 
+; ----------------------------
+004702D8  DB      $FF, $FF  //      
+004702DA  DB      $FF, $FF  //      
+004702DC  push    ss
+004702DD  add     [eax], al
+004702DF  add     [ebp+$75], al
+004702E2  jb      EurekaLogTest.EurekaLogTest (Line=19)
+004702E4  imul    esp, [ecx+$4C], $6F
+004702E8  and     [bx+di+$73], ch
+004702EC  and     [ecx+$6E], ch
+
+Registers:
+-----------------------------
+EAX: 01D24004   EDI: 00470248
+EBX: 7FFDE000   ESI: 00470248
+ECX: 00000000   ESP: 0018FF70
+EDX: 004702D3   EIP: 004702CE
+
+Stack:               Memory Dump:
+------------------   ---------------------------------------------------------------------------
+0018FF70: 00007FF9   004702CE: E8 39 40 F9 FF E8 04 45 F9 FF FF FF FF FF 16 00  .9@....E........
+0018FF74: 0018FFCC   004702DE: 00 00 45 75 72 65 6B 61 4C 6F 67 20 69 73 20 69  ..EurekaLog is i
+0018FF78: 00404470   004702EE: 6E 73 74 61 6C 6C 65 64 00 00 FF FF FF FF 13 00  nstalled........
+0018FF7C: 0018FF80   004702FE: 00 00 45 75 72 65 6B 61 4C 6F 67 20 69 73 20 61  ..EurekaLog is a
+0018FF80: 0018FF94   0047030E: 63 74 69 76 65 00 FF FF FF FF 18 00 00 00 43 6F  ctive.........Co
+0018FF84: 750D6A24   0047031E: 6D 70 69 6C 65 64 20 77 69 74 68 20 45 75 72 65  mpiled with Eure
+0018FF88: 7FFDE000   0047032E: 6B 61 4C 6F 67 2E 00 00 00 00 FF FF FF FF 0E 00  kaLog...........
+0018FF8C: 750D6A00   0047033E: 00 00 45 75 72 65 6B 61 4C 6F 67 20 74 65 73 74  ..EurekaLog test
+0018FF90: E431E927   0047034E: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+0018FF94: 0018FFDC   0047035E: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+0018FF98: 778CA9FF   0047036E: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+0018FF9C: 7FFDE000   0047037E: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+0018FFA0: B8405E19   0047038E: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+0018FFA4: 00000000   0047039E: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+0018FFA8: 00000000   004703AE: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+0018FFAC: 7FFDE000   004703BE: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+

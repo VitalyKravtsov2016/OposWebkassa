@@ -6,7 +6,7 @@ uses
   // VCL
   Windows, Classes, SysUtils,
   // Tnt
-  TntClasses, TntRegistry,
+  TntClasses, TntRegistry, TntSysUtils,
   // Json
   uLkJSON,
   // Indy
@@ -1410,6 +1410,8 @@ type
     procedure HTTPHeadersAvailable(Sender: TObject;
       AHeaders: TIdHeaderList; var VContinue: Boolean);
   public
+    TestException: Exception;
+
     constructor Create(ALogger: ILogFile);
     destructor Destroy; override;
 
@@ -1509,7 +1511,7 @@ begin
    else
      Result := 'Неизвестная ошибка';
    end;
-   Result := WideFormat('%d, %s', [Code, Result]);
+   Result := Tnt_WideFormat('%d, %s', [Code, Result]);
 end;
 
 (*
@@ -1594,6 +1596,7 @@ begin
   FDomainNames := TStringList.Create;
   FRegKeyName := 'SHTRIH-M\WebKassa';
   FSendReceiptCommand := TSendReceiptCommand.Create;
+  TestException := nil;
 end;
 
 destructor TWebkassaClient.Destroy;
@@ -1739,6 +1742,8 @@ procedure TWebkassaClient.Connect;
 var
   Command: TAuthCommand;
 begin
+  if FTestMode then Exit;
+
   //CheckSSLLibrary; !!!
   if Token = '' then
   begin
@@ -1780,7 +1785,7 @@ begin
       for i := 0 to FErrorResult.Errors.Count-1 do
       begin
         Item := FErrorResult.Errors[i];
-        Text := Text + WideFormat('%d, %s', [Item.Code, Item.Text]) + #13#10;
+        Text := Text + Tnt_WideFormat('%d, %s', [Item.Code, Item.Text]) + #13#10;
       end;
       RaiseError(-1, Text);
     end;
@@ -1862,6 +1867,9 @@ begin
 
   if FTestMode then
   begin
+    if TestException <> nil then
+      raise TestException;
+
     Result := FAnswerJson;
     if FTestErrorResult <> nil then
     begin

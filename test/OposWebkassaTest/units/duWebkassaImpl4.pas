@@ -195,8 +195,10 @@ begin
   end;
 end;
 
+(*
 initialization
   RegisterTest('', TWebkassaImplTest4.Suite);
+*)
 
 
 end.

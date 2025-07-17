@@ -54,7 +54,6 @@ type
   TWebkassaImpl = class(TDispIntfObject, IFiscalPrinterService_1_12)
   private
     FPort: IPrinterPort;
-    FLines: TTntStrings;
     FCashboxStatus: TlkJSONbase;
     FCashboxStatusAnswerJson: WideString;
     FTestMode: Boolean;
@@ -78,6 +77,9 @@ type
     FPrefix: WideString;
     FCapRecBold: Boolean;
     FCapRecDwideDhigh: Boolean;
+    FCapRecDwide: Boolean;
+    FCapRecDhigh: Boolean;
+
     FExternalCheckNumber: WideString;
     FCodePage: Integer;
     FPageMode: Boolean;
@@ -114,7 +116,6 @@ type
     procedure PrintSalesReceipt(Receipt: TSalesREceipt;
       Command: TSendReceiptCommand);
     function ReadINN: WideString;
-    function ReadCasboxStatusAnswerJson: WideString;
     procedure DisablePosPrinter;
     procedure EnablePosPrinter(ClaimTimeout: Integer);
     function RenderBarcodeStr(var Barcode: TBarcodeRec): AnsiString;
@@ -138,6 +139,7 @@ type
     procedure PrintHeader;
     procedure PrintTrailerGap;
   public
+    function ReadCasboxStatusAnswerJson: WideString;
     procedure PrintDocumentSafe(Document: TTextDocument);
     procedure CheckCanPrint;
     function GetVatRate(ID: Integer): TVatRate;
@@ -281,7 +283,6 @@ type
     FChangeDue: WideString;
     FRemainingFiscalMemory: Integer;
     FUnitsUpdated: Boolean;
-    FReceiptJson: WideString;
     FPtrMapCharacterSet: Boolean;
 
     function DoCloseDevice: Integer;
@@ -412,7 +413,6 @@ type
     property Port: IPrinterPort read FPort write FPort;
     property TestMode: Boolean read FTestMode write FTestMode;
     property OposDevice: TOposServiceDevice19 read FOposDevice;
-    property ReceiptJson: WideString read FReceiptJson write FReceiptJson;
     property LoadParamsEnabled: Boolean read FLoadParamsEnabled write FLoadParamsEnabled;
     property ExternalCheckNumber: WideString read FExternalCheckNumber write FExternalCheckNumber;
   end;
@@ -595,7 +595,6 @@ begin
   FPrinterState := TFiscalPrinterState.Create;
   FPageBuffer := TPageBuffer.Create;
   FClient.RaiseErrors := True;
-  FLines := TTntStringList.Create;
   FLoadParamsEnabled := True;
 end;
 
@@ -604,7 +603,6 @@ begin
   Close;
 
   FPrinter := nil;
-  FLines.Free;
   FClient.Free;
   FParams.Free;
   FDocument.Free;
@@ -869,6 +867,7 @@ begin
     CheckState(FPTR_PS_MONITOR);
 
     AReceipt := CreateReceipt(FFiscalReceiptType);
+
     FReceipt.Free;
     FReceipt := AReceipt;
     FReceipt.BeginFiscalReceipt(PrintHeader);
@@ -1528,6 +1527,7 @@ begin
       FDuplicateReceipt := False;
       FDuplicate.Assign(Document);
     end;
+    Document.Clear;
     ClearCashboxStatus;
 
     SetPrinterState(FPTR_PS_MONITOR);
@@ -2671,9 +2671,9 @@ function TWebkassaImpl.ResetPrinter: Integer;
 begin
   try
     CheckEnabled;
+
     FReceipt.Free;
     FReceipt := TCustomReceipt.Create;
-
     SetPrinterState(FPTR_PS_MONITOR);
     Result := ClearResult;
   except
@@ -3210,6 +3210,9 @@ begin
     ReleaseDevice;
     Printer.Close;
     FOposDevice.Close;
+    FReceipt.Free;
+    FReceipt := TCustomReceipt.Create;
+
     Result := ClearResult;
   except
     on E: Exception do
@@ -3227,6 +3230,9 @@ var
   OPOSError: TOPOSError;
   OPOSException: EOPOSException;
 begin
+  if E is EHeapException then
+    raise E;
+
   if E is EDriverError then
   begin
     OPOSError := HandleDriverError(E as EDriverError);
@@ -3602,7 +3608,7 @@ begin
   begin
     PrintReceipt(Receipt, Command);
   end;
-  PrintDocumentSafe(Document);
+  //PrintDocumentSafe(Document);
 end;
 
 function GetPaperKind(WidthInDots: Integer): Integer;
@@ -3691,6 +3697,9 @@ end;
 
 function TWebkassaImpl.ReadINN: WideString;
 begin
+  Result := '';
+  if TestMode then Exit;
+
   try
     Result := ReadCashboxStatus.Get('Data').Get('Xin').Value;
   except
@@ -3746,7 +3755,6 @@ var
   CapQRCodeInPageMode: Boolean;
 begin
   Document.AddLine('ÁÑÍ/ÁÈÍ: ' + ReadINN);
-
   Document.Addlines(Tnt_WideFormat('ÍÄÑ Ñåðèÿ %s', [Params.VATSeries]),
     Tnt_WideFormat('¹ %s', [Params.VATNumber]));
   Document.AddSeparator;
@@ -3937,7 +3945,13 @@ begin
     TEMPLATE_TYPE_JSON_REQ_FIELD: Result := GetJsonField(Receipt.ReguestJson, Item.Text);
     TEMPLATE_TYPE_JSON_ANS_FIELD: Result := GetJsonField(Receipt.AnswerJson, Item.Text);
     TEMPLATE_TYPE_NEWLINE: Result := CRLF;
-    TEMPLATE_TYPE_CASHBOX_STATE_JSON: Result := GetJsonField(ReadCasboxStatusAnswerJson, Item.Text);
+    TEMPLATE_TYPE_CASHBOX_STATE_JSON:
+    begin
+      if Item.Text = 'Data.Xin' then
+        Result := ReadInn
+      else
+        Result := GetJsonField(ReadCasboxStatusAnswerJson, Item.Text);
+    end;
   else
     Result := '';
   end;
@@ -4276,7 +4290,7 @@ begin
       end;
 
       if Item.FormatText <> '' then
-        Item.Value := WideFormat(Item.FormatText, [Item.Value]);
+        Item.Value := Tnt_WideFormat(Item.FormatText, [Item.Value]);
 
       case Item.Alignment of
         ALIGN_RIGHT:
@@ -4352,6 +4366,8 @@ begin
     CheckCanPrint;
 
     FCapRecBold := Printer.CapRecBold;
+    FCapRecDwide := Printer.CapRecDwide;
+    FCapRecDhigh := Printer.CapRecDhigh;
     FCapRecDwideDhigh := Printer.CapRecDwideDhigh;
 
     FLineChars := Params.RecLineChars;
@@ -4445,6 +4461,14 @@ procedure TWebkassaImpl.PrintDocItemText(Item: TDocItem);
       STYLE_BOLD:
         if FCapRecBold then Result := Result + [lsBold];
 
+      STYLE_DWIDTH:
+        if FCapRecDwide then
+          Result := Result + [lsDoubleWidth];
+
+      STYLE_DHEIGHT:
+        if FCapRecDhigh then
+          Result := Result + [lsDoubleHeight];
+
       STYLE_DWIDTH_HEIGHT:
         if FCapRecDwideDhigh then
           Result := Result + [lsDoubleWidth, lsDoubleHeight];
@@ -4468,6 +4492,7 @@ procedure TWebkassaImpl.PrintDocItemText(Item: TDocItem);
     begin
       if lsDoubleWidth in LineStyles then
         Result := Result + ESC_DoubleWide;
+
       if lsDoubleHeight in LineStyles then
         Result := Result + ESC_DoubleHigh;
     end;

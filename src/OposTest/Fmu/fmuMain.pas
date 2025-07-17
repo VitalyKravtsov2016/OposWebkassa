@@ -64,6 +64,7 @@ end;
 
 procedure TfmMain.btnCloseClick(Sender: TObject);
 begin
+  //raise Exception.Create('Test');
   Close;
 end;
 

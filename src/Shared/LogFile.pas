@@ -6,7 +6,7 @@ uses
   // VCL
   Windows, Classes, SysUtils, SyncObjs, SysConst, Variants, DateUtils, TypInfo,
   // Jcl
-  JclDebug, JclHookExcept,
+  //JclDebug, JclHookExcept,
   // 3'd
   TntClasses, TntStdCtrls, TntRegistry, TntSysUtils,
   // This
@@ -107,7 +107,7 @@ type
     procedure SetDeviceName(const Value: WideString);
     procedure SetTimeStampEnabled(const Value: Boolean);
     procedure GetFileNames(const Mask: WideString; FileNames: TTntStrings);
-    procedure LogException(ExceptObj: TObject; ExceptAddr: Pointer; IsOS: Boolean);
+    //procedure LogException(ExceptObj: TObject; ExceptAddr: Pointer; IsOS: Boolean);
 
     property Opened: Boolean read GetOpened;
   public
@@ -283,19 +283,20 @@ begin
   FSeparator := SDefaultSeparator;
   SetDefaults;
 
-  JclAddExceptNotifier(LogException);
+  //JclAddExceptNotifier(LogException);
 end;
 
 destructor TLogFile.Destroy;
 begin
   ODS('TLogFile.Destroy');
-  JclRemoveExceptNotifier(LogException);
+  //JclRemoveExceptNotifier(LogException);
 
   CloseFile;
   FLock.Free;
   inherited Destroy;
 end;
 
+(*
 procedure TLogFile.LogException(ExceptObj: TObject; ExceptAddr: Pointer; IsOS: Boolean);
 var
   S: WideString;
@@ -303,12 +304,6 @@ var
   Lines2: TStrings;
   Lines: TTntStrings;
   ModInfo: TJclLocationInfo;
-  (*
-  I: Integer;
-  ExceptionHandled: Boolean;
-  HandlerLocation: Pointer;
-  ExceptFrame: TJclExceptFrame;
-  *)
 begin
   //if ExceptObj is UserException then Exit;
 
@@ -334,51 +329,6 @@ begin
        ModInfo.SourceName,
        ModInfo.LineNumber]));
 
-    (*
-    if stExceptFrame in JclStackTrackingOptions then
-    begin
-      Lines.Add('  Except frame-dump:');
-      I := 0;
-      ExceptionHandled := False;
-      while (not ExceptionHandled) and
-        (I < JclLastExceptFrameList.Count) do
-      begin
-        ExceptFrame := JclLastExceptFrameList.Items[I];
-        ExceptionHandled := ExceptFrame.HandlerInfo(ExceptObj, HandlerLocation);
-        if (ExceptFrame.FrameKind = efkFinally) or
-            (ExceptFrame.FrameKind = efkUnknown) or
-            not ExceptionHandled then
-          HandlerLocation := ExceptFrame.CodeLocation;
-        ModInfo := GetLocationInfo(HandlerLocation);
-        TmpS := Format(
-          '    Frame at $%p (type: %s',
-          [ExceptFrame.FrameLocation,
-           GetEnumName(TypeInfo(TExceptFrameKind), Ord(ExceptFrame.FrameKind))]);
-        if ExceptionHandled then
-          TmpS := TmpS + ', handles exception)'
-        else
-          TmpS := TmpS + ')';
-        Lines.Add(TmpS);
-        if ExceptionHandled then
-          Lines.Add(Format(
-            '      Handler at $%p',
-            [HandlerLocation]))
-        else
-          Lines.Add(Format(
-            '      Code at $%p',
-            [HandlerLocation]));
-        Lines.Add(Format(
-          '      Module "%s", Procedure "%s", Unit "%s", Line %d',
-          [ModInfo.UnitName,
-           ModInfo.ProcedureName,
-           ModInfo.SourceName,
-           ModInfo.LineNumber]));
-        Inc(I);
-      end;
-    end;
-    Lines.Add('');
-    *)
-
     JclLastExceptStackList.AddToStrings(Lines2, True, True, True, True);
 
     Lines.AddStrings(Lines2);
@@ -389,6 +339,7 @@ begin
     Lines2.Free;
   end;
 end;
+*)
 
 procedure TLogFile.Lock;
 begin
@@ -885,6 +836,7 @@ begin
   end;
 end;
 
+(*
 initialization
   Include(JclStackTrackingOptions, stStaticModuleList);
   Include(JclStackTrackingOptions, stExceptFrame);
@@ -892,5 +844,6 @@ initialization
 
 finalization
   JclStopExceptionTracking;
+*)
 
 end.

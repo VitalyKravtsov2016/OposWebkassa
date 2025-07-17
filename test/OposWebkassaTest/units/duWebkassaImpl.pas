@@ -1,11 +1,10 @@
-
 unit duWebkassaImpl;
 
 interface
 
 uses
   // VCL
-  Windows, SysUtils, Classes, SyncObjs, Math,
+  Windows, SysUtils, Classes, SyncObjs, Math, ShareMem,
   // DUnit
   TestFramework,
   // Opos
@@ -13,11 +12,13 @@ uses
   OposEvents, OposPtr, RCSEvents, OposEsc,
   // Tnt
   TntClasses, TntSysUtils,
+  // Indy
+  IdException, IdResourceStrings,
   // This
   LogFile, WebkassaImpl, WebkassaClient, MockPosPrinter, FileUtils,
   CustomReceipt, uLkJSON, ReceiptTemplate, SalesReceipt, DirectIOAPI,
   DebugUtils, StringUtils, PrinterTypes, PrinterParameters, VatRate,
-  JsonUtils;
+  JsonUtils, MemoryUtils, TextDocument;
 
 type
   { TWebkassaImplTest }
@@ -89,6 +90,7 @@ type
     procedure TestSetTrailerLines;
     procedure TestReceiptTemplate;
     procedure TestReceiptTemplate3;
+    procedure TestReceiptTemplate5;
     procedure TestGetJsonField;
     procedure TestEncoding;
     procedure TestBarcode;
@@ -100,6 +102,13 @@ type
     procedure TestRecLineChars;
     procedure TestParseJson;
     procedure TestParseJson2;
+    procedure TestReadCashboxStatus;
+    procedure TestReadCasboxStatusAnswerJson;
+
+    procedure TestMemoryLeak;
+    procedure TestMemoryLeak2;
+    procedure TestMemoryLeak3;
+    procedure TestTextDocument;
   end;
 
 implementation
@@ -114,6 +123,9 @@ var
   VatRate: TVatRateRec;
 begin
   inherited SetUp;
+
+  MemCheckStart;
+
   FLines := TStringList.Create;
   FWaitEvent := TEvent.Create(nil, False, False, '');
   FEvents := TOposEvents.Create;
@@ -191,6 +203,7 @@ begin
   FEvents.Free;
   FWaitEvent.Free;
   FLines.Free;
+  MemCheckStop;
   inherited TearDown;
 end;
 
@@ -661,7 +674,6 @@ begin
 
   FDriver.Client.TestMode := True;
   FDriver.Client.AnswerJson := ReadFileData(GetModulePath + 'SendReceiptAnswer.txt');
-  FDriver.ReceiptJson := ReadFileData(GetModulePath + 'ReadReceiptAnswer.txt');
   FDriver.Params.VATSeries := 'VATSeries';
   FDriver.Params.VATNumber := 'VATNumber';
 
@@ -1316,15 +1328,6 @@ const
     '                                          ' + CRLF;
 
 begin
-  Driver.Params.TemplateEnabled := True;
-  Driver.Params.Template.SetDefaults;
-  FDriver.Params.NumHeaderLines := 0;
-  FDriver.Params.NumTrailerLines := 0;
-  FDriver.Params.HeaderText := '';
-  FDriver.Params.TrailerText := '';
-
-  OpenClaimEnable;
-  FDriver.Client.TestMode := True;
   CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
   Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
   FptrCheck(Driver.BeginFiscalReceipt(True));
@@ -1334,9 +1337,30 @@ begin
   FptrCheck(Driver.PrintRecMessage('Оператор: Кассир1'));
   FptrCheck(Driver.PrintRecMessage('Транз.:      16868 '));
   FptrCheck(Driver.EndFiscalReceipt(False));
-
+(*
   FLines.Text := ReceiptText;
   CheckLines;
+*)
+end;
+
+procedure TWebkassaImplTest.TestReceiptTemplate5;
+begin
+  CheckEquals(True, IsMemoryManagerSet, 'IsMemoryManagerSet');
+
+  Driver.Params.TemplateEnabled := True;
+  Driver.Params.Template.SetDefaults;
+  FDriver.Params.NumHeaderLines := 0;
+  FDriver.Params.NumTrailerLines := 0;
+  FDriver.Params.HeaderText := '';
+  FDriver.Params.TrailerText := '';
+
+  OpenClaimEnable;
+  FDriver.Client.TestMode := True;
+
+  //for i := 1 to 100 do
+  begin
+    TestReceiptTemplate4;
+  end;
 end;
 
 procedure TWebkassaImplTest.ShowLines;
@@ -1515,6 +1539,7 @@ begin
   CheckEquals(ExpectedText, JsonText, 'Driver.Client.CommandJson');
 end;
 
+//  <                    ДУБЛИКАТ> but was: <|3C                    ДУБЛИКАТ>
 procedure TWebkassaImplTest.TestPrintDuplicate;
 begin
   OpenClaimEnable;
@@ -1526,6 +1551,7 @@ begin
   FptrCheck(Driver.DirectIO2(DIO_PRINT_RECEIPT_DUPLICATE, 0, '{29FA3A2F-5A60-47E4-872B-6AE8C3893CC7}'));
   CheckEquals(42, FPrinter.Lines.Count, 'Lines.Count.1');
   FLines.LoadFromFile('DuplicateReceipt.txt');
+  FLines[0] := ESC_DoubleHigh + FLines[0];
   CheckLines;
 end;
 
@@ -1575,6 +1601,94 @@ begin
 
   Doc := TlkJSON.ParseText(JsonText);
   Doc.Free;
+end;
+
+procedure TWebkassaImplTest.TestReadCashboxStatus;
+begin
+  OpenClaimEnable;
+  try
+    Driver.Client.TestException := EIdConnClosedGracefully.Create(RSConnectionClosedGracefully);
+    Driver.ReadCashboxStatus;
+    Fail('No exception');
+  except
+    on E: EIdConnClosedGracefully do;
+  end;
+end;
+
+//
+
+procedure TWebkassaImplTest.TestReadCasboxStatusAnswerJson;
+begin
+  OpenClaimEnable;
+  Driver.TestMode := True;
+  Driver.Client.TestException := EIdConnClosedGracefully.Create(RSConnectionClosedGracefully);
+  CheckEquals('', Driver.ReadCasboxStatusAnswerJson, 'ReadCasboxStatusAnswerJson');
+end;
+
+procedure TWebkassaImplTest.TestMemoryLeak;
+begin
+  //Driver.Params.TemplateEnabled := True;
+  OpenClaimEnable;
+  Driver.Close;
+
+  OpenClaimEnable;
+  CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+  FptrCheck(Driver.PrintRecItem('ТРК 1:АИ-92-К4/К5', 1353, 6700, 4, 202, 'л'));
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка 10', 10, 1));
+  FptrCheck(Driver.PrintRecTotal(1343, 2000, '0'));
+  FptrCheck(Driver.PrintRecMessage('Оператор: Кассир1'));
+  FptrCheck(Driver.PrintRecMessage('Транз.:      16868 '));
+  FptrCheck(Driver.EndFiscalReceipt(False));
+  Driver.Close;
+end;
+
+procedure TWebkassaImplTest.TestTextDocument;
+var
+  Document: TTextDocument;
+begin
+  //MemCheckStart;
+  Document := TTextDocument.Create;
+  Document.Add('zkxchkzjxch', 0);
+  Document.Clear;
+  Document.Free;
+  //MemCheckStop;
+end;
+
+procedure TWebkassaImplTest.TestMemoryLeak2;
+begin
+  Driver.Params.TemplateEnabled := True;
+  OpenClaimEnable;
+  Driver.Client.AnswerJson := ReadFileData(GetModulePath + 'FiscalReceipt3.json');
+
+  CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+  FptrCheck(Driver.PrintRecItem('ТРК 1:АИ-92-К4/К5', 1353, 6700, 4, 202, 'л'));
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка 10', 10, 1));
+  FptrCheck(Driver.PrintRecTotal(1343, 2000, '0'));
+  FptrCheck(Driver.PrintRecMessage('Оператор: Кассир1'));
+  FptrCheck(Driver.PrintRecMessage('Транз.:      16868 '));
+  FptrCheck(Driver.EndFiscalReceipt(False));
+  Driver.Close;
+end;
+
+procedure TWebkassaImplTest.TestMemoryLeak3;
+var
+  ResponseJson: string;
+  Command: TSendReceiptCommand;
+begin
+  Command := TSendReceiptCommand.Create;
+  try
+    ResponseJson := ReadFileData(GetModulePath + 'FiscalReceipt3.json');
+    JsonToObject(ResponseJson, Command);
+
+    CheckEquals(74, Command.Data.CheckOrderNumber, 'Command.Data.CheckOrderNumber');
+    CheckEquals(406, Command.Data.ShiftNumber, 'Command.Data.ShiftNumber');
+ finally
+    Command.Free;
+  end;
 end;
 
 initialization

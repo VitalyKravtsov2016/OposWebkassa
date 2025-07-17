@@ -274,7 +274,7 @@ begin
     if GetLastError = ERROR_ACCESS_DENIED then
       raise EUsbPortError.Create('Port is opened by another application');
 
-    ErrorMessage := WideFormat('CreateFile ERROR: 0x%.8x, %s', [
+    ErrorMessage := Tnt_WideFormat('CreateFile ERROR: 0x%.8x, %s', [
       GetLastError, SysErrorMessage(GetLastError)]);
     FLogger.Error(ErrorMessage);
     raise EUsbPortError.Create('Failed open port, ' + ErrorMessage);
