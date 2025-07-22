@@ -15,7 +15,7 @@ BEGIN
       VALUE "FileDescription", "WebKassa OPOS fiscal printer service\0"
       VALUE "FileVersion", "${version}\0"
       VALUE "InternalName", "WebKassa OPOS fiscal printer driver\0"
-      VALUE "LegalCopyright", "SHTRIH-M \251 2022 \0"
+      VALUE "LegalCopyright", "SHTRIH-M \251 2025 \0"
       VALUE "OriginalFilename", "OposWebkassa.dll\0"
       VALUE "ProductName", "OPOS drivers\0"
       VALUE "ProductVersion","${version2}\0"

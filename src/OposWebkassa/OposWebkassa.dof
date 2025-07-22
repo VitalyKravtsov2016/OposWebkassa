@@ -118,11 +118,11 @@ ProjectLang=$00000409
 RootDir=
 [Version Info]
 IncludeVerInfo=1
-AutoIncBuild=1
+AutoIncBuild=0
 MajorVer=1
 MinorVer=13
 Release=0
-Build=129
+Build=122
 Debug=0
 PreRelease=0
 Special=0
@@ -133,9 +133,9 @@ CodePage=1252
 [Version Info Keys]
 CompanyName=SHTRIH-M
 FileDescription=WebKassa OPOS fiscal printer service
-FileVersion=1.13.0.129
+FileVersion=1.13.0.122
 InternalName=WebKassa OPOS fiscal printer driver
-LegalCopyright=SHTRIH-M © 2022
+LegalCopyright=SHTRIH-M © 2025
 LegalTrademarks=
 OriginalFilename=OposWebkassa.dll
 ProductName=OPOS drivers

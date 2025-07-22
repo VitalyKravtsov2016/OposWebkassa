@@ -3891,8 +3891,8 @@ end;
 function TWebkassaImpl.GetJsonField(JsonText: WideString;
   const FieldName: WideString): Variant;
 var
+  S: string;
   P: Integer;
-  S: WideString;
   Doc: TlkJSONbase;
   Root: TlkJSONbase;
   Field: WideString;
@@ -3909,7 +3909,7 @@ begin
       S := FieldName;
       Result := '';
       repeat
-        P := WideTextPos('.', S);
+        P := Pos('.', S);
         if P <> 0 then
         begin
           Field := Copy(S, 1, P-1);

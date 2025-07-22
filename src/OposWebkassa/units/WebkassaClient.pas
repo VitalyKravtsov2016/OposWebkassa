@@ -2590,11 +2590,12 @@ begin
   if Source is TCashboxParameters then
   begin
     Src := Source as TCashboxParameters;
-    FUniqueNumber := Src.FUniqueNumber;
-    FRegistrationNumber := Src.FRegistrationNumber;
-    FIdentityNumber := Src.FIdentityNumber;
-    FAddress := Src.FAddress;
-    FOfd.Assign(Src.Ofd);
+
+    UniqueNumber := Src.FUniqueNumber;
+    RegistrationNumber := Src.FRegistrationNumber;
+    IdentityNumber := Src.FIdentityNumber;
+    Address := Src.FAddress;
+    Ofd := Src.Ofd;
   end;
 end;
 
@@ -3272,7 +3273,7 @@ begin
   begin
     Src := Source as TSendReceiptCommandResponse;
 
-		Cashbox.Assign(Src.Cashbox);
+		Cashbox := Src.Cashbox;
 		CheckNumber := Src.CheckNumber;
 		DateTime := Src.DateTime;
 		OfflineMode := Src.OfflineMode;
@@ -3282,6 +3283,7 @@ begin
 		EmployeeName := Src.EmployeeName;
 		TicketUrl := Src.TicketUrl;
 		TicketPrintUrl := Src.TicketPrintUrl;
+    Organization := Src.Organization;
   end;
 end;
 
@@ -3566,6 +3568,7 @@ begin
   if Source is TOrganization then
   begin
     Src := Source as TOrganization;
+
     FTaxPayerIN := Src.TaxPayerIN;
     FTaxPayerName := Src.TaxPayerName;
   end;

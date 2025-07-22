@@ -15,7 +15,7 @@ BEGIN
       VALUE "FileDescription", "OPOS test utility\0"
       VALUE "FileVersion", "${version}\0"
       VALUE "InternalName", "OPOS test\0"
-      VALUE "LegalCopyright", "SHTRIH-M \251 2013 \0"
+      VALUE "LegalCopyright", "SHTRIH-M \251 2025 \0"
       VALUE "OriginalFilename", "OposTest.exe\0"
       VALUE "ProductName", "OPOS drivers\0"
       VALUE "ProductVersion","${version2}\0"

@@ -15,7 +15,7 @@ BEGIN
       VALUE "FileDescription", "WebKassa OPOS setup utility\0"
       VALUE "FileVersion", "${version}\0"
       VALUE "InternalName", "WebKassa OPOS setup \0"
-      VALUE "LegalCopyright", "SHTRIH-M \251 2013 \0"
+      VALUE "LegalCopyright", "SHTRIH-M \251 2025 \0"
       VALUE "OriginalFilename", "OposConfig.exe\0"
       VALUE "ProductName", "WebKassa OPOS driver\0"
       VALUE "ProductVersion","${version2}\0"
