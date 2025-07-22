@@ -3608,7 +3608,7 @@ begin
   begin
     PrintReceipt(Receipt, Command);
   end;
-  //PrintDocumentSafe(Document);
+  PrintDocumentSafe(Document);
 end;
 
 function GetPaperKind(WidthInDots: Integer): Integer;
