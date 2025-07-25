@@ -4,6 +4,7 @@ program OposWebkassaTest;
 
 uses
   FastMM4,
+  ExceptionLog,
   SysUtils,
   TestFramework,
   GUITestRunner,

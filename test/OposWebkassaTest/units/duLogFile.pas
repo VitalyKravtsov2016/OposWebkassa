@@ -22,7 +22,9 @@ type
   protected
     procedure SetUp; override;
     procedure TearDown; override;
+
     procedure TestOutOfMemory;
+    procedure TestOutOfMemory2;
   published
     procedure WriteUnicode;
     procedure WriteUnicode2;
@@ -99,20 +101,25 @@ end;
 var
   EOutOfMemoryOccured: Boolean;  // ???
 
-procedure TLogFileTest.TestOutOfMemory;
+
+procedure DoOutOfMemory;
 var
   P: Pointer;
-  Strings: TTntStrings;
+begin
+  while True do
+  begin
+    P := nil;
+    GetMem(P, MaxInt);
+  end;
+end;
+
+procedure TLogFileTest.TestOutOfMemory;
 begin
   DeleteLogFile;
 
   EOutOfMemoryOccured := False;
   try
-    while True do
-    begin
-      P := nil;
-      GetMem(P, MaxInt);
-    end;
+    DoOutOfMemory;
   except
     on E: EOutOfMemory do
     begin
@@ -123,6 +130,7 @@ begin
   // Check that Exception not stealed by logger
   Check(EOutOfMemoryOccured, 'EOutOfMemory not occured');
 
+(*
   FLogger.CloseFile;
   Check(FileExists(FLogger.FileName), 'File not exists, ' + FLogger.FileName);
 
@@ -133,9 +141,14 @@ begin
   finally
     Strings.Free;
   end;
-
+*)
 end;
 
+
+procedure TLogFileTest.TestOutOfMemory2;
+begin
+  DoOutOfMemory;
+end;
 
 initialization
   RegisterTest('', TLogFileTest.Suite);

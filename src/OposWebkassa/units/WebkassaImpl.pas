@@ -3230,9 +3230,6 @@ var
   OPOSError: TOPOSError;
   OPOSException: EOPOSException;
 begin
-  if E is EHeapException then
-    raise E;
-
   if E is EDriverError then
   begin
     OPOSError := HandleDriverError(E as EDriverError);
