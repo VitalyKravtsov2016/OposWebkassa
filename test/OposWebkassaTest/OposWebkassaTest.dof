@@ -96,7 +96,7 @@ PackageDLLOutputDir=
 PackageDCPOutputDir=
 SearchPath=$(DELPHI)\Lib\Debug;C:\PROGRA~2\Borland\Delphi7\Comp\jcl\lib\d7\debug
 Packages=vcl;rtl;vclx;dbrtl;Ean7;qrpt;bdertl;vcldb;EanRave7;Rave50VCL;Ean7Editors;VclSmp;RxCtl7;TntUnicodeVcl_R70;RxDB7;RxBDE7;Jcl;CnPack_D7;adortl;AdvOfficePagerPkgd7;JclVcl;JvCoreD7R;JvSystemD7R;JvStdCtrlsD7R;JvAppFrmD7R;JvBandsD7R;JvCmpD7R;JvCryptD7R;JvCtrlsD7R;JvCustomD7R;JvDlgsD7R;JvDockingD7R;JvDotNetCtrlsD7R;JvEDID7R;JvGlobusD7R;JvHMID7R;JvInterpreterD7R;JvJansD7R;JvManagedThreadsD7R;JvMMD7R;JvNetD7R;JvPageCompsD7R;JvPluginD7R;JvPrintPreviewD7R;JvRuntimeDesignD7R;JvTimeFrameworkD7R;JvValidatorsD7R;tdbf_d7d;tdbf_d7r;RaizeComponentsVcl;RaizeComponentsVclDb;PNG_D7;PngComponentsD7;indy;vcldbx;teeui;teedb;tee;JvDBD7R;JvBDED7R;JvWizardD7R;JvXPCtrlsD7R;vclactnband;visualclx;visualdbclx;dsnap;dsnapcon;dbexpress;dss;inet;xmlrtl;vclie;inetdbbde;inetdbxpress;webdsnap;soaprtl;dbxcds;websnap;ibxpress;IntrawebDB_50_70;Intraweb_50_70;TIE_http_https;vclshlctrls;Rave50CLX;GmXml_D7;inetdb;IndyCore70;IndySystem70;IndyProtocols70
-Conditionals=DEBUG;EUREKALOG;EUREKALOG_VER6
+Conditionals=DEBUG;
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
@@ -135,16 +135,15 @@ ProductName=
 ProductVersion=1.0.0.0
 Comments=
 [HistoryLists\hlConditionals]
-Count=2
-Item0=DEBUG;EUREKALOG;EUREKALOG_VER6
-Item1=DEBUG
+Count=1
+Item0=DEBUG
 [HistoryLists\hlUnitAliases]
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
 Count=4
-Item0=$(DELPHI)\Lib\Debug;C:\PROGRA~2\Borland\Delphi7\Comp\jcl\lib\d7\debug;c:\PROGRA~2\Borland\Delphi7\Comp\jcl\lib\d7\debug;$(DELPHI)\Comp\jvcl\lib\D7\debug
-Item1=$(DELPHI)\Lib\Debug;C:\PROGRA~2\Borland\Delphi7\Comp\jcl\lib\d7\debug
+Item0=$(DELPHI)\Lib\Debug;C:\PROGRA~2\Borland\Delphi7\Comp\jcl\lib\d7\debug
+Item1=$(DELPHI)\Lib\Debug;C:\PROGRA~2\Borland\Delphi7\Comp\jcl\lib\d7\debug;c:\PROGRA~2\Borland\Delphi7\Comp\jcl\lib\d7\debug;$(DELPHI)\Comp\jvcl\lib\D7\debug
 Item2=Barcode
 Item3=c:\PROGRA~2\Borland\Delphi7\Comp\jcl\lib\d7\debug;$(DELPHI)\Comp\jvcl\lib\D7\debug
 [HistoryLists\hlUnitOutputDirectory]
@@ -153,12 +152,12 @@ Item0=DCU
 Item1=..\..\DCU
 [HistoryLists\hlOutputDirectorry]
 Count=2
-Item0=..\Bin
-Item1=Bin
+Item0=Bin
+Item1=..\Bin
 [Exception Log]
 EurekaLog Version=6101
-Activate=1
-Activate Handle=1
+Activate=0
+Activate Handle=0
 Save Log File=1
 Foreground Tab=0
 Freeze Activate=0
@@ -218,7 +217,7 @@ ZipPassword=
 PreBuildEvent=
 PostSuccessfulBuildEvent=
 PostFailureBuildEvent=
-ExceptionDialogType=3
+ExceptionDialogType=0
 Count=0
 EMail Message Line Count=0
 loNoDuplicateErrors=0

@@ -144,12 +144,11 @@ var
   Root: IXmlNode;
   Doc: IXmlDocument;
 begin
+  Clear;
   Logger.Debug('TReceiptTemplate.LoadFromFile, ' + FileName);
   try
-    if not FileExists(FileName) then
-      raise UserException.Create('File not found, ' + FileName);
+    if not FileExists(FileName) then Exit;
 
-    Clear;
     Doc := LoadXMLDocument(FileName);
     Root := Doc.DocumentElement;
     LoadItems(Root.ChildNodes.FindNode('Header'), Header);
