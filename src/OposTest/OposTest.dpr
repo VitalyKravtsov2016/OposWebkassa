@@ -92,7 +92,10 @@ uses
   ReceiptTemplate in '..\Shared\ReceiptTemplate.pas',
   xmlParser in '..\Shared\XMLParser.pas',
   PrinterTypes in '..\Shared\PrinterTypes.pas',
-  fmuFptrSetPosID in 'Fmu\fmuFptrSetPosID.pas' {fmFptrSetPosId};
+  fmuFptrSetPosID in 'Fmu\fmuFptrSetPosID.pas' {fmFptrSetPosId},
+  fmuFptrDirectIO in 'Fmu\fmuFptrDirectIO.pas' {fmFptrDirectIO},
+  DirectIOAPI in '..\OposWebkassa\units\DirectIOAPI.pas',
+  DIODescription in 'Units\DIODescription.pas';
 
 {$R *.RES}
 {$R WindowsXP.RES}

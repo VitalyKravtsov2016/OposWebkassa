@@ -1488,6 +1488,7 @@ begin
       DIO_PRINT_TEST_RECEIPT: pString := DioPrintTestReceipt;
       DIO_READ_PRINTER_LIST: pString := DioReadPrinterList;
       DIO_READ_FONT_LIST: pString := DioReadFontList;
+      DIO_DO_OUTOFMEMORY: raise EOutOfMemory.Create('Out of memory');
     else
       if Receipt.IsOpened then
       begin

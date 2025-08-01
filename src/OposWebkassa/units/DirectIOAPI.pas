@@ -125,6 +125,7 @@ const
   DIO_READ_PRINTER_PARAMS         = 106;
   DIO_READ_PRINTER_LIST           = 107;
   DIO_READ_FONT_LIST              = 108;
+  DIO_DO_OUTOFMEMORY              = 109;
 
 
   DIO_PRINT_TEXT2                = 1000;  // print text

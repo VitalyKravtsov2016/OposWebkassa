@@ -20,7 +20,7 @@ const
   CRLF = #13#10;
   DIO_CUSTOM_COMMAND = $FFFF;
 
-  DIODescriptions: array[1..51] of TDirectIODescription = (
+  DIODescriptions: array[1..52] of TDirectIODescription = (
 
     (Command: DIO_CUSTOM_COMMAND;
      Description: 'Custom command';
@@ -649,6 +649,12 @@ const
 
     (Command: DIO_STLV_WRITE_OP;
      Description: 'Write STLV value for operation';
+     DescriptionEx:
+       'Data: not used' + CRLF +
+       'String: not used';),
+
+    (Command: DIO_DO_OUTOFMEMORY;
+     Description: 'Create EOutOfMemory exception';
      DescriptionEx:
        'Data: not used' + CRLF +
        'String: not used';)

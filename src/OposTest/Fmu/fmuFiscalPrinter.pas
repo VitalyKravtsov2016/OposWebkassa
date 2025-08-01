@@ -23,7 +23,7 @@ uses
   fmuFptrWritableProperties, fmuFptrSetHeadertrailer, fmuFptrSetPosID,
   fmuFptrTraining, fmuPrintRecVoidItem,
   fmuPrintRecItemRefund, fmuPrintRecItemRefundVoid,
-  fmuFptrStatistics, fmuFptrEvents, fmuFptrTest, fmuFptrTest2,
+  fmuFptrStatistics, fmuFptrEvents, fmuFptrTest, fmuFptrTest2, fmuFptrDirectIO,
   DebugUtils, TntExtCtrls;
 
 type
@@ -160,6 +160,7 @@ begin
   AddPage(TfmFptrGetData);
   AddPage(TfmFptrSetHeaderTrailer);
   AddPage(TfmFptrAddHeaderTrailer);
+  AddPage(TfmFptrDirectIO);
   // Driver tests
   AddPage(TfmFptrStatistics);
   AddPage(TfmFptrTest);
