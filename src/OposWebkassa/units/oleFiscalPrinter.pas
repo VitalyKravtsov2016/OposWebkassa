@@ -8,8 +8,7 @@ uses
   // Opos
   OposFptrUtils,
   // This
-  OPOSWebkassaLib_TLB, WebkassaImpl, LogFile,
-  WebkassaClient, PrinterParameters;
+  OPOSWebkassaLib_TLB, WebkassaImpl, LogFile, WebkassaClient, PrinterParameters;
 
 type
   { ToleFiscalPrinter }

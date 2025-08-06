@@ -24,7 +24,7 @@ type
   protected
     procedure SetUp; override;
     procedure TearDown; override;
-  published
+  //published
     procedure TestAdd;
     procedure TestAddItem;
   end;

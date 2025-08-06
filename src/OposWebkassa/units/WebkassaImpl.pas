@@ -6,6 +6,8 @@ uses
   // VCL
   Classes, SysUtils, Windows, DateUtils, ActiveX, ComObj, Math, Graphics,
   Printers,
+  // EurekaLog
+  ExceptionLog, ECore, ETypes,
   // Tnt
   TntSysUtils, TntClasses,
   // Opos
@@ -2032,6 +2034,9 @@ end;
 function TWebkassaImpl.Open(const DeviceClass, DeviceName: WideString;
   const pDispatch: IDispatch): Integer;
 begin
+  CurrentEurekaLogOptions.ExceptionDialogType := edtNone;
+  CurrentEurekaLogOptions.ExceptionDialogOptions := [];
+
   Result := DoOpen(DeviceClass, DeviceName, pDispatch);
 end;
 
