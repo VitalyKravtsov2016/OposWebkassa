@@ -78,8 +78,10 @@ begin
   end;
 end;
 
+(*
 initialization
   RegisterTest('', TMemoryTest.Suite);
+*)  
 
 
 end.

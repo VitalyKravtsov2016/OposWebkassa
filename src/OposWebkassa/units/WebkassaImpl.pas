@@ -581,6 +581,20 @@ begin
   Result := WideTextPos(IntToStr(CharacterSet), CharacterSetList) <> 0;
 end;
 
+procedure SetEurekaLogOptions;
+begin
+(*
+  CurrentEurekaLogOptions.SetToDefaultOptions;
+  CurrentEurekaLogOptions.ExceptionsFilters.Clear;
+  CurrentEurekaLogOptions.SaveLogFile := True;
+  CurrentEurekaLogOptions.ExceptionDialogType := edtNone;
+  CurrentEurekaLogOptions.ExceptionDialogOptions := [];
+  CurrentEurekaLogOptions.BehaviourOptions :=
+    CurrentEurekaLogOptions.BehaviourOptions + [boCatchHandledExceptions];
+  CurrentEurekaLogOptions.Active := True;
+*)  
+end;
+
 { TWebkassaImpl }
 
 constructor TWebkassaImpl.Create;
@@ -864,6 +878,7 @@ function TWebkassaImpl.BeginFiscalReceipt(PrintHeader: WordBool): Integer;
 var
   AReceipt: TCustomReceipt;
 begin
+  SetEurekaLogOptions;
   try
     CheckEnabled;
     CheckState(FPTR_PS_MONITOR);
@@ -2034,9 +2049,7 @@ end;
 function TWebkassaImpl.Open(const DeviceClass, DeviceName: WideString;
   const pDispatch: IDispatch): Integer;
 begin
-  CurrentEurekaLogOptions.ExceptionDialogType := edtNone;
-  CurrentEurekaLogOptions.ExceptionDialogOptions := [];
-
+  SetEurekaLogOptions;
   Result := DoOpen(DeviceClass, DeviceName, pDispatch);
 end;
 
