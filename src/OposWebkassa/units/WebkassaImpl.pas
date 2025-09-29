@@ -87,6 +87,12 @@ type
     FPageMode: Boolean;
     FPrintArea: TPageArea;
 
+    FReceiptNumber: WideString;
+    FReceiptDateTime: WideString;
+    FRegistrationNumber: WideString;
+    FReceiptTotal: Currency;
+    FReceiptIsOffline: Boolean;
+
     procedure PrintLine(Text: WideString);
     function GetReceiptItemText(ReceiptItem: TSalesReceiptItem;
       Item: TTemplateItem): WideString;
@@ -117,6 +123,8 @@ type
     function DioPrintTestReceipt: WideString;
     procedure PrintSalesReceipt(Receipt: TSalesREceipt;
       Command: TSendReceiptCommand);
+    procedure PrintRefundSalesReceipt(Receipt: TSalesREceipt;
+      Command: TSendRefundReceiptCommand);
     function ReadINN: WideString;
     procedure DisablePosPrinter;
     procedure EnablePosPrinter(ClaimTimeout: Integer);
@@ -140,6 +148,10 @@ type
     procedure CutPaperOnWindowsPrinter;
     procedure PrintHeader;
     procedure PrintTrailerGap;
+    procedure SetReceiptRequestParams(Request: TSendReceiptCommandRequest;
+      Receipt: TSalesReceipt);
+    procedure PrintRefundReceipt(Receipt: TSalesReceipt);
+    procedure PrintSalesReceipt2(Receipt: TSalesReceipt);
   public
     function ReadCasboxStatusAnswerJson: WideString;
     procedure PrintDocumentSafe(Document: TTextDocument);
@@ -175,7 +187,9 @@ type
     procedure Print(Receipt: TCashInReceipt); overload;
     procedure Print(Receipt: TCashOutReceipt); overload;
     procedure Print(Receipt: TSalesReceipt); overload;
-    procedure PrintReceipt(Receipt: TSalesReceipt; Command: TSendReceiptCommand);
+    procedure PrintReceipt(Receipt: TSalesReceipt;
+      Request: TSendReceiptCommandRequest;
+      Data: TSendReceiptCommandResponse);
     function GetPrinterState: Integer;
     function DoRelease: Integer;
     procedure UpdateUnits;
@@ -1383,6 +1397,12 @@ begin
         ExternalCheckNumber := pString;
     end;
     DriverParameterFiscalSign: Receipt.FiscalSign := pString;
+
+    DriverParameterReceiptNumber: FReceiptNumber := pString;
+    DriverParameterReceiptDateTime: FReceiptDateTime := pString;
+    DriverParameterRegistrationNumber: FRegistrationNumber := pString;
+    DriverParameterReceiptTotal: FReceiptTotal := StrToCurr(pString);
+    DriverParameterReceiptIsOffline: FReceiptIsOffline := StrToBool(pString);
   end;
 end;
 
@@ -1394,6 +1414,12 @@ begin
     DriverParameterBarcode: pString := Receipt.Barcode;
     DriverParameterExternalCheckNumber: pString := ExternalCheckNumber;
     DriverParameterFiscalSign: pString := Receipt.FiscalSign;
+
+    DriverParameterReceiptNumber: pString := FReceiptNumber;
+    DriverParameterReceiptDateTime: pString := FReceiptDateTime;
+    DriverParameterRegistrationNumber: pString := FRegistrationNumber;
+    DriverParameterReceiptTotal: pString := CurrToStr(FReceiptTotal);
+    DriverParameterReceiptIsOffline: pString := BoolToStr(FReceiptIsOffline);
   end;
 end;
 
@@ -3476,6 +3502,70 @@ begin
 end;
 
 procedure TWebkassaImpl.Print(Receipt: TSalesReceipt);
+begin
+  if Receipt.RecType in [rtRetBuy, rtRetSell] then
+  begin
+    PrintRefundReceipt(Receipt)
+  end else
+  begin
+    PrintSalesReceipt2(Receipt);
+  end;
+end;
+
+procedure TWebkassaImpl.PrintSalesReceipt2(Receipt: TSalesReceipt);
+var
+  Command: TSendReceiptCommand;
+begin
+  Command := TSendReceiptCommand.Create;
+  try
+    SetReceiptRequestParams(Command.Request, Receipt);
+    FClient.SendReceipt(Command);
+
+    Params.CheckNumber := Command.Data.CheckNumber;
+    Params.ShiftNumber := Command.Data.ShiftNumber;
+    SaveUsrParams;
+
+    FReceiptNumber := Command.Data.CheckNumber;
+    FReceiptDateTime := Command.Data.DateTime;
+    FRegistrationNumber := Command.Data.Cashbox.RegistrationNumber;
+    FReceiptTotal := Receipt.GetTotal;
+    FReceiptIsOffline := Command.Data.OfflineMode;
+
+    PrintSalesReceipt(Receipt, Command);
+  finally
+    Command.Free;
+  end;
+end;
+
+procedure TWebkassaImpl.PrintRefundReceipt(Receipt: TSalesReceipt);
+var
+  Details: TReturnDetails;
+  Command: TSendRefundReceiptCommand;
+begin
+  Command := TSendRefundReceiptCommand.Create;
+  try
+    SetReceiptRequestParams(Command.Request, Receipt);
+    Details := Command.Request.ReturnBasisDetails;
+
+		Details.CheckNumber := Params.CheckNumber;
+		Details.DateTime := FReceiptDateTime;
+    Details.RegistrationNumber := FRegistrationNumber;
+    Details.Total := FReceiptTotal;
+    Details.IsOffline := FReceiptIsOffline;
+
+    FClient.SendRefundReceipt(Command);
+    Params.CheckNumber := Command.Data.CheckNumber;
+    Params.ShiftNumber := Command.Data.ShiftNumber;
+    SaveUsrParams;
+
+    PrintRefundSalesReceipt(Receipt, Command);
+  finally
+    Command.Free;
+  end;
+end;
+
+procedure TWebkassaImpl.SetReceiptRequestParams(
+  Request: TSendReceiptCommandRequest; Receipt: TSalesReceipt);
 
   function RecTypeToOperationType(RecType: TRecType): Integer;
   begin
@@ -3498,112 +3588,100 @@ var
   ReceiptItem: TReceiptItem;
   Position: TTicketItem;
   Modifier: TTicketModifier;
-  Command: TSendReceiptCommand;
 begin
-  Command := TSendReceiptCommand.Create;
-  try
-    Command.Request.Token := FClient.Token;
-    Command.Request.CashboxUniqueNumber := Params.CashboxNumber;
-    Command.Request.OperationType := RecTypeToOperationType(Receipt.RecType);
-    Command.Request.Change := Receipt.Change;
-    Command.Request.RoundType := FParams.RoundType;
-    Command.Request.ExternalCheckNumber := FExternalCheckNumber;
-    Command.Request.CustomerEmail := Receipt.CustomerEmail;
-    Command.Request.CustomerPhone := Receipt.CustomerPhone;
-    Command.Request.CustomerXin := Receipt.CustomerINN;
+  Request.Token := FClient.Token;
+  Request.CashboxUniqueNumber := Params.CashboxNumber;
+  Request.OperationType := RecTypeToOperationType(Receipt.RecType);
+  Request.Change := Receipt.Change;
+  Request.RoundType := FParams.RoundType;
+  Request.ExternalCheckNumber := FExternalCheckNumber;
+  Request.CustomerEmail := Receipt.CustomerEmail;
+  Request.CustomerPhone := Receipt.CustomerPhone;
+  Request.CustomerXin := Receipt.CustomerINN;
 
-    // Items
-    for i := 0 to Receipt.Items.Count-1 do
+  // Items
+  for i := 0 to Receipt.Items.Count-1 do
+  begin
+    ReceiptItem := Receipt.Items[i];
+    if ReceiptItem is TSalesReceiptItem then
     begin
-      ReceiptItem := Receipt.Items[i];
-      if ReceiptItem is TSalesReceiptItem then
-      begin
-        Item := ReceiptItem as TSalesReceiptItem;
+      Item := ReceiptItem as TSalesReceiptItem;
 
-        VatRate := GetVatRate(Item.VatInfo);
-        Position := Command.Request.Positions.Add as TTicketItem;
-        if Item.UnitPrice <> 0 then
+      VatRate := GetVatRate(Item.VatInfo);
+      Position := Request.Positions.Add as TTicketItem;
+      if Item.UnitPrice <> 0 then
+      begin
+        Position.Count := Item.Quantity;
+        Position.Price := Item.UnitPrice;
+      end else
+      begin
+        Position.Count := 1;
+        Position.Price := Item.Price;
+      end;
+      Position.PositionName := Item.Description;
+      Position.DisplayName := Item.Description;
+      Position.PositionCode := IntToStr(i+1);
+      Position.Discount := Abs(Item.GetDiscount.Amount);
+      Position.Markup := Abs(Item.GetCharge.Amount);
+      Position.IsStorno := False;
+      Position.MarkupDeleted := False;
+      Position.DiscountDeleted := False;
+      Position.UnitCode := GetUnitCode(Item.UnitName);
+      Position.SectionCode := 0;
+      Position.Mark := Item.MarkCode;
+      Position.GTIN := '';
+      Position.Productld := 0;
+      Position.WarehouseType := 0;
+      if VatRate = nil then
+      begin
+        Position.Tax := 0;
+        Position.TaxPercent := TDouble.Create(0);
+        Position.TaxType := TaxTypeNoTax;
+      end else
+      begin
+        Position.Tax := Abs(VatRate.GetTax(Item.GetTotalAmount(Params.RoundType)));
+        Position.TaxType := TaxTypeVAT;
+        Position.TaxPercent := TDouble.Create(VatRate.Rate);
+        if VatRate.VatType in [VAT_TYPE_ZERO_TAX, VAT_TYPE_NO_TAX] then
         begin
-          Position.Count := Item.Quantity;
-          Position.Price := Item.UnitPrice;
-        end else
-        begin
-          Position.Count := 1;
-          Position.Price := Item.Price;
-        end;
-        Position.PositionName := Item.Description;
-        Position.DisplayName := Item.Description;
-        Position.PositionCode := IntToStr(i+1);
-        Position.Discount := Abs(Item.GetDiscount.Amount);
-        Position.Markup := Abs(Item.GetCharge.Amount);
-        Position.IsStorno := False;
-        Position.MarkupDeleted := False;
-        Position.DiscountDeleted := False;
-        Position.UnitCode := GetUnitCode(Item.UnitName);
-        Position.SectionCode := 0;
-        Position.Mark := Item.MarkCode;
-        Position.GTIN := '';
-        Position.Productld := 0;
-        Position.WarehouseType := 0;
-        if VatRate = nil then
-        begin
-          Position.Tax := 0;
-          Position.TaxPercent := TDouble.Create(0);
           Position.TaxType := TaxTypeNoTax;
-        end else
-        begin
-          Position.Tax := Abs(VatRate.GetTax(Item.GetTotalAmount(Params.RoundType)));
-          Position.TaxType := TaxTypeVAT;
-          Position.TaxPercent := TDouble.Create(VatRate.Rate);
-          if VatRate.VatType in [VAT_TYPE_ZERO_TAX, VAT_TYPE_NO_TAX] then
-          begin
-            Position.TaxType := TaxTypeNoTax;
-            Position.TaxPercent := TDouble.Create(0);
-          end;
-          if VatRate.VatType = VAT_TYPE_NO_TAX then
-            Position.TaxPercent := nil;
+          Position.TaxPercent := TDouble.Create(0);
         end;
+        if VatRate.VatType = VAT_TYPE_NO_TAX then
+          Position.TaxPercent := nil;
       end;
     end;
-    // Discounts
-    for i := 0 to Receipt.Discounts.Count-1 do
-    begin
-      Adjustment := Receipt.Discounts[i];
-      Modifier := Command.Request.TicketModifiers.Add as TTicketModifier;
+  end;
+  // Discounts
+  for i := 0 to Receipt.Discounts.Count-1 do
+  begin
+    Adjustment := Receipt.Discounts[i];
+    Modifier := Request.TicketModifiers.Add as TTicketModifier;
 
-      Modifier.Sum := Abs(Adjustment.Total);
-      Modifier.Text := Adjustment.Description;
-      Modifier._Type := ModifierTypeDiscount;
-      Modifier.TaxType := TaxTypeNoTax;
-      Modifier.Tax := 0;
-    end;
-    // Charges
-    for i := 0 to Receipt.Charges.Count-1 do
-    begin
-      Adjustment := Receipt.Charges[i];
-      Modifier := Command.Request.TicketModifiers.Add as TTicketModifier;
+    Modifier.Sum := Abs(Adjustment.Total);
+    Modifier.Text := Adjustment.Description;
+    Modifier._Type := ModifierTypeDiscount;
+    Modifier.TaxType := TaxTypeNoTax;
+    Modifier.Tax := 0;
+  end;
+  // Charges
+  for i := 0 to Receipt.Charges.Count-1 do
+  begin
+    Adjustment := Receipt.Charges[i];
+    Modifier := Request.TicketModifiers.Add as TTicketModifier;
 
-      Modifier.Sum := Abs(Adjustment.Total);
-      Modifier.Text := Adjustment.Description;
-      Modifier._Type := ModifierTypeCharge;
-      Modifier.TaxType := TaxTypeNoTax;
-      Modifier.Tax := 0;
-    end;
-    // Payments
-    for i := 0 to Receipt.Payments.Count-1 do
-    begin
-      Payment := Command.Request.Payments.Add as TPayment;
-      Payment.Sum := Receipt.Payments[i].Amount;
-      Payment.PaymentType := Receipt.Payments[i].PayType;
-    end;
-    FClient.SendReceipt(Command);
-    Params.CheckNumber := Command.Data.CheckNumber;
-    Params.ShiftNumber := Command.Data.ShiftNumber;
-    SaveUsrParams;
-
-    PrintSalesReceipt(Receipt, Command);
-  finally
-    Command.Free;
+    Modifier.Sum := Abs(Adjustment.Total);
+    Modifier.Text := Adjustment.Description;
+    Modifier._Type := ModifierTypeCharge;
+    Modifier.TaxType := TaxTypeNoTax;
+    Modifier.Tax := 0;
+  end;
+  // Payments
+  for i := 0 to Receipt.Payments.Count-1 do
+  begin
+    Payment := Request.Payments.Add as TPayment;
+    Payment.Sum := Receipt.Payments[i].Amount;
+    Payment.PaymentType := Receipt.Payments[i].PayType;
   end;
 end;
 
@@ -3622,7 +3700,27 @@ begin
     PrintReceiptTemplate(Receipt, Params.Template);
   end else
   begin
-    PrintReceipt(Receipt, Command);
+    PrintReceipt(Receipt, Command.Request, Command.Data);
+  end;
+  PrintDocumentSafe(Document);
+end;
+
+procedure TWebkassaImpl.PrintRefundSalesReceipt(Receipt: TSalesREceipt;
+  Command: TSendRefundReceiptCommand);
+begin
+  if Command.Data.OfflineMode then
+  begin
+    Document.AddLine(Document.AlignCenter(Params.OfflineText));
+  end;
+
+  if Params.TemplateEnabled then
+  begin
+    Receipt.ReguestJson := FClient.CommandJson;
+    Receipt.AnswerJson := FClient.AnswerJson;
+    PrintReceiptTemplate(Receipt, Params.Template);
+  end else
+  begin
+    PrintReceipt(Receipt, Command.Request, Command.Data);
   end;
   PrintDocumentSafe(Document);
 end;
@@ -3754,7 +3852,8 @@ begin
 end;
 
 procedure TWebkassaImpl.PrintReceipt(Receipt: TSalesReceipt;
-  Command: TSendReceiptCommand);
+  Request: TSendReceiptCommandRequest;
+  Data: TSendReceiptCommandResponse);
 var
   i: Integer;
   Text: WideString;
@@ -3775,8 +3874,8 @@ begin
     Tnt_WideFormat('¹ %s', [Params.VATNumber]));
   Document.AddSeparator;
   Document.AddLine(Document.AlignCenter(Params.CashboxNumber));
-  Document.AddLine(Document.AlignCenter(Tnt_WideFormat('ÑÌÅÍÀ ¹%d', [Command.Data.ShiftNumber])));
-  Document.AddLine(OperationTypeToText(Command.Request.OperationType));
+  Document.AddLine(Document.AlignCenter(Tnt_WideFormat('ÑÌÅÍÀ ¹%d', [Data.ShiftNumber])));
+  Document.AddLine(OperationTypeToText(Request.OperationType));
 
   //Document.AddLine(AlignCenter(WideFormat('Ïîðÿäêîâûé íîìåð ÷åêà ¹%d', [Command.Data.DocumentNumber])));
   //Document.AddLine(WideFormat('×åê ¹%s', [Command.Data.CheckNumber]));
@@ -3880,26 +3979,26 @@ begin
   Document.AddSeparator;
   if Receipt.FiscalSign = '' then
   begin
-    Receipt.FiscalSign := Command.Data.CheckNumber;
+    Receipt.FiscalSign := Data.CheckNumber;
   end;
   CapQRCodeInPageMode := GetCapQRCodeInPageMode;
   if CapQRCodeInPageMode then
   begin
-    Document.AddItem(Command.Data.TicketUrl, STYLE_QR_CODE_PM);
+    Document.AddItem(Data.TicketUrl, STYLE_QR_CODE_PM);
   end;
   Document.AddLine('ÔÏ: ' + Receipt.FiscalSign);
-  Document.AddLine('Âðåìÿ: ' + Command.Data.DateTime);
-  Document.AddLine('ÎÔÄ: ' + Command.Data.Cashbox.Ofd.Name);
+  Document.AddLine('Âðåìÿ: ' + Data.DateTime);
+  Document.AddLine('ÎÔÄ: ' + Data.Cashbox.Ofd.Name);
   Document.AddLine('Äëÿ ïðîâåðêè ÷åêà:');
-  Document.AddLine(Command.Data.Cashbox.Ofd.Host);
+  Document.AddLine(Data.Cashbox.Ofd.Host);
   Document.AddItem('', STYLE_END_PAGE_MODE);
   if not CapQRCodeInPageMode then
   begin
-    Document.AddItem(Command.Data.TicketUrl, STYLE_QR_CODE);
+    Document.AddItem(Data.TicketUrl, STYLE_QR_CODE);
   end;
-  Document.AddLine('ÈÍÊ ÎÔÄ: ' + Command.Data.Cashbox.IdentityNumber);
-  Document.AddLine('Êîä ÊÊÌ ÊÃÄ (ÐÍÌ): ' + Command.Data.Cashbox.RegistrationNumber);
-  Document.AddLine('ÇÍÌ: ' + Command.Data.Cashbox.UniqueNumber);
+  Document.AddLine('ÈÍÊ ÎÔÄ: ' + Data.Cashbox.IdentityNumber);
+  Document.AddLine('Êîä ÊÊÌ ÊÃÄ (ÐÍÌ): ' + Data.Cashbox.RegistrationNumber);
+  Document.AddLine('ÇÍÌ: ' + Data.Cashbox.UniqueNumber);
   Document.AddSeparator;
   Document.AddText(Receipt.Trailer.Text);
 end;

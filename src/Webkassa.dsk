@@ -1,100 +1,85 @@
 [Closed Files]
-File_0=SourceModule,'D:\IBTS\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas',0,1,577,8,587,0,0
-File_1=SourceModule,'D:\IBTS\WebKassa\test\OposWebkassaTest\units\duMemory.pas',0,1,6,7,72,0,0
-File_2=SourceModule,'D:\IBTS\WebKassa\test\OposWebkassaTest\units\duLogFile.pas',0,1,26,22,38,0,0
-File_3=SourceModule,'C:\Program Files (x86)\EurekaLab\EurekaLog 6\Delphi7\ExceptionLog.pas',0,1,16424,25,16443,0,0
-File_4=SourceModule,'D:\IBTS\WebKassa\src\Shared\DriverError.pas',0,1,24,52,37,0,0
-File_5=SourceModule,'C:\Program Files (x86)\EurekaLab\EurekaLog 6\Delphi7\ECore.pas',0,1,2179,18,2195,0,0
-File_6=SourceModule,'C:\Program Files (x86)\EurekaLab\EurekaLog 6\Delphi7\ETypes.pas',0,1,106,1,106,0,0
-File_7=SourceModule,'D:\IBTS\WebKassa\test\OposWebkassaTest\units\duTextDocument.pas',0,1,1,7,9,0,0
-File_8=SourceModule,'c:\program files (x86)\borland\delphi7\Comp\dunit\src\TestFramework.pas',0,1,2032,1,2045,0,0
+File_0=SourceModule,'D:\projects\IBTS\WebKassa\test\WebkassaAccTest\units\duWebkassaClient.pas',0,1,641,29,655,0,0
+File_1=SourceModule,'D:\projects\IBTS\WebKassa\src\OposWebkassa\units\DirectIOAPI.pas',0,1,373,1,394,0,0
+File_2=SourceModule,'D:\projects\IBTS\WebKassa\src\OposWebkassa\Units\WebkassaClient.pas',0,1,324,1,339,0,0
+File_3=SourceModule,'D:\projects\IBTS\WebKassa\src\OposWebkassa\units\SalesReceipt.pas',0,1,26,30,42,0,0
+File_4=SourceModule,'D:\projects\IBTS\WebKassa\src\Shared\JsonUtils.pas',0,1,1,10,18,0,0
+File_5=SourceModule,'c:\program files (x86)\borland\delphi7\source\rtl\common\classes.pas',0,1,273,1,290,0,0
+File_6=SourceModule,'c:\program files (x86)\borland\delphi7\Comp\Indy10\Lib\Protocols\IdHTTP.pas',0,1,358,1,376,0,0
+File_7=SourceModule,'c:\program files (x86)\borland\delphi7\source\rtl\Sys\sysutils.pas',0,1,7559,49,7573,0,0
 
 [Modules]
-Module0=c:\program files (x86)\borland\delphi7\source\rtl\Sys\sysutils.pas
-Module1=D:\IBTS\WebKassa\src\Shared\JsonUtils.pas
-Module2=c:\program files (x86)\borland\delphi7\Comp\TntUnicodeControls_2.3.0\Source\TntSysUtils.pas
-Module3=D:\IBTS\WebKassa\src\Opos\OposDevice.pas
-Module4=D:\IBTS\WebKassa\src\Shared\EscPrinterXPrinter.pas
-Module5=D:\IBTS\WebKassa\src\OposWebkassa\units\WebkassaClient.pas
-Count=6
+Module0=D:\projects\IBTS\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas
+Module1=D:\projects\IBTS\WebKassa\src\Shared\PrinterParametersReg.pas
+Module2=D:\projects\IBTS\WebKassa\test\WebkassaAccTest\units\duWebkassaImpl.pas
+Module3=D:\projects\IBTS\WebKassa\src\Shared\PrinterParameters.pas
+Count=4
 EditWindowCount=1
 TypeLibWindowCount=1
 
-[c:\program files (x86)\borland\delphi7\source\rtl\Sys\sysutils.pas]
+[D:\projects\IBTS\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[D:\IBTS\WebKassa\src\Shared\JsonUtils.pas]
+[D:\projects\IBTS\WebKassa\src\Shared\PrinterParametersReg.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[c:\program files (x86)\borland\delphi7\Comp\TntUnicodeControls_2.3.0\Source\TntSysUtils.pas]
+[D:\projects\IBTS\WebKassa\test\WebkassaAccTest\units\duWebkassaImpl.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[D:\IBTS\WebKassa\src\Opos\OposDevice.pas]
+[D:\projects\IBTS\WebKassa\src\Shared\PrinterParameters.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[D:\IBTS\WebKassa\src\Shared\EscPrinterXPrinter.pas]
-ModuleType=SourceModule
+[D:\projects\IBTS\WebKassa\src\Webkassa.bpg]
 FormState=0
 FormOnTop=0
 
-[D:\IBTS\WebKassa\src\OposWebkassa\units\WebkassaClient.pas]
-ModuleType=SourceModule
+[D:\projects\IBTS\WebKassa\src\OposConfig\OposConfig.dpr]
 FormState=0
 FormOnTop=0
 
-[D:\IBTS\WebKassa\src\Webkassa.bpg]
+[D:\projects\IBTS\WebKassa\src\OposTest\OposTest.dpr]
 FormState=0
 FormOnTop=0
 
-[D:\IBTS\WebKassa\src\OposConfig\OposConfig.dpr]
+[D:\projects\IBTS\WebKassa\src\OposWebkassa\OposWebkassa.dpr]
 FormState=0
 FormOnTop=0
 
-[D:\IBTS\WebKassa\src\OposTest\OposTest.dpr]
+[D:\projects\IBTS\WebKassa\src\OposWebkassa\OposWebkassa.tlb]
 FormState=0
 FormOnTop=0
 
-[D:\IBTS\WebKassa\src\OposWebkassa\OposWebkassa.dpr]
+[D:\projects\IBTS\WebKassa\test\OposWebkassaTest\OposWebkassaTest.dpr]
 FormState=0
 FormOnTop=0
 
-[D:\IBTS\WebKassa\src\OposWebkassa\OposWebkassa.tlb]
+[D:\projects\IBTS\WebKassa\test\OposWebkassaTest\OposWebkassaTest.todo]
 FormState=0
 FormOnTop=0
 
-[D:\IBTS\WebKassa\test\OposWebkassaTest\OposWebkassaTest.dpr]
+[D:\projects\IBTS\WebKassa\test\OposWebkassaTest\OposWebkassaTestLib.dpr]
 FormState=0
 FormOnTop=0
 
-[D:\IBTS\WebKassa\test\OposWebkassaTest\OposWebkassaTest.todo]
-FormState=0
-FormOnTop=0
-
-[D:\IBTS\WebKassa\test\OposWebkassaTest\OposWebkassaTestLib.dpr]
-FormState=0
-FormOnTop=0
-
-[D:\IBTS\WebKassa\test\WebkassaAccTest\WebkassaAccTest.dpr]
+[D:\projects\IBTS\WebKassa\test\WebkassaAccTest\WebkassaAccTest.dpr]
 FormState=0
 FormOnTop=0
 
 [EditWindow0]
-ViewCount=6
-CurrentView=2
+ViewCount=4
+CurrentView=1
 View0=0
 View1=1
 View2=2
 View3=3
-View4=4
-View5=5
 CodeExplorer=CodeExplorer@EditWindow0
 MessageView=MessageView@EditWindow0
 Create=1
@@ -106,58 +91,44 @@ Width=1302
 Height=682
 MaxLeft=-8
 MaxTop=107
-MaxWidth=1932
+MaxWidth=1936
 MaxHeight=941
-ClientWidth=1916
+ClientWidth=1920
 ClientHeight=902
 LeftPanelSize=0
 LeftPanelClients=CodeExplorer@EditWindow0
 LeftPanelData=00000400010000000C000000436F64654578706C6F7265720000000000000000000000000000000000FFFFFFFF
 RightPanelSize=0
-BottomPanelSize=206
+BottomPanelSize=260
 BottomPanelClients=MessageView@EditWindow0
 BottomPanelData=000004000000000000000000000000000000000000000000000100000000000000000B0000004D65737361676556696577FFFFFFFF
 
 [View0]
-Module=D:\IBTS\WebKassa\src\OposWebkassa\units\WebkassaClient.pas
-CursorX=39
-CursorY=1788
-TopLine=1782
+Module=D:\projects\IBTS\WebKassa\test\WebkassaAccTest\units\duWebkassaImpl.pas
+CursorX=45
+CursorY=1146
+TopLine=1105
 LeftCol=1
 
 [View1]
-Module=D:\IBTS\WebKassa\src\Shared\EscPrinterXPrinter.pas
-CursorX=20
-CursorY=740
-TopLine=735
+Module=D:\projects\IBTS\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas
+CursorX=139
+CursorY=1424
+TopLine=1416
 LeftCol=1
 
 [View2]
-Module=c:\program files (x86)\borland\delphi7\source\rtl\Sys\sysutils.pas
-CursorX=49
-CursorY=7573
-TopLine=7559
+Module=D:\projects\IBTS\WebKassa\src\Shared\PrinterParametersReg.pas
+CursorX=37
+CursorY=677
+TopLine=666
 LeftCol=1
 
 [View3]
-Module=D:\IBTS\WebKassa\src\Opos\OposDevice.pas
-CursorX=30
-CursorY=321
-TopLine=317
-LeftCol=1
-
-[View4]
-Module=c:\program files (x86)\borland\delphi7\Comp\TntUnicodeControls_2.3.0\Source\TntSysUtils.pas
-CursorX=2
-CursorY=439
-TopLine=425
-LeftCol=1
-
-[View5]
-Module=D:\IBTS\WebKassa\src\Shared\JsonUtils.pas
-CursorX=1
-CursorY=163
-TopLine=145
+Module=D:\projects\IBTS\WebKassa\src\Shared\PrinterParameters.pas
+CursorX=16
+CursorY=262
+TopLine=244
 LeftCol=1
 
 [TypeLibEditWindow0]
@@ -165,14 +136,14 @@ Create=1
 Visible=0
 State=0
 Left=200
-Top=582
+Top=117
 Width=647
 Height=458
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=631
 ClientHeight=419
-Module=D:\IBTS\WebKassa\src\OposWebkassa\OposWebkassa.tlb
+Module=D:\projects\IBTS\WebKassa\src\OposWebkassa\OposWebkassa.tlb
 
 [Watches]
 Count=0
@@ -205,15 +176,15 @@ Count=0
 Create=1
 Visible=1
 State=2
-Left=0
-Top=0
-Width=1920
+Left=571
+Top=27
+Width=1349
 Height=123
 MaxLeft=-1
 MaxTop=-1
-MaxWidth=1932
+MaxWidth=1936
 MaxHeight=123
-ClientWidth=1916
+ClientWidth=1920
 ClientHeight=84
 
 [ProjectManager]
@@ -487,13 +458,13 @@ Visible=1
 State=0
 Left=12
 Top=0
-Width=1892
-Height=206
+Width=1908
+Height=260
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1892
-ClientHeight=206
-TBDockHeight=206
+ClientWidth=1908
+ClientHeight=260
+TBDockHeight=260
 LRDockWidth=443
 Dockable=1
 
@@ -505,8 +476,8 @@ DockSiteType=0
 Create=1
 Visible=0
 State=0
-Left=720
-Top=183
+Left=763
+Top=363
 Width=872
 Height=535
 MaxLeft=-1
@@ -520,5 +491,5 @@ DockClients=CallStackWindow
 DockSiteData=0000040000000000F001000000000000015803000000000000010000000087000000000000000100000002F0010000000000000200000000580300000F00000043616C6C537461636B57696E646F770200000000F7010000000000000100000000080100000000000001000000008C010000000000000100000000100200000000000001000000009802000000000000FFFFFFFF
 
 [ActiveProject]
-ActiveProject=4
+ActiveProject=6
 

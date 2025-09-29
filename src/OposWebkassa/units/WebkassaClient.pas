@@ -201,6 +201,8 @@ type
   TPayment = class;
   TCashBoxes = class;
   TCashBox = class;
+  TReturnDetails = class;
+  TSendRefundReceiptCommandRequest = class;
 
   { TErrorResult }
 
@@ -344,6 +346,22 @@ type
     property Data: TSendReceiptCommandResponse read FData write SetData;
   end;
 
+  { TSendRefundReceiptCommand }
+
+  TSendRefundReceiptCommand = class(TJsonCommand)
+  private
+    FData: TSendReceiptCommandResponse;
+    FRequest: TSendRefundReceiptCommandRequest;
+    procedure SetData(const Value: TSendReceiptCommandResponse);
+  public
+    constructor Create;
+    destructor Destroy; override;
+    procedure Assign(Source: TPersistent); override;
+    property Request: TSendRefundReceiptCommandRequest read FRequest;
+  published
+    property Data: TSendReceiptCommandResponse read FData write SetData;
+  end;
+
   { TSendReceiptCommandRequest }
 
   TSendReceiptCommandRequest = class(TJsonPersistent)
@@ -364,7 +382,7 @@ type
     procedure SetPositions(const Value: TTicketItems);
     procedure SetTicketModifiers(const Value: TTicketModifiers);
   public
-    constructor Create;
+    constructor Create; virtual;
     destructor Destroy; override;
     function IsRequiredField(const Field: WideString): Boolean; override;
   published
@@ -381,6 +399,47 @@ type
     property CustomerPhone: WideString read FCustomerPhone write FCustomerPhone;
     property CustomerXin: WideString read FCustomerXin write FCustomerXin;
   end;
+
+  { TSendRefundReceiptCommandRequest }
+
+  TSendRefundReceiptCommandRequest = class(TSendReceiptCommandRequest)
+  private
+    FDetails: TReturnDetails;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+  published
+    property ReturnBasisDetails: TReturnDetails read FDetails write FDetails;
+  end;
+
+  { TReturnDetails }
+
+  TReturnDetails = class(TJsonPersistent)
+  private
+		FCheckNumber: WideString;
+		FDateTime: WideString;
+    FRegistrationNumber: WideString;
+    FTotal: Currency;
+    FIsOffline: Boolean;
+  published
+		property CheckNumber: WideString read FCheckNumber write FCheckNumber;
+		property DateTime: WideString read FDateTime write FDateTime;
+    property RegistrationNumber: WideString read FRegistrationNumber write FRegistrationNumber;
+    property Total: Currency read FTotal write FTotal;
+    property IsOffline: Boolean read FIsOffline write FIsOffline;
+  end;
+
+(*
+
+	"ReturnBasisDetails": {
+		"CheckNumber": "143425020642",
+		"DateTime": "2025-09-05T06:22:21.567Z",
+		"RegistrationNumber": "032600010221",
+		"Total": 5000,
+		"IsOffline": false
+	},
+
+*)
 
   { TOrganization }
 
@@ -502,6 +561,7 @@ type
     FWarehouseType: Integer;
     procedure SetTaxPercent(const Value: TDouble);
   public
+    constructor Create(Collection: TJsonCollection); override;
     destructor Destroy; override;
   published
     property Count: Double read FCount write FCount;
@@ -1426,6 +1486,7 @@ type
     function Authenticate(Command: TAuthCommand): Boolean;
     function ChangeToken(Command: TChangeTokenCommand): Boolean;
     function SendReceipt(Command: TSendReceiptCommand): Boolean;
+    function SendRefundReceipt(Command: TSendRefundReceiptCommand): Boolean;
     function MoneyOperation(Command: TMoneyOperationCommand): Boolean;
     function ZReport(Command: TZXReportCommand): Boolean;
     function XReport(Command: TZXReportCommand): Boolean;
@@ -1985,6 +2046,18 @@ begin
 end;
 
 function TWebkassaClient.SendReceipt(Command: TSendReceiptCommand): Boolean;
+begin
+  Command.RequestJson := ObjectToJson(Command.Request);
+  Command.ResponseJson := Post(GetAddress + 'api/check', Command.RequestJson);
+  Result := CheckLastError;
+  if Result then
+  begin
+    JsonToObject(Command.ResponseJson, Command);
+    FSendReceiptCommand.Assign(Command);
+  end;
+end;
+
+function TWebkassaClient.SendRefundReceipt(Command: TSendRefundReceiptCommand): Boolean;
 begin
   Command.RequestJson := ObjectToJson(Command.Request);
   Command.ResponseJson := Post(GetAddress + 'api/check', Command.RequestJson);
@@ -3576,6 +3649,12 @@ end;
 
 { TTicketItem }
 
+constructor TTicketItem.Create(Collection: TJsonCollection);
+begin
+  inherited Create(Collection);
+  FTaxPercent := TDouble.Create(0);
+end;
+
 destructor TTicketItem.Destroy;
 begin
   FTaxPercent.Free;
@@ -3586,6 +3665,54 @@ procedure TTicketItem.SetTaxPercent(const Value: TDouble);
 begin
   FTaxPercent.Free;
   FTaxPercent := Value;
+end;
+
+{ TSendRefundReceiptCommandRequest }
+
+constructor TSendRefundReceiptCommandRequest.Create;
+begin
+  inherited Create;
+  FDetails := TReturnDetails.Create;
+end;
+
+destructor TSendRefundReceiptCommandRequest.Destroy;
+begin
+  FDetails.Free;
+  inherited Destroy;
+end;
+
+{ TSendRefundReceiptCommand }
+
+constructor TSendRefundReceiptCommand.Create;
+begin
+  inherited Create;
+  FData := TSendReceiptCommandResponse.Create;
+  FRequest := TSendRefundReceiptCommandRequest.Create;
+end;
+
+destructor TSendRefundReceiptCommand.Destroy;
+begin
+  FData.Free;
+  FRequest.Free;
+  inherited Destroy;
+end;
+
+procedure TSendRefundReceiptCommand.Assign(Source: TPersistent);
+var
+  Src: TSendRefundReceiptCommand;
+begin
+  if Source is TSendRefundReceiptCommand then
+  begin
+    Src := Source as TSendRefundReceiptCommand;
+    FData.Assign(Src.Data);
+    FRequest.Assign(Src.Request);
+  end;
+end;
+
+procedure TSendRefundReceiptCommand.SetData(
+  const Value: TSendReceiptCommandResponse);
+begin
+  FData.Assign(Value);
 end;
 
 initialization

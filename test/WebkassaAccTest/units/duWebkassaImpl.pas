@@ -9,6 +9,7 @@ uses
   TestFramework,
   // Opos
   Opos, OposFptr, Oposhi, OposFptrhi, OposFptrUtils, OposUtils,
+  OposPOSPrinter_CCO_TLB,
   // Tnt
   TntClasses, TntSysUtils,
   // This
@@ -76,6 +77,7 @@ type
     procedure TestFiscalReceipt9;
     procedure TestFiscalReceipt10;
     procedure TestFiscalReceipt11;
+    procedure TestRefundFiscalReceipt;
   end;
 
 implementation
@@ -123,23 +125,19 @@ end;
 procedure TWebkassaImplTest.SetUp;
 var
   VatRate: TVatRateRec;
+  Printer: IOPOSPOSPrinter;
 begin
   inherited SetUp;
-  (*
-  if Printer = nil then
-  begin
-    Printer := TMockPOSPrinter.Create;
-  end;
-  *)
   if Driver = nil then
   begin
     //FLogger := TLogFile.Create;
     //FBmpPrinter := TBmpPrinter.Create;
-    //FPrinter := TPosPrinterWindows.Create(FLogger, FBmpPrinter);
     //FPrinter.FontName := 'Cascadia Mono';
 
+    //FPrinter := TPosPrinterWindows.Create(FLogger, FBmpPrinter);
+    Printer := TMockPOSPrinter.Create;
     Driver := ToleFiscalPrinter.Create();
-    //Driver.Driver.Printer := FPrinter; !!!
+    Driver.Driver.Printer := Printer;
 
     Driver.Driver.LoadParamsEnabled := False;
     Params.PrintBarcode := PrintBarcodeESCCommands;
@@ -152,7 +150,7 @@ begin
 
     Params.Login := 'apykhtin@ibtsmail.ru';
     Params.Password := 'Kassa123!';
-    Params.CashboxNumber := 'SWK00032944';
+    Params.CashboxNumber := 'SWK00034308';
     Params.ConnectTimeout := 10;
     Params.WebkassaAddress := 'https://devkkm.webkassa.kz';
 
@@ -1183,6 +1181,70 @@ begin
   FptrCheck(Driver.DirectIO2(30, 302, '1'));
   FptrCheck(Driver.DirectIO2(30, 300, CreateGUIDStr));
   FptrCheck(Driver.DirectIO2(40, 1203, '780409402215'));
+  FptrCheck(Driver.EndFiscalReceipt(False));
+end;
+
+procedure TWebkassaImplTest.TestRefundFiscalReceipt;
+
+  function GetDriverParam(ParamId: Integer): WideString;
+  var
+    pData: Integer;
+    pString: WideString;
+  begin
+    pString := '';
+    pData := ParamId;
+    FptrCheck(Driver.DirectIO(DIO_GET_DRIVER_PARAMETER, pData, pString));
+    Result := pString;
+  end;
+
+  procedure SetDriverParam(ParamId: Integer; const Value: WideString);
+  var
+    pData: Integer;
+    pString: WideString;
+  begin
+    pData := ParamId;
+    pString := Value;
+    FptrCheck(Driver.DirectIO(DIO_SET_DRIVER_PARAMETER, pData, pString));
+  end;
+
+var
+  ReceiptNumber: WideString;
+  ReceiptDateTime: WideString;
+  RegistrationNumber: WideString;
+  ReceiptTotal: WideString;
+  ReceiptIsOffline: WideString;
+begin
+  OpenClaimEnable;
+  // Receipt1
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+  FptrCheck(Driver.PrintRecItem('œ¿ ≈“ - Ã¿… ¿', 10, 1000, 4, 10, '¯Ú'));
+  FptrCheck(Driver.PrintRecTotal(10, 10, '0'));
+  FptrCheck(Driver.EndFiscalReceipt(False));
+
+  ReceiptNumber := GetDriverParam(DriverParameterReceiptNumber);
+  ReceiptDateTime := GetDriverParam(DriverParameterReceiptDateTime);
+  RegistrationNumber := GetDriverParam(DriverParameterRegistrationNumber);
+  ReceiptTotal := GetDriverParam(DriverParameterReceiptTotal);
+  ReceiptIsOffline := GetDriverParam(DriverParameterReceiptIsOffline);
+
+  // Receipt2
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+  FptrCheck(Driver.PrintRecItem('Item 2', 23, 1000, 4, 23, '¯Ú'));
+  FptrCheck(Driver.PrintRecTotal(23, 23, '0'));
+  FptrCheck(Driver.EndFiscalReceipt(False));
+  // Return receipt1
+  SetDriverParam(DriverParameterReceiptNumber, ReceiptNumber);
+  SetDriverParam(DriverParameterReceiptDateTime, ReceiptDateTime);
+  SetDriverParam(DriverParameterRegistrationNumber, RegistrationNumber);
+  SetDriverParam(DriverParameterReceiptTotal, ReceiptTotal);
+  SetDriverParam(DriverParameterReceiptIsOffline, ReceiptIsOffline);
+
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_REFUND);
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+  FptrCheck(Driver.PrintRecItem('œ¿ ≈“ - Ã¿… ¿', 10, 1000, 4, 10, '¯Ú'));
+  FptrCheck(Driver.PrintRecTotal(10, 10, '0'));
   FptrCheck(Driver.EndFiscalReceipt(False));
 end;
 

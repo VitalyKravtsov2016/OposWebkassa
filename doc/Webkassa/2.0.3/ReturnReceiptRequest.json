@@ -1,0 +1,33 @@
+{
+	"Token": "6a4eaa2e5f764950blelce3712110d3d",
+	"CashboxUniqueNumber": "SWK00033717",
+	"OperationType": 3,
+	"Positions": [
+		{
+			"Count": 1,
+			"Price": 500,
+			"TaxPercent": 12,
+			"Tax": 53.57,
+			"TaxType": 100,
+			"PositionName": "Terea Summer Wave",
+			"UnitCode": 796,
+			"Gtin": "4870249811936",
+			"Ntin": "0200000000004"
+		}
+	],
+	"Payments": [
+		{
+			"Sum": 500,
+			"PaymentType": 1
+		}
+	],
+	"ReturnBasisDetails": {
+		"CheckNumber": "143425020642",
+		"DateTime": "2025-09-05T06:22:21.567Z",
+		"RegistrationNumber": "032600010221",
+		"Total": 5000,
+		"IsOffline": false
+	},
+	"RoundType": 2,
+	"ExternalCheckNumber": "e2c99643-82nb-4622-9323-c0a12395d1ec"
+}
