@@ -386,11 +386,12 @@ const
   DriverParameterExternalCheckNumber      = 300;
   DriverParameterFiscalSign               = 301;
   DriverParameterPrintEnabled             = 302;
-  DriverParameterReceiptNumber            = 303;
-  DriverParameterReceiptDateTime          = 304;
-  DriverParameterRegistrationNumber       = 305;
-  DriverParameterReceiptTotal             = 306;
-  DriverParameterReceiptIsOffline         = 307;
+  
+  DriverParameterReceiptNumber            = 304;
+  DriverParameterReceiptDateTime          = 305;
+  DriverParameterRegistrationNumber       = 306;
+  DriverParameterReceiptTotal             = 307;
+  DriverParameterReceiptIsOffline         = 308;
 
   /////////////////////////////////////////////////////////////////////////////
   // Separator type

@@ -6,19 +6,19 @@
 
 *******************************************************************
 
-  OposWebKassa_0.129.exe
-  29 сентября 2025 11:30
+  OposWebKassa_0.130.exe
+  8 октября 2025 11:30
 
   [+] Добавлена возможность указать параметры чека для формирования 
       чека возврата. Дополнительные параметры читаются и записываются
 	  через directIO.
 	  DIO_GET_DRIVER_PARAMETER = 29; // read internal driver parameter
       DIO_SET_DRIVER_PARAMETER = 30; // write internal driver parameter
-	  DriverParameterReceiptNumber            = 303;
-	  DriverParameterReceiptDateTime          = 304;
-	  DriverParameterRegistrationNumber       = 305;
-	  DriverParameterReceiptTotal             = 306;
-	  DriverParameterReceiptIsOffline         = 307;
+	  DriverParameterReceiptNumber            = 304;
+	  DriverParameterReceiptDateTime          = 305;
+	  DriverParameterRegistrationNumber       = 306;
+	  DriverParameterReceiptTotal             = 307;
+	  DriverParameterReceiptIsOffline         = 308;
 	  Параметры нужно прочитать и сохранить после формирования чека продажи и 
 	  записать перед формированием чека возврата. 
   
