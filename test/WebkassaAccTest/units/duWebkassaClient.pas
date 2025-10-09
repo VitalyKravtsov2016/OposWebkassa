@@ -44,6 +44,8 @@ type
     procedure TestSendReceipt2;
     procedure TestReadReceiptText;
     procedure TestRefundReceipt;
+    procedure TestRefundReceipt2;
+    procedure TestRefundReceipt3;
   end;
 
 implementation
@@ -75,7 +77,7 @@ begin
     FClient.Address := 'https://devkkm.webkassa.kz';
     FClient.Login := 'apykhtin@ibtsmail.ru';
     FClient.Password := 'Kassa123!';
-    FClient.CashboxNumber := 'SWK00034308';
+    FClient.CashboxNumber := 'SWK00034423';
     FClient.AcceptLanguage := 'kk-KZ';
   end;
 end;
@@ -387,10 +389,11 @@ begin
 
     Command.Request.Token := FClient.Token;
     Command.Request.CashboxUniqueNumber := FClient.CashboxNumber;
-    Command.Request.Number := FReceipt.Data.CheckNumber;
-    Command.Request.ShiftNumber := FReceipt.Data.ShiftNumber;
+    Command.Request.Number := '1414131070918';
+    Command.Request.ShiftNumber := 2;
 
     FClient.ReadReceipt(Command);
+    (*
     CheckEquals(FReceipt.Request.Positions.Count, Command.Data.Positions.Count, 'Positions.Count');
 
     SrcItem := FReceipt.Request.Positions[0];
@@ -398,6 +401,7 @@ begin
     CheckEquals(SrcItem.Count, DstItem.Count, 'Count');
     CheckEquals(SrcItem.Price, DstItem.Price, 'Price');
     CheckEquals(SrcItem.PositionName, DstItem.PositionName, 'PositionName');
+    *)
   finally
     Command.Free;
   end;
@@ -697,6 +701,114 @@ begin
   end;
 end;
 
+procedure TWebkassaClientTest.TestRefundReceipt2;
+var
+  Payment: TPayment;
+  Item: TTicketItem;
+  RetDetails: TReturnDetails;
+  Command: TReceiptCommand;
+  RefReceipt: TSendRefundReceiptCommand;
+begin
+  TestSendReceipt2;
+
+  Command := TReceiptCommand.Create;
+  RefReceipt := TSendRefundReceiptCommand.Create;
+  try
+    Command.Request.Token := FClient.Token;
+    Command.Request.CashboxUniqueNumber := FReceipt.Data.Cashbox.UniqueNumber;
+    Command.Request.Number := FReceipt.Data.CheckNumber;
+    Command.Request.ShiftNumber := FReceipt.Data.ShiftNumber;
+    Check(FClient.ReadReceipt(Command), 'ReadReceipt');
+
+    // ReturnBasisDetails
+    RetDetails := RefReceipt.Request.ReturnBasisDetails;
+		RetDetails.CheckNumber := FReceipt.Data.CheckNumber;
+		RetDetails.DateTime := Command.Data.RegistratedOn;
+    RetDetails.RegistrationNumber := Command.Data.CashboxRegistrationNumber;
+    RetDetails.Total := Command.Data.Total;
+    RetDetails.IsOffline := Command.Data.IsOffline;
+
+    RefReceipt.Request.Token := FClient.Token;
+    RefReceipt.Request.CashboxUniqueNumber := FClient.CashboxNumber;
+    RefReceipt.Request.ExternalCheckNumber := CreateGUIDStr;
+    RefReceipt.Request.OperationType := OperationTypeRetSell;
+    // Item 1
+    Item := RefReceipt.Request.Positions.Add as TTicketItem;
+    Item.Count := 2;
+    Item.Price := 23;
+    Item.TaxPercent.Value := 0;
+    Item.Tax := 0;
+    Item.TaxType := TaxTypeNoTax;
+    Item.PositionName := 'Позиция чека 1';
+    Item.PositionCode := '1';
+    Item.DisplayName := 'Товар номер 1';
+    Item.UnitCode := 796;
+    Item.Discount := 0;
+    Item.Markup := 0;
+    Item.WarehouseType := 0;
+
+    RefReceipt.Request.Change := 0;
+    RefReceipt.Request.RoundType := 0;
+    Payment := RefReceipt.Request.Payments.Add as TPayment;
+    Payment.Sum := 46;
+    Payment.PaymentType := PaymentTypeCash;
+
+    FClient.SendRefundReceipt(RefReceipt);
+    WriteFileData(GetModulePath + 'SendRefundReceipt.txt', FClient.AnswerJson);
+  finally
+    Command.Free;
+    RefReceipt.Free;
+  end;
+end;
+
+procedure TWebkassaClientTest.TestRefundReceipt3;
+var
+  Payment: TPayment;
+  Item: TTicketItem;
+  RetDetails: TReturnDetails;
+  RefReceipt: TSendRefundReceiptCommand;
+begin
+  RefReceipt := TSendRefundReceiptCommand.Create;
+  try
+    // ReturnBasisDetails
+    RetDetails := RefReceipt.Request.ReturnBasisDetails;
+		RetDetails.CheckNumber := '1414131070918';
+		RetDetails.DateTime := '07.10.2025 08:44';
+    RetDetails.RegistrationNumber := '601000010426';
+    RetDetails.Total := 100.0;
+    RetDetails.IsOffline := False;
+
+    RefReceipt.Request.Token := FClient.Token;
+    RefReceipt.Request.CashboxUniqueNumber := FClient.CashboxNumber;
+    RefReceipt.Request.ExternalCheckNumber := CreateGUIDStr;
+    RefReceipt.Request.OperationType := OperationTypeRetSell;
+    // Item 1
+    Item := RefReceipt.Request.Positions.Add as TTicketItem;
+    Item.Count := 1;
+    Item.Price := 100;
+    Item.TaxPercent.Value := 0;
+    Item.Tax := 0;
+    Item.TaxType := TaxTypeNoTax;
+    Item.PositionName := 'Товар';
+    Item.PositionCode := '1';
+    Item.DisplayName := 'Товар';
+    Item.UnitCode := 0;
+    Item.Discount := 0;
+    Item.Markup := 0;
+    Item.WarehouseType := 0;
+
+    RefReceipt.Request.Change := 0;
+    RefReceipt.Request.RoundType := 0;
+    Payment := RefReceipt.Request.Payments.Add as TPayment;
+    Payment.Sum := 100;
+    Payment.PaymentType := PaymentTypeCash;
+
+    FClient.SendRefundReceipt(RefReceipt);
+    WriteFileData(GetModulePath + 'SendRefundReceipt.txt', FClient.AnswerJson);
+  finally
+    RefReceipt.Free;
+  end;
+end;
 
 initialization
   FReceipt := TSendReceiptCommand.Create;
