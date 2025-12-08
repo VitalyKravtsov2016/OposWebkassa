@@ -92,6 +92,8 @@ type
     FRegistrationNumber: WideString;
     FReceiptTotal: Currency;
     FReceiptIsOffline: Boolean;
+    FGTIN: WideString;
+    FNTIN: WideString;
 
     procedure PrintLine(Text: WideString);
     function GetReceiptItemText(ReceiptItem: TSalesReceiptItem;
@@ -1390,19 +1392,29 @@ procedure TWebkassaImpl.DioSetDriverParameter(var pData: Integer;
 begin
   case pData of
     DriverParameterPrintEnabled: Params.PrintEnabled := StrToBool(pString);
-    DriverParameterBarcode: Receipt.Barcode := pString;
+    DriverParameterBarcode:
+    begin
+      if Receipt is TSalesReceipt then
+      (Receipt as TSalesReceipt).Barcode := pString;
+    end;
     DriverParameterExternalCheckNumber:
     begin
       if pString <> '' then
         ExternalCheckNumber := pString;
     end;
-    DriverParameterFiscalSign: Receipt.FiscalSign := pString;
+    DriverParameterFiscalSign:
+    begin
+      if Receipt is TSalesReceipt then
+      (Receipt as TSalesReceipt).FiscalSign := pString;
+    end;
 
     DriverParameterReceiptNumber: FReceiptNumber := pString;
     DriverParameterReceiptDateTime: FReceiptDateTime := pString;
     DriverParameterRegistrationNumber: FRegistrationNumber := pString;
     DriverParameterReceiptTotal: FReceiptTotal := StrToCurr(pString);
     DriverParameterReceiptIsOffline: FReceiptIsOffline := StrToBool(pString);
+    DriverParameterGTIN: FGTIN := pString;
+    DriverParameterNTIN: FNTIN := pString;
   end;
 end;
 
@@ -1411,15 +1423,26 @@ procedure TWebkassaImpl.DioGetDriverParameter(var pData: Integer;
 begin
   case pData of
     DriverParameterPrintEnabled: pString := BoolToStr(Params.PrintEnabled);
-    DriverParameterBarcode: pString := Receipt.Barcode;
+    DriverParameterBarcode:
+    begin
+      if Receipt is TSalesReceipt then
+        pString := (Receipt as TSalesReceipt).Barcode;
+    end;
+
     DriverParameterExternalCheckNumber: pString := ExternalCheckNumber;
-    DriverParameterFiscalSign: pString := Receipt.FiscalSign;
+    DriverParameterFiscalSign:
+    begin
+      if Receipt is TSalesReceipt then
+      pString := (Receipt as TSalesReceipt).FiscalSign;
+    end;
 
     DriverParameterReceiptNumber: pString := FReceiptNumber;
     DriverParameterReceiptDateTime: pString := FReceiptDateTime;
     DriverParameterRegistrationNumber: pString := FRegistrationNumber;
     DriverParameterReceiptTotal: pString := CurrToStr(FReceiptTotal);
     DriverParameterReceiptIsOffline: pString := BoolToStr(FReceiptIsOffline);
+    DriverParameterGTIN: pString := FGTIN;
+    DriverParameterNTIN: pString := FNTIN;
   end;
 end;
 
@@ -3630,6 +3653,7 @@ begin
       Position.SectionCode := 0;
       Position.Mark := Item.MarkCode;
       Position.GTIN := '';
+      Position.NTIN := '';
       Position.Productld := 0;
       Position.WarehouseType := 0;
       if VatRate = nil then

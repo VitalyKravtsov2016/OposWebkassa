@@ -1,0 +1,43 @@
+{
+	"Token": "0671dad68ff9470e9fa7f687ab9caf86",
+	"CashboxUniqueNumber": "SWK00034423",
+	"OperationType": 3,
+	"Positions": [
+		{
+			"Count": 1,
+			"Price": 100,
+			"TaxPercent": 0,
+			"Tax": 0,
+			"TaxType": 0,
+			"PositionName": "Товар",
+			"PositionCode": "1",
+			"Discount": 0,
+			"Markup": 0,
+			"SectionCode": 0,
+			"IsStorno": false,
+			"MarkupDeleted": false,
+			"DiscountDeleted": false,
+			"UnitCode": 0,
+			"Mark": "",
+			"GTIN": "",
+			"Productld": 0,
+			"WarehouseType": 0
+		}
+	],
+	"Payments": [
+		{
+			"Sum": 100,
+			"PaymentType": 0
+		}
+	],
+	"Change": 0,
+	"RoundType": 0,
+	"ExternalCheckNumber": "769B6B7B-CBB6-4966-8C3A-96EF02020C42",
+	"ReturnBasisDetails": {
+		"CheckNumber": "1414131070918",
+		"DateTime": "07.10.2025 08:44",
+		"RegistrationNumber": "601000010426",
+		"Total": 100,
+		"IsOffline": false
+	}
+}

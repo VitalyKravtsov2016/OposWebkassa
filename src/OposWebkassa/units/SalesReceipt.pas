@@ -8,10 +8,10 @@ uses
   // Opos
   Opos, OposFptrUtils, OposException, OposFptr, OposUtils,
   // Tnt
-  TntClasses,
+  TntClasses, TntSysUtils,
   // This
   CustomReceipt, ReceiptItem, gnugettext, UserError, MathUtils,
-  TextDocument, PrinterTypes, VatRate;
+  TextDocument, PrinterTypes, VatRate, DirectIOAPI;
 
 const
   MaxPayments = 4;
@@ -54,6 +54,13 @@ type
     FDiscounts: TAdjustments;
     FPayments: TReceiptPayments;
     FAmountDecimalPlaces: Integer;
+    FFiscalSign: WideString;
+    FCustomerINN: WideString;
+    FCustomerEmail: WideString;
+    FCustomerPhone: WideString;
+    FGTIN: WideString;
+    FNTIN: WideString;
+    FBarcode: string;
 
     function AddItem: TSalesReceiptItem;
     procedure SubtotalCharge(Amount: Currency;
@@ -151,6 +158,9 @@ type
     function GetVatAmount(const VatRate: TVatRate): Currency;
     function GetPaymentAmount(PayType: Integer): Currency;
 
+    procedure DirectIO(Command: Integer; var pData: Integer;
+      var pString: WideString); override;
+
     property Change: Currency read FChange;
     property Charge: Currency read GetCharge;
     property RecType: TRecType read FRecType;
@@ -161,6 +171,13 @@ type
     property Discounts: TAdjustments read FDiscounts;
     property Payments: TReceiptPayments read FPayments;
     property AmountDecimalPlaces: Integer read FAmountDecimalPlaces;
+    property FiscalSign: WideString read FFiscalSign write FFiscalSign;
+    property CustomerINN: WideString read FCustomerINN write FCustomerINN;
+    property CustomerEmail: WideString read FCustomerEmail write FCustomerEmail;
+    property CustomerPhone: WideString read FCustomerPhone write FCustomerPhone;
+    property Barcode: string read FBarcode write FBarcode;
+    property GTIN: WideString read FGTIN;
+    property NTIN: WideString read FNTIN;
   end;
 
 implementation
@@ -713,6 +730,24 @@ begin
 
   Amount := GetTotalByVAT(VatRate.ID);
   Result := RoundAmount(Amount * VATRate.Rate / (100 + VATRate.Rate));
+end;
+
+procedure TSalesReceipt.DirectIO(Command: Integer; var pData: Integer;
+  var pString: WideString);
+begin
+  if Command = DIO_WRITE_FS_STRING_TAG_OP then
+  begin
+    case pData of
+      1228: FCustomerINN := pString;
+      1008:
+      begin
+        if WideTextPos('@', pString) <> 0 then
+          FCustomerEmail := pString
+        else
+          FCustomerPhone := pString;
+      end;
+    end;
+  end;
 end;
 
 end.

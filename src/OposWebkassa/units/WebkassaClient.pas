@@ -557,6 +557,7 @@ type
     FUnitCode: Integer;
     FMark: WideString;
     FGTIN: WideString;
+    FNTIN: WideString;
     FProductld: Integer;
     FWarehouseType: Integer;
     procedure SetTaxPercent(const Value: TDouble);
@@ -580,6 +581,7 @@ type
     property UnitCode: Integer read FUnitCode write FUnitCode;
     property Mark: WideString read FMark write FMark;
     property GTIN: WideString read FGTIN write FGTIN;
+    property NTIN: WideString read FNTIN write FNTIN;
     property Productld: Integer read FProductld write FProductld;
     property WarehouseType: Integer read FWarehouseType write FWarehouseType;
   end;

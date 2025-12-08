@@ -6,7 +6,7 @@ uses
   // Opos
   Opos, OposFptr, OposException,
   // Tnt
-  TntClasses, TntSysUtils, 
+  TntClasses, TntSysUtils,
   // This
   gnugettext, StringUtils, DirectIOAPI, PrinterTypes;
 
@@ -20,20 +20,12 @@ type
     FLines: TTntStrings;
     FTrailer: TTntStrings;
     FAfterTotal: Boolean;
-    FBarcode: string;
-    FFiscalSign: WideString;
-    FCustomerINN: WideString;
-    FCustomerEmail: WideString;
-    FCustomerPhone: WideString;
   public
     procedure CheckNotVoided;
     function GetTotal: Currency; virtual;
     function GetPayment: Currency; virtual;
     property IsVoided: Boolean read FIsVoided;
     property IsOpened: Boolean read FIsOpened;
-    property CustomerINN: WideString read FCustomerINN write FCustomerINN;
-    property CustomerEmail: WideString read FCustomerEmail write FCustomerEmail;
-    property CustomerPhone: WideString read FCustomerPhone write FCustomerPhone;
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -122,11 +114,9 @@ type
     procedure Print(AVisitor: TObject); virtual;
     procedure PrintBarcode(const Barcode: string); virtual;
 
-    property Barcode: string read FBarcode write FBarcode;
     property Lines: TTntStrings read FLines;
     property Trailer: TTntStrings read FTrailer;
     property AfterTotal: Boolean read FAfterTotal;
-    property FiscalSign: WideString read FFiscalSign write FFiscalSign;
   end;
 
 function CurrencyToInt64(Value: Currency): Int64;
@@ -337,26 +327,15 @@ begin
     raiseExtendedError(OPOS_EFPTR_WRONG_STATE, 'Receipt is voided');
 end;
 
-procedure TCustomReceipt.DirectIO(Command: Integer; var pData: Integer;
-  var pString: WideString);
-begin
-  if Command = DIO_WRITE_FS_STRING_TAG_OP then
-  begin
-    case pData of
-      1228: FCustomerINN := pString;
-      1008:
-      begin
-        if WideTextPos('@', pString) <> 0 then
-          FCustomerEmail := pString
-        else
-          FCustomerPhone := pString;
-      end;
-    end;
-  end;
-end;
 
 procedure TCustomReceipt.PrintBarcode(const Barcode: string);
 begin
+end;
+
+procedure TCustomReceipt.DirectIO(Command: Integer; var pData: Integer;
+  var pString: WideString);
+begin
+
 end;
 
 end.

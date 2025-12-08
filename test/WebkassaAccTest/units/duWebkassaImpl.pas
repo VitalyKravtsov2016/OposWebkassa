@@ -77,6 +77,7 @@ type
     procedure TestFiscalReceipt9;
     procedure TestFiscalReceipt10;
     procedure TestFiscalReceipt11;
+
     procedure TestRefundFiscalReceipt;
   end;
 
@@ -150,7 +151,9 @@ begin
 
     Params.Login := 'apykhtin@ibtsmail.ru';
     Params.Password := 'Kassa123!';
-    Params.CashboxNumber := 'SWK00034308';
+    //Params.CashboxNumber := 'SWK00034308';
+    Params.CashboxNumber := 'SWK00034645';
+
     Params.ConnectTimeout := 10;
     Params.WebkassaAddress := 'https://devkkm.webkassa.kz';
 

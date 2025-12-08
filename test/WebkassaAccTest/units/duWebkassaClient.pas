@@ -77,7 +77,9 @@ begin
     FClient.Address := 'https://devkkm.webkassa.kz';
     FClient.Login := 'apykhtin@ibtsmail.ru';
     FClient.Password := 'Kassa123!';
-    FClient.CashboxNumber := 'SWK00034423';
+    //FClient.CashboxNumber := 'SWK00034423';
+    //FClient.CashboxNumber := 'SWK00034532';
+    FClient.CashboxNumber := 'SWK00034645';
     FClient.AcceptLanguage := 'kk-KZ';
   end;
 end;

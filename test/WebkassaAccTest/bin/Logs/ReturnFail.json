@@ -1,0 +1,51 @@
+{
+	"CashboxUniqueNumber": "SWK00034423",
+	"Positions": [
+		{
+			"Count": 1.0,
+			"Price": 100.0,
+			"Tax": 10.71,
+			"TaxPercent": 12,
+			"TaxType": 100,
+			"TaxValidationType": 0,
+			"PositionName": "Товар",
+			"PositionCode": "",
+			"Discount": 0.0,
+			"Markup": 0.0,
+			"MarkupPercent": 0.0,
+			"SectionCode": "1",
+			"IsStorno": false,
+			"MarkupDeleted": false,
+			"DiscountDeleted": false,
+			"DiscountPercent": 0.0,
+			"IsReturned": false,
+			"UnitCode": 796,
+			"WarehouseType": 0
+		}
+	],
+	"OperationType": 3,
+	"Payments": [
+		{
+			"Sum": 100.0,
+			"PaymentType": 0
+		}
+	],
+	"Change": 0.0,
+	"Discount": 0.0,
+	"Markup": 0.0,
+	"ExternalCheckNumber": "0bb87c98-9009-431a-91c9-df550fad4568",
+	"RoundType": 0,
+	"OfflineDate": "07.10.2025 09:04:56.489",
+	"OfflineNumber": "633326964",
+	"TicketModifiers": [],
+	"TaxValues": [],
+	"ReturnBasisDetails": {
+		"CheckNumber": "1414131070918",
+		"DateTime": "07.10.2025 08:44:00",
+		"RegistrationNumber": "601000010426",
+		"Total": 100.0,
+		"IsOffline": false
+	},
+	"Ofd": 4,
+	"Token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI0ODU5NSIsInN1YiI6ImFweWtodGluQGlidHNtYWlsLnJ1IiwiaWF0IjoxNzU5ODE1NzIwLjAsImV4cCI6MTc1OTkwMjEyMC4wLCJwZXJtaXNzaW9ucyI6WzAsMSwyLDMsNCw1LDYsNywxMyw3MSwxMDZdLCJvcmdhbml6YXRpb25YaW4iOiIxMzEyNDAwMTA0NzkiLCJtZmEiOjB9.tVgj334-zRKTMkVXVRM7YGc4i7_M2upms_Nv8ESt_fs"
+}
