@@ -78,6 +78,8 @@ type
     FCharges: TAdjustments;
     FDiscounts: TAdjustments;
     FNumber: Integer;
+    FGTIN: WideString;
+    FNTIN: WideString;
   public
     constructor Create(AOwner: TReceiptItems); override;
     destructor Destroy; override;
@@ -102,6 +104,8 @@ type
     property UnitName: WideString read FUnitName write FUnitName;
     property Description: WideString read FDescription write FDescription;
     property MarkCode: string read FMarkCode write FMarkCode;
+    property GTIN: WideString read FGTIN write FGTIN;
+    property NTIN: WideString read FNTIN write FNTIN;
   end;
 
   { TAdjustments }

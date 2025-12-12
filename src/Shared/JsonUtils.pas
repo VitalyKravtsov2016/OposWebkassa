@@ -21,9 +21,11 @@ type
   { TDouble }
 
   TDouble = class
+  private
+    FValue: Double;
   public
-    Value: Double;
     constructor Create(AValue: Double);
+    property Value: Double read FValue;
   end;
 
 
@@ -1001,7 +1003,7 @@ end;
 constructor TDouble.Create(AValue: Double);
 begin
   inherited Create;
-  Value := AValue;
+  FValue := AValue;
 end;
 
 end.

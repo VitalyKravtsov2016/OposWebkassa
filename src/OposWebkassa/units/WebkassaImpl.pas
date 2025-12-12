@@ -92,8 +92,6 @@ type
     FRegistrationNumber: WideString;
     FReceiptTotal: Currency;
     FReceiptIsOffline: Boolean;
-    FGTIN: WideString;
-    FNTIN: WideString;
 
     procedure PrintLine(Text: WideString);
     function GetReceiptItemText(ReceiptItem: TSalesReceiptItem;
@@ -1413,8 +1411,16 @@ begin
     DriverParameterRegistrationNumber: FRegistrationNumber := pString;
     DriverParameterReceiptTotal: FReceiptTotal := StrToCurr(pString);
     DriverParameterReceiptIsOffline: FReceiptIsOffline := StrToBool(pString);
-    DriverParameterGTIN: FGTIN := pString;
-    DriverParameterNTIN: FNTIN := pString;
+    DriverParameterGTIN:
+    begin
+      if Receipt is TSalesREceipt then
+      (Receipt as TSalesREceipt).GTIN := pString;
+    end;
+    DriverParameterNTIN:
+    begin
+      if Receipt is TSalesREceipt then
+      (Receipt as TSalesREceipt).NTIN := pString;
+    end;
   end;
 end;
 
@@ -1441,8 +1447,18 @@ begin
     DriverParameterRegistrationNumber: pString := FRegistrationNumber;
     DriverParameterReceiptTotal: pString := CurrToStr(FReceiptTotal);
     DriverParameterReceiptIsOffline: pString := BoolToStr(FReceiptIsOffline);
-    DriverParameterGTIN: pString := FGTIN;
-    DriverParameterNTIN: pString := FNTIN;
+    DriverParameterGTIN:
+    begin
+      pString := '';
+      if Receipt is TSalesREceipt then
+        pString := (Receipt as TSalesREceipt).GTIN;
+    end;
+    DriverParameterNTIN:
+    begin
+      pString := '';
+      if Receipt is TSalesREceipt then
+        pString := (Receipt as TSalesREceipt).NTIN;
+    end;
   end;
 end;
 
@@ -3652,8 +3668,8 @@ begin
       Position.UnitCode := GetUnitCode(Item.UnitName);
       Position.SectionCode := 0;
       Position.Mark := Item.MarkCode;
-      Position.GTIN := '';
-      Position.NTIN := '';
+      Position.GTIN := Item.GTIN;
+      Position.NTIN := Item.NTIN;
       Position.Productld := 0;
       Position.WarehouseType := 0;
       if VatRate = nil then

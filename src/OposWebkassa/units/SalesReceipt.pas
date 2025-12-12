@@ -176,8 +176,8 @@ type
     property CustomerEmail: WideString read FCustomerEmail write FCustomerEmail;
     property CustomerPhone: WideString read FCustomerPhone write FCustomerPhone;
     property Barcode: string read FBarcode write FBarcode;
-    property GTIN: WideString read FGTIN;
-    property NTIN: WideString read FNTIN;
+    property GTIN: WideString read FGTIN write FGTIN;
+    property NTIN: WideString read FNTIN write FNTIN;
   end;
 
 implementation
@@ -340,6 +340,10 @@ begin
   Result := TSalesReceiptItem.Create(FItems);
   FRecItems.Add(Result);
   Result.Number := FRecItems.Count;
+  Result.NTIN := FNTIN;
+  Result.GTIN := FGTIN;
+  FNTIN := '';
+  FGTIN := '';
 end;
 
 procedure TSalesReceipt.PrintRecItem(const Description: WideString;

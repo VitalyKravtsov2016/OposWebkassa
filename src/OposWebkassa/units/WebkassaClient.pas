@@ -337,11 +337,12 @@ type
     FData: TSendReceiptCommandResponse;
     FRequest: TSendReceiptCommandRequest;
     procedure SetData(const Value: TSendReceiptCommandResponse);
+    procedure SetRequest(const Value: TSendReceiptCommandRequest);
   public
     constructor Create;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-    property Request: TSendReceiptCommandRequest read FRequest;
+    property Request: TSendReceiptCommandRequest read FRequest write SetRequest;
   published
     property Data: TSendReceiptCommandResponse read FData write SetData;
   end;
@@ -384,6 +385,7 @@ type
   public
     constructor Create; virtual;
     destructor Destroy; override;
+    procedure Assign(Source: TPersistent); override;
     function IsRequiredField(const Field: WideString): Boolean; override;
   published
     property Token: WideString read FToken write FToken;
@@ -495,6 +497,8 @@ type
   private
     FSum: Currency;
     FPaymentType: Integer;
+  public
+    procedure Assign(Source: TPersistent); override;
   published
     property Sum: Currency read FSum write FSum;
     property PaymentType: Integer read FPaymentType write FPaymentType;
@@ -519,6 +523,8 @@ type
 	  FType: Integer;
 	  FTaxType: Integer;
 	  FTax:	Currency;
+  public
+    procedure Assign(Source: TPersistent); override;
   published
     property Sum: Currency read FSum write FSum;
 	  property Text: WideString read FText write FText;
@@ -560,10 +566,11 @@ type
     FNTIN: WideString;
     FProductld: Integer;
     FWarehouseType: Integer;
-    procedure SetTaxPercent(const Value: TDouble);
+    procedure SetTaxPercent(const ATaxPercent: TDouble);
   public
     constructor Create(Collection: TJsonCollection); override;
     destructor Destroy; override;
+    procedure Assign(Source: TPersistent); override;
   published
     property Count: Double read FCount write FCount;
     property Price: Currency read FPrice write FPrice;
@@ -2055,6 +2062,9 @@ begin
   if Result then
   begin
     JsonToObject(Command.ResponseJson, Command);
+
+    //JsonToObject(Command.RequestJson, FSendReceiptCommand.Request);
+    //JsonToObject(Command.ResponseJson, FSendReceiptCommand);
     FSendReceiptCommand.Assign(Command);
   end;
 end;
@@ -3261,11 +3271,15 @@ end;
 { TSendReceiptCommand }
 
 procedure TSendReceiptCommand.Assign(Source: TPersistent);
+var
+  Src: TSendReceiptCommand;
 begin
   if Source is TSendReceiptCommand then
   begin
-    inherited Assign(Source);
-    Data.Assign((Source as TSendReceiptCommand).Data);
+    Src := Source as TSendReceiptCommand;
+
+    Data := Src.Data;
+    Request := Src.Request;
   end;
 end;
 
@@ -3289,7 +3303,35 @@ begin
   FData.Assign(Value);
 end;
 
+procedure TSendReceiptCommand.SetRequest(
+  const Value: TSendReceiptCommandRequest);
+begin
+  FRequest.Assign(Value);
+end;
+
 { TSendReceiptCommandRequest }
+
+procedure TSendReceiptCommandRequest.Assign(Source: TPersistent);
+var
+  Src: TSendReceiptCommandRequest;
+begin
+  if Source is TSendReceiptCommandRequest then
+  begin
+    Src := Source as TSendReceiptCommandRequest;
+    Token := Src.Token;
+    CashboxUniqueNumber := Src.CashboxUniqueNumber;
+    OperationType := Src.OperationType;
+    Change := Src.Change;
+    RoundType := Src.RoundType;
+    ExternalCheckNumber := SRc.ExternalCheckNumber;
+    CustomerEmail := Src.CustomerEmail;
+    CustomerPhone := Src.CustomerPhone;
+    CustomerXin := Src.CustomerXin;
+    Payments := Src.Payments;
+    Positions := Src.Positions;
+    TicketModifiers := Src.TicketModifiers;
+  end;
+end;
 
 constructor TSendReceiptCommandRequest.Create;
 begin
@@ -3651,6 +3693,40 @@ end;
 
 { TTicketItem }
 
+procedure TTicketItem.Assign(Source: TPersistent);
+var
+  Src: TTicketItem;
+begin
+  if Source is TTicketItem then
+  begin
+    Src := Source as TTicketItem;
+
+    Count := Src.Count;
+    Price := Src.Price;
+
+    TaxPercent := nil;
+    if Src.TaxPercent <> nil then
+      TaxPercent := TDouble.Create(Src.TaxPercent.Value);
+
+    Tax := Src.Tax;
+    TaxType := Src.TaxType;
+    PositionName := Src.PositionName;
+    PositionCode := Src.PositionCode;
+    Discount := Src.Discount;
+    Markup := Src.Markup;
+    SectionCode := Src.SectionCode;
+    IsStorno := Src.IsStorno;
+    MarkupDeleted := Src.MarkupDeleted;
+    DiscountDeleted := Src.DiscountDeleted;
+    UnitCode := Src.UnitCode;
+    Mark := Src.Mark;
+    GTIN := Src.GTIN;
+    NTIN := Src.NTIN;
+    Productld := Src.Productld;
+    WarehouseType := Src.WarehouseType;
+  end;
+end;
+
 constructor TTicketItem.Create(Collection: TJsonCollection);
 begin
   inherited Create(Collection);
@@ -3663,10 +3739,10 @@ begin
   inherited Destroy;
 end;
 
-procedure TTicketItem.SetTaxPercent(const Value: TDouble);
+procedure TTicketItem.SetTaxPercent(const ATaxPercent: TDouble);
 begin
   FTaxPercent.Free;
-  FTaxPercent := Value;
+  FTaxPercent := ATaxPercent;
 end;
 
 { TSendRefundReceiptCommandRequest }
@@ -3715,6 +3791,39 @@ procedure TSendRefundReceiptCommand.SetData(
   const Value: TSendReceiptCommandResponse);
 begin
   FData.Assign(Value);
+end;
+
+{ TPayment }
+
+procedure TPayment.Assign(Source: TPersistent);
+var
+  Src: TPayment;
+begin
+  if Source is TPayment then
+  begin
+    Src := Source as TPayment;
+
+    Sum := Src.Sum;
+    PaymentType := Src.PaymentType;
+  end;
+end;
+
+{ TTicketModifier }
+
+procedure TTicketModifier.Assign(Source: TPersistent);
+var
+  Src: TTicketModifier;
+begin
+  if Source is TTicketModifier then
+  begin
+    Src := Source as TTicketModifier;
+
+    FSum := Src.Sum;
+	  FText := Src.Text;
+	  FType := Src._Type;
+	  FTaxType := Src.TaxType;
+	  Tax := Src.Tax;
+  end;
 end;
 
 initialization

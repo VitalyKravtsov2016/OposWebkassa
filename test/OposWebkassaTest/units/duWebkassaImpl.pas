@@ -18,7 +18,7 @@ uses
   LogFile, WebkassaImpl, WebkassaClient, MockPosPrinter, FileUtils,
   CustomReceipt, uLkJSON, ReceiptTemplate, SalesReceipt, DirectIOAPI,
   DebugUtils, StringUtils, PrinterTypes, PrinterParameters, VatRate,
-  JsonUtils, MemoryUtils, TextDocument;
+  JsonUtils, MemoryUtils, TextDocument, ReceiptItem;
 
 type
   { TWebkassaImplTest }
@@ -109,6 +109,8 @@ type
     procedure TestMemoryLeak2;
     procedure TestMemoryLeak3;
     procedure TestTextDocument;
+    procedure TestGTIN;
+    procedure TestNTIN;
   end;
 
 implementation
@@ -1689,6 +1691,120 @@ begin
  finally
     Command.Free;
   end;
+end;
+
+procedure TWebkassaImplTest.TestGTIN;
+const
+  GTINValue = '823gjhgu62t83674';
+var
+  pData: Integer;
+  pString: WideString;
+  Receipt: TSalesReceipt;
+  Item: TReceiptItem;
+  Position: TTicketItem;
+begin
+  OpenClaimEnable;
+  /////////////////////////////////////////////////////////
+  // if Receipt is not opened - setting GTIN has no effect
+
+  FptrCheck(Driver.DirectIO2(DIO_SET_DRIVER_PARAMETER,
+    DriverParameterGTIN, GTINValue));
+
+  pString := '';
+  pData := DriverParameterGTIN;
+  FptrCheck(Driver.DirectIO(DIO_GET_DRIVER_PARAMETER, pData, pString));
+  CheckEquals('', pString);
+
+  // Open sales receipt
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
+  CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+  CheckEquals(FPTR_PS_FISCAL_RECEIPT, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+  // Set and get GTIN value
+  FptrCheck(Driver.DirectIO2(DIO_SET_DRIVER_PARAMETER,
+    DriverParameterGTIN, GTINValue));
+  pString := '';
+  pData := DriverParameterGTIN;
+  FptrCheck(Driver.DirectIO(DIO_GET_DRIVER_PARAMETER, pData, pString));
+  CheckEquals(GTINValue, pString);
+  // Add receipt item
+  FptrCheck(Driver.PrintRecItem('Item 1', 123.45, 1000, 1, 123.45, 'Í„'));
+  Check(Driver.Receipt is TSalesReceipt, 'Driver.Receipt is TSalesReceipt');
+  Receipt := Driver.Receipt as TSalesReceipt;
+  CheckEquals(1, Receipt.Items.Count, 'Receipt.Items.Count <> 1');
+  Item := Receipt.Items[0];
+  Check(Item is TSalesReceiptItem, 'Item is TSalesReceiptItem');
+  CheckEquals(GTINValue, (Item as TSalesReceiptItem).GTIN);
+  // GTIN will be reset
+  pString := '';
+  pData := DriverParameterGTIN;
+  FptrCheck(Driver.DirectIO(DIO_GET_DRIVER_PARAMETER, pData, pString));
+  CheckEquals('', pString);
+  // Close receipt
+  FptrCheck(Driver.PrintRecTotal(123.45, 123.45, '0'));
+  CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+  CheckEquals(OPOS_SUCCESS, Driver.EndFiscalReceipt(False));
+  // Check receipt command
+  CheckEquals(1, Driver.Client.SendReceiptCommand.Request.Positions.Count, 'Positions.Count');
+  Position := Driver.Client.SendReceiptCommand.Request.Positions[0];
+  CheckEquals(GTINValue, Position.GTIN, 'Position.GTIN');
+end;
+
+procedure TWebkassaImplTest.TestNTIN;
+const
+  NTINValue = 'kjsdhf9834ry98237498aksjdh';
+var
+  pData: Integer;
+  pString: WideString;
+  Receipt: TSalesReceipt;
+  Item: TReceiptItem;
+  Position: TTicketItem;
+begin
+  OpenClaimEnable;
+  /////////////////////////////////////////////////////////
+  // if Receipt is not opened - setting NTIN has no effect
+
+  FptrCheck(Driver.DirectIO2(DIO_SET_DRIVER_PARAMETER,
+    DriverParameterNTIN, NTINValue));
+
+  pString := '';
+  pData := DriverParameterNTIN;
+  FptrCheck(Driver.DirectIO(DIO_GET_DRIVER_PARAMETER, pData, pString));
+  CheckEquals('', pString);
+
+  // Open sales receipt
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
+  CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+  CheckEquals(FPTR_PS_FISCAL_RECEIPT, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+  // Set and get NTIN value
+  FptrCheck(Driver.DirectIO2(DIO_SET_DRIVER_PARAMETER,
+    DriverParameterNTIN, NTINValue));
+  pString := '';
+  pData := DriverParameterNTIN;
+  FptrCheck(Driver.DirectIO(DIO_GET_DRIVER_PARAMETER, pData, pString));
+  CheckEquals(NTINValue, pString);
+  // Add receipt item
+  FptrCheck(Driver.PrintRecItem('Item 1', 123.45, 1000, 1, 123.45, 'Í„'));
+  Check(Driver.Receipt is TSalesReceipt, 'Driver.Receipt is TSalesReceipt');
+  Receipt := Driver.Receipt as TSalesReceipt;
+  CheckEquals(1, Receipt.Items.Count, 'Receipt.Items.Count <> 1');
+  Item := Receipt.Items[0];
+  Check(Item is TSalesReceiptItem, 'Item is TSalesReceiptItem');
+  CheckEquals(NTINValue, (Item as TSalesReceiptItem).NTIN);
+  // NTIN will be reset
+  pString := '';
+  pData := DriverParameterNTIN;
+  FptrCheck(Driver.DirectIO(DIO_GET_DRIVER_PARAMETER, pData, pString));
+  CheckEquals('', pString);
+  // Close receipt
+  FptrCheck(Driver.PrintRecTotal(123.45, 123.45, '0'));
+  CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+  CheckEquals(OPOS_SUCCESS, Driver.EndFiscalReceipt(False));
+  // Check receipt command
+  CheckEquals(1, Driver.Client.SendReceiptCommand.Request.Positions.Count, 'Positions.Count');
+  Position := Driver.Client.SendReceiptCommand.Request.Positions[0];
+  CheckEquals(NTINValue, Position.NTIN, 'Position.NTIN');
 end;
 
 initialization
