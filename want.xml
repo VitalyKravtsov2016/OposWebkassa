@@ -208,7 +208,7 @@ See http://www.suigeneris.org/want/ for details.
       <dcuoutput path="${dcu}"  />
       <build     value="true" />
       <debug     value="true" />
-      <console   value="true" />
+      <console   value="false" />
       <writeableconst value="true" />
       <warnings value="true" />    
       <warning name="SYMBOL_PLATFORM" value="off" />

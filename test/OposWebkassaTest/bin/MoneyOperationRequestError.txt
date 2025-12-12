@@ -1,1 +1,1 @@
-{"Token":"","CashboxUniqueNumber":"SWK00000019","OperationType":1,"Sum":1500,"ExternalCheckNumber":"123456789"}
+{"CashboxUniqueNumber":"SWK00000019","OperationType":1,"Sum":1500,"ExternalCheckNumber":"123456789"}

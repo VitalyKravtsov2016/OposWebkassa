@@ -204,6 +204,13 @@ type
   TReturnDetails = class;
   TSendRefundReceiptCommandRequest = class;
 
+  { TJsonPersistent }
+
+  TJsonPersistent = class(TJsonPersist)
+  public
+    function IsRequiredField(const Field: WideString): Boolean; override;
+  end;
+
   { TErrorResult }
 
   TErrorResult = class(TJsonPersistent)
@@ -1654,6 +1661,11 @@ public enum ApiErrorCode
 }
 
 *)
+
+function TJsonPersistent.IsRequiredField(const Field: WideString): Boolean;
+begin
+  Result := AnsiCompareText(Field, 'Token') = 0;
+end;
 
 { TWebkassaClient }
 
@@ -3360,8 +3372,9 @@ begin
   for i := Low(RequiredFields) to High(RequiredFields) do
   begin
     Result := AnsiCompareText(Field, RequiredFields[i]) = 0;
-    if Result then Break;
+    if Result then Exit;
   end;
+  Result := inherited IsRequiredField(Field);
 end;
 
 procedure TSendReceiptCommandRequest.SetPayments(const Value: TPayments);
@@ -3825,6 +3838,8 @@ begin
 	  Tax := Src.Tax;
   end;
 end;
+
+{ TJsonPersistent }
 
 initialization
   DecimalSeparator := '.';

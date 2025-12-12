@@ -6,21 +6,35 @@
 
 *******************************************************************
 
+  OposWebKassa_0.131.exe
+  12 декабря 2025 10:50
+
+  [+] Добавлены поля NTIN и GTIN. Для установки можно использовать
+      команды:
+      directIO(DIO_SET_DRIVER_PARAMETER, DriverParameterGTIN, value);
+      directIO(DIO_SET_DRIVER_PARAMETER, DriverParameterNTIN, value);
+      DIO_GET_DRIVER_PARAMETER   = 29; // read internal driver parameter
+      DIO_SET_DRIVER_PARAMETER   = 30; // write internal driver parameter
+      DriverParameterGTIN        = 309;
+      DriverParameterNTIN        = 310;
+ 
+*******************************************************************
+
   OposWebKassa_0.130.exe
   9 октября 2025 08:30
 
   [+] Добавлена возможность указать параметры чека для формирования 
       чека возврата. Дополнительные параметры читаются и записываются
-	  через directIO.
-	  DIO_GET_DRIVER_PARAMETER = 29; // read internal driver parameter
+      через directIO.
+      DIO_GET_DRIVER_PARAMETER = 29; // read internal driver parameter
       DIO_SET_DRIVER_PARAMETER = 30; // write internal driver parameter
-	  DriverParameterReceiptNumber            = 304;
-	  DriverParameterReceiptDateTime          = 305;
-	  DriverParameterRegistrationNumber       = 306;
-	  DriverParameterReceiptTotal             = 307;
-	  DriverParameterReceiptIsOffline         = 308;
-	  Параметры нужно прочитать и сохранить после формирования чека продажи и 
-	  записать перед формированием чека возврата. 
+      DriverParameterReceiptNumber            = 304;
+      DriverParameterReceiptDateTime          = 305;
+      DriverParameterRegistrationNumber       = 306;
+      DriverParameterReceiptTotal             = 307;
+      DriverParameterReceiptIsOffline         = 308;
+      Параметры нужно прочитать и сохранить после формирования чека продажи и 
+      записать перед формированием чека возврата. 
   
 *******************************************************************
 
@@ -35,7 +49,7 @@
   6 августа 2025 13:40
 
   [+] Добавлена программная установка параметров для EurekaLog
-	  
+      
 *******************************************************************
 
   OposWebKassa_0.126.exe
@@ -100,7 +114,7 @@
   10 июня 2025 12:00
   
   [-] Исправлена запись в лог стека при исключениях
-	  
+      
 *******************************************************************
 
   OposWebKassa_0.114.exe
@@ -138,7 +152,7 @@
   
   [+] При инициализации ESC принтера добавлена команда 0x1C 0x2E 
       для отмены китайских символов, которые могут быть включены 
-	  по-умолчанию
+      по-умолчанию
   
 *******************************************************************
 
@@ -146,7 +160,7 @@
   2 апреля 2025 13:22
   
   [+] Обновлена библиотека zint.dll до версии 2.15, 
-	  исключены библиотеки lpng и zlib
+      исключены библиотеки lpng и zlib
   
 *******************************************************************
 
@@ -155,7 +169,7 @@
   
   [+] Добавлена поддержка принтера XPrinter, 
       https://www.xprintertech.com/
-	  
+      
   [-] Исправлена печать в страничном режиме на принтере Posiflex
   
 *******************************************************************
@@ -196,9 +210,9 @@
   
   [-] Исправлена утилита настройки драйвера. 
       Теперь порт USB доступен только для принтера Posiflex.
-	  
+      
   [-] Исправлена ошибка печати на принтере Windows
-	  
+      
 *******************************************************************
 
   OposWebKassa_0.99.exe
@@ -249,7 +263,7 @@
   26 декабря 2024 14:46
   
   [+] Добавлена поддержка принтера Posiflex
-	  
+      
 *******************************************************************
 
   OposWebKassa_0.92.exe
@@ -265,10 +279,10 @@
   
   [+] Сделана печать QR кода справа от текста
       В шаблоне чека этот элемент должен иметь тип STYLE_QR_CODE_PM = 9.
-	  Чтобы изменить шаблон чека нужно изменить поле "TextStyle" - 
-	  вместо значения STYLE_QR_CODE = 8 установить STYLE_QR_CODE_PM = 9.
-	  QR код печатается на принтере Rongta, на принтере OA-48
-	  страничный режим (page mode) не поддерживается.
+      Чтобы изменить шаблон чека нужно изменить поле "TextStyle" - 
+      вместо значения STYLE_QR_CODE = 8 установить STYLE_QR_CODE_PM = 9.
+      QR код печатается на принтере Rongta, на принтере OA-48
+      страничный режим (page mode) не поддерживается.
   
 *******************************************************************
 
@@ -300,7 +314,7 @@
   
   [-] Исправлена ошибка межстрочного интервала
   [-] Исправлена ошибка загрузки шрифтов в принтер Rongta
-	  
+      
 *******************************************************************
 
   OposWebKassa_0.86.exe
@@ -315,7 +329,7 @@
   18 ноября 2024 13:50
   
   [-] Исправлена ошибка печати QR кода в дубликате чека
-	  
+      
 *******************************************************************
 
   OposWebKassa_0.84.exe
@@ -323,7 +337,7 @@
   
   [+] Добавлен параметр "Печатать QR код вместо DataMatrix" на 
       страницу "Штрихкод" в программе настройки. 
-	  
+      
 *******************************************************************
 
   OposWebKassa_0.83.exe
@@ -331,7 +345,7 @@
   
   [-] Изменена работа с POS принтером. POS принтер 
       захватывается только для печати документа.
-	  
+      
 *******************************************************************
 
   OposWebKassa_0.82.exe
@@ -513,21 +527,21 @@
   
   [+] Добавлена команда directIO DIO_GET_RECEIPT_RESPONSE_PARAM = 101
       для запроса параметров чека из ответа сервера. 
-	  pData - не используется
-	  pString - название поля, возможные значения:
-	  CheckNumber, DateTime, OfflineMode, CashboxOfflineMode, 
-	  Cashbox.UniqueNumber, Cashbox.RegistrationNumber, Cashbox.IdentityNumber, 
-	  Cashbox.Address, Cashbox.Ofd.Code, Cashbox.Ofd.Host, Cashbox.Ofd.Name,
-	  CheckOrderNumber, ShiftNumber, EmployeeName, TicketUrl, TicketPrintUrl, 
-	  
+      pData - не используется
+      pString - название поля, возможные значения:
+      CheckNumber, DateTime, OfflineMode, CashboxOfflineMode, 
+      Cashbox.UniqueNumber, Cashbox.RegistrationNumber, Cashbox.IdentityNumber, 
+      Cashbox.Address, Cashbox.Ofd.Code, Cashbox.Ofd.Host, Cashbox.Ofd.Name,
+      CheckOrderNumber, ShiftNumber, EmployeeName, TicketUrl, TicketPrintUrl, 
+      
   [+] Добавлена команда directIO DIO_GET_RECEIPT_RESPONSE_FIELD = 102
       для запроса параметров чека из ответа сервера. 
-	  pData - не используется
-	  pString - название поля, возможные значения:
-	  Data.CheckNumber, Data.DateTime, Data.OfflineMode, Data.CashboxOfflineMode, 
-	  Data.Cashbox.UniqueNumber, Data.Cashbox.RegistrationNumber, Data.Cashbox.IdentityNumber, 
-	  Data.Cashbox.Address, Data.Cashbox.Ofd.Code, Data.Cashbox.Ofd.Host, Data.Cashbox.Ofd.Name,
-	  Data.CheckOrderNumber, Data.ShiftNumber, Data.EmployeeName, Data.TicketUrl, Data.TicketPrintUrl, 
+      pData - не используется
+      pString - название поля, возможные значения:
+      Data.CheckNumber, Data.DateTime, Data.OfflineMode, Data.CashboxOfflineMode, 
+      Data.Cashbox.UniqueNumber, Data.Cashbox.RegistrationNumber, Data.Cashbox.IdentityNumber, 
+      Data.Cashbox.Address, Data.Cashbox.Ofd.Code, Data.Cashbox.Ofd.Host, Data.Cashbox.Ofd.Name,
+      Data.CheckOrderNumber, Data.ShiftNumber, Data.EmployeeName, Data.TicketUrl, Data.TicketPrintUrl, 
     
   [+] Добавлена команда directIO DIO_GET_REQUEST_JSON_FIELD = 103
       для запроса полей запроса к серверу
@@ -684,7 +698,7 @@
   17 января 2023 16, 
   
   [-] Исправлена ошибка с дублированием строк заголока чека
-	  
+      
 *******************************************************************
 
   OposWebKassa_0.29.exe
@@ -706,7 +720,7 @@
   28 декабря 2022 16, 
   
   [-] Исправлена ошибка сохранения заголовка и подвала чека
-	  
+      
 *******************************************************************
 
   OposWebKassa_0.26.exe
@@ -714,8 +728,8 @@
   
   [+] Добавлен тип принтера "ESC Windows принтер"
       Этот принтер использует передачу ESC последовательностей в 
-	  Windows принтер. Будет работать только с ESC/POS принтером.
-	  
+      Windows принтер. Будет работать только с ESC/POS принтером.
+      
 *******************************************************************
 
   OposWebKassa_0.25.exe
@@ -769,7 +783,7 @@
   
   [-] Исправлена ошибка оплаты мобильным типом
   [-] Исправлена ошибка обработки событий
-	  
+      
 *******************************************************************
 
   OposWebKassa_0.18.exe
