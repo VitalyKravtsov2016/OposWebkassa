@@ -1,26 +1,25 @@
 [Closed Files]
-File_0=SourceModule,'c:\program files (x86)\borland\delphi7\source\rtl\common\classes.pas',0,1,3477,31,3495,0,0
-File_1=SourceModule,'D:\projects\IBTS\WebKassa\src\Shared\JsonUtils.pas',0,1,293,1,311,0,0
-File_2=SourceModule,'D:\projects\IBTS\WebKassa\src\OposWebkassa\units\WebkassaClient.pas',0,1,3805,5,3825,0,0
-File_3=SourceModule,'D:\projects\IBTS\WebKassa\test\WebkassaAccTest\units\duWebkassaImpl.pas',0,1,736,29,737,0,0
-File_4=SourceModule,'D:\projects\IBTS\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas',0,1,3540,1,3558,0,0
-File_5=SourceModule,'D:\projects\IBTS\WebKassa\src\Shared\DriverError.pas',0,1,24,1,42,0,0
-File_6=SourceModule,'D:\projects\IBTS\WebKassa\src\OposWebkassa\units\SalesReceipt.pas',0,1,263,1,278,0,0
-File_7=SourceModule,'D:\projects\IBTS\WebKassa\src\Opos\Opos.pas',0,1,49,1,66,0,0
-File_8=SourceModule,'c:\program files (x86)\borland\delphi7\Comp\dunit\src\TestFramework.pas',0,1,850,49,859,0,0
+File_0=SourceModule,'D:\projects\IBTS\WebKassa\test\OposWebkassaTest\units\duComUtils.pas',0,1,95,16,111,0,0
+File_1=SourceModule,'D:\projects\IBTS\WebKassa\test\OposWebkassaTest\units\duOposDevice.pas',0,1,42,5,49,0,0
+File_2=SourceModule,'D:\projects\IBTS\WebKassa\test\OposWebkassaTest\units\duTranslation.pas',0,1,57,3,67,0,0
+File_3=SourceModule,'D:\projects\IBTS\WebKassa\test\OposWebkassaTest\units\duWebkassaClient.pas',0,1,779,1,788,0,0
+File_4=SourceModule,'D:\projects\IBTS\WebKassa\test\OposWebkassaTest\units\duWebkassaImpl.pas',0,1,1805,1,1811,0,0
+File_5=SourceModule,'D:\projects\IBTS\WebKassa\test\OposWebkassaTest\units\duWebkassaImpl2.pas',0,1,686,51,694,0,0
+File_6=SourceModule,'D:\projects\IBTS\WebKassa\test\OposWebkassaTest\units\duWebkassaImpl3.pas',0,1,240,3,246,0,0
+File_7=SourceModule,'D:\projects\IBTS\WebKassa\test\OposWebkassaTest\units\duWebkassaImpl4.pas',0,1,192,42,204,0,0
+File_8=SourceModule,'D:\projects\IBTS\WebKassa\test\OposWebkassaTest\units\duOposUtils.pas',0,1,82,16,98,0,0
+File_9=SourceModule,'D:\projects\IBTS\WebKassa\src\Opos\OposUtils.pas',0,1,320,5,335,0,0
 
 [Modules]
-Module0=D:\projects\IBTS\WebKassa\test\OposWebkassaTest\units\duWebkassaImpl.pas
-Count=1
-EditWindowCount=1
+Count=0
+EditWindowCount=0
 TypeLibWindowCount=1
 
-[D:\projects\IBTS\WebKassa\test\OposWebkassaTest\units\duWebkassaImpl.pas]
-ModuleType=SourceModule
+[D:\projects\IBTS\WebKassa\test\OposWebkassaTest\OposWebkassaTest.dpr]
 FormState=0
 FormOnTop=0
 
-[D:\projects\IBTS\WebKassa\test\WebkassaAccTest\WebkassaAccTest.dpr]
+[D:\projects\IBTS\WebKassa\test\OposWebkassaTest\OposWebkassaTestLib.dpr]
 FormState=0
 FormOnTop=0
 
@@ -44,51 +43,13 @@ FormOnTop=0
 FormState=0
 FormOnTop=0
 
-[D:\projects\IBTS\WebKassa\test\OposWebkassaTest\OposWebkassaTest.dpr]
-FormState=0
-FormOnTop=0
-
 [D:\projects\IBTS\WebKassa\test\OposWebkassaTest\OposWebkassaTest.todo]
 FormState=0
 FormOnTop=0
 
-[D:\projects\IBTS\WebKassa\test\OposWebkassaTest\OposWebkassaTestLib.dpr]
+[D:\projects\IBTS\WebKassa\test\WebkassaAccTest\WebkassaAccTest.dpr]
 FormState=0
 FormOnTop=0
-
-[EditWindow0]
-ViewCount=1
-CurrentView=0
-View0=0
-CodeExplorer=CodeExplorer@EditWindow0
-MessageView=MessageView@EditWindow0
-Create=1
-Visible=1
-State=2
-Left=493
-Top=140
-Width=1302
-Height=682
-MaxLeft=-8
-MaxTop=107
-MaxWidth=1936
-MaxHeight=941
-ClientWidth=1920
-ClientHeight=902
-LeftPanelSize=0
-LeftPanelClients=CodeExplorer@EditWindow0
-LeftPanelData=00000400010000000C000000436F64654578706C6F7265720000000000000000000000000000000000FFFFFFFF
-RightPanelSize=0
-BottomPanelSize=0
-BottomPanelClients=MessageView@EditWindow0
-BottomPanelData=00000400010000000B0000004D657373616765566965770000000000000000000000000000000000FFFFFFFF
-
-[View0]
-Module=D:\projects\IBTS\WebKassa\test\OposWebkassaTest\units\duWebkassaImpl.pas
-CursorX=11
-CursorY=542
-TopLine=529
-LeftCol=1
 
 [TypeLibEditWindow0]
 Create=1
@@ -152,12 +113,12 @@ Visible=1
 State=0
 Left=0
 Top=117
-Width=633
-Height=754
+Width=584
+Height=341
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=617
-ClientHeight=715
+ClientWidth=568
+ClientHeight=302
 TBDockHeight=681
 LRDockWidth=445
 Dockable=0
@@ -215,7 +176,7 @@ HiddenCategories=
 
 [BreakpointWindow]
 Create=1
-Visible=1
+Visible=0
 State=0
 Left=528
 Top=191
@@ -395,45 +356,13 @@ TBDockHeight=151
 LRDockWidth=383
 Dockable=1
 
-[CodeExplorer@EditWindow0]
-Create=1
-Visible=0
-State=0
-Left=-297
-Top=-9
-Width=140
-Height=305
-MaxLeft=-1
-MaxTop=-1
-ClientWidth=140
-ClientHeight=305
-TBDockHeight=305
-LRDockWidth=140
-Dockable=1
-
-[MessageView@EditWindow0]
-Create=1
-Visible=0
-State=0
-Left=-303
-Top=-707
-Width=443
-Height=85
-MaxLeft=-1
-MaxTop=-1
-ClientWidth=443
-ClientHeight=85
-TBDockHeight=85
-LRDockWidth=443
-Dockable=1
-
 [DockHosts]
 DockHostCount=1
 
 [DockSite0]
 DockSiteType=0
 Create=1
-Visible=1
+Visible=0
 State=0
 Left=715
 Top=518

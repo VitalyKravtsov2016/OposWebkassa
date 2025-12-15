@@ -1,0 +1,73 @@
+{
+	"Data": {
+		"UniqueNumber": "SWK00082409",
+		"IdentityNumber": 4108,
+		"RegistrationNumber": "220114123824",
+		"OfdProtocolVersion": 202,
+		"AllLicenseExpiring": "2034-11-18T15:39:29",
+		"OrganizationXin": "950402350702",
+		"OrganizationName": "ТОО or BIN 950402350702",
+		"CurrentState": {
+			"ShiftNumber": 222,
+			"ShiftClosed": true,
+			"ShiftOpenedAt": "2024-11-18T15:39:29",
+			"ShiftClosedAt": "2024-11-19T15:39:29",
+			"LastOperationDate": "2025-09-04T17:52:11",
+			"DocumentsCount": 5,
+			"ReportState": {
+				"TaxPayerName": "ТОО DevKKM",
+				"TaxPayerIN": "090540008881",
+				"TaxPayerVAT": true,
+				"TaxPayerVATSeria": "11111",
+				"TaxPayerVATNumber": "1111111",
+				"ReportNumber": 1,
+				"CashboxSN": "SWK00033717",
+				"CashboxIN": 748,
+				"CashboxRN": "660377756642",
+				"StartOn": "2024-11-18T15:39:29",
+				"ReportOn": "2024-11-19T15:39:29",
+				"CloseOn": "2024-11-19T15:39:29",
+				"CashierCode": 64,
+				"CashierName": "Пользователь интегратора",
+				"ShiftNumber": 2,
+				"DocumentCount": 1,
+				"PutMoneySum": 500,
+				"TakeMoneySum": 0,
+				"ControlSum": 1092464610,
+				"OfflineMode": false,
+				"CashboxOfflineMode": false,
+				"SumInCashbox": 2500,
+				"Sell": {
+					"PaymentsByTypesApiModel": [],
+					"Discount": 0,
+					"Markup": 0,
+					"Taken": 0,
+					"Change": 0,
+					"Count": 0,
+					"TotalCount": 0,
+					"VAT": 0
+				},
+				"Buy": {
+					"PaymentsByTypesApiModel": [],
+					"Discount": 0,
+					"Markup": 0,
+					"Taken": 0,
+					"Change": 0,
+					"Count": 0,
+					"TotalCount": 0,
+					"VAT": 0
+				},
+				"ReturnSell": {
+					"PaymentsByTypesApiModel": [],
+					"Discount": 0,
+					"Markup": 0,
+					"Taken": 0,
+					"Change": 0,
+					"Count": 0,
+					"TotalCount": 0,
+					"VAT": 0
+				}
+			}
+		}
+	}
+}

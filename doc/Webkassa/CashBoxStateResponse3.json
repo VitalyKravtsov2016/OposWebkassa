@@ -1,0 +1,105 @@
+{
+	"Data": {
+		"UniqueNumber": "SWK00034792",
+		"IdentityNumber": 3163,
+		"RegistrationNumber": "904672513209",
+		"OfdProtocolVersion": 203,
+		"AllLicenseExpiring": "2026-01-01T00:00:00",
+		"OrganizationXin": "131240010479",
+		"OrganizationName": "ТОО SOFT IT KAZAKHSTAN",
+		"CurrentState": {
+			"ShiftNumber": 2,
+			"ShiftClosed": false,
+			"ShiftOpenedAt": "2025-12-04T09:34:11.2696498",
+			"LastOperationDate": "2025-12-04T09:34:11.2696498",
+			"DocumentsCount": 1,
+			"ReportState": {
+				"TaxPayerName": "ТОО SOFT IT KAZAKHSTAN",
+				"TaxPayerIN": "131240010479",
+				"TaxPayerVAT": true,
+				"TaxPayerVATSeria": "00000",
+				"TaxPayerVATNumber": "0000000",
+				"ReportNumber": 1,
+				"CashboxSN": "SWK00034792",
+				"CashboxIN": 3163,
+				"CashboxRN": "904672513209",
+				"StartOn": "2025-12-04T09:34:11.2696498",
+				"ReportOn": "2025-12-04T09:34:11.2696498",
+				"CashierCode": 0,
+				"CashierName": "Ахметзянов Рустам",
+				"ShiftNumber": 2,
+				"DocumentCount": 1,
+				"PutMoneySum": 0.0,
+				"TakeMoneySum": 0.0,
+				"ControlSum": 1834486955,
+				"OfflineMode": false,
+				"CashboxOfflineMode": false,
+				"SumInCashbox": 7561454.46,
+				"Sell": {
+					"PaymentsByTypesApiModel": [
+						{
+							"Sum": 319391.0,
+							"Type": 0
+						}
+					],
+					"Discount": 0.0,
+					"Markup": 0.0,
+					"Taken": 319391.0,
+					"Change": 0.0,
+					"Count": 1,
+					"TotalCount": 12,
+					"VAT": 34220.46
+				},
+				"Buy": {
+					"PaymentsByTypesApiModel": [],
+					"Discount": 0.0,
+					"Markup": 0.0,
+					"Taken": 0.0,
+					"Change": 0.0,
+					"Count": 0,
+					"TotalCount": 0,
+					"VAT": 0.0
+				},
+				"ReturnSell": {
+					"PaymentsByTypesApiModel": [],
+					"Discount": 0.0,
+					"Markup": 0.0,
+					"Taken": 0.0,
+					"Change": 0.0,
+					"Count": 0,
+					"TotalCount": 0,
+					"VAT": 0.0
+				},
+				"ReturnBuy": {
+					"PaymentsByTypesApiModel": [],
+					"Discount": 0.0,
+					"Markup": 0.0,
+					"Taken": 0.0,
+					"Change": 0.0,
+					"Count": 0,
+					"TotalCount": 0,
+					"VAT": 0.0
+				},
+				"EndNonNullable": {
+					"Sell": 7561454.46,
+					"Buy": 0.0,
+					"ReturnSell": 0.0,
+					"ReturnBuy": 0.0
+				},
+				"StartNonNullable": {
+					"Sell": 7242063.46,
+					"Buy": 0.0,
+					"ReturnSell": 0.0,
+					"ReturnBuy": 0.0
+				},
+				"Ofd": {
+					"Name": "ТОО \"Smartcontract\" (WOFD)",
+					"NameKz": "ЖШС \"Smartcontract\" (WOFD)",
+					"NameEn": "ТОО \"Smartcontract\" (WOFD)",
+					"Host": "ctest3.wofd.kz/consumer",
+					"Code": 4
+				}
+			}
+		}
+	}
+}

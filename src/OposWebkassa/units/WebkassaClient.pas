@@ -1513,7 +1513,8 @@ type
     function ReadUnits(Command: TReadUnitsCommand): Boolean;
     function UploadOrder(Command: TUploadOrderCommand): Boolean;
     function ReadCashboxes(Command: TCashboxesCommand): Boolean;
-    function ReadCashboxStatus(Request: TCashboxRequest): Boolean;
+    function ReadCashboxStatusOld(Request: TCashboxRequest): Boolean;
+    function ReadCashboxStatus2(Request: TCashboxRequest): Boolean;
     function ReadShiftHistory(Command: TShiftCommand): Boolean;
     function Execute(Command: TWebkassaCommand): Boolean;
 
@@ -2363,12 +2364,21 @@ begin
   end;
 end;
 
-function TWebkassaClient.ReadCashboxStatus(Request: TCashboxRequest): Boolean;
+function TWebkassaClient.ReadCashboxStatusOld(Request: TCashboxRequest): Boolean;
 var
   JsonText: WideString;
 begin
   JsonText := ObjectToJson(Request);
   JsonText := Post(GetAddress + 'api/cashbox/state', JsonText);
+  Result := CheckLastError;
+end;
+
+function TWebkassaClient.ReadCashboxStatus2(Request: TCashboxRequest): Boolean;
+var
+  JsonText: WideString;
+begin
+  JsonText := ObjectToJson(Request);
+  JsonText := Post(GetAddress + 'api-portal/cashbox/state', JsonText);
   Result := CheckLastError;
 end;
 

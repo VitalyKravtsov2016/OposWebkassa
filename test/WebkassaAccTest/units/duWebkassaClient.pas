@@ -35,7 +35,6 @@ type
     procedure TestReadCahiers;
     procedure TestReadUnits;
     procedure TestRegistration;
-    procedure TestReadCashboxState;
     procedure TestXReport;
     procedure TestZReport;
     procedure TestJournalReport;
@@ -46,6 +45,8 @@ type
     procedure TestRefundReceipt;
     procedure TestRefundReceipt2;
     procedure TestRefundReceipt3;
+    procedure TestReadCashboxState;
+    procedure TestReadCashboxState2;
   end;
 
 implementation
@@ -77,9 +78,7 @@ begin
     FClient.Address := 'https://devkkm.webkassa.kz';
     FClient.Login := 'apykhtin@ibtsmail.ru';
     FClient.Password := 'Kassa123!';
-    //FClient.CashboxNumber := 'SWK00034423';
-    //FClient.CashboxNumber := 'SWK00034532';
-    FClient.CashboxNumber := 'SWK00034645';
+    FClient.CashboxNumber := 'SWK00034792';
     FClient.AcceptLanguage := 'kk-KZ';
   end;
 end;
@@ -598,7 +597,7 @@ begin
     FClient.Connect;
     Request.Token := FClient.Token;
     Request.CashboxUniqueNumber := FClient.CashboxNumber;
-    FClient.ReadCashboxStatus(Request);
+    FClient.ReadCashboxStatus2(Request);
     WriteFileData(GetModulePath + 'ReadCashboxStatus.txt', FClient.AnswerJson);
   finally
     Request.Free;
@@ -811,6 +810,23 @@ begin
     RefReceipt.Free;
   end;
 end;
+
+procedure TWebkassaClientTest.TestReadCashboxState2;
+var
+  Request: TCashboxRequest;
+begin
+  Request := TCashboxRequest.Create;
+  try
+    FClient.Connect;
+    Request.Token := FClient.Token;
+    Request.CashboxUniqueNumber := FClient.CashboxNumber;
+    FClient.ReadCashboxStatus2(Request);
+    WriteFileData(GetModulePath + 'ReadCashboxStatus.txt', FClient.AnswerJson);
+  finally
+    Request.Free;
+  end;
+end;
+
 
 initialization
   FReceipt := TSendReceiptCommand.Create;

@@ -1693,7 +1693,7 @@ begin
     try
       Request.Token := Client.Token;
       Request.CashboxUniqueNumber := Params.CashboxNumber;
-      Client.ReadCashboxStatus(Request);
+      Client.ReadCashboxStatus2(Request);
 
       FCashboxStatusAnswerJson := FClient.AnswerJson;
       FCashboxStatus := TlkJSON.ParseText(FClient.AnswerJson);
@@ -1711,7 +1711,7 @@ begin
   Result := Params.SumInCashbox;
   try
     Result := ReadCashboxStatus.Get('Data').Get('CurrentState').Get(
-      'XReport').Get('SumInCashbox').Value;
+      'ReportState').Get('SumInCashbox').Value;
 
     Params.SumInCashbox := Result;
     SaveUsrParams;
@@ -1729,7 +1729,7 @@ var
 begin
   Result := Params.GrossTotal;
   try
-    Node := ReadCashboxStatus.Get('Data').Get('CurrentState').Get('XReport').Get('StartNonNullable');
+    Node := ReadCashboxStatus.Get('Data').Get('CurrentState').Get('ReportState');
     Result :=
       Currency(Node.Get('Sell').Value) -
       Currency(Node.Get('Buy').Value) -
@@ -1752,7 +1752,7 @@ var
 begin
   Result := Params.DailyTotal;
   try
-    Doc := ReadCashboxStatus.Get('Data').Get('CurrentState').Get('XReport');
+    Doc := ReadCashboxStatus.Get('Data').Get('CurrentState').Get('ReportState');
     // Sell
     Result :=  Result +
       (Doc.Get('Sell').Get('Taken').Value -
@@ -1786,7 +1786,7 @@ var
 begin
   Result := Params.SellTotal;
   try
-    Doc := ReadCashboxStatus.Get('Data').Get('CurrentState').Get('XReport');
+    Doc := ReadCashboxStatus.Get('Data').Get('CurrentState').Get('ReportState');
     // Sell
     Result :=  Result +
       (Doc.Get('Sell').Get('Taken').Value -
@@ -1812,7 +1812,7 @@ var
 begin
   Result := Params.RefundTotal;
   try
-    Doc := ReadCashboxStatus.Get('Data').Get('CurrentState').Get('XReport');
+    Doc := ReadCashboxStatus.Get('Data').Get('CurrentState').Get('ReportState');
     // Buy
     Result :=  Result +
       (Doc.Get('Buy').Get('Taken').Value -
