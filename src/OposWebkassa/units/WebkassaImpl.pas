@@ -3855,7 +3855,7 @@ begin
   if TestMode then Exit;
 
   try
-    Result := ReadCashboxStatus.Get('Data').Get('Xin').Value;
+    Result := ReadCashboxStatus.Get('Data').Get('OrganizationXin').Value;
   except
     on E: Exception do
     begin

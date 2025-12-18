@@ -578,6 +578,7 @@ type
     constructor Create(Collection: TJsonCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
+    function IsRequiredField(const Field: WideString): Boolean; override;
   published
     property Count: Double read FCount write FCount;
     property Price: Currency read FPrice write FPrice;
@@ -3766,6 +3767,20 @@ procedure TTicketItem.SetTaxPercent(const ATaxPercent: TDouble);
 begin
   FTaxPercent.Free;
   FTaxPercent := ATaxPercent;
+end;
+
+function TTicketItem.IsRequiredField(const Field: WideString): Boolean;
+const
+  RequiredFields: array [0..1] of WideString = ('GTIN', 'NTIN');
+var
+  i: Integer;
+begin
+  for i := Low(RequiredFields) to High(RequiredFields) do
+  begin
+    Result := AnsiCompareText(Field, RequiredFields[i]) = 0;
+    if Result then Exit;
+  end;
+  Result := inherited IsRequiredField(Field);
 end;
 
 { TSendRefundReceiptCommandRequest }
