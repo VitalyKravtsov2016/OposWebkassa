@@ -1,27 +1,21 @@
 [Closed Files]
-File_0=SourceModule,'D:\projects\IBTS\WebKassa\src\OposWebkassa\Units\WebkassaClient.pas',0,1,2354,23,2369,0,0
-File_1=SourceModule,'D:\projects\IBTS\WebKassa\src\OposWebkassa\units\DirectIOAPI.pas',0,1,28,32,45,0,0
-File_2=SourceModule,'D:\projects\IBTS\WebKassa\test\WebkassaAccTest\units\duWebkassaClient.pas',0,1,1,28,8,0,0
-File_3=SourceModule,'D:\projects\IBTS\WebKassa\test\WebkassaAccTest\units\duWebkassaImpl.pas',0,1,134,1,154,0,0
-File_4=SourceModule,'D:\projects\IBTS\WebKassa\test\OposWebkassaTest\units\duComUtils.pas',0,1,95,16,111,0,0
-File_5=SourceModule,'D:\projects\IBTS\WebKassa\test\OposWebkassaTest\units\duOposDevice.pas',0,1,42,5,49,0,0
-File_6=SourceModule,'D:\projects\IBTS\WebKassa\test\OposWebkassaTest\units\duTranslation.pas',0,1,57,3,67,0,0
-File_7=SourceModule,'D:\projects\IBTS\WebKassa\test\OposWebkassaTest\units\duWebkassaClient.pas',0,1,779,1,788,0,0
-File_8=SourceModule,'D:\projects\IBTS\WebKassa\test\OposWebkassaTest\units\duWebkassaImpl.pas',0,1,1805,1,1811,0,0
+File_0=SourceModule,'D:\projects\IBTS\WebKassa\src\OposWebkassa\Units\WebkassaClient.pas',0,1,1196,26,1216,0,0
+File_1=SourceModule,'D:\projects\IBTS\WebKassa\src\Shared\VatRate.pas',0,1,99,1,115,0,0
+File_2=SourceModule,'D:\projects\IBTS\WebKassa\src\OposWebkassa\units\SalesReceipt.pas',0,1,1,1,1,0,0
+File_3=SourceModule,'D:\projects\IBTS\WebKassa\test\OposWebkassaTest\units\duWebkassaImpl.pas',0,1,729,31,748,0,0
+File_4=SourceModule,'D:\projects\IBTS\WebKassa\src\OposWebkassa\units\DirectIOAPI.pas',0,1,28,32,45,0,0
+File_5=SourceModule,'D:\projects\IBTS\WebKassa\test\WebkassaAccTest\units\duWebkassaClient.pas',0,1,1,28,8,0,0
+File_6=SourceModule,'D:\projects\IBTS\WebKassa\test\WebkassaAccTest\units\duWebkassaImpl.pas',0,1,134,1,154,0,0
+File_7=SourceModule,'D:\projects\IBTS\WebKassa\test\OposWebkassaTest\units\duComUtils.pas',0,1,95,16,111,0,0
+File_8=SourceModule,'D:\projects\IBTS\WebKassa\test\OposWebkassaTest\units\duOposDevice.pas',0,1,42,5,49,0,0
 
 [Modules]
 Module0=D:\projects\IBTS\WebKassa\src\OposWebkassa\Units\WebkassaImpl.pas
-Module1=D:\projects\IBTS\WebKassa\src\OposWebkassa\units\SalesReceipt.pas
-Count=2
+Count=1
 EditWindowCount=1
 TypeLibWindowCount=1
 
 [D:\projects\IBTS\WebKassa\src\OposWebkassa\Units\WebkassaImpl.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[D:\projects\IBTS\WebKassa\src\OposWebkassa\units\SalesReceipt.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -63,10 +57,9 @@ FormState=0
 FormOnTop=0
 
 [EditWindow0]
-ViewCount=2
+ViewCount=1
 CurrentView=0
 View0=0
-View1=1
 CodeExplorer=CodeExplorer@EditWindow0
 MessageView=MessageView@EditWindow0
 Create=1
@@ -92,16 +85,9 @@ BottomPanelData=00000400010000000B0000004D65737361676556696577000000000000000000
 
 [View0]
 Module=D:\projects\IBTS\WebKassa\src\OposWebkassa\Units\WebkassaImpl.pas
-CursorX=1
-CursorY=1414
-TopLine=1396
-LeftCol=1
-
-[View1]
-Module=D:\projects\IBTS\WebKassa\src\OposWebkassa\units\SalesReceipt.pas
-CursorX=11
-CursorY=61
-TopLine=43
+CursorX=42
+CursorY=13
+TopLine=1
 LeftCol=1
 
 [TypeLibEditWindow0]

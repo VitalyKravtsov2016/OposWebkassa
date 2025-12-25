@@ -3930,6 +3930,7 @@ begin
     if ReceiptItem is TSalesReceiptItem then
     begin
       RecItem := ReceiptItem as TSalesReceiptItem;
+
       //Document.AddLine(WideFormat('%3d. %s', [RecItem.Number, RecItem.Description]));
       Document.AddLine(RecItem.Description);
 
@@ -3961,6 +3962,12 @@ begin
           '+' + AmountToStr(Abs(Adjustment.Amount)));
       end;
       Document.AddLines('   Стоимость', AmountToStr(RecItem.GetTotalAmount(Receipt.RoundType)));
+
+      if RecItem.GTIN <> '' then
+        Document.AddLine(RecItem.GTIN);
+
+      if RecItem.NTIN <> '' then
+        Document.AddLine(RecItem.NTIN);
     end;
     // Text
     if ReceiptItem is TRecTexItem then
@@ -4194,6 +4201,18 @@ begin
     Amount := Abs(ReceiptItem.GetTotalAmount(Params.RoundType));
     if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
       Result := Tnt_WideFormat('%.2f', [Amount]);
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'GTIN') = 0 then
+  begin
+    if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(ReceiptItem.GTIN <> '') then
+      Result := ReceiptItem.GTIN;
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'NTIN') = 0 then
+  begin
+    if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(ReceiptItem.NTIN <> '') then
+      Result := ReceiptItem.NTIN;
     Exit;
   end;
   raise UserException.CreateFmt('Receipt item %s not found', [Item.Text]);

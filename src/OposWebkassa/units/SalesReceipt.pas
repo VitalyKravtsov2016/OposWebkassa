@@ -38,7 +38,6 @@ type
     property Items[Index: Integer]: TReceiptPayment read GetItem; default;
   end;
 
-
   TRecType = (rtBuy, rtRetBuy, rtSell, rtRetSell);
 
   { TSalesReceipt }
