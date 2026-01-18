@@ -6,7 +6,7 @@ Uses
   // VCL
   Classes, SysUtils, Math,
   // This
-  MathUtils, PrinterTypes;
+  MathUtils, PrinterTypes, VatRate;
 
 const
   // RoundType - Тип округления
@@ -80,6 +80,7 @@ type
     FNumber: Integer;
     FGTIN: WideString;
     FNTIN: WideString;
+    FVatRate: TVatRate;
   public
     constructor Create(AOwner: TReceiptItems); override;
     destructor Destroy; override;
@@ -91,7 +92,9 @@ type
     function GetTotal: Currency; override;
     procedure Assign(Item: TSalesReceiptItem);
     function GetTotalAmount(RoundType: Integer): Currency;
+    function GetVatAmount(Rate, Amount: Currency): Currency;
     function GetTotalByVAT(AVatInfo: Integer): Currency; override;
+    function GetTotalVat(RoundType: Integer): Currency;
 
     property Total: Currency read GetTotal;
     property Charges: TAdjustments read FCharges;
@@ -106,6 +109,7 @@ type
     property MarkCode: string read FMarkCode write FMarkCode;
     property GTIN: WideString read FGTIN write FGTIN;
     property NTIN: WideString read FNTIN write FNTIN;
+    property VatRate: TVatRate read FVatRate write FVatRate;
   end;
 
   { TAdjustments }
@@ -364,6 +368,29 @@ begin
   Result := 0;
   if VatInfo = AVatInfo then
     Result := GetTotal;
+end;
+
+function TSalesReceiptItem.GetVatAmount(Rate, Amount: Currency): Currency;
+begin
+  Result := 0;
+  if Rate <> 0 then
+  begin
+    Result := Amount * (Rate/100) / (1 + Rate/100);
+    Result := Round(Result * 100) / 100;
+  end;
+end;
+
+function TSalesReceiptItem.GetTotalVat(RoundType: Integer): Currency;
+var
+  VatRate: Double;
+  Amount: Currency;
+begin
+  Amount := GetTotalAmount(RoundType);
+  VatRate := 0;
+  if FVatRate <> nil then
+    VatRate := FVatRate.Rate;
+
+  Result := GetVatAmount(VatRate, Amount);
 end;
 
 { TAdjustment }

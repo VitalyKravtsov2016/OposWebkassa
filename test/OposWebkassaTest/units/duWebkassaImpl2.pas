@@ -463,7 +463,7 @@ begin
   Lines := TStringList.Create;
   try
     Driver.Params.TemplateEnabled := True;
-    Driver.Params.Template.SetDefaults;
+    Driver.Template.SetDefaults;
 
     OpenClaimEnable;
 

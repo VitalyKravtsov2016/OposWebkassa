@@ -902,7 +902,7 @@ end;
 
 procedure TWebkassaImplTest.TestReceiptTemplate;
 begin
-  Driver.Params.Template.Clear;
+  Driver.Template.Clear;
   Driver.Params.TemplateEnabled := True;
 
   Driver.Params.HeaderText := '';
@@ -910,7 +910,7 @@ begin
   FDriver.Params.NumHeaderLines := 0;
   FDriver.Params.NumTrailerLines := 0;
 
-  Driver.Params.Template.Header.AddSeparator;
+  Driver.Template.Header.AddSeparator;
   OpenClaimEnable;
 
   CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
@@ -934,290 +934,290 @@ var
   Item: TTemplateItem;
 begin
   Driver.Params.TemplateEnabled := True;
-  Driver.Params.Template.Clear;
+  Driver.Template.Clear;
   // Line 1
-  Item := Driver.Params.Template.Header.Add;
+  Item := Driver.Template.Header.Add;
   Item.ItemType := TEMPLATE_TYPE_PARAM;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'VATSeries';
   Item.FormatText := 'НДС Серия %s';
   Item.Alignment := ALIGN_LEFT;
   //
-  Item := Driver.Params.Template.Header.Add;
+  Item := Driver.Template.Header.Add;
   Item.ItemType := TEMPLATE_TYPE_PARAM;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'VATNumber';
   Item.FormatText := '№ %s';
   Item.Alignment := ALIGN_RIGHT;
-  Driver.Params.Template.Header.NewLine;
+  Driver.Template.Header.NewLine;
   // Line 2
-  Driver.Params.Template.Header.AddSeparator;
+  Driver.Template.Header.AddSeparator;
   // Line3
-  Item := Driver.Params.Template.Header.Add;
+  Item := Driver.Template.Header.Add;
   Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Data.CashBox.UniqueNumber';
   Item.FormatText := '               %s';
   Item.Alignment := ALIGN_LEFT;
   // Line2
-  Driver.Params.Template.Header.NewLine;
+  Driver.Template.Header.NewLine;
   // Line4
-  Item := Driver.Params.Template.Header.Add;
+  Item := Driver.Template.Header.Add;
   Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Data.ShiftNumber';
   Item.FormatText := 'СМЕНА №%s';
   Item.Alignment := ALIGN_CENTER;
-  Driver.Params.Template.Header.NewLine;
+  Driver.Template.Header.NewLine;
   //
-  Driver.Params.Template.Header.AddText('ПРОДАЖА' + CRLF);
-  Driver.Params.Template.Header.AddSeparator;
+  Driver.Template.Header.AddText('ПРОДАЖА' + CRLF);
+  Driver.Template.Header.AddSeparator;
   // Description
-  Item := Driver.Params.Template.RecItem.Add;
+  Item := Driver.Template.RecItem.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Description';
   Item.FormatText := '';
   Item.Alignment := ALIGN_LEFT;
-  Driver.Params.Template.RecItem.NewLine;
+  Driver.Template.RecItem.NewLine;
   // Quantity
-  Item := Driver.Params.Template.RecItem.Add;
+  Item := Driver.Template.RecItem.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Quantity';
   Item.FormatText := '   %s';
   Item.Alignment := ALIGN_LEFT;
   // UnitName
-  Item := Driver.Params.Template.RecItem.Add;
+  Item := Driver.Template.RecItem.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'UnitName';
   Item.FormatText := ' %s x ';
   Item.Alignment := ALIGN_LEFT;
   // Price
-  Item := Driver.Params.Template.RecItem.Add;
+  Item := Driver.Template.RecItem.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'UnitPrice';
   Item.FormatText := '%s ';
   Item.Alignment := ALIGN_LEFT;
   // Currency name
-  Item := Driver.Params.Template.RecItem.Add;
+  Item := Driver.Template.RecItem.Add;
   Item.ItemType := TEMPLATE_TYPE_PARAM;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'CurrencyName';
   Item.FormatText := '';
   Item.Alignment := ALIGN_LEFT;
-  Driver.Params.Template.RecItem.NewLine;
+  Driver.Template.RecItem.NewLine;
   // Discount
-  Driver.Params.Template.RecItem.AddText('   Скидка');
-  Item := Driver.Params.Template.RecItem.Add;
+  Driver.Template.RecItem.AddText('   Скидка');
+  Item := Driver.Template.RecItem.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Discount';
   Item.FormatText := '-%s';
   Item.Alignment := ALIGN_RIGHT;
   Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
-  Driver.Params.Template.RecItem.NewLine;
+  Driver.Template.RecItem.NewLine;
   // Charge
-  Driver.Params.Template.RecItem.AddText('   Наценка');
-  Item := Driver.Params.Template.RecItem.Add;
+  Driver.Template.RecItem.AddText('   Наценка');
+  Item := Driver.Template.RecItem.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Charge';
   Item.FormatText := '+%s';
   Item.Alignment := ALIGN_RIGHT;
   Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
-  Driver.Params.Template.RecItem.NewLine;
+  Driver.Template.RecItem.NewLine;
   // Total
-  Driver.Params.Template.RecItem.AddText('   Стоимость');
-  Item := Driver.Params.Template.RecItem.Add;
+  Driver.Template.RecItem.AddText('   Стоимость');
+  Item := Driver.Template.RecItem.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Total';
   Item.FormatText := '';
   Item.Alignment := ALIGN_RIGHT;
-  Driver.Params.Template.RecItem.NewLine;
+  Driver.Template.RecItem.NewLine;
   // Separator
-  Driver.Params.Template.Trailer.AddSeparator;
+  Driver.Template.Trailer.AddSeparator;
   // Discount
-  Driver.Params.Template.Trailer.AddText('Скидка:');
-  Item := Driver.Params.Template.Trailer.Add;
+  Driver.Template.Trailer.AddText('Скидка:');
+  Item := Driver.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Discount';
   Item.FormatText := '%s';
   Item.Alignment := ALIGN_RIGHT;
   Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
-  Driver.Params.Template.Trailer.NewLine;
+  Driver.Template.Trailer.NewLine;
   // Charge
-  Driver.Params.Template.Trailer.AddText('Наценка:');
-  Item := Driver.Params.Template.Trailer.Add;
+  Driver.Template.Trailer.AddText('Наценка:');
+  Item := Driver.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Charge';
   Item.FormatText := '%s';
   Item.Alignment := ALIGN_RIGHT;
   Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
-  Driver.Params.Template.Trailer.NewLine;
+  Driver.Template.Trailer.NewLine;
   // Total
-  Item := Driver.Params.Template.Trailer.Add;
+  Item := Driver.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_TEXT;
   Item.TextStyle := STYLE_DWIDTH_HEIGHT;
   Item.Alignment := ALIGN_LEFT;
   Item.Text := 'ИТОГ';
-  Item := Driver.Params.Template.Trailer.Add;
+  Item := Driver.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
   Item.TextStyle := STYLE_DWIDTH_HEIGHT;
   Item.Text := 'Total';
   Item.FormatText := '=%s';
   Item.Alignment := ALIGN_RIGHT;
   Item.Enabled := TEMPLATE_ITEM_ENABLED;
-  Driver.Params.Template.Trailer.NewLine;
+  Driver.Template.Trailer.NewLine;
   // Payment0
-  Driver.Params.Template.Trailer.AddText('Наличные:');
-  Item := Driver.Params.Template.Trailer.Add;
+  Driver.Template.Trailer.AddText('Наличные:');
+  Item := Driver.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Payment0';
   Item.FormatText := '=%s';
   Item.Alignment := ALIGN_RIGHT;
   Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
-  Driver.Params.Template.Trailer.NewLine;
+  Driver.Template.Trailer.NewLine;
   // Payment1
-  Driver.Params.Template.Trailer.AddText('Банковская карта:');
-  Item := Driver.Params.Template.Trailer.Add;
+  Driver.Template.Trailer.AddText('Банковская карта:');
+  Item := Driver.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Payment1';
   Item.FormatText := '=%s';
   Item.Alignment := ALIGN_RIGHT;
   Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
-  Driver.Params.Template.Trailer.NewLine;
+  Driver.Template.Trailer.NewLine;
   // Payment2
-  Driver.Params.Template.Trailer.AddText('Кредит:');
-  Item := Driver.Params.Template.Trailer.Add;
+  Driver.Template.Trailer.AddText('Кредит:');
+  Item := Driver.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Payment2';
   Item.FormatText := '=%s';
   Item.Alignment := ALIGN_RIGHT;
   Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
-  Driver.Params.Template.Trailer.NewLine;
+  Driver.Template.Trailer.NewLine;
   // Payment3
-  Driver.Params.Template.Trailer.AddText('Оплата тарой:');
-  Item := Driver.Params.Template.Trailer.Add;
+  Driver.Template.Trailer.AddText('Оплата тарой:');
+  Item := Driver.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Payment3';
   Item.FormatText := '=%s';
   Item.Alignment := ALIGN_RIGHT;
   Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
-  Driver.Params.Template.Trailer.NewLine;
+  Driver.Template.Trailer.NewLine;
   // Change
-  Driver.Params.Template.Trailer.AddText('  СДАЧА');
-  Item := Driver.Params.Template.Trailer.Add;
+  Driver.Template.Trailer.AddText('  СДАЧА');
+  Item := Driver.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Change';
   Item.FormatText := '=%s';
   Item.Alignment := ALIGN_RIGHT;
   Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
-  Driver.Params.Template.Trailer.NewLine;
+  Driver.Template.Trailer.NewLine;
   // Taxes
-  Driver.Params.Template.Trailer.AddText('в т.ч. НДС 12%');
-  Item := Driver.Params.Template.Trailer.Add;
+  Driver.Template.Trailer.AddText('в т.ч. НДС 12%');
+  Item := Driver.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'TaxAmount';
   Item.FormatText := '=%s';
   Item.Alignment := ALIGN_RIGHT;
   Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
-  Driver.Params.Template.Trailer.NewLine;
+  Driver.Template.Trailer.NewLine;
   // Separator
-  Driver.Params.Template.Trailer.AddSeparator;
+  Driver.Template.Trailer.AddSeparator;
   // Fiscal sign
-  Driver.Params.Template.Trailer.AddText('ФП: ');
-  Item := Driver.Params.Template.Trailer.Add;
+  Driver.Template.Trailer.AddText('ФП: ');
+  Item := Driver.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Data.CheckNumber';
   Item.FormatText := '';
   Item.Alignment := ALIGN_LEFT;
   Item.Enabled := TEMPLATE_ITEM_ENABLED;
-  Driver.Params.Template.Trailer.NewLine;
+  Driver.Template.Trailer.NewLine;
   // Time
-  Driver.Params.Template.Trailer.AddText('Время: ');
-  Item := Driver.Params.Template.Trailer.Add;
+  Driver.Template.Trailer.AddText('Время: ');
+  Item := Driver.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Data.DateTime';
   Item.FormatText := '';
   Item.Alignment := ALIGN_LEFT;
   Item.Enabled := TEMPLATE_ITEM_ENABLED;
-  Driver.Params.Template.Trailer.NewLine;
+  Driver.Template.Trailer.NewLine;
   // Fiscal data operator
-  Driver.Params.Template.Trailer.AddText('ОФД: ');
-  Item := Driver.Params.Template.Trailer.Add;
+  Driver.Template.Trailer.AddText('ОФД: ');
+  Item := Driver.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Data.Cashbox.Ofd.Name';
   Item.FormatText := '';
   Item.Alignment := ALIGN_LEFT;
   Item.Enabled := TEMPLATE_ITEM_ENABLED;
-  Driver.Params.Template.Trailer.NewLine;
+  Driver.Template.Trailer.NewLine;
   // Ticket URL
-  Driver.Params.Template.Trailer.AddText('Для проверки чека:');
-  Driver.Params.Template.Trailer.NewLine;
-  Item := Driver.Params.Template.Trailer.Add;
+  Driver.Template.Trailer.AddText('Для проверки чека:');
+  Driver.Template.Trailer.NewLine;
+  Item := Driver.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Data.Cashbox.Ofd.Host';
   Item.FormatText := '';
   Item.Alignment := ALIGN_LEFT;
   Item.Enabled := TEMPLATE_ITEM_ENABLED;
-  Driver.Params.Template.Trailer.NewLine;
+  Driver.Template.Trailer.NewLine;
   // Separator
-  Driver.Params.Template.Trailer.AddSeparator;
+  Driver.Template.Trailer.AddSeparator;
   // Fiscal receipt
-  Item := Driver.Params.Template.Trailer.Add;
+  Item := Driver.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_TEXT;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'ФИСКАЛЬНЫЙ ЧЕK';
   Item.Alignment := ALIGN_CENTER;
-  Driver.Params.Template.Trailer.NewLine;
+  Driver.Template.Trailer.NewLine;
   // QR code
-  Item := Driver.Params.Template.Trailer.Add;
+  Item := Driver.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
   Item.TextStyle := STYLE_QR_CODE;
   Item.Text := 'Data.TicketUrl';
   Item.Alignment := ALIGN_CENTER;
-  Driver.Params.Template.Trailer.NewLine;
+  Driver.Template.Trailer.NewLine;
   // Fiscal receipt
-  Item := Driver.Params.Template.Trailer.Add;
+  Item := Driver.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Data.Cashbox.IdentityNumber';
   Item.FormatText := 'ИНК ОФД: %s';
   Item.Alignment := ALIGN_CENTER;
-  Driver.Params.Template.Trailer.NewLine;
+  Driver.Template.Trailer.NewLine;
   // Registration number
-  Item := Driver.Params.Template.Trailer.Add;
+  Item := Driver.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Data.Cashbox.RegistrationNumber';
   Item.FormatText := 'Код ККМ КГД (РНМ): %s';
   Item.Alignment := ALIGN_CENTER;
-  Driver.Params.Template.Trailer.NewLine;
+  Driver.Template.Trailer.NewLine;
   // Unique number
-  Item := Driver.Params.Template.Trailer.Add;
+  Item := Driver.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_JSON_ANS_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Data.Cashbox.UniqueNumber';
   Item.FormatText := 'ЗНМ: %s';
   Item.Alignment := ALIGN_CENTER;
-  Driver.Params.Template.Trailer.NewLine;
-  Driver.Params.Template.SaveToFile('Receipt3.xml');
+  Driver.Template.Trailer.NewLine;
+  Driver.Template.SaveToFile('Receipt3.xml');
 end;
 
 procedure TWebkassaImplTest.TestReceiptTemplate2;
@@ -1225,12 +1225,12 @@ var
   TemplateItem: TTemplateItem;
 begin
   Driver.Params.TemplateEnabled := True;
-  Driver.Params.Template.SetDefaults;
-  TemplateItem := FDriver.Params.Template.Trailer.ItemByText('TaxAmount');
+  Driver.Template.SetDefaults;
+  TemplateItem := FDriver.Template.Trailer.ItemByText('TaxAmount');
   if TemplateItem <> nil then
   begin
     TemplateItem.parameter := 4;
-    FDriver.Params.Template.Trailer.Items[TemplateItem.Index-1].Text := 'в т.ч. VAT 12%';
+    FDriver.Template.Trailer.Items[TemplateItem.Index-1].Text := 'в т.ч. VAT 12%';
   end;
 
   OpenClaimEnable;
@@ -1247,20 +1247,20 @@ const
     'ИТОГ                 =108.27' + CRLF;
 begin
   Driver.Params.TemplateEnabled := True;
-  Driver.Params.Template.Clear;
+  Driver.Template.Clear;
   FDriver.Params.NumHeaderLines := 0;
   FDriver.Params.NumTrailerLines := 0;
   FDriver.Params.HeaderText := '';
   FDriver.Params.TrailerText := '';
   // Total
-  Item := Driver.Params.Template.Trailer.Add;
+  Item := Driver.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_TEXT;
   Item.TextStyle := STYLE_DWIDTH_HEIGHT;
   Item.Alignment := ALIGN_LEFT;
   Item.LineChars := 56;
   Item.Text := 'ИТОГ';
 
-  Item := Driver.Params.Template.Trailer.Add;
+  Item := Driver.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
   Item.TextStyle := STYLE_DWIDTH_HEIGHT;
   Item.Text := 'Total';
@@ -1269,7 +1269,7 @@ begin
   Item.Enabled := TEMPLATE_ITEM_ENABLED;
   Item.LineChars := 56;
 
-  Driver.Params.Template.Trailer.NewLine;
+  Driver.Template.Trailer.NewLine;
 
   OpenClaimEnable;
 
@@ -1350,7 +1350,7 @@ begin
   CheckEquals(True, IsMemoryManagerSet, 'IsMemoryManagerSet');
 
   Driver.Params.TemplateEnabled := True;
-  Driver.Params.Template.SetDefaults;
+  Driver.Template.SetDefaults;
   FDriver.Params.NumHeaderLines := 0;
   FDriver.Params.NumTrailerLines := 0;
   FDriver.Params.HeaderText := '';

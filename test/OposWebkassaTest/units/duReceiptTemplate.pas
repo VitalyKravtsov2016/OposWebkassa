@@ -13,7 +13,8 @@ uses
   // Tnt
   TntClasses, TntSysUtils,
   // This
-  ReceiptTemplate, LogFile, FileUtils, EscPrinterUtils;
+  ReceiptTemplate, LogFile, FileUtils, EscPrinterUtils, ReceiptItem,
+  PrinterParameters, PrinterTypes, VatRate;
 
 type
   { TReceiptTemplateTest }
@@ -21,13 +22,14 @@ type
   TReceiptTemplateTest = class(TTestCase)
   private
     FLogger: ILogFile;
-    FDocument: TReceiptTemplate;
+    FTemplate: TReceiptTemplate;
   protected
     procedure SetUp; override;
     procedure TearDown; override;
   published
     procedure TestSave;
     procedure TestUnicode;
+    procedure TestRecItemText;
   end;
 
 implementation
@@ -50,12 +52,12 @@ procedure TReceiptTemplateTest.SetUp;
 begin
   inherited SetUp;
   FLogger := TLogFile.Create;
-  FDocument := TReceiptTemplate.Create(FLogger);
+  FTemplate := TReceiptTemplate.Create(FLogger);
 end;
 
 procedure TReceiptTemplateTest.TearDown;
 begin
-  FDocument.Free;
+  FTemplate.Free;
   inherited TearDown;
 end;
 
@@ -80,7 +82,7 @@ begin
     Strings.Free;
   end;
 
-  Item := FDocument.Header.Add;
+  Item := FTemplate.Header.Add;
   Item.Enabled := 1;
   Item.ItemType := 2;
   Item.TextStyle := 3;
@@ -89,7 +91,7 @@ begin
   Item.LineSpacing := 6;
   Item.Text := UnicodeText;
   Item.FormatText := UnicodeText;
-  Item := FDocument.Trailer.Add;
+  Item := FTemplate.Trailer.Add;
   Item.Enabled := 11;
   Item.ItemType := 12;
   Item.TextStyle := 13;
@@ -98,7 +100,7 @@ begin
   Item.LineSpacing := 16;
   Item.Text := UnicodeText;
   Item.FormatText := UnicodeText;
-  Item := FDocument.RecItem.Add;
+  Item := FTemplate.RecItem.Add;
   Item.Enabled := 31;
   Item.ItemType := 32;
   Item.TextStyle := 33;
@@ -111,18 +113,18 @@ begin
   FileName := GetModulePath + 'Receipt.xml';
   DeleteFile(FileName);
   CheckEquals(False, FileExists(FileName), 'FileExists(FileName).0');
-  FDocument.SaveToFile(FileName);
+  FTemplate.SaveToFile(FileName);
   CheckEquals(True, FileExists(FileName), 'FileExists(FileName).1');
 
-  FDocument.Clear;
-  CheckEquals(0, FDocument.Header.Count, 'FDocument.Header.Count');
-  CheckEquals(0, FDocument.Trailer.Count, 'FDocument.Trailer.Count');
-  CheckEquals(0, FDocument.RecItem.Count, 'FDocument.RecItem.Count');
+  FTemplate.Clear;
+  CheckEquals(0, FTemplate.Header.Count, 'FTemplate.Header.Count');
+  CheckEquals(0, FTemplate.Trailer.Count, 'FTemplate.Trailer.Count');
+  CheckEquals(0, FTemplate.RecItem.Count, 'FTemplate.RecItem.Count');
 
-  FDocument.LoadFromFile(FileName);
+  FTemplate.LoadFromFile(FileName);
 
-  CheckEquals(1, FDocument.Header.Count, 'FDocument.Header.Count');
-  Item := FDocument.Header.Items[0];
+  CheckEquals(1, FTemplate.Header.Count, 'FTemplate.Header.Count');
+  Item := FTemplate.Header.Items[0];
   CheckEquals(1, Item.Enabled, 'Item.Enabled');
   CheckEquals(2, Item.ItemType, 'Item.ItemType');
   CheckEquals(3, Item.TextStyle, 'Item.TextStyle');
@@ -132,8 +134,8 @@ begin
   CheckEqualsWide(UnicodeText, Item.Text, 'Item.Text');
   CheckEqualsWide(UnicodeText, Item.FormatText, 'Item.FormatText');
 
-  CheckEquals(1, FDocument.Trailer.Count, 'FDocument.Trailer.Count');
-  Item := FDocument.Trailer.Items[0];
+  CheckEquals(1, FTemplate.Trailer.Count, 'FTemplate.Trailer.Count');
+  Item := FTemplate.Trailer.Items[0];
   CheckEquals(11, Item.Enabled, 'Item.Enabled');
   CheckEquals(12, Item.ItemType, 'Item.ItemType');
   CheckEquals(13, Item.TextStyle, 'Item.TextStyle');
@@ -143,8 +145,8 @@ begin
   CheckEqualsWide(UnicodeText, Item.Text, 'Item.Text');
   CheckEqualsWide(UnicodeText, Item.FormatText, 'Item.FormatText');
 
-  CheckEquals(1, FDocument.RecItem.Count, 'FDocument.RecItem.Count');
-  Item := FDocument.RecItem.Items[0];
+  CheckEquals(1, FTemplate.RecItem.Count, 'FTemplate.RecItem.Count');
+  Item := FTemplate.RecItem.Items[0];
   CheckEquals(31, Item.Enabled, 'Item.Enabled');
   CheckEquals(32, Item.ItemType, 'Item.ItemType');
   CheckEquals(33, Item.TextStyle, 'Item.TextStyle');
@@ -168,6 +170,71 @@ begin
   UnicodeText := '';
   UnicodeText := UnicodeText + WideChar($0492) + WideChar($0493) + WideChar($049A) + WideChar($049B) + WideChar($04A2) + WideChar($04A3);
   CheckEquals('0492 0493 049A 049B 04A2 04A3', WideStringToHex(UnicodeText));
+end;
+
+procedure TReceiptTemplateTest.TestRecItemText;
+var
+  Line: WideString;
+  Logger: ILogFile;
+  Item: TSalesReceiptItem;
+  Params: TPrinterParameters;
+  TemplateItem: TTemplateItem;
+  VatRate: TVatRateRec;
+  Vat: TVatRate;
+begin
+  Logger := TLogFile.Create;
+  Item := TSalesReceiptItem.Create(nil);
+  TemplateItem := TTemplateItem.Create(nil);
+  Params := TPrinterParameters.Create(Logger);
+  try
+    // Price
+    TemplateItem.Text := 'Price';
+    TemplateItem.Enabled := TEMPLATE_ITEM_ENABLED;
+    Item.Price := 123.45;
+    Line := TemplateItem.ReceiptItemByText(Item, Params);
+    CheckEquals('123.45', Line, 'ReceiptItemByText.Price');
+    // Quantity
+    TemplateItem.Text := 'Quantity';
+    TemplateItem.Enabled := TEMPLATE_ITEM_ENABLED;
+    Item.Quantity := 123.456;
+    Line := TemplateItem.ReceiptItemByText(Item, Params);
+    CheckEquals('123.456', Line, 'ReceiptItemByText.Quantity');
+    // VatInfo
+    TemplateItem.Text := 'VatInfo';
+    TemplateItem.Enabled := TEMPLATE_ITEM_ENABLED;
+    Item.VatInfo := 123;
+    Line := TemplateItem.ReceiptItemByText(Item, Params);
+    CheckEquals('123', Line, 'ReceiptItemByText.VatInfo');
+    // VatRate
+    VatRate.ID := 1;
+    VatRate.Rate := 12.34;
+    VatRate.Name := 'VAT 12.34%';
+    VatRate.VatType := VAT_TYPE_NORMAL;
+    Params.VatRates.Clear;
+    Vat := Params.VatRates.Add(VatRate);
+    Item.VatInfo := 1;
+    Item.VatRate := Vat;
+
+    TemplateItem.Text := 'VatRate';
+    TemplateItem.Enabled := TEMPLATE_ITEM_ENABLED;
+    Line := TemplateItem.ReceiptItemByText(Item, Params);
+    CheckEquals('12.34', Line, 'ReceiptItemByText.VatRate');
+
+    TemplateItem.Text := 'VatName';
+    TemplateItem.Enabled := TEMPLATE_ITEM_ENABLED;
+    Line := TemplateItem.ReceiptItemByText(Item, Params);
+    CheckEquals('VAT 12.34%', Line, 'ReceiptItemByText.VatName');
+
+    TemplateItem.Text := 'VatText';
+    TemplateItem.Enabled := TEMPLATE_ITEM_ENABLED;
+    Line := TemplateItem.ReceiptItemByText(Item, Params);
+    CheckEquals('ÍÄÑ 12.34%', Line, 'ReceiptItemByText.VatName');
+  finally
+    Item.Free;
+    Params.Free;
+    TemplateItem.Free;
+    Logger := nil;
+  end;
 end;
 
 initialization

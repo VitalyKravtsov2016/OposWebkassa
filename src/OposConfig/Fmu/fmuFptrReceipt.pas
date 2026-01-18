@@ -110,8 +110,8 @@ begin
     Receipt.AnswerJson := AnswerJson;
 
 
-    Parameters.Template.LoadFromXml(TemplateXml);
-    Driver.PrintReceiptTemplate(Receipt, Parameters.Template);
+    Template.LoadFromXml(TemplateXml);
+    Driver.PrintReceiptTemplate(Receipt, Template);
 
     for i := 0 to Driver.Document.Items.Count-1 do
     begin
@@ -160,14 +160,14 @@ end;
 procedure TfmFptrReceipt.UpdatePage;
 begin
   chbTemplateEnabled.Checked := Parameters.TemplateEnabled;
-  seTemplate.Lines.Text := Parameters.Template.AsXML;
-  UpdateReceiptText2(Parameters.Template.AsXML);
+  seTemplate.Lines.Text := Template.AsXML;
+  UpdateReceiptText2(Template.AsXML);
 end;
 
 procedure TfmFptrReceipt.UpdateObject;
 begin
   Parameters.TemplateEnabled := chbTemplateEnabled.Checked;
-  Parameters.Template.AsXML := seTemplate.Lines.Text;
+  Template.AsXML := seTemplate.Lines.Text;
 end;
 
 procedure TfmFptrReceipt.ReceiptChange(Sender: TObject);
@@ -182,7 +182,7 @@ end;
 
 procedure TfmFptrReceipt.btnUpdateClick(Sender: TObject);
 begin
-  UpdateReceiptText2(Parameters.Template.AsXML);
+  UpdateReceiptText2(Template.AsXML);
 end;
 
 end.

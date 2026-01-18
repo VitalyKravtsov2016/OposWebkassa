@@ -47,20 +47,16 @@ type
   TVatRate = class(TCollectionItem)
   private
     FData: TVatRateRec;
-    FTotal: Currency;
-    function GetVatTypeText: string;
   public
     constructor Create2(AOwner: TVatRates; const AData: TVatRateRec);
-
-    function GetTax(Amount: Currency): Currency;
     procedure Assign(Source: TPersistent); override;
+    function GetText: string;
 
     property ID: Integer read FData.ID;
     property Rate: Double read FData.Rate;
     property Name: WideString read FData.Name;
-    property Total: Currency read FTotal;
     property VatType: Integer read FData.VatType;
-    property VatTypeText: string read GetVatTypeText;
+    property Data: TVatRateRec read FData;
   end;
 
 implementation
@@ -112,12 +108,6 @@ begin
   FData := AData;
 end;
 
-function TVatRate.GetTax(Amount: Currency): Currency;
-begin
-  Result := Amount * (Rate/100) / (1 + Rate/100);
-  Result := Round(Result * 100) / 100;
-end;
-
 procedure TVatRate.Assign(Source: TPersistent);
 var
   Src: TVatRate;
@@ -130,10 +120,10 @@ begin
     inherited Assign(Source);
 end;
 
-function TVatRate.GetVatTypeText: string;
+function TVatRate.GetText: string;
 begin
   case VatType of
-    VAT_TYPE_NORMAL: Result := 'ÍÄÑ';
+    VAT_TYPE_NORMAL: Result := Format('ÍÄÑ %.2f%%', [Rate]);
     VAT_TYPE_ZERO_TAX: Result := 'ÍÄÑ 0%';
     VAT_TYPE_NO_TAX: Result := 'ÁÅÇ ÍÄÑ';
   else

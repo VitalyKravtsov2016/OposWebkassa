@@ -6,7 +6,8 @@ uses
   // Opos
   OposDevice,
   // This
-  untPages, FptrTypes, PrinterParameters, PrinterParametersReg, fmuPages, LogFile;
+  untPages, FptrTypes, PrinterParameters, PrinterParametersReg, fmuPages,
+  LogFile, ReceiptTemplate;
 
 type
   TFptrPage = class;
@@ -18,6 +19,7 @@ type
   TFiscalPrinterDevice = class(TOposDevice)
   private
     FLogger: ILogFile;
+    FTemplate: TReceiptTemplate;
     FParameters: TPrinterParameters;
 
     procedure AddPage(Pages: TfmPages; PageClass: TFptrPageClass);
@@ -31,6 +33,7 @@ type
     procedure UpdateObject;
 
     property Logger: ILogFile read FLogger;
+    property Template: TReceiptTemplate read FTemplate;
     property Parameters: TPrinterParameters read FParameters;
   end;
 
@@ -39,14 +42,17 @@ type
   TFptrPage = class(TPage)
   private
     FDevice: TFiscalPrinterDevice;
+    function GetTemplate: TReceiptTemplate;
   public
-    function GetParameters: TPrinterParameters;
-    function GetDeviceName: WideString;
     function GetLogger: ILogFile;
+    function GetDeviceName: WideString;
+    function GetParameters: TPrinterParameters;
   public
     property Logger: ILogFile read GetLogger;
     property DeviceName: WideString read GetDeviceName;
+    property Template: TReceiptTemplate read GetTemplate;
     property Parameters: TPrinterParameters read GetParameters;
+
     property Device: TFiscalPrinterDevice read FDevice write FDevice;
   end;
 
@@ -63,12 +69,14 @@ constructor TFiscalPrinterDevice.CreateDevice(AOwner: TOposDevices);
 begin
   inherited Create(AOwner, 'FiscalPrinter', 'FiscalPrinter', FiscalPrinterProgID);
   FLogger := TLogFile.Create;
+  FTemplate := TReceiptTemplate.Create(FLogger);
   FParameters := TPrinterParameters.Create(FLogger);
 end;
 
 destructor TFiscalPrinterDevice.Destroy;
 begin
   FLogger := nil;
+  FTemplate.Free;
   FParameters.Free;
   inherited Destroy;
 end;
@@ -76,11 +84,13 @@ end;
 procedure TFiscalPrinterDevice.SetDefaults;
 begin
   Parameters.SetDefaults;
+  Template.SetDefaults;
 end;
 
 procedure TFiscalPrinterDevice.SaveParams;
 begin
   SaveParametersReg(Parameters, DeviceName, Logger);
+  Template.Save(DeviceName);
 end;
 
 procedure TFiscalPrinterDevice.AddPage(Pages: TfmPages; PageClass: TFptrPageClass);
@@ -102,6 +112,8 @@ begin
     fm.Device := Self;
     fm.Caption := 'Fiscal printer';
     LoadParametersReg(Parameters, DeviceName, Logger);
+    Template.Load(DeviceName);
+
     UpdateObject;
     Logger.Debug('LOG START');
     Parameters.WriteLogParameters;
@@ -151,6 +163,11 @@ end;
 function TFptrPage.GetParameters: TPrinterParameters;
 begin
   Result := FDevice.Parameters;
+end;
+
+function TFptrPage.GetTemplate: TReceiptTemplate;
+begin
+  Result := FDevice.Template;
 end;
 
 end.

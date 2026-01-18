@@ -146,7 +146,7 @@ begin
     Params.LogMaxCount := 10;
     Params.LogFilePath := GetModulePath + 'Logs';
     Params.TemplateEnabled := False;
-    Params.Template.SetDefaults;
+    Driver.Driver.Template.SetDefaults;
     //Params.Template.LoadFromFile('Receipt.xml');
 
     Params.Login := 'apykhtin@ibtsmail.ru';
@@ -1128,7 +1128,7 @@ procedure TWebkassaImplTest.TestFiscalReceipt9;
 begin
   //Params.TemplateEnabled := True;
   Params.TemplateEnabled := False;
-  Params.Template.LoadFromFile('Receipt2.xml');
+  Driver.Driver.Template.LoadFromFile('Receipt2.xml');
 
   OpenClaimEnable;
   Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
@@ -1148,7 +1148,7 @@ end;
 procedure TWebkassaImplTest.TestFiscalReceipt10;
 begin
   Params.TemplateEnabled := True;
-  Params.Template.LoadFromFile('Receipt3.xml');
+  Driver.Driver.Template.LoadFromFile('Receipt3.xml');
 
   OpenClaimEnable;
 
@@ -1169,7 +1169,7 @@ end;
 procedure TWebkassaImplTest.TestFiscalReceipt11;
 begin
   Params.TemplateEnabled := True;
-  Params.Template.LoadFromFile('Receipt4.xml');
+  Driver.Driver.Template.LoadFromFile('Receipt4.xml');
 
   OpenClaimEnable;
 

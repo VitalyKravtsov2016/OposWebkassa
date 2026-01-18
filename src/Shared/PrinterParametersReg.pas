@@ -99,7 +99,6 @@ begin
   Writer := TPrinterParametersReg.Create(Parameters, Logger);
   try
     Writer.Save(DeviceName);
-    Parameters.Save(DeviceName);
   finally
     Writer.Free;
   end;
@@ -139,7 +138,6 @@ begin
   LoadSysParameters(DeviceName);
   LoadUsrParameters(DeviceName);
   LoadIBTParameters(DeviceName);
-  Parameters.Load(DeviceName);
 end;
 
 procedure TPrinterParametersReg.Save(const DeviceName: WideString);
@@ -147,7 +145,6 @@ begin
   SaveUsrParameters(DeviceName);
   SaveIBTParameters(DeviceName);
   SaveSysParameters(DeviceName);
-  Parameters.Save(DeviceName);
 end;
 
 procedure TPrinterParametersReg.LoadSysParameters(const DeviceName: WideString);

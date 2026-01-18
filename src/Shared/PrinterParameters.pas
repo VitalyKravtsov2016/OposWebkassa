@@ -11,7 +11,7 @@ uses
   Opos, Oposhi, OposException,
   // This
   UserError, LogFile, FileUtils, VatRate, SerialPort, SerialPorts, ReceiptItem,
-  Translation, ReceiptTemplate, WebkassaClient, PrinterTypes;
+  Translation, WebkassaClient, PrinterTypes;
 
 const
   /////////////////////////////////////////////////////////////////////////////
@@ -225,7 +225,6 @@ type
     FDevicePollTime: Integer;
     FTranslationEnabled: Boolean;
     FTemplateEnabled: Boolean;
-    FTemplate: TReceiptTemplate;
     FCurrencyName: WideString;
     FOfflineText: WideString;
     FLineSpacing: Integer;
@@ -243,7 +242,6 @@ type
     procedure SetBaudRate(const Value: Integer);
     function GetTranslation: TTranslation;
     function GetTranslationRus: TTranslation;
-    function GetTemplateFileName(const DeviceName: WideString): WideString;
   public
     PortType: Integer;
     PortName: string;
@@ -279,14 +277,10 @@ type
     procedure CheckPrameters;
     procedure WriteLogParameters;
     function SerialPortNames: string;
-    procedure Load(const DeviceName: WideString);
-    procedure Save(const DeviceName: WideString);
     procedure Assign(Source: TPersistent); override;
     function BaudRateIndex(const Value: Integer): Integer;
     function GetTranslationText(const Text: WideString): WideString;
     function ItemByText(const ParamName: WideString): WideString;
-    function GetTemplateXml: WideString;
-    procedure SetTemplateXml(const Value: WideString);
     procedure SetHeaderLine(LineNumber: Integer; const Text: WideString);
     procedure SetTrailerLine(LineNumber: Integer; const Text: WideString);
     procedure AddUnitName(const AppName, SrvName: string; SrvCode: Integer);
@@ -331,7 +325,6 @@ type
     property TranslationRus: TTranslation read GetTranslationRus;
     property TranslationEnabled: Boolean read FTranslationEnabled write FTranslationEnabled;
     property TemplateEnabled: Boolean read FTemplateEnabled write FTemplateEnabled;
-    property Template: TReceiptTemplate read FTemplate;
     property CurrencyName: WideString read FCurrencyName write FCurrencyName;
     property OfflineText: WideString read FOfflineText write FOfflineText;
     property LineSpacing: Integer read FLineSpacing write FLineSpacing;
@@ -380,7 +373,6 @@ begin
   FUnitNames := TUnitNames.Create;
 
   FTranslations := TTranslations.Create;
-  FTemplate := TReceiptTemplate.Create(ALogger);
   FUnits := TUnitItems.Create(TUnitItem);
 
   SetDefaults;
@@ -392,19 +384,8 @@ begin
   FUnits.Free;
   FVatRates.Free;
   FUnitNames.Free;
-  FTemplate.Free;
   FTranslations.Free;
   inherited Destroy;
-end;
-
-function TPrinterParameters.GetTemplateXml: WideString;
-begin
-  Result := Template.AsXML;
-end;
-
-procedure TPrinterParameters.SetTemplateXml(const Value: WideString);
-begin
-  Template.AsXML := Value;
 end;
 
 procedure TPrinterParameters.SetDefaults;
@@ -463,7 +444,6 @@ begin
   TranslationName := DefTranslationName;
   TranslationEnabled := DefTranslationEnabled;
   TemplateEnabled := DefTemplateEnabled;
-  Template.SetDefaults;
   CurrencyName := DefCurrencyName;
   LineSpacing := DefLineSpacing;
   PrintEnabled := DefPrintEnabled;
@@ -804,28 +784,6 @@ begin
     end;
   end;
   Result := FTranslation;
-end;
-
-procedure TPrinterParameters.Load(const DeviceName: WideString);
-begin
-  FTemplate.LoadFromFile(GetTemplateFileName(DeviceName));
-end;
-
-function TPrinterParameters.GetTemplateFileName(const DeviceName: WideString): WideString;
-begin
-  Result := GetModulePath + 'Params\' + DeviceName + '\Receipt.xml';
-end;
-
-procedure TPrinterParameters.Save(const DeviceName: WideString);
-var
-  Path: WideString;
-begin
-  Path := GetModulePath + 'Params';
-  if not DirectoryExists(Path) then CreateDir(Path);
-  Path := Path + '\' + DeviceName;
-  if not DirectoryExists(Path) then CreateDir(Path);
-
-  FTemplate.SaveToFile(GetTemplateFileName(DeviceName));
 end;
 
 function TPrinterParameters.ItemByText(const ParamName: WideString): WideString;

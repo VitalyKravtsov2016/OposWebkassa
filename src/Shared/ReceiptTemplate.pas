@@ -4,8 +4,10 @@ interface
 
 uses
   Classes, SysUtils, Variants, XMLDoc, XMLIntf, ActiveX,
+  // Tnt
+  TntSysUtils, TntClasses,
   // This
-  LogFile, PrinterTypes, UserError;
+  LogFile, PrinterTypes, UserError, ReceiptItem, PrinterParameters, FileUtils;
 
 type
   TTemplateItem = class;
@@ -34,6 +36,9 @@ type
     procedure LoadFromXml(const Xml: WideString);
     procedure SaveToFile(const FileName: WideString);
     procedure LoadFromFile(const FileName: WideString);
+
+    procedure Load(const DeviceName: WideString);
+    procedure Save(const DeviceName: WideString);
 
     property Logger: ILogFile read FLogger;
     property Header: TTemplateItems read FHeader;
@@ -75,6 +80,11 @@ type
     FParameter: Integer;
   public
     function GetLineLength: Integer;
+
+    function GetRecItemText(ReceiptItem: TSalesReceiptItem;
+      Params: TPrinterParameters): WideString;
+    function ReceiptItemByText(ReceiptItem: TSalesReceiptItem;
+      Params: TPrinterParameters): WideString;
 
     property Value: WideString read FValue write FValue;
     property Text: WideString read FText write FText;
@@ -137,6 +147,28 @@ begin
       Logger.Error('Failed to load, ' + E.Message);
     end;
   end;
+end;
+
+function GetTemplateFileName(const DeviceName: WideString): WideString;
+begin
+  Result := GetModulePath + 'Params\' + DeviceName + '\Receipt.xml';
+end;
+
+procedure TReceiptTemplate.Load(const DeviceName: WideString);
+begin
+  LoadFromFile(GetTemplateFileName(DeviceName));
+end;
+
+procedure TReceiptTemplate.Save(const DeviceName: WideString);
+var
+  Path: WideString;
+begin
+  Path := GetModulePath + 'Params';
+  if not DirectoryExists(Path) then CreateDir(Path);
+  Path := Path + '\' + DeviceName;
+  if not DirectoryExists(Path) then CreateDir(Path);
+
+  SaveToFile(GetTemplateFileName(DeviceName));
 end;
 
 procedure TReceiptTemplate.LoadFromFile(const FileName: WideString);
@@ -667,6 +699,123 @@ begin
   Result := LineChars;
   if (TextStyle = STYLE_DWIDTH) or (TextStyle = STYLE_DWIDTH_HEIGHT) then
     Result := LineChars div 2;
+end;
+
+function TTemplateItem.GetRecItemText(ReceiptItem: TSalesReceiptItem;
+  Params: TPrinterParameters): WideString;
+begin
+  case ItemType of
+    TEMPLATE_TYPE_TEXT: Result := Text;
+    TEMPLATE_TYPE_ITEM_FIELD: Result := ReceiptItemByText(ReceiptItem, Params);
+    TEMPLATE_TYPE_PARAM: Result := Params.ItemByText(Text);
+    TEMPLATE_TYPE_SEPARATOR: Result := StringOfChar('-', Params.RecLineChars);
+    TEMPLATE_TYPE_NEWLINE: Result := CRLF;
+  else
+    Result := '';
+  end;
+end;
+
+function TTemplateItem.ReceiptItemByText(ReceiptItem: TSalesReceiptItem;
+  Params: TPrinterParameters): WideString;
+var
+  Amount: Currency;
+begin
+  Result := '';
+  if WideCompareText(Text, 'Price') = 0 then
+  begin
+    if (Enabled = TEMPLATE_ITEM_ENABLED)or(ReceiptItem.Price <> 0) then
+    begin
+      Result := Tnt_WideFormat('%.2f', [ReceiptItem.Price]);
+    end;
+    Exit;
+  end;
+  if WideCompareText(Text, 'VatInfo') = 0 then
+  begin
+    Result := IntToStr(ReceiptItem.VatInfo);
+    Exit;
+  end;
+  if WideCompareText(Text, 'Quantity') = 0 then
+  begin
+    Result := Tnt_WideFormat('%.3f', [ReceiptItem.Quantity]);
+    Exit;
+  end;
+  if WideCompareText(Text, 'UnitPrice') = 0 then
+  begin
+    if (Enabled = TEMPLATE_ITEM_ENABLED)or(ReceiptItem.UnitPrice <> 0) then
+    begin
+      Result := Tnt_WideFormat('%.2f', [ReceiptItem.UnitPrice]);
+    end;
+    Exit;
+  end;
+  if WideCompareText(Text, 'UnitName') = 0 then
+  begin
+    Result := ReceiptItem.UnitName;
+    Exit;
+  end;
+  if WideCompareText(Text, 'Description') = 0 then
+  begin
+    Result := ReceiptItem.Description;
+    Exit;
+  end;
+  if WideCompareText(Text, 'MarkCode') = 0 then
+  begin
+    Result := ReceiptItem.MarkCode;
+    Exit;
+  end;
+  if WideCompareText(Text, 'Discount') = 0 then
+  begin
+    Amount := Abs(ReceiptItem.Discounts.GetTotal);
+    if (Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
+    begin
+      Result := Tnt_WideFormat('%.2f', [Amount]);
+    end;
+    Exit;
+  end;
+  if WideCompareText(Text, 'Charge') = 0 then
+  begin
+    Amount := Abs(ReceiptItem.Charges.GetTotal);
+    if (Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
+    Result := Tnt_WideFormat('%.2f', [Amount]);
+    Exit;
+  end;
+  if WideCompareText(Text, 'Total') = 0 then
+  begin
+    Amount := Abs(ReceiptItem.GetTotalAmount(Params.RoundType));
+    if (Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
+      Result := Tnt_WideFormat('%.2f', [Amount]);
+    Exit;
+  end;
+  if WideCompareText(Text, 'GTIN') = 0 then
+  begin
+    if (Enabled = TEMPLATE_ITEM_ENABLED)or(ReceiptItem.GTIN <> '') then
+      Result := ReceiptItem.GTIN;
+    Exit;
+  end;
+  if WideCompareText(Text, 'NTIN') = 0 then
+  begin
+    if (Enabled = TEMPLATE_ITEM_ENABLED)or(ReceiptItem.NTIN <> '') then
+      Result := ReceiptItem.NTIN;
+    Exit;
+  end;
+  if WideCompareText(Text, 'VatRate') = 0 then
+  begin
+    if (ReceiptItem.VatRate <> nil) and (Enabled = TEMPLATE_ITEM_ENABLED) then
+      Result := Tnt_WideFormat('%.2f', [ReceiptItem.VatRate.Rate]);
+    Exit;
+  end;
+  if WideCompareText(Text, 'VatName') = 0 then
+  begin
+    if (ReceiptItem.VatRate <> nil) and (Enabled = TEMPLATE_ITEM_ENABLED) then
+      Result := Tnt_WideFormat('%s', [ReceiptItem.VatRate.Name]);
+    Exit;
+  end;
+  if WideCompareText(Text, 'VatText') = 0 then
+  begin
+    if (ReceiptItem.VatRate <> nil) and (Enabled = TEMPLATE_ITEM_ENABLED) then
+      Result := Tnt_WideFormat('%s', [ReceiptItem.VatRate.GetText]);
+    Exit;
+  end;
+  raise UserException.CreateFmt('Receipt item %s not found', [Text]);
 end;
 
 end.

@@ -70,6 +70,7 @@ type
     FReceipt: TCustomReceipt;
     FPrinter: IOPOSPOSPrinter;
     FParams: TPrinterParameters;
+    FTemplate: TReceiptTemplate;
     FOposDevice: TOposServiceDevice19;
     FPrinterState: TFiscalPrinterState;
     FVatValues: array [MinVatID..MaxVatID] of Integer;
@@ -94,10 +95,6 @@ type
     FReceiptIsOffline: Boolean;
 
     procedure PrintLine(Text: WideString);
-    function GetReceiptItemText(ReceiptItem: TSalesReceiptItem;
-      Item: TTemplateItem): WideString;
-    function ReceiptItemByText(ReceiptItem: TSalesReceiptItem;
-      Item: TTemplateItem): WideString;
     function ReceiptFieldByText(Receipt: TSalesReceipt;
       Item: TTemplateItem): WideString;
     procedure AddItems(Items: TList);
@@ -382,7 +379,7 @@ type
     function PrintRecItemFuel(const Description: WideString; Price: Currency; Quantity: Integer; 
                               VatInfo: Integer; UnitPrice: Currency; const UnitName: WideString; 
                               SpecialTax: Currency; const SpecialTaxName: WideString): Integer; safecall;
-    function PrintRecItemFuelVoid(const Description: WideString; Price: Currency; VatInfo: Integer; 
+    function PrintRecItemFuelVoid(const Description: WideString; Price: Currency; VatInfo: Integer;
                                   SpecialTax: Currency): Integer; safecall;
     function PrintRecPackageAdjustment(AdjustmentType: Integer; const Description: WideString; 
                                        const VatAdjustment: WideString): Integer; safecall;
@@ -427,6 +424,7 @@ type
     property Client: TWebkassaClient read FClient;
     property Params: TPrinterParameters read FParams;
     property Port: IPrinterPort read FPort write FPort;
+    property Template: TReceiptTemplate read FTemplate;
     property TestMode: Boolean read FTestMode write FTestMode;
     property OposDevice: TOposServiceDevice19 read FOposDevice;
     property LoadParamsEnabled: Boolean read FLoadParamsEnabled write FLoadParamsEnabled;
@@ -624,6 +622,7 @@ begin
   FOposDevice.ErrorEventEnabled := False;
   FPrinterState := TFiscalPrinterState.Create;
   FPageBuffer := TPageBuffer.Create;
+  FTemplate := TReceiptTemplate.Create(FLogger);
   FClient.RaiseErrors := True;
   FLoadParamsEnabled := True;
 end;
@@ -642,6 +641,7 @@ begin
   FReceipt.Free;
   FCashboxStatus.Free;
   FPageBuffer.Free;
+  FTemplate.Free;
   inherited Destroy;
 end;
 
@@ -3058,6 +3058,7 @@ end;
 
 function TWebkassaImpl.DoOpen(const DeviceClass, DeviceName: WideString;
   const pDispatch: IDispatch): Integer;
+
 begin
   try
     Initialize;
@@ -3066,6 +3067,7 @@ begin
     begin
       try
         LoadParametersReg(FParams, DeviceName, Logger);
+        FTemplate.Load(DeviceName);
       except
         on E: Exception do
           Logger.Error('LoadParameters', E);
@@ -3622,7 +3624,6 @@ var
   i: Integer;
   Payment: TPayment;
   Adjustment: TAdjustment;
-  VatRate: TVatRate;
   Item: TSalesReceiptItem;
   ReceiptItem: TReceiptItem;
   Position: TTicketItem;
@@ -3646,7 +3647,7 @@ begin
     begin
       Item := ReceiptItem as TSalesReceiptItem;
 
-      VatRate := GetVatRate(Item.VatInfo);
+      Item.VatRate := GetVatRate(Item.VatInfo);
       Position := Request.Positions.Add as TTicketItem;
       if Item.UnitPrice <> 0 then
       begin
@@ -3672,22 +3673,22 @@ begin
       Position.NTIN := Item.NTIN;
       Position.Productld := 0;
       Position.WarehouseType := 0;
-      if VatRate = nil then
+      if Item.VatRate = nil then
       begin
         Position.Tax := 0;
         Position.TaxPercent := TDouble.Create(0);
         Position.TaxType := TaxTypeNoTax;
       end else
       begin
-        Position.Tax := Abs(VatRate.GetTax(Item.GetTotalAmount(Params.RoundType)));
+        Position.Tax := Abs(Item.GetTotalVat(Params.RoundType));
         Position.TaxType := TaxTypeVAT;
-        Position.TaxPercent := TDouble.Create(VatRate.Rate);
-        if VatRate.VatType in [VAT_TYPE_ZERO_TAX, VAT_TYPE_NO_TAX] then
+        Position.TaxPercent := TDouble.Create(Item.VatRate.Rate);
+        if Item.VatRate.VatType in [VAT_TYPE_ZERO_TAX, VAT_TYPE_NO_TAX] then
         begin
           Position.TaxType := TaxTypeNoTax;
           Position.TaxPercent := TDouble.Create(0);
         end;
-        if VatRate.VatType = VAT_TYPE_NO_TAX then
+        if Item.VatRate.VatType = VAT_TYPE_NO_TAX then
           Position.TaxPercent := nil;
       end;
     end;
@@ -3737,7 +3738,7 @@ begin
   begin
     Receipt.ReguestJson := FClient.CommandJson;
     Receipt.AnswerJson := FClient.AnswerJson;
-    PrintReceiptTemplate(Receipt, Params.Template);
+    PrintReceiptTemplate(Receipt, FTemplate);
   end else
   begin
     PrintReceipt(Receipt, Command.Request, Command.Data);
@@ -3757,7 +3758,7 @@ begin
   begin
     Receipt.ReguestJson := FClient.CommandJson;
     Receipt.AnswerJson := FClient.AnswerJson;
-    PrintReceiptTemplate(Receipt, Params.Template);
+    PrintReceiptTemplate(Receipt, Template);
   end else
   begin
     PrintReceipt(Receipt, Command.Request, Command.Data);
@@ -4119,105 +4120,6 @@ begin
   end;
 end;
 
-function TWebkassaImpl.GetReceiptItemText(ReceiptItem: TSalesReceiptItem;
-  Item: TTemplateItem): WideString;
-begin
-  case Item.ItemType of
-    TEMPLATE_TYPE_TEXT: Result := Item.Text;
-    TEMPLATE_TYPE_ITEM_FIELD: Result := ReceiptItemByText(ReceiptItem, Item);
-    TEMPLATE_TYPE_PARAM: Result := Params.ItemByText(Item.Text);
-    TEMPLATE_TYPE_SEPARATOR: Result := StringOfChar('-', Document.LineChars);
-    TEMPLATE_TYPE_NEWLINE: Result := CRLF;
-  else
-    Result := '';
-  end;
-end;
-
-function TWebkassaImpl.ReceiptItemByText(ReceiptItem: TSalesReceiptItem;
-  Item: TTemplateItem): WideString;
-var
-  Amount: Currency;
-begin
-  Result := '';
-  if WideCompareText(Item.Text, 'Price') = 0 then
-  begin
-    if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(ReceiptItem.Price <> 0) then
-    begin
-      Result := Tnt_WideFormat('%.2f', [ReceiptItem.Price]);
-    end;
-    Exit;
-  end;
-  if WideCompareText(Item.Text, 'VatInfo') = 0 then
-  begin
-    Result := IntToStr(ReceiptItem.VatInfo);
-    Exit;
-  end;
-  if WideCompareText(Item.Text, 'Quantity') = 0 then
-  begin
-    Result := Tnt_WideFormat('%.3f', [ReceiptItem.Quantity]);
-    Exit;
-  end;
-  if WideCompareText(Item.Text, 'UnitPrice') = 0 then
-  begin
-    if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(ReceiptItem.UnitPrice <> 0) then
-    begin
-      Result := Tnt_WideFormat('%.2f', [ReceiptItem.UnitPrice]);
-    end;
-    Exit;
-  end;
-  if WideCompareText(Item.Text, 'UnitName') = 0 then
-  begin
-    Result := ReceiptItem.UnitName;
-    Exit;
-  end;
-  if WideCompareText(Item.Text, 'Description') = 0 then
-  begin
-    Result := ReceiptItem.Description;
-    Exit;
-  end;
-  if WideCompareText(Item.Text, 'MarkCode') = 0 then
-  begin
-    Result := ReceiptItem.MarkCode;
-    Exit;
-  end;
-  if WideCompareText(Item.Text, 'Discount') = 0 then
-  begin
-    Amount := Abs(ReceiptItem.Discounts.GetTotal);
-    if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
-    begin
-      Result := Tnt_WideFormat('%.2f', [Amount]);
-    end;
-    Exit;
-  end;
-  if WideCompareText(Item.Text, 'Charge') = 0 then
-  begin
-    Amount := Abs(ReceiptItem.Charges.GetTotal);
-    if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
-    Result := Tnt_WideFormat('%.2f', [Amount]);
-    Exit;
-  end;
-  if WideCompareText(Item.Text, 'Total') = 0 then
-  begin
-    Amount := Abs(ReceiptItem.GetTotalAmount(Params.RoundType));
-    if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
-      Result := Tnt_WideFormat('%.2f', [Amount]);
-    Exit;
-  end;
-  if WideCompareText(Item.Text, 'GTIN') = 0 then
-  begin
-    if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(ReceiptItem.GTIN <> '') then
-      Result := ReceiptItem.GTIN;
-    Exit;
-  end;
-  if WideCompareText(Item.Text, 'NTIN') = 0 then
-  begin
-    if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(ReceiptItem.NTIN <> '') then
-      Result := ReceiptItem.NTIN;
-    Exit;
-  end;
-  raise UserException.CreateFmt('Receipt item %s not found', [Item.Text]);
-end;
-
 function TWebkassaImpl.ReceiptFieldByText(Receipt: TSalesReceipt;
   Item: TTemplateItem): WideString;
 
@@ -4386,7 +4288,7 @@ begin
           end else
           begin
             LineItems.Add(Item);
-            Item.Value := GetReceiptItemText(ReceiptItem as TSalesReceiptItem, Item);
+            Item.Value := Item.GetRecItemText(ReceiptItem as TSalesReceiptItem, Params);
             IsValid := Item.Value <> '';
           end;
         end;
@@ -5325,5 +5227,19 @@ begin
     Command.Free;
   end;
 end;
+
+(*
+procedure TPrinterParameters.Save(const DeviceName: WideString);
+var
+  Path: WideString;
+begin
+  Path := GetModulePath + 'Params';
+  if not DirectoryExists(Path) then CreateDir(Path);
+  Path := Path + '\' + DeviceName;
+  if not DirectoryExists(Path) then CreateDir(Path);
+
+  FTemplate.SaveToFile(GetTemplateFileName(DeviceName));
+end;
+*)
 
 end.

@@ -57,7 +57,7 @@ begin
       begin
         Item := Items.Add;
         Item.Caption := IntToStr(Parameters.VatRates[i].ID);
-        Item.SubItems.Add(Parameters.VatRates[i].VatTypeText);
+        Item.SubItems.Add(Parameters.VatRates[i].GetText);
         Item.SubItems.Add(Format('%.2f', [Parameters.VatRates[i].Rate]));
         Item.SubItems.Add(Parameters.VatRates[i].Name);
         if i = 0 then
