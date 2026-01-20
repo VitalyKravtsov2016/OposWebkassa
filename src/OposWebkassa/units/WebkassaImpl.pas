@@ -4138,6 +4138,7 @@ function TWebkassaImpl.ReceiptFieldByText(Receipt: TSalesReceipt;
 var
   Amount: Currency;
   VatRate: TVatRate;
+  TaxRate: Double;
 begin
   Result := '';
   if WideCompareText(Item.Text, 'Discount') = 0 then
@@ -4205,14 +4206,44 @@ begin
       Result := Tnt_WideFormat('%.2f', [Amount]);
     Exit;
   end;
+  // TaxAmount
   if WideCompareText(Item.Text, 'TaxAmount') = 0 then
   begin
     VatRate := Params.VatRates.ItemByID(Item.Parameter);
-    Amount := Abs(Receipt.GetVatAmount(VatRate));
+    Amount := 0;
+    if VatRate <> nil then
+      Amount := Abs(Receipt.GetVatAmount(VatRate));
     if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
       Result := Tnt_WideFormat('%.2f', [Amount]);
     Exit;
   end;
+  // TaxRate
+  if WideCompareText(Item.Text, 'TaxRate') = 0 then
+  begin
+    VatRate := Params.VatRates.ItemByID(Item.Parameter);
+    TaxRate := 0;
+    if VatRate <> nil then
+      TaxRate := VatRate.Rate;
+    Result := Tnt_WideFormat('%.2f', [TaxRate]);
+    Exit;
+  end;
+  // TaxName
+  if WideCompareText(Item.Text, 'TaxName') = 0 then
+  begin
+    VatRate := Params.VatRates.ItemByID(Item.Parameter);
+    if VatRate <> nil then
+      Result := VatRate.Name;
+    Exit;
+  end;
+  // TaxText
+  if WideCompareText(Item.Text, 'TaxText') = 0 then
+  begin
+    VatRate := Params.VatRates.ItemByID(Item.Parameter);
+    if VatRate <> nil then
+      Result := VatRate.GetText;
+    Exit;
+  end;
+
   if WideCompareText(Item.Text, 'OperationTypeText') = 0 then
   begin
     Result := GetRecTypeText(Receipt.RecType);

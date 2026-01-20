@@ -215,17 +215,17 @@ begin
     Item.VatInfo := 1;
     Item.VatRate := Vat;
 
-    TemplateItem.Text := 'VatRate';
+    TemplateItem.Text := 'TaxRate';
     TemplateItem.Enabled := TEMPLATE_ITEM_ENABLED;
     Line := TemplateItem.ReceiptItemByText(Item, Params);
     CheckEquals('12.34', Line, 'ReceiptItemByText.VatRate');
 
-    TemplateItem.Text := 'VatName';
+    TemplateItem.Text := 'TaxName';
     TemplateItem.Enabled := TEMPLATE_ITEM_ENABLED;
     Line := TemplateItem.ReceiptItemByText(Item, Params);
     CheckEquals('VAT 12.34%', Line, 'ReceiptItemByText.VatName');
 
-    TemplateItem.Text := 'VatText';
+    TemplateItem.Text := 'TaxText';
     TemplateItem.Enabled := TEMPLATE_ITEM_ENABLED;
     Line := TemplateItem.ReceiptItemByText(Item, Params);
     CheckEquals('ÍÄÑ 12.34%', Line, 'ReceiptItemByText.VatName');

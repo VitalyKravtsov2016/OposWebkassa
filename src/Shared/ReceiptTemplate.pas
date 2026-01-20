@@ -797,19 +797,26 @@ begin
       Result := ReceiptItem.NTIN;
     Exit;
   end;
-  if WideCompareText(Text, 'VatRate') = 0 then
+  if WideCompareText(Text, 'TaxAmount') = 0 then
+  begin
+    Amount := ReceiptItem.GetTotalVat(Params.RoundType);
+    if (Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
+      Result := Tnt_WideFormat('%.2f', [Amount]);
+    Exit;
+  end;
+  if WideCompareText(Text, 'TaxRate') = 0 then
   begin
     if (ReceiptItem.VatRate <> nil) and (Enabled = TEMPLATE_ITEM_ENABLED) then
       Result := Tnt_WideFormat('%.2f', [ReceiptItem.VatRate.Rate]);
     Exit;
   end;
-  if WideCompareText(Text, 'VatName') = 0 then
+  if WideCompareText(Text, 'TaxName') = 0 then
   begin
     if (ReceiptItem.VatRate <> nil) and (Enabled = TEMPLATE_ITEM_ENABLED) then
       Result := Tnt_WideFormat('%s', [ReceiptItem.VatRate.Name]);
     Exit;
   end;
-  if WideCompareText(Text, 'VatText') = 0 then
+  if WideCompareText(Text, 'TaxText') = 0 then
   begin
     if (ReceiptItem.VatRate <> nil) and (Enabled = TEMPLATE_ITEM_ENABLED) then
       Result := Tnt_WideFormat('%s', [ReceiptItem.VatRate.GetText]);

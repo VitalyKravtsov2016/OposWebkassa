@@ -1,26 +1,31 @@
 [Closed Files]
-File_0=SourceModule,'D:\projects\IBTS\WebKassa\test\OposWebkassaTest\units\duReceiptTemplate.pas',0,1,212,57,220,0,0
-File_1=SourceModule,'D:\projects\IBTS\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas',0,1,3619,78,3637,0,0
-File_2=SourceModule,'D:\projects\IBTS\WebKassa\src\OposWebkassa\units\ReceiptItem.pas',0,1,97,29,112,0,0
-File_3=SourceModule,'D:\projects\IBTS\WebKassa\src\OposWebkassa\units\SalesReceipt.pas',0,1,39,24,39,0,0
-File_4=SourceModule,'D:\projects\IBTS\WebKassa\test\OposWebkassaTest\units\duPrinterParameters.pas',0,1,76,36,90,0,0
-File_5=SourceModule,'D:\projects\IBTS\WebKassa\test\OposWebkassaTest\units\duOposDevice.pas',0,1,22,1,39,0,0
-File_6=SourceModule,'D:\projects\IBTS\WebKassa\src\Shared\PrinterParameters.pas',0,1,352,2,368,0,0
-File_7=SourceModule,'c:\program files (x86)\borland\delphi7\source\rtl\common\classes.pas',0,1,3626,1,3642,0,0
+File_0=SourceModule,'D:\projects\IBTS\WebKassa\src\OposWebkassa\units\ReceiptItem.pas',0,1,371,39,383,0,0
+File_1=SourceModule,'D:\projects\IBTS\WebKassa\src\Shared\VatRate.pas',0,1,34,1,47,0,0
+File_2=SourceModule,'D:\projects\IBTS\WebKassa\src\OposWebkassa\Units\WebkassaClient.pas',0,1,1,95,14,0,0
+File_3=SourceModule,'D:\projects\IBTS\WebKassa\src\OposConfig\Fmu\fmuFptrVatRate.pas',0,1,49,25,63,0,0
+File_4=SourceModule,'D:\projects\IBTS\WebKassa\test\OposWebkassaTest\units\duReceiptTemplate.pas',0,1,212,57,220,0,0
+File_5=SourceModule,'D:\projects\IBTS\WebKassa\test\OposWebkassaTest\units\duPrinterParameters.pas',0,1,76,36,90,0,0
+File_6=SourceModule,'D:\projects\IBTS\WebKassa\test\OposWebkassaTest\units\duOposDevice.pas',0,1,22,1,39,0,0
 
 [Modules]
-Module0=D:\projects\IBTS\WebKassa\src\Shared\VatRate.pas
-Module1=D:\projects\IBTS\WebKassa\src\Shared\ReceiptTemplate.pas
-Count=2
+Module0=D:\projects\IBTS\WebKassa\src\Shared\ReceiptTemplate.pas
+Module1=D:\projects\IBTS\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas
+Module2=D:\projects\IBTS\WebKassa\src\OposWebkassa\units\SalesReceipt.pas
+Count=3
 EditWindowCount=1
 TypeLibWindowCount=1
 
-[D:\projects\IBTS\WebKassa\src\Shared\VatRate.pas]
+[D:\projects\IBTS\WebKassa\src\Shared\ReceiptTemplate.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[D:\projects\IBTS\WebKassa\src\Shared\ReceiptTemplate.pas]
+[D:\projects\IBTS\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[D:\projects\IBTS\WebKassa\src\OposWebkassa\units\SalesReceipt.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -62,43 +67,53 @@ FormState=0
 FormOnTop=0
 
 [EditWindow0]
-ViewCount=2
-CurrentView=1
+ViewCount=3
+CurrentView=2
 View0=0
 View1=1
+View2=2
 CodeExplorer=CodeExplorer@EditWindow0
 MessageView=MessageView@EditWindow0
 Create=1
 Visible=1
-State=0
+State=2
 Left=493
 Top=140
 Width=1302
 Height=682
-MaxLeft=-1
-MaxTop=-1
-ClientWidth=1286
-ClientHeight=643
+MaxLeft=-8
+MaxTop=107
+MaxWidth=1936
+MaxHeight=941
+ClientWidth=1920
+ClientHeight=902
 LeftPanelSize=0
 LeftPanelClients=CodeExplorer@EditWindow0
 LeftPanelData=00000400010000000C000000436F64654578706C6F7265720000000000000000000000000000000000FFFFFFFF
 RightPanelSize=0
-BottomPanelSize=0
+BottomPanelSize=230
 BottomPanelClients=MessageView@EditWindow0
-BottomPanelData=00000400010000000B0000004D657373616765566965770000000000000000000000000000000000FFFFFFFF
+BottomPanelData=000004000000000000000000000000000000000000000000000100000000000000000B0000004D65737361676556696577FFFFFFFF
 
 [View0]
-Module=D:\projects\IBTS\WebKassa\src\Shared\ReceiptTemplate.pas
-CursorX=19
-CursorY=800
-TopLine=796
+Module=D:\projects\IBTS\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas
+CursorX=36
+CursorY=4215
+TopLine=4203
 LeftCol=1
 
 [View1]
-Module=D:\projects\IBTS\WebKassa\src\Shared\VatRate.pas
-CursorX=44
-CursorY=134
-TopLine=119
+Module=D:\projects\IBTS\WebKassa\src\OposWebkassa\units\SalesReceipt.pas
+CursorX=25
+CursorY=723
+TopLine=714
+LeftCol=1
+
+[View2]
+Module=D:\projects\IBTS\WebKassa\src\Shared\ReceiptTemplate.pas
+CursorX=2
+CursorY=804
+TopLine=790
 LeftCol=1
 
 [TypeLibEditWindow0]
@@ -150,11 +165,11 @@ Left=571
 Top=27
 Width=1349
 Height=123
-MaxLeft=-8
-MaxTop=-8
-MaxWidth=1932
+MaxLeft=-1
+MaxTop=-1
+MaxWidth=1936
 MaxHeight=123
-ClientWidth=1916
+ClientWidth=1920
 ClientHeight=84
 
 [ProjectManager]
@@ -164,11 +179,11 @@ State=0
 Left=0
 Top=117
 Width=755
-Height=308
+Height=405
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=739
-ClientHeight=269
+ClientHeight=366
 TBDockHeight=681
 LRDockWidth=445
 Dockable=0
@@ -424,17 +439,17 @@ Dockable=1
 
 [MessageView@EditWindow0]
 Create=1
-Visible=0
+Visible=1
 State=0
-Left=-303
-Top=-707
-Width=443
-Height=85
+Left=12
+Top=0
+Width=1908
+Height=230
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=443
-ClientHeight=85
-TBDockHeight=85
+ClientWidth=1908
+ClientHeight=230
+TBDockHeight=230
 LRDockWidth=443
 Dockable=1
 
