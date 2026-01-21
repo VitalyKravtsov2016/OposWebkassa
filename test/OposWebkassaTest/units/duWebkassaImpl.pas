@@ -88,9 +88,6 @@ type
     procedure TestDuplicateReceipt;
     procedure TestSetHeaderLines;
     procedure TestSetTrailerLines;
-    procedure TestReceiptTemplate;
-    procedure TestReceiptTemplate3;
-    procedure TestReceiptTemplate5;
     procedure TestGetJsonField;
     procedure TestEncoding;
     procedure TestBarcode;
@@ -111,6 +108,12 @@ type
     procedure TestTextDocument;
     procedure TestGTIN;
     procedure TestNTIN;
+
+    procedure TestReceiptTemplate;
+    procedure TestReceiptTemplate3;
+    procedure TestReceiptTemplate5;
+    procedure TestReceiptTemplate6;
+    procedure TestReceiptTemplate7;
   end;
 
 implementation
@@ -166,14 +169,20 @@ begin
 
   VatRate.Id := 1;
   VatRate.Rate := 0;
-  VatRate.Name := '';
+  VatRate.Name := 'ZERO TAX';
   VatRate.VatType := VAT_TYPE_ZERO_TAX;
   FDriver.Params.VatRates.Add(VatRate);
 
   VatRate.Id := 2;
   VatRate.Rate := 0;
-  VatRate.Name := '';
+  VatRate.Name := 'NO TAX';
   VatRate.VatType := VAT_TYPE_NO_TAX;
+  FDriver.Params.VatRates.Add(VatRate);
+
+  VatRate.Id := 3;
+  VatRate.Rate := 5;
+  VatRate.Name := 'VAT 5%';
+  VatRate.VatType := VAT_TYPE_NORMAL;
   FDriver.Params.VatRates.Add(VatRate);
 
   VatRate.Id := 4;
@@ -900,6 +909,448 @@ end;
  |bC¹
 *)
 
+procedure TWebkassaImplTest.ShowLines;
+var
+  i: Integer;
+begin
+  for i := 0 to FPrinter.Lines.Count-1 do
+  begin
+    ODS(Format('%d, %s', [i, FPrinter.Lines[i]]));
+  end;
+end;
+
+procedure TWebkassaImplTest.CheckLines;
+var
+  i: Integer;
+  Count: Integer;
+begin
+  //ShowLines;
+
+(*
+  if FLines.Text <> FPrinter.Lines.Text then
+  begin
+    FLines.SaveToFile('CheckLines1.txt');
+    FPrinter.Lines.SaveToFile('CheckLines2.txt');
+  end;
+  CheckEquals(FLines.Count, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
+*)
+  Count := Math.Min(FLines.Count, FPrinter.Lines.Count);
+  for i := 0 to Count-1 do
+  begin
+    if FLines[i] <> FPrinter.Lines[i] then
+    begin
+      CheckEquals(TrimRight(FLines[i]), TrimRight(FPrinter.Lines[i]), IntToStr(i));
+    end;
+  end;
+end;
+
+procedure TWebkassaImplTest.TestGetJsonField;
+var
+  V: Variant;
+  Doc: TlkJSONbase;
+  Item: TlkJSONbase;
+  JsonText: WideString;
+begin
+  JsonText := ReadFileData(GetModulePath + 'SendReceiptAnswer.txt');
+  Doc := TlkJSON.ParseText(JsonText);
+  try
+    Item := Doc.Field['Data'];
+    Check(Item <> nil, 'Data');
+    CheckEquals('923956785162', Item.Field['CheckNumber'].Value, 'CheckNumber');
+    Item := Item.Field['CashBox'];
+    Check(Item <> nil, 'CashBox');
+    CheckEquals('SWK00032685', Item.Field['UniqueNumber'].Value, 'UniqueNumber');
+
+    V := Driver.GetJsonField(JsonText, 'Data.Cashbox.UniqueNumber');
+    CheckEquals('SWK00032685', V, 'UniqueNumber');
+  finally
+    Doc.Free;
+  end;
+end;
+
+procedure TWebkassaImplTest.TestEncoding;
+const
+  TEXT_UTF16LE_HEX =
+  '1e 04 3f 04 35 04 40 04 30 04 42 04 3e 04 40 04 ' +
+  '3a 00 20 00 92 04 30 04 a3 04 a3 04 d9 04 20 00 ' +
+  '9a 04 b1 04 37 04 3c 04 56 04 a3 04 30 04';
+var
+  S: AnsiString;
+  Text: WideString;
+begin
+  FPrinter.FRecLinesToPaperCut := 0;
+  FDriver.Params.NumHeaderLines := 0;
+  FDriver.Params.NumTrailerLines := 0;
+
+  S := HexToStr(TEXT_UTF16LE_HEX);
+  SetLength(Text, Length(S) div Sizeof(WideChar));
+  Move(S[1], Text[1], Length(S));
+
+  OpenClaimEnable;
+  CheckEquals(0, Driver.ResetPrinter, 'ResetPrinter');
+  CheckEquals(0, Driver.BeginNonFiscal, 'BeginNonFiscal');
+  CheckEquals(0, Driver.PrintNormal(FPTR_S_RECEIPT, Text));
+  CheckEquals(0, Driver.EndNonFiscal, 'EndNonFiscal');
+
+  FLines.Text := Text;
+  CheckLines;
+end;
+
+procedure TWebkassaImplTest.TestBarcode;
+const
+  BarcodeData = 'http://dev.kofd.kz/consumer?i=925871425876&f=211030200207&s=15443.72&t=20220826T210014';
+begin
+  Driver.PrintQRCodeAsGraphics(BarcodeData);
+end;
+
+procedure TWebkassaImplTest.TestFiscalreceiptType;
+var
+  ErrorString: WideString;
+begin
+  OpenClaimEnable;
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, 10);
+  CheckEquals(OPOS_E_ILLEGAL, Driver.BeginFiscalReceipt(True), 'BeginFiscalReceipt.1');
+  ErrorString := Driver.GetPropertyString(PIDXFptr_ErrorString);
+  CheckEquals('Invalid property value, FiscalReceiptType=''10''', ErrorString, 'ErrorString');
+
+  CheckEquals(OPOS_E_EXTENDED, Driver.EndFiscalReceipt(False), 'EndFiscalReceipt.1');
+  ErrorString := Driver.GetPropertyString(PIDXFptr_ErrorString);
+  CheckEquals('Wrong printer state', ErrorString, 'ErrorString');
+
+  CheckEquals(OPOS_E_ILLEGAL, Driver.BeginFiscalReceipt(True), 'BeginFiscalReceipt.2');
+  ErrorString := Driver.GetPropertyString(PIDXFptr_ErrorString);
+  CheckEquals('Invalid property value, FiscalReceiptType=''10''', ErrorString, 'ErrorString');
+end;
+
+
+procedure TWebkassaImplTest.TestFiscalreceiptType2;
+begin
+  OpenClaimEnable;
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, 4);
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+  FptrCheck(Driver.DirectIO2(30, 72, '4'));
+  FptrCheck(Driver.DirectIO2(30, 73, '1'));
+  FptrCheck(Driver.PrintRecItem('ÒÐ'#$1A' 4:'#$10#$18'-92-'#$1A'4/'#$1A'5', 2050, 10000, 4, 205, 'ë'));
+  FptrCheck(Driver.DirectIO2(30, 72, '4'));
+  FptrCheck(Driver.DirectIO2(30, 73, '33'));
+  FptrCheck(Driver.DirectIO2(30, 81, '5'));
+  FptrCheck(Driver.DirectIO2(30, 80, '000000487435878"*y35ebWE2Slls'));
+
+  FptrCheck(Driver.PrintRecItem('Ñ'#$18#$13#$10'Ð'#$15'ÒÛ WINSTON XSTYLE SILVER', 870, 1000, 1, 870, 'øò'));
+  FptrCheck(Driver.DirectIO2(120, 0, '2402209000'));
+
+  FptrCheck(Driver.PrintRecItem('Item 3', 870, 1000, 2, 870, 'øò'));
+
+  FptrCheck(Driver.PrintRecTotal(3790, 5000, '0'));
+
+  FptrCheck(Driver.PrintRecMessage(#$1E'ïåðàòîð: Òàíåêåíîâà  '#$10'éíóð'));
+  FptrCheck(Driver.PrintRecMessage('Òðàíç.:    2965055 '));
+  FptrCheck(Driver.DirectIO2(30, 302, '1'));
+  FptrCheck(Driver.DirectIO2(30, 300, '2965055'));
+  FptrCheck(Driver.PrintRecMessage('Òðàíç. ïðîäàæè: 2965015 (2920,00 òã));'));
+  FptrCheck(Driver.EndFiscalReceipt(False));
+end;
+
+procedure TWebkassaImplTest.TestZeroFiscalReceipt;
+var
+  pData: Integer;
+  pString: WideString;
+  JsonText: string;
+  ExpectedText: string;
+begin
+  OpenClaimEnable;
+  FDriver.Client.TestMode := True;
+  FDriver.Params.VATSeries := 'VATSeries';
+  FDriver.Params.VATNumber := 'VATNumber';
+  FptrCheck(Driver.ResetPrinter);
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+
+  // ExternalCheckNumber
+  pData := DriverParameterExternalCheckNumber;
+  pString := 'ExternalCheckNumber';
+  FptrCheck(FDriver.DirectIO(DIO_SET_DRIVER_PARAMETER, pData, pString));
+
+  FptrCheck(Driver.PrintRecItem('Item1', 0, 1000, 4, 0, 'øò'));
+  FptrCheck(Driver.PrintRecTotal(0, 0, '0'));
+  CheckEquals(OPOS_SUCCESS, Driver.EndFiscalReceipt(False));
+
+  JsonText := UTF8Decode(Driver.Client.CommandJson);
+  ExpectedText := UTF8Decode(ReadFileData(GetModulePath + 'ZeroReceiptRequest.json'));
+  if JsonText <> ExpectedText then
+  begin
+    WriteFileData(GetModulePath + 'ExpectedText1.json', ExpectedText);
+    WriteFileData(GetModulePath + 'JsonText1.json', JsonText);
+  end;
+  CheckEquals(ExpectedText, JsonText, 'Driver.Client.CommandJson');
+end;
+
+//  <                    ÄÓÁËÈÊÀÒ> but was: <|3C                    ÄÓÁËÈÊÀÒ>
+procedure TWebkassaImplTest.TestPrintDuplicate;
+begin
+  OpenClaimEnable;
+  FDriver.Client.TestMode := True;
+  FDriver.Client.AnswerJson := ReadFileData(GetModulePath + 'ReadReceiptTextAnswer2.txt');
+
+  FptrCheck(Driver.ResetPrinter);
+  CheckEquals(0, FPrinter.Lines.Count, 'Lines.Count.0');
+  FptrCheck(Driver.DirectIO2(DIO_PRINT_RECEIPT_DUPLICATE, 0, '{29FA3A2F-5A60-47E4-872B-6AE8C3893CC7}'));
+  CheckEquals(42, FPrinter.Lines.Count, 'Lines.Count.1');
+  FLines.LoadFromFile('DuplicateReceipt.txt');
+  FLines[0] := ESC_DoubleHigh + FLines[0];
+  CheckLines;
+end;
+
+procedure TWebkassaImplTest.TestPrintDuplicate2;
+begin
+  OpenClaimEnable;
+  FDriver.Client.TestMode := True;
+  FDriver.Client.AnswerJson := ReadFileData(GetModulePath + 'ReadReceiptTextAnswer2.txt');
+
+  FptrCheck(Driver.ResetPrinter);
+  CheckEquals(0, FPrinter.Lines.Count, 'Lines.Count.0');
+  FptrCheck(Driver.DirectIO2(DIO_SET_DRIVER_PARAMETER, DriverParameterPrintEnabled, '0'));
+  FptrCheck(Driver.DirectIO2(DIO_PRINT_RECEIPT_DUPLICATE, 0, '{29FA3A2F-5A60-47E4-872B-6AE8C3893CC7}'));
+  CheckEquals(0, FPrinter.Lines.Count, 'Lines.Count.1');
+end;
+
+procedure TWebkassaImplTest.TestRecLineChars;
+begin
+  Driver.Params.RecLineChars := 20;
+  OpenClaimEnable;
+  CheckEquals(20, Driver.GetPropertyNumber(PIDXFptr_DescriptionLength), 'DescriptionLength');
+end;
+
+procedure TWebkassaImplTest.TestParseJson;
+var
+  Doc: TlkJSONbase;
+  JsonText: WideString;
+begin
+  JsonText := ReadFileData(GetModulePath + 'CashboxState.json');
+  Doc := TlkJSON.ParseText(JsonText);
+  Doc.Free;
+end;
+
+procedure TWebkassaImplTest.TestParseJson2;
+var
+  Doc: TlkJSONbase;
+  JsonText: WideString;
+  Data: TSendReceiptCommandResponse;
+begin
+  JsonText := ReadFileData(GetModulePath + 'ReceiptAnswer5.json');
+  Data := TSendReceiptCommandResponse.Create;
+  try
+    JsonToObject(JsonText, Data);
+  finally
+    Data.Free;
+  end;
+
+  Doc := TlkJSON.ParseText(JsonText);
+  Doc.Free;
+end;
+
+procedure TWebkassaImplTest.TestReadCashboxStatus;
+begin
+  OpenClaimEnable;
+  try
+    Driver.Client.TestException := EIdConnClosedGracefully.Create(RSConnectionClosedGracefully);
+    Driver.ReadCashboxStatus;
+    Fail('No exception');
+  except
+    on E: EIdConnClosedGracefully do;
+  end;
+end;
+
+//
+
+procedure TWebkassaImplTest.TestReadCasboxStatusAnswerJson;
+begin
+  OpenClaimEnable;
+  Driver.TestMode := True;
+  Driver.Client.TestException := EIdConnClosedGracefully.Create(RSConnectionClosedGracefully);
+  CheckEquals('', Driver.ReadCasboxStatusAnswerJson, 'ReadCasboxStatusAnswerJson');
+end;
+
+procedure TWebkassaImplTest.TestMemoryLeak;
+begin
+  //Driver.Params.TemplateEnabled := True;
+  OpenClaimEnable;
+  Driver.Close;
+
+  OpenClaimEnable;
+  CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+  FptrCheck(Driver.PrintRecItem('ÒÐÊ 1:ÀÈ-92-Ê4/Ê5', 1353, 6700, 4, 202, 'ë'));
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Ñêèäêà 10', 10, 1));
+  FptrCheck(Driver.PrintRecTotal(1343, 2000, '0'));
+  FptrCheck(Driver.PrintRecMessage('Îïåðàòîð: Êàññèð1'));
+  FptrCheck(Driver.PrintRecMessage('Òðàíç.:      16868 '));
+  FptrCheck(Driver.EndFiscalReceipt(False));
+  Driver.Close;
+end;
+
+procedure TWebkassaImplTest.TestTextDocument;
+var
+  Document: TTextDocument;
+begin
+  //MemCheckStart;
+  Document := TTextDocument.Create;
+  Document.Add('zkxchkzjxch', 0);
+  Document.Clear;
+  Document.Free;
+  //MemCheckStop;
+end;
+
+procedure TWebkassaImplTest.TestMemoryLeak2;
+begin
+  Driver.Params.TemplateEnabled := True;
+  OpenClaimEnable;
+  Driver.Client.AnswerJson := ReadFileData(GetModulePath + 'FiscalReceipt3.json');
+
+  CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+  FptrCheck(Driver.PrintRecItem('ÒÐÊ 1:ÀÈ-92-Ê4/Ê5', 1353, 6700, 4, 202, 'ë'));
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Ñêèäêà 10', 10, 1));
+  FptrCheck(Driver.PrintRecTotal(1343, 2000, '0'));
+  FptrCheck(Driver.PrintRecMessage('Îïåðàòîð: Êàññèð1'));
+  FptrCheck(Driver.PrintRecMessage('Òðàíç.:      16868 '));
+  FptrCheck(Driver.EndFiscalReceipt(False));
+  Driver.Close;
+end;
+
+procedure TWebkassaImplTest.TestMemoryLeak3;
+var
+  ResponseJson: string;
+  Command: TSendReceiptCommand;
+begin
+  Command := TSendReceiptCommand.Create;
+  try
+    ResponseJson := ReadFileData(GetModulePath + 'FiscalReceipt3.json');
+    JsonToObject(ResponseJson, Command);
+
+    CheckEquals(74, Command.Data.CheckOrderNumber, 'Command.Data.CheckOrderNumber');
+    CheckEquals(406, Command.Data.ShiftNumber, 'Command.Data.ShiftNumber');
+ finally
+    Command.Free;
+  end;
+end;
+
+procedure TWebkassaImplTest.TestGTIN;
+const
+  GTINValue = '823gjhgu62t83674';
+var
+  pData: Integer;
+  pString: WideString;
+  Receipt: TSalesReceipt;
+  Item: TReceiptItem;
+  Position: TTicketItem;
+begin
+  OpenClaimEnable;
+  /////////////////////////////////////////////////////////
+  // if Receipt is not opened - setting GTIN has no effect
+
+  FptrCheck(Driver.DirectIO2(DIO_SET_DRIVER_PARAMETER,
+    DriverParameterGTIN, GTINValue));
+
+  pString := '';
+  pData := DriverParameterGTIN;
+  FptrCheck(Driver.DirectIO(DIO_GET_DRIVER_PARAMETER, pData, pString));
+  CheckEquals('', pString);
+
+  // Open sales receipt
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
+  CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+  CheckEquals(FPTR_PS_FISCAL_RECEIPT, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+  // Set and get GTIN value
+  FptrCheck(Driver.DirectIO2(DIO_SET_DRIVER_PARAMETER,
+    DriverParameterGTIN, GTINValue));
+  pString := '';
+  pData := DriverParameterGTIN;
+  FptrCheck(Driver.DirectIO(DIO_GET_DRIVER_PARAMETER, pData, pString));
+  CheckEquals(GTINValue, pString);
+  // Add receipt item
+  FptrCheck(Driver.PrintRecItem('Item 1', 123.45, 1000, 1, 123.45, 'êã'));
+  Check(Driver.Receipt is TSalesReceipt, 'Driver.Receipt is TSalesReceipt');
+  Receipt := Driver.Receipt as TSalesReceipt;
+  CheckEquals(1, Receipt.Items.Count, 'Receipt.Items.Count <> 1');
+  Item := Receipt.Items[0];
+  Check(Item is TSalesReceiptItem, 'Item is TSalesReceiptItem');
+  CheckEquals(GTINValue, (Item as TSalesReceiptItem).GTIN);
+  // GTIN will be reset
+  pString := '';
+  pData := DriverParameterGTIN;
+  FptrCheck(Driver.DirectIO(DIO_GET_DRIVER_PARAMETER, pData, pString));
+  CheckEquals('', pString);
+  // Close receipt
+  FptrCheck(Driver.PrintRecTotal(123.45, 123.45, '0'));
+  CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+  CheckEquals(OPOS_SUCCESS, Driver.EndFiscalReceipt(False));
+  // Check receipt command
+  CheckEquals(1, Driver.Client.SendReceiptCommand.Request.Positions.Count, 'Positions.Count');
+  Position := Driver.Client.SendReceiptCommand.Request.Positions[0];
+  CheckEquals(GTINValue, Position.GTIN, 'Position.GTIN');
+end;
+
+procedure TWebkassaImplTest.TestNTIN;
+const
+  NTINValue = 'kjsdhf9834ry98237498aksjdh';
+var
+  pData: Integer;
+  pString: WideString;
+  Receipt: TSalesReceipt;
+  Item: TReceiptItem;
+  Position: TTicketItem;
+begin
+  OpenClaimEnable;
+  /////////////////////////////////////////////////////////
+  // if Receipt is not opened - setting NTIN has no effect
+
+  FptrCheck(Driver.DirectIO2(DIO_SET_DRIVER_PARAMETER,
+    DriverParameterNTIN, NTINValue));
+
+  pString := '';
+  pData := DriverParameterNTIN;
+  FptrCheck(Driver.DirectIO(DIO_GET_DRIVER_PARAMETER, pData, pString));
+  CheckEquals('', pString);
+
+  // Open sales receipt
+  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
+  CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
+  FptrCheck(Driver.BeginFiscalReceipt(True));
+  CheckEquals(FPTR_PS_FISCAL_RECEIPT, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+  // Set and get NTIN value
+  FptrCheck(Driver.DirectIO2(DIO_SET_DRIVER_PARAMETER,
+    DriverParameterNTIN, NTINValue));
+  pString := '';
+  pData := DriverParameterNTIN;
+  FptrCheck(Driver.DirectIO(DIO_GET_DRIVER_PARAMETER, pData, pString));
+  CheckEquals(NTINValue, pString);
+  // Add receipt item
+  FptrCheck(Driver.PrintRecItem('Item 1', 123.45, 1000, 1, 123.45, 'êã'));
+  Check(Driver.Receipt is TSalesReceipt, 'Driver.Receipt is TSalesReceipt');
+  Receipt := Driver.Receipt as TSalesReceipt;
+  CheckEquals(1, Receipt.Items.Count, 'Receipt.Items.Count <> 1');
+  Item := Receipt.Items[0];
+  Check(Item is TSalesReceiptItem, 'Item is TSalesReceiptItem');
+  CheckEquals(NTINValue, (Item as TSalesReceiptItem).NTIN);
+  // NTIN will be reset
+  pString := '';
+  pData := DriverParameterNTIN;
+  FptrCheck(Driver.DirectIO(DIO_GET_DRIVER_PARAMETER, pData, pString));
+  CheckEquals('', pString);
+  // Close receipt
+  FptrCheck(Driver.PrintRecTotal(123.45, 123.45, '0'));
+  CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+  CheckEquals(OPOS_SUCCESS, Driver.EndFiscalReceipt(False));
+  // Check receipt command
+  CheckEquals(1, Driver.Client.SendReceiptCommand.Request.Positions.Count, 'Positions.Count');
+  Position := Driver.Client.SendReceiptCommand.Request.Positions[0];
+  CheckEquals(NTINValue, Position.NTIN, 'Position.NTIN');
+end;
+
 procedure TWebkassaImplTest.TestReceiptTemplate;
 begin
   Driver.Template.Clear;
@@ -1365,446 +1816,332 @@ begin
   end;
 end;
 
-procedure TWebkassaImplTest.ShowLines;
+procedure TWebkassaImplTest.TestReceiptTemplate6;
 var
-  i: Integer;
-begin
-  for i := 0 to FPrinter.Lines.Count-1 do
-  begin
-    ODS(Format('%d, %s', [i, FPrinter.Lines[i]]));
-  end;
-end;
-
-procedure TWebkassaImplTest.CheckLines;
-var
-  i: Integer;
-  Count: Integer;
-begin
-  //ShowLines;
-
-(*
-  if FLines.Text <> FPrinter.Lines.Text then
-  begin
-    FLines.SaveToFile('CheckLines1.txt');
-    FPrinter.Lines.SaveToFile('CheckLines2.txt');
-  end;
-  CheckEquals(FLines.Count, FPrinter.Lines.Count, 'FPrinter.Lines.Count');
-*)
-  Count := Math.Min(FLines.Count, FPrinter.Lines.Count);
-  for i := 0 to Count-1 do
-  begin
-    if FLines[i] <> FPrinter.Lines[i] then
-    begin
-      CheckEquals(TrimRight(FLines[i]), TrimRight(FPrinter.Lines[i]), IntToStr(i));
-    end;
-  end;
-end;
-
-procedure TWebkassaImplTest.TestGetJsonField;
-var
-  V: Variant;
-  Doc: TlkJSONbase;
-  Item: TlkJSONbase;
-  JsonText: WideString;
-begin
-  JsonText := ReadFileData(GetModulePath + 'SendReceiptAnswer.txt');
-  Doc := TlkJSON.ParseText(JsonText);
-  try
-    Item := Doc.Field['Data'];
-    Check(Item <> nil, 'Data');
-    CheckEquals('923956785162', Item.Field['CheckNumber'].Value, 'CheckNumber');
-    Item := Item.Field['CashBox'];
-    Check(Item <> nil, 'CashBox');
-    CheckEquals('SWK00032685', Item.Field['UniqueNumber'].Value, 'UniqueNumber');
-
-    V := Driver.GetJsonField(JsonText, 'Data.Cashbox.UniqueNumber');
-    CheckEquals('SWK00032685', V, 'UniqueNumber');
-  finally
-    Doc.Free;
-  end;
-end;
-
-procedure TWebkassaImplTest.TestEncoding;
+  Item: TTemplateItem;
 const
-  TEXT_UTF16LE_HEX =
-  '1e 04 3f 04 35 04 40 04 30 04 42 04 3e 04 40 04 ' +
-  '3a 00 20 00 92 04 30 04 a3 04 a3 04 d9 04 20 00 ' +
-  '9a 04 b1 04 37 04 3c 04 56 04 a3 04 30 04';
-var
-  S: AnsiString;
-  Text: WideString;
-begin
-  FPrinter.FRecLinesToPaperCut := 0;
-  FDriver.Params.NumHeaderLines := 0;
-  FDriver.Params.NumTrailerLines := 0;
-
-  S := HexToStr(TEXT_UTF16LE_HEX);
-  SetLength(Text, Length(S) div Sizeof(WideChar));
-  Move(S[1], Text[1], Length(S));
-
-  OpenClaimEnable;
-  CheckEquals(0, Driver.ResetPrinter, 'ResetPrinter');
-  CheckEquals(0, Driver.BeginNonFiscal, 'BeginNonFiscal');
-  CheckEquals(0, Driver.PrintNormal(FPTR_S_RECEIPT, Text));
-  CheckEquals(0, Driver.EndNonFiscal, 'EndNonFiscal');
-
-  FLines.Text := Text;
-  CheckLines;
-end;
-
-procedure TWebkassaImplTest.TestBarcode;
-const
-  BarcodeData = 'http://dev.kofd.kz/consumer?i=925871425876&f=211030200207&s=15443.72&t=20220826T210014';
-begin
-  Driver.PrintQRCodeAsGraphics(BarcodeData);
-end;
-
-procedure TWebkassaImplTest.TestFiscalreceiptType;
-var
-  ErrorString: WideString;
-begin
-  OpenClaimEnable;
-  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, 10);
-  CheckEquals(OPOS_E_ILLEGAL, Driver.BeginFiscalReceipt(True), 'BeginFiscalReceipt.1');
-  ErrorString := Driver.GetPropertyString(PIDXFptr_ErrorString);
-  CheckEquals('Invalid property value, FiscalReceiptType=''10''', ErrorString, 'ErrorString');
-
-  CheckEquals(OPOS_E_EXTENDED, Driver.EndFiscalReceipt(False), 'EndFiscalReceipt.1');
-  ErrorString := Driver.GetPropertyString(PIDXFptr_ErrorString);
-  CheckEquals('Wrong printer state', ErrorString, 'ErrorString');
-
-  CheckEquals(OPOS_E_ILLEGAL, Driver.BeginFiscalReceipt(True), 'BeginFiscalReceipt.2');
-  ErrorString := Driver.GetPropertyString(PIDXFptr_ErrorString);
-  CheckEquals('Invalid property value, FiscalReceiptType=''10''', ErrorString, 'ErrorString');
-end;
-
-
-procedure TWebkassaImplTest.TestFiscalreceiptType2;
-begin
-  OpenClaimEnable;
-  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, 4);
-  FptrCheck(Driver.BeginFiscalReceipt(True));
-  FptrCheck(Driver.DirectIO2(30, 72, '4'));
-  FptrCheck(Driver.DirectIO2(30, 73, '1'));
-  FptrCheck(Driver.PrintRecItem('ÒÐ'#$1A' 4:'#$10#$18'-92-'#$1A'4/'#$1A'5', 2050, 10000, 4, 205, 'ë'));
-  FptrCheck(Driver.DirectIO2(30, 72, '4'));
-  FptrCheck(Driver.DirectIO2(30, 73, '33'));
-  FptrCheck(Driver.DirectIO2(30, 81, '5'));
-  FptrCheck(Driver.DirectIO2(30, 80, '000000487435878"*y35ebWE2Slls'));
-
-  FptrCheck(Driver.PrintRecItem('Ñ'#$18#$13#$10'Ð'#$15'ÒÛ WINSTON XSTYLE SILVER', 870, 1000, 1, 870, 'øò'));
-  FptrCheck(Driver.DirectIO2(120, 0, '2402209000'));
-
-  FptrCheck(Driver.PrintRecItem('Item 3', 870, 1000, 2, 870, 'øò'));
-
-  FptrCheck(Driver.PrintRecTotal(3790, 5000, '0'));
-
-  FptrCheck(Driver.PrintRecMessage(#$1E'ïåðàòîð: Òàíåêåíîâà  '#$10'éíóð'));
-  FptrCheck(Driver.PrintRecMessage('Òðàíç.:    2965055 '));
-  FptrCheck(Driver.DirectIO2(30, 302, '1'));
-  FptrCheck(Driver.DirectIO2(30, 300, '2965055'));
-  FptrCheck(Driver.PrintRecMessage('Òðàíç. ïðîäàæè: 2965015 (2920,00 òã));'));
-  FptrCheck(Driver.EndFiscalReceipt(False));
-end;
-
-procedure TWebkassaImplTest.TestZeroFiscalReceipt;
-var
-  pData: Integer;
-  pString: WideString;
-  JsonText: string;
-  ExpectedText: string;
-begin
-  OpenClaimEnable;
-  FDriver.Client.TestMode := True;
-  FDriver.Params.VATSeries := 'VATSeries';
-  FDriver.Params.VATNumber := 'VATNumber';
-  FptrCheck(Driver.ResetPrinter);
-  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
-  FptrCheck(Driver.BeginFiscalReceipt(True));
-
-  // ExternalCheckNumber
-  pData := DriverParameterExternalCheckNumber;
-  pString := 'ExternalCheckNumber';
-  FptrCheck(FDriver.DirectIO(DIO_SET_DRIVER_PARAMETER, pData, pString));
-
-  FptrCheck(Driver.PrintRecItem('Item1', 0, 1000, 4, 0, 'øò'));
-  FptrCheck(Driver.PrintRecTotal(0, 0, '0'));
-  CheckEquals(OPOS_SUCCESS, Driver.EndFiscalReceipt(False));
-
-  JsonText := UTF8Decode(Driver.Client.CommandJson);
-  ExpectedText := UTF8Decode(ReadFileData(GetModulePath + 'ZeroReceiptRequest.json'));
-  if JsonText <> ExpectedText then
-  begin
-    WriteFileData(GetModulePath + 'ExpectedText1.json', ExpectedText);
-    WriteFileData(GetModulePath + 'JsonText1.json', JsonText);
-  end;
-  CheckEquals(ExpectedText, JsonText, 'Driver.Client.CommandJson');
-end;
-
-//  <                    ÄÓÁËÈÊÀÒ> but was: <|3C                    ÄÓÁËÈÊÀÒ>
-procedure TWebkassaImplTest.TestPrintDuplicate;
-begin
-  OpenClaimEnable;
-  FDriver.Client.TestMode := True;
-  FDriver.Client.AnswerJson := ReadFileData(GetModulePath + 'ReadReceiptTextAnswer2.txt');
-
-  FptrCheck(Driver.ResetPrinter);
-  CheckEquals(0, FPrinter.Lines.Count, 'Lines.Count.0');
-  FptrCheck(Driver.DirectIO2(DIO_PRINT_RECEIPT_DUPLICATE, 0, '{29FA3A2F-5A60-47E4-872B-6AE8C3893CC7}'));
-  CheckEquals(42, FPrinter.Lines.Count, 'Lines.Count.1');
-  FLines.LoadFromFile('DuplicateReceipt.txt');
-  FLines[0] := ESC_DoubleHigh + FLines[0];
-  CheckLines;
-end;
-
-procedure TWebkassaImplTest.TestPrintDuplicate2;
-begin
-  OpenClaimEnable;
-  FDriver.Client.TestMode := True;
-  FDriver.Client.AnswerJson := ReadFileData(GetModulePath + 'ReadReceiptTextAnswer2.txt');
-
-  FptrCheck(Driver.ResetPrinter);
-  CheckEquals(0, FPrinter.Lines.Count, 'Lines.Count.0');
-  FptrCheck(Driver.DirectIO2(DIO_SET_DRIVER_PARAMETER, DriverParameterPrintEnabled, '0'));
-  FptrCheck(Driver.DirectIO2(DIO_PRINT_RECEIPT_DUPLICATE, 0, '{29FA3A2F-5A60-47E4-872B-6AE8C3893CC7}'));
-  CheckEquals(0, FPrinter.Lines.Count, 'Lines.Count.1');
-end;
-
-procedure TWebkassaImplTest.TestRecLineChars;
-begin
-  Driver.Params.RecLineChars := 20;
-  OpenClaimEnable;
-  CheckEquals(20, Driver.GetPropertyNumber(PIDXFptr_DescriptionLength), 'DescriptionLength');
-end;
-
-procedure TWebkassaImplTest.TestParseJson;
-var
-  Doc: TlkJSONbase;
-  JsonText: WideString;
-begin
-  JsonText := ReadFileData(GetModulePath + 'CashboxState.json');
-  Doc := TlkJSON.ParseText(JsonText);
-  Doc.Free;
-end;
-
-procedure TWebkassaImplTest.TestParseJson2;
-var
-  Doc: TlkJSONbase;
-  JsonText: WideString;
-  Data: TSendReceiptCommandResponse;
-begin
-  JsonText := ReadFileData(GetModulePath + 'ReceiptAnswer5.json');
-  Data := TSendReceiptCommandResponse.Create;
-  try
-    JsonToObject(JsonText, Data);
-  finally
-    Data.Free;
-  end;
-
-  Doc := TlkJSON.ParseText(JsonText);
-  Doc.Free;
-end;
-
-procedure TWebkassaImplTest.TestReadCashboxStatus;
-begin
-  OpenClaimEnable;
-  try
-    Driver.Client.TestException := EIdConnClosedGracefully.Create(RSConnectionClosedGracefully);
-    Driver.ReadCashboxStatus;
-    Fail('No exception');
-  except
-    on E: EIdConnClosedGracefully do;
-  end;
-end;
-
-//
-
-procedure TWebkassaImplTest.TestReadCasboxStatusAnswerJson;
-begin
-  OpenClaimEnable;
-  Driver.TestMode := True;
-  Driver.Client.TestException := EIdConnClosedGracefully.Create(RSConnectionClosedGracefully);
-  CheckEquals('', Driver.ReadCasboxStatusAnswerJson, 'ReadCasboxStatusAnswerJson');
-end;
-
-procedure TWebkassaImplTest.TestMemoryLeak;
-begin
-  //Driver.Params.TemplateEnabled := True;
-  OpenClaimEnable;
-  Driver.Close;
-
-  OpenClaimEnable;
-  CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
-  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
-  FptrCheck(Driver.BeginFiscalReceipt(True));
-  FptrCheck(Driver.PrintRecItem('ÒÐÊ 1:ÀÈ-92-Ê4/Ê5', 1353, 6700, 4, 202, 'ë'));
-  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Ñêèäêà 10', 10, 1));
-  FptrCheck(Driver.PrintRecTotal(1343, 2000, '0'));
-  FptrCheck(Driver.PrintRecMessage('Îïåðàòîð: Êàññèð1'));
-  FptrCheck(Driver.PrintRecMessage('Òðàíç.:      16868 '));
-  FptrCheck(Driver.EndFiscalReceipt(False));
-  Driver.Close;
-end;
-
-procedure TWebkassaImplTest.TestTextDocument;
-var
-  Document: TTextDocument;
-begin
-  //MemCheckStart;
-  Document := TTextDocument.Create;
-  Document.Add('zkxchkzjxch', 0);
-  Document.Clear;
-  Document.Free;
-  //MemCheckStop;
-end;
-
-procedure TWebkassaImplTest.TestMemoryLeak2;
+  ReceiptText: string =
+    'Item 1' + CRLF +
+    '       1.000 êã x 123.45 ðóá' + CRLF +
+    'ÍÄÑ 0%                 =0.00' + CRLF +
+    'Item 2' + CRLF +
+    '       1.000 êã x 123.45 ðóá' + CRLF +
+    'ÁÅÇ ÍÄÑ                =0.00' + CRLF +
+    'Item 3' + CRLF +
+    '       1.000 êã x 123.45 ðóá' + CRLF +
+    'ÍÄÑ 5.00%              =5.88' + CRLF +
+    'Item 4' + CRLF +
+    '       1.000 êã x 123.45 ðóá' + CRLF +
+    'ÍÄÑ 12.00%            =13.23' + CRLF + 
+    'ÈÒÎÃ                 =493.80' + CRLF +
+    'ÍÄÑ 0%                 =0.00' + CRLF +
+    'ÁÅÇ ÍÄÑ                =0.00' + CRLF +
+    'ÍÄÑ 5.00%              =5.88' + CRLF +
+    'ÍÄÑ 12.00%            =13.23' + CRLF;
 begin
   Driver.Params.TemplateEnabled := True;
-  OpenClaimEnable;
-  Driver.Client.AnswerJson := ReadFileData(GetModulePath + 'FiscalReceipt3.json');
+  Driver.Template.Clear;
+  FDriver.Params.NumHeaderLines := 0;
+  FDriver.Params.NumTrailerLines := 0;
+  FDriver.Params.HeaderText := '';
+  FDriver.Params.TrailerText := '';
+  // Description
+  Item := Driver.Template.RecItem.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'Description';
+  Item.FormatText := '';
+  Item.Alignment := ALIGN_LEFT;
+  Item.LineChars := 56;
+  Driver.Template.RecItem.NewLine;
+  // Quantity
+  Item := Driver.Template.RecItem.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'Quantity';
+  Item.FormatText := '       %s';
+  Item.Alignment := ALIGN_LEFT;
+  Item.LineChars := 56;
+  // UnitName
+  Item := Driver.Template.RecItem.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'UnitName';
+  Item.FormatText := ' %s x ';
+  Item.LineChars := 56;
+  Item.Alignment := ALIGN_LEFT;
+  // Price
+  Item := Driver.Template.RecItem.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'UnitPrice';
+  Item.FormatText := '%s ';
+  Item.LineChars := 56;
+  Item.Alignment := ALIGN_LEFT;
+  // Currency name
+  Item := Driver.Template.RecItem.Add;
+  Item.ItemType := TEMPLATE_TYPE_PARAM;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Text := 'CurrencyName';
+  Item.FormatText := '';
+  Item.Alignment := ALIGN_LEFT;
+  Item.LineChars := 56;
+  Driver.Template.RecItem.NewLine;
+  // VAT 1 text
+  Item := Driver.Template.RecItem.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.Alignment := ALIGN_LEFT;
+  Item.LineChars := 56;
+  Item.Text := 'TaxText';
+  Item.Parameter := 1;
+  // VAT 1 amount
+  Item := Driver.Template.RecItem.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.Alignment := ALIGN_RIGHT;
+  Item.LineChars := 56;
+  Item.Text := 'TaxAmount';
+  Item.FormatText := '=%s';
+  Item.Parameter := 1;
+  Driver.Template.RecItem.NewLine;
+  // Total text
+  Item := Driver.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_TEXT;
+  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.Alignment := ALIGN_LEFT;
+  Item.LineChars := 56;
+  Item.Text := 'ÈÒÎÃ';
+  // Total amount
+  Item := Driver.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.Text := 'Total';
+  Item.FormatText := '=%s';
+  Item.Alignment := ALIGN_RIGHT;
+  Item.Enabled := TEMPLATE_ITEM_ENABLED;
+  Item.LineChars := 56;
+  Driver.Template.Trailer.NewLine;
+  // VAT 1 text
+  Item := Driver.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.Alignment := ALIGN_LEFT;
+  Item.LineChars := 56;
+  Item.Text := 'TaxText';
+  Item.Parameter := 1;
+  // VAT 1 amount
+  Item := Driver.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.Alignment := ALIGN_RIGHT;
+  Item.LineChars := 56;
+  Item.Text := 'TaxAmount';
+  Item.FormatText := '=%s';
+  Item.Parameter := 1;
+  Driver.Template.Trailer.NewLine;
+  // VAT 2 text
+  Item := Driver.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.Alignment := ALIGN_LEFT;
+  Item.LineChars := 56;
+  Item.Text := 'TaxText';
+  Item.Parameter := 2;
+  // VAT 2 amount
+  Item := Driver.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.Alignment := ALIGN_RIGHT;
+  Item.LineChars := 56;
+  Item.Text := 'TaxAmount';
+  Item.FormatText := '=%s';
+  Item.Parameter := 2;
+  Driver.Template.Trailer.NewLine;
+  // VAT 3 text
+  Item := Driver.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.Alignment := ALIGN_LEFT;
+  Item.LineChars := 56;
+  Item.Text := 'TaxText';
+  Item.Parameter := 3;
+  // VAT 3 amount
+  Item := Driver.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.Alignment := ALIGN_RIGHT;
+  Item.LineChars := 56;
+  Item.Text := 'TaxAmount';
+  Item.FormatText := '=%s';
+  Item.Parameter := 3;
+  Driver.Template.Trailer.NewLine;
+  // VAT 4 text
+  Item := Driver.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.Alignment := ALIGN_LEFT;
+  Item.LineChars := 56;
+  Item.Text := 'TaxText';
+  Item.Parameter := 4;
+  // VAT 4 amount
+  Item := Driver.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.Alignment := ALIGN_RIGHT;
+  Item.LineChars := 56;
+  Item.Text := 'TaxAmount';
+  Item.FormatText := '=%s';
+  Item.Parameter := 4;
+  Driver.Template.Trailer.NewLine;
 
+  OpenClaimEnable;
+
+  FDriver.Client.TestMode := True;
   CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
   Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
+  CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
   FptrCheck(Driver.BeginFiscalReceipt(True));
-  FptrCheck(Driver.PrintRecItem('ÒÐÊ 1:ÀÈ-92-Ê4/Ê5', 1353, 6700, 4, 202, 'ë'));
-  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Ñêèäêà 10', 10, 1));
-  FptrCheck(Driver.PrintRecTotal(1343, 2000, '0'));
-  FptrCheck(Driver.PrintRecMessage('Îïåðàòîð: Êàññèð1'));
-  FptrCheck(Driver.PrintRecMessage('Òðàíç.:      16868 '));
-  FptrCheck(Driver.EndFiscalReceipt(False));
-  Driver.Close;
+  CheckEquals(FPTR_PS_FISCAL_RECEIPT, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+  FptrCheck(Driver.PrintRecItem('Item 1', 123.45, 1000, 1, 123.45, 'êã'));
+  FptrCheck(Driver.PrintRecItem('Item 2', 123.45, 1000, 2, 123.45, 'êã'));
+  FptrCheck(Driver.PrintRecItem('Item 3', 123.45, 1000, 3, 123.45, 'êã'));
+  FptrCheck(Driver.PrintRecItem('Item 4', 123.45, 1000, 4, 123.45, 'êã'));
+
+  FptrCheck(Driver.PrintRecTotal(493.8, 500, '1'));
+  CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
+  CheckEquals(OPOS_SUCCESS, Driver.EndFiscalReceipt(False));
+
+  FLines.Text := ReceiptText;
+  CheckLines;
 end;
 
-procedure TWebkassaImplTest.TestMemoryLeak3;
+procedure TWebkassaImplTest.TestReceiptTemplate7;
 var
-  ResponseJson: string;
-  Command: TSendReceiptCommand;
-begin
-  Command := TSendReceiptCommand.Create;
-  try
-    ResponseJson := ReadFileData(GetModulePath + 'FiscalReceipt3.json');
-    JsonToObject(ResponseJson, Command);
-
-    CheckEquals(74, Command.Data.CheckOrderNumber, 'Command.Data.CheckOrderNumber');
-    CheckEquals(406, Command.Data.ShiftNumber, 'Command.Data.ShiftNumber');
- finally
-    Command.Free;
-  end;
-end;
-
-procedure TWebkassaImplTest.TestGTIN;
+  Item: TTemplateItem;
 const
-  GTINValue = '823gjhgu62t83674';
-var
-  pData: Integer;
-  pString: WideString;
-  Receipt: TSalesReceipt;
-  Item: TReceiptItem;
-  Position: TTicketItem;
+  ReceiptText: string =
+    'ÈÒÎÃ                 =493.80' + CRLF +
+    'ZERO TAX               =0.00' + CRLF +
+    'NO TAX                 =0.00' + CRLF +
+    'VAT 5%                 =5.88' + CRLF +
+    'VAT 12%               =13.23' + CRLF;
 begin
+  Driver.Params.TemplateEnabled := True;
+  Driver.Template.Clear;
+  FDriver.Params.NumHeaderLines := 0;
+  FDriver.Params.NumTrailerLines := 0;
+  FDriver.Params.HeaderText := '';
+  FDriver.Params.TrailerText := '';
+  // Total text
+  Item := Driver.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_TEXT;
+  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.Alignment := ALIGN_LEFT;
+  Item.LineChars := 56;
+  Item.Text := 'ÈÒÎÃ';
+  // Total amount
+  Item := Driver.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.Text := 'Total';
+  Item.FormatText := '=%s';
+  Item.Alignment := ALIGN_RIGHT;
+  Item.Enabled := TEMPLATE_ITEM_ENABLED;
+  Item.LineChars := 56;
+  Driver.Template.Trailer.NewLine;
+  // VAT 1 text
+  Item := Driver.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.Alignment := ALIGN_LEFT;
+  Item.LineChars := 56;
+  Item.Text := 'TaxName';
+  Item.Parameter := 1;
+  // VAT 1 amount
+  Item := Driver.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.Alignment := ALIGN_RIGHT;
+  Item.LineChars := 56;
+  Item.Text := 'TaxAmount';
+  Item.FormatText := '=%s';
+  Item.Parameter := 1;
+  Driver.Template.Trailer.NewLine;
+  // VAT 2 text
+  Item := Driver.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.Alignment := ALIGN_LEFT;
+  Item.LineChars := 56;
+  Item.Text := 'TaxName';
+  Item.Parameter := 2;
+  // VAT 2 amount
+  Item := Driver.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.Alignment := ALIGN_RIGHT;
+  Item.LineChars := 56;
+  Item.Text := 'TaxAmount';
+  Item.FormatText := '=%s';
+  Item.Parameter := 2;
+  Driver.Template.Trailer.NewLine;
+  // VAT 3 text
+  Item := Driver.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.Alignment := ALIGN_LEFT;
+  Item.LineChars := 56;
+  Item.Text := 'TaxName';
+  Item.Parameter := 3;
+  // VAT 3 amount
+  Item := Driver.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.Alignment := ALIGN_RIGHT;
+  Item.LineChars := 56;
+  Item.Text := 'TaxAmount';
+  Item.FormatText := '=%s';
+  Item.Parameter := 3;
+  Driver.Template.Trailer.NewLine;
+  // VAT 4 text
+  Item := Driver.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.Alignment := ALIGN_LEFT;
+  Item.LineChars := 56;
+  Item.Text := 'TaxName';
+  Item.Parameter := 4;
+  // VAT 4 amount
+  Item := Driver.Template.Trailer.Add;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.Alignment := ALIGN_RIGHT;
+  Item.LineChars := 56;
+  Item.Text := 'TaxAmount';
+  Item.FormatText := '=%s';
+  Item.Parameter := 4;
+  Driver.Template.Trailer.NewLine;
+
   OpenClaimEnable;
-  /////////////////////////////////////////////////////////
-  // if Receipt is not opened - setting GTIN has no effect
 
-  FptrCheck(Driver.DirectIO2(DIO_SET_DRIVER_PARAMETER,
-    DriverParameterGTIN, GTINValue));
-
-  pString := '';
-  pData := DriverParameterGTIN;
-  FptrCheck(Driver.DirectIO(DIO_GET_DRIVER_PARAMETER, pData, pString));
-  CheckEquals('', pString);
-
-  // Open sales receipt
+  FDriver.Client.TestMode := True;
+  CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
   Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
   CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
   FptrCheck(Driver.BeginFiscalReceipt(True));
   CheckEquals(FPTR_PS_FISCAL_RECEIPT, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
-  // Set and get GTIN value
-  FptrCheck(Driver.DirectIO2(DIO_SET_DRIVER_PARAMETER,
-    DriverParameterGTIN, GTINValue));
-  pString := '';
-  pData := DriverParameterGTIN;
-  FptrCheck(Driver.DirectIO(DIO_GET_DRIVER_PARAMETER, pData, pString));
-  CheckEquals(GTINValue, pString);
-  // Add receipt item
   FptrCheck(Driver.PrintRecItem('Item 1', 123.45, 1000, 1, 123.45, 'êã'));
-  Check(Driver.Receipt is TSalesReceipt, 'Driver.Receipt is TSalesReceipt');
-  Receipt := Driver.Receipt as TSalesReceipt;
-  CheckEquals(1, Receipt.Items.Count, 'Receipt.Items.Count <> 1');
-  Item := Receipt.Items[0];
-  Check(Item is TSalesReceiptItem, 'Item is TSalesReceiptItem');
-  CheckEquals(GTINValue, (Item as TSalesReceiptItem).GTIN);
-  // GTIN will be reset
-  pString := '';
-  pData := DriverParameterGTIN;
-  FptrCheck(Driver.DirectIO(DIO_GET_DRIVER_PARAMETER, pData, pString));
-  CheckEquals('', pString);
-  // Close receipt
-  FptrCheck(Driver.PrintRecTotal(123.45, 123.45, '0'));
+  FptrCheck(Driver.PrintRecItem('Item 1', 123.45, 1000, 2, 123.45, 'êã'));
+  FptrCheck(Driver.PrintRecItem('Item 1', 123.45, 1000, 3, 123.45, 'êã'));
+  FptrCheck(Driver.PrintRecItem('Item 1', 123.45, 1000, 4, 123.45, 'êã'));
+
+  FptrCheck(Driver.PrintRecTotal(493.8, 500, '1'));
   CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
   CheckEquals(OPOS_SUCCESS, Driver.EndFiscalReceipt(False));
-  // Check receipt command
-  CheckEquals(1, Driver.Client.SendReceiptCommand.Request.Positions.Count, 'Positions.Count');
-  Position := Driver.Client.SendReceiptCommand.Request.Positions[0];
-  CheckEquals(GTINValue, Position.GTIN, 'Position.GTIN');
-end;
 
-procedure TWebkassaImplTest.TestNTIN;
-const
-  NTINValue = 'kjsdhf9834ry98237498aksjdh';
-var
-  pData: Integer;
-  pString: WideString;
-  Receipt: TSalesReceipt;
-  Item: TReceiptItem;
-  Position: TTicketItem;
-begin
-  OpenClaimEnable;
-  /////////////////////////////////////////////////////////
-  // if Receipt is not opened - setting NTIN has no effect
-
-  FptrCheck(Driver.DirectIO2(DIO_SET_DRIVER_PARAMETER,
-    DriverParameterNTIN, NTINValue));
-
-  pString := '';
-  pData := DriverParameterNTIN;
-  FptrCheck(Driver.DirectIO(DIO_GET_DRIVER_PARAMETER, pData, pString));
-  CheckEquals('', pString);
-
-  // Open sales receipt
-  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
-  CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
-  FptrCheck(Driver.BeginFiscalReceipt(True));
-  CheckEquals(FPTR_PS_FISCAL_RECEIPT, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
-  // Set and get NTIN value
-  FptrCheck(Driver.DirectIO2(DIO_SET_DRIVER_PARAMETER,
-    DriverParameterNTIN, NTINValue));
-  pString := '';
-  pData := DriverParameterNTIN;
-  FptrCheck(Driver.DirectIO(DIO_GET_DRIVER_PARAMETER, pData, pString));
-  CheckEquals(NTINValue, pString);
-  // Add receipt item
-  FptrCheck(Driver.PrintRecItem('Item 1', 123.45, 1000, 1, 123.45, 'êã'));
-  Check(Driver.Receipt is TSalesReceipt, 'Driver.Receipt is TSalesReceipt');
-  Receipt := Driver.Receipt as TSalesReceipt;
-  CheckEquals(1, Receipt.Items.Count, 'Receipt.Items.Count <> 1');
-  Item := Receipt.Items[0];
-  Check(Item is TSalesReceiptItem, 'Item is TSalesReceiptItem');
-  CheckEquals(NTINValue, (Item as TSalesReceiptItem).NTIN);
-  // NTIN will be reset
-  pString := '';
-  pData := DriverParameterNTIN;
-  FptrCheck(Driver.DirectIO(DIO_GET_DRIVER_PARAMETER, pData, pString));
-  CheckEquals('', pString);
-  // Close receipt
-  FptrCheck(Driver.PrintRecTotal(123.45, 123.45, '0'));
-  CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
-  CheckEquals(OPOS_SUCCESS, Driver.EndFiscalReceipt(False));
-  // Check receipt command
-  CheckEquals(1, Driver.Client.SendReceiptCommand.Request.Positions.Count, 'Positions.Count');
-  Position := Driver.Client.SendReceiptCommand.Request.Positions[0];
-  CheckEquals(NTINValue, Position.NTIN, 'Position.NTIN');
+  FLines.Text := ReceiptText;
+  CheckLines;
 end;
 
 initialization
