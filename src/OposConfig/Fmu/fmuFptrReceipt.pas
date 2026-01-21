@@ -69,14 +69,8 @@ begin
 end;
 
 procedure TfmFptrReceipt.UpdateReceiptText2(const TemplateXml: WideString);
-var
-  i: Integer;
-  TextItem: TDocItem;
-  Driver: TWebkassaImpl;
-  Receipt: TSalesReceipt;
-  ItemName: WideString;
 const
-  ReceiptItemsCount = 2;
+  RecItemCount = 4;
   FontSizeNormal = 8;
   FontSizeDouble = 16;
   AnswerJson =
@@ -87,6 +81,14 @@ const
     '"Code":3}},"CheckOrderNumber":2,"ShiftNumber":100,"EmployeeName":"webkassa4@softit.kz",'+
     '"TicketUrl":"http://dev.kofd.kz/consumer?i=1158917320297&f=427490326691&s=15443.72&t=20230306T200949",'+
     '"TicketPrintUrl":"https://devkkm.webkassa.kz/Ticket?chb=SWK00033059&sh=100&extnum=92D51F08-13CF-428E-AF2F-67B6E8BDE994"}}';
+var
+  i: Integer;
+  VatId: Integer;
+  ItemCount: Integer;
+  TextItem: TDocItem;
+  Driver: TWebkassaImpl;
+  Receipt: TSalesReceipt;
+  ItemName: WideString;
 begin
   reReceipt.Lines.Clear;
   if TemplateXml = '' then Exit;
@@ -98,17 +100,21 @@ begin
 
   reReceipt.Lines.BeginUpdate;
   Driver.Params.Assign(Parameters);
+  ItemCount := Max(RecItemCount, Parameters.VatRates.Count);
   try
     Receipt.BeginFiscalReceipt(True);
-    for i := 1 to ReceiptItemsCount do
+    for i := 1 to ItemCount do
     begin
+      VatId := 0;
+      if i <= Parameters.VatRates.Count then
+        VatId := Parameters.VatRates[i-1].ID;
+
       ItemName := Tnt_WideFormat('%d. Receipt item %d', [i, i]);
-      Receipt.PrintRecItem(ItemName, 100, 1, 0, 100, '');
+      Receipt.PrintRecItem(ItemName, 100, 1, VatId, 100, '');
     end;
     Receipt.PrintRecTotal(1000, 1000, '0');
     Receipt.EndFiscalReceipt(false);
     Receipt.AnswerJson := AnswerJson;
-
 
     Template.LoadFromXml(TemplateXml);
     Driver.PrintReceiptTemplate(Receipt, Template);

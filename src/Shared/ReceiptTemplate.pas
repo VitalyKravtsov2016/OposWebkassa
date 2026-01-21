@@ -81,11 +81,6 @@ type
   public
     function GetLineLength: Integer;
 
-    function GetRecItemText(ReceiptItem: TSalesReceiptItem;
-      Params: TPrinterParameters): WideString;
-    function ReceiptItemByText(ReceiptItem: TSalesReceiptItem;
-      Params: TPrinterParameters): WideString;
-
     property Value: WideString read FValue write FValue;
     property Text: WideString read FText write FText;
     property Enabled: Integer read FEnabled write FEnabled;
@@ -431,6 +426,24 @@ begin
   Item.Alignment := ALIGN_RIGHT;
   Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
   RecItem.NewLine;
+  // VAT 1 text
+  Item := RecItem.Add;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Alignment := ALIGN_LEFT;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.Enabled := TEMPLATE_ITEM_ENABLED;
+  Item.Text := 'TaxText';
+  Item.Parameter := 0;
+  // VAT 1 amount
+  Item := RecItem.Add;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Alignment := ALIGN_RIGHT;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.Enabled := TEMPLATE_ITEM_ENABLED;
+  Item.Text := 'TaxAmount';
+  Item.FormatText := '=%s';
+  Item.Parameter := 0;
+  RecItem.NewLine;
   // Separator
   Trailer.AddSeparator;
   // Discount
@@ -527,16 +540,77 @@ begin
   Item.Alignment := ALIGN_RIGHT;
   Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
   Trailer.NewLine;
-  // Taxes
-  Trailer.AddText('â ò.÷. ÍÄÑ 12%');
+  // VAT 1 text
   Item := Trailer.Add;
-  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
   Item.TextStyle := STYLE_NORMAL;
+  Item.Alignment := ALIGN_LEFT;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
+  Item.Text := 'TaxName';
+  Item.Parameter := 1;
+  // VAT 1 amount
+  Item := Trailer.Add;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Alignment := ALIGN_RIGHT;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
   Item.Text := 'TaxAmount';
   Item.FormatText := '=%s';
-  Item.Alignment := ALIGN_RIGHT;
-  Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
   Item.Parameter := 1;
+  Trailer.NewLine;
+  // VAT 2 text
+  Item := Trailer.Add;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Alignment := ALIGN_LEFT;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
+  Item.Text := 'TaxName';
+  Item.Parameter := 2;
+  // VAT 2 amount
+  Item := Trailer.Add;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Alignment := ALIGN_RIGHT;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
+  Item.Text := 'TaxAmount';
+  Item.FormatText := '=%s';
+  Item.Parameter := 2;
+  Trailer.NewLine;
+  // VAT 3 text
+  Item := Trailer.Add;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Alignment := ALIGN_LEFT;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
+  Item.Text := 'TaxName';
+  Item.Parameter := 3;
+  // VAT 3 amount
+  Item := Trailer.Add;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Alignment := ALIGN_RIGHT;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
+  Item.Text := 'TaxAmount';
+  Item.FormatText := '=%s';
+  Item.Parameter := 3;
+  Trailer.NewLine;
+  // VAT 4 text
+  Item := Trailer.Add;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Alignment := ALIGN_LEFT;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
+  Item.Text := 'TaxName';
+  Item.Parameter := 4;
+  // VAT 4 amount
+  Item := Trailer.Add;
+  Item.TextStyle := STYLE_NORMAL;
+  Item.Alignment := ALIGN_RIGHT;
+  Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
+  Item.Enabled := TEMPLATE_ITEM_ENABLED_IF_NOT_ZERO;
+  Item.Text := 'TaxAmount';
+  Item.FormatText := '=%s';
+  Item.Parameter := 4;
   Trailer.NewLine;
   // Separator
   Trailer.AddSeparator;
@@ -699,130 +773,6 @@ begin
   Result := LineChars;
   if (TextStyle = STYLE_DWIDTH) or (TextStyle = STYLE_DWIDTH_HEIGHT) then
     Result := LineChars div 2;
-end;
-
-function TTemplateItem.GetRecItemText(ReceiptItem: TSalesReceiptItem;
-  Params: TPrinterParameters): WideString;
-begin
-  case ItemType of
-    TEMPLATE_TYPE_TEXT: Result := Text;
-    TEMPLATE_TYPE_ITEM_FIELD: Result := ReceiptItemByText(ReceiptItem, Params);
-    TEMPLATE_TYPE_PARAM: Result := Params.ItemByText(Text);
-    TEMPLATE_TYPE_SEPARATOR: Result := StringOfChar('-', Params.RecLineChars);
-    TEMPLATE_TYPE_NEWLINE: Result := CRLF;
-  else
-    Result := '';
-  end;
-end;
-
-function TTemplateItem.ReceiptItemByText(ReceiptItem: TSalesReceiptItem;
-  Params: TPrinterParameters): WideString;
-var
-  Amount: Currency;
-begin
-  Result := '';
-  if WideCompareText(Text, 'Price') = 0 then
-  begin
-    if (Enabled = TEMPLATE_ITEM_ENABLED)or(ReceiptItem.Price <> 0) then
-    begin
-      Result := Tnt_WideFormat('%.2f', [ReceiptItem.Price]);
-    end;
-    Exit;
-  end;
-  if WideCompareText(Text, 'VatInfo') = 0 then
-  begin
-    Result := IntToStr(ReceiptItem.VatInfo);
-    Exit;
-  end;
-  if WideCompareText(Text, 'Quantity') = 0 then
-  begin
-    Result := Tnt_WideFormat('%.3f', [ReceiptItem.Quantity]);
-    Exit;
-  end;
-  if WideCompareText(Text, 'UnitPrice') = 0 then
-  begin
-    if (Enabled = TEMPLATE_ITEM_ENABLED)or(ReceiptItem.UnitPrice <> 0) then
-    begin
-      Result := Tnt_WideFormat('%.2f', [ReceiptItem.UnitPrice]);
-    end;
-    Exit;
-  end;
-  if WideCompareText(Text, 'UnitName') = 0 then
-  begin
-    Result := ReceiptItem.UnitName;
-    Exit;
-  end;
-  if WideCompareText(Text, 'Description') = 0 then
-  begin
-    Result := ReceiptItem.Description;
-    Exit;
-  end;
-  if WideCompareText(Text, 'MarkCode') = 0 then
-  begin
-    Result := ReceiptItem.MarkCode;
-    Exit;
-  end;
-  if WideCompareText(Text, 'Discount') = 0 then
-  begin
-    Amount := Abs(ReceiptItem.Discounts.GetTotal);
-    if (Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
-    begin
-      Result := Tnt_WideFormat('%.2f', [Amount]);
-    end;
-    Exit;
-  end;
-  if WideCompareText(Text, 'Charge') = 0 then
-  begin
-    Amount := Abs(ReceiptItem.Charges.GetTotal);
-    if (Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
-    Result := Tnt_WideFormat('%.2f', [Amount]);
-    Exit;
-  end;
-  if WideCompareText(Text, 'Total') = 0 then
-  begin
-    Amount := Abs(ReceiptItem.GetTotalAmount(Params.RoundType));
-    if (Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
-      Result := Tnt_WideFormat('%.2f', [Amount]);
-    Exit;
-  end;
-  if WideCompareText(Text, 'GTIN') = 0 then
-  begin
-    if (Enabled = TEMPLATE_ITEM_ENABLED)or(ReceiptItem.GTIN <> '') then
-      Result := ReceiptItem.GTIN;
-    Exit;
-  end;
-  if WideCompareText(Text, 'NTIN') = 0 then
-  begin
-    if (Enabled = TEMPLATE_ITEM_ENABLED)or(ReceiptItem.NTIN <> '') then
-      Result := ReceiptItem.NTIN;
-    Exit;
-  end;
-  if WideCompareText(Text, 'TaxAmount') = 0 then
-  begin
-    Amount := ReceiptItem.GetTotalVat(Params.RoundType);
-    if (Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
-      Result := Tnt_WideFormat('%.2f', [Amount]);
-    Exit;
-  end;
-  if WideCompareText(Text, 'TaxRate') = 0 then
-  begin
-    if (ReceiptItem.VatRate <> nil) and (Enabled = TEMPLATE_ITEM_ENABLED) then
-      Result := Tnt_WideFormat('%.2f', [ReceiptItem.VatRate.Rate]);
-    Exit;
-  end;
-  if WideCompareText(Text, 'TaxName') = 0 then
-  begin
-    if (ReceiptItem.VatRate <> nil) and (Enabled = TEMPLATE_ITEM_ENABLED) then
-      Result := Tnt_WideFormat('%s', [ReceiptItem.VatRate.Name]);
-    Exit;
-  end;
-  if WideCompareText(Text, 'TaxText') = 0 then
-  begin
-    if (ReceiptItem.VatRate <> nil) and (Enabled = TEMPLATE_ITEM_ENABLED) then
-      Result := Tnt_WideFormat('%s', [ReceiptItem.VatRate.GetText]);
-    Exit;
-  end;
-  raise UserException.CreateFmt('Receipt item %s not found', [Text]);
 end;
 
 end.

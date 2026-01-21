@@ -149,6 +149,10 @@ type
       Receipt: TSalesReceipt);
     procedure PrintRefundReceipt(Receipt: TSalesReceipt);
     procedure PrintSalesReceipt2(Receipt: TSalesReceipt);
+    function GetRecItemText(ReceiptItem: TSalesReceiptItem;
+      Item: TTemplateItem): WideString;
+    function ReceiptItemByText(ReceiptItem: TSalesReceiptItem;
+      Item: TTemplateItem): WideString;
   public
     function ReadCasboxStatusAnswerJson: WideString;
     procedure PrintDocumentSafe(Document: TTextDocument);
@@ -3628,6 +3632,7 @@ var
   ReceiptItem: TReceiptItem;
   Position: TTicketItem;
   Modifier: TTicketModifier;
+  VatRate: TVatRate;
 begin
   Request.Token := FClient.Token;
   Request.CashboxUniqueNumber := Params.CashboxNumber;
@@ -3647,7 +3652,7 @@ begin
     begin
       Item := ReceiptItem as TSalesReceiptItem;
 
-      Item.VatRate := GetVatRate(Item.VatInfo);
+      VatRate := GetVatRate(Item.VatInfo);
       Position := Request.Positions.Add as TTicketItem;
       if Item.UnitPrice <> 0 then
       begin
@@ -3673,22 +3678,22 @@ begin
       Position.NTIN := Item.NTIN;
       Position.Productld := 0;
       Position.WarehouseType := 0;
-      if Item.VatRate = nil then
+      if VatRate = nil then
       begin
         Position.Tax := 0;
         Position.TaxPercent := TDouble.Create(0);
         Position.TaxType := TaxTypeNoTax;
       end else
       begin
-        Position.Tax := Abs(Item.GetTotalVat(Params.RoundType));
+        Position.Tax := Abs(Item.GetTotalVat(VatRate.Rate, Params.RoundType));
         Position.TaxType := TaxTypeVAT;
-        Position.TaxPercent := TDouble.Create(Item.VatRate.Rate);
-        if Item.VatRate.VatType in [VAT_TYPE_ZERO_TAX, VAT_TYPE_NO_TAX] then
+        Position.TaxPercent := TDouble.Create(VatRate.Rate);
+        if VatRate.VatType in [VAT_TYPE_ZERO_TAX, VAT_TYPE_NO_TAX] then
         begin
           Position.TaxType := TaxTypeNoTax;
           Position.TaxPercent := TDouble.Create(0);
         end;
-        if Item.VatRate.VatType = VAT_TYPE_NO_TAX then
+        if VatRate.VatType = VAT_TYPE_NO_TAX then
           Position.TaxPercent := nil;
       end;
     end;
@@ -4253,6 +4258,138 @@ begin
   raise UserException.CreateFmt('Receipt field %s not found', [Item.Text]);
 end;
 
+function TWebkassaImpl.GetRecItemText(ReceiptItem: TSalesReceiptItem;
+  Item: TTemplateItem): WideString;
+begin
+  case Item.ItemType of
+    TEMPLATE_TYPE_TEXT: Result := Item.Text;
+    TEMPLATE_TYPE_ITEM_FIELD: Result := ReceiptItemByText(ReceiptItem, Item);
+    TEMPLATE_TYPE_PARAM: Result := Params.ItemByText(Item.Text);
+    TEMPLATE_TYPE_SEPARATOR: Result := StringOfChar('-', Params.RecLineChars);
+    TEMPLATE_TYPE_NEWLINE: Result := CRLF;
+  else
+    Result := '';
+  end;
+end;
+
+function TWebkassaImpl.ReceiptItemByText(ReceiptItem: TSalesReceiptItem;
+  Item: TTemplateItem): WideString;
+var
+  Amount: Currency;
+  VatRate: TVatRate;
+begin
+  Result := '';
+  if WideCompareText(Item.Text, 'Price') = 0 then
+  begin
+    if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(ReceiptItem.Price <> 0) then
+    begin
+      Result := Tnt_WideFormat('%.2f', [ReceiptItem.Price]);
+    end;
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'VatInfo') = 0 then
+  begin
+    Result := IntToStr(ReceiptItem.VatInfo);
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'Quantity') = 0 then
+  begin
+    Result := Tnt_WideFormat('%.3f', [ReceiptItem.Quantity]);
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'UnitPrice') = 0 then
+  begin
+    if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(ReceiptItem.UnitPrice <> 0) then
+    begin
+      Result := Tnt_WideFormat('%.2f', [ReceiptItem.UnitPrice]);
+    end;
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'UnitName') = 0 then
+  begin
+    Result := ReceiptItem.UnitName;
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'Description') = 0 then
+  begin
+    Result := ReceiptItem.Description;
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'MarkCode') = 0 then
+  begin
+    Result := ReceiptItem.MarkCode;
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'Discount') = 0 then
+  begin
+    Amount := Abs(ReceiptItem.Discounts.GetTotal);
+    if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
+    begin
+      Result := Tnt_WideFormat('%.2f', [Amount]);
+    end;
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'Charge') = 0 then
+  begin
+    Amount := Abs(ReceiptItem.Charges.GetTotal);
+    if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
+    Result := Tnt_WideFormat('%.2f', [Amount]);
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'Total') = 0 then
+  begin
+    Amount := Abs(ReceiptItem.GetTotalAmount(Params.RoundType));
+    if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
+      Result := Tnt_WideFormat('%.2f', [Amount]);
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'GTIN') = 0 then
+  begin
+    if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(ReceiptItem.GTIN <> '') then
+      Result := ReceiptItem.GTIN;
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'NTIN') = 0 then
+  begin
+    if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(ReceiptItem.NTIN <> '') then
+      Result := ReceiptItem.NTIN;
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'TaxAmount') = 0 then
+  begin
+    VatRate := GetVatRate(ReceiptItem.VatInfo);
+    if VatRate <> nil then
+    begin
+      Amount := ReceiptItem.GetTotalVat(VatRate.Rate, Params.RoundType);
+      if (Item.Enabled = TEMPLATE_ITEM_ENABLED)or(Amount <> 0) then
+        Result := Tnt_WideFormat('%.2f', [Amount]);
+    end;
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'TaxRate') = 0 then
+  begin
+    VatRate := GetVatRate(ReceiptItem.VatInfo);
+    if (VatRate <> nil) and (Item.Enabled = TEMPLATE_ITEM_ENABLED) then
+      Result := Tnt_WideFormat('%.2f', [VatRate.Rate]);
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'TaxName') = 0 then
+  begin
+    VatRate := GetVatRate(ReceiptItem.VatInfo);
+    if (VatRate <> nil) and (Item.Enabled = TEMPLATE_ITEM_ENABLED) then
+      Result := Tnt_WideFormat('%s', [VatRate.Name]);
+    Exit;
+  end;
+  if WideCompareText(Item.Text, 'TaxText') = 0 then
+  begin
+    VatRate := GetVatRate(ReceiptItem.VatInfo);
+    if (VatRate <> nil) and (Item.Enabled = TEMPLATE_ITEM_ENABLED) then
+      Result := Tnt_WideFormat('%s', [VatRate.GetText]);
+    Exit;
+  end;
+  raise UserException.CreateFmt('Receipt item %s not found', [Item.Text]);
+end;
+
 function GetLastLine(const Line: WideString): WideString;
 var
   P: Integer;
@@ -4319,7 +4456,7 @@ begin
           end else
           begin
             LineItems.Add(Item);
-            Item.Value := Item.GetRecItemText(ReceiptItem as TSalesReceiptItem, Params);
+            Item.Value := GetRecItemText(ReceiptItem as TSalesReceiptItem, Item);
             IsValid := Item.Value <> '';
           end;
         end;

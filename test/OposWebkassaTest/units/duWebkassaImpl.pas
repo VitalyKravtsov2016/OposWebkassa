@@ -1832,7 +1832,7 @@ const
     'Õƒ— 5.00%              =5.88' + CRLF +
     'Item 4' + CRLF +
     '       1.000 Í„ x 123.45 Û·' + CRLF +
-    'Õƒ— 12.00%            =13.23' + CRLF + 
+    'Õƒ— 12.00%            =13.23' + CRLF +
     '»“Œ√                 =493.80' + CRLF +
     'Õƒ— 0%                 =0.00' + CRLF +
     '¡≈« Õƒ—                =0.00' + CRLF +
@@ -1852,7 +1852,7 @@ begin
   Item.Text := 'Description';
   Item.FormatText := '';
   Item.Alignment := ALIGN_LEFT;
-  Item.LineChars := 56;
+  Item.LineChars := 28;
   Driver.Template.RecItem.NewLine;
   // Quantity
   Item := Driver.Template.RecItem.Add;
@@ -1861,14 +1861,14 @@ begin
   Item.Text := 'Quantity';
   Item.FormatText := '       %s';
   Item.Alignment := ALIGN_LEFT;
-  Item.LineChars := 56;
+  Item.LineChars := 28;
   // UnitName
   Item := Driver.Template.RecItem.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'UnitName';
   Item.FormatText := ' %s x ';
-  Item.LineChars := 56;
+  Item.LineChars := 28;
   Item.Alignment := ALIGN_LEFT;
   // Price
   Item := Driver.Template.RecItem.Add;
@@ -1876,7 +1876,7 @@ begin
   Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'UnitPrice';
   Item.FormatText := '%s ';
-  Item.LineChars := 56;
+  Item.LineChars := 28;
   Item.Alignment := ALIGN_LEFT;
   // Currency name
   Item := Driver.Template.RecItem.Add;
@@ -1885,57 +1885,57 @@ begin
   Item.Text := 'CurrencyName';
   Item.FormatText := '';
   Item.Alignment := ALIGN_LEFT;
-  Item.LineChars := 56;
+  Item.LineChars := 28;
   Driver.Template.RecItem.NewLine;
   // VAT 1 text
   Item := Driver.Template.RecItem.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
-  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.TextStyle := STYLE_NORMAL;
   Item.Alignment := ALIGN_LEFT;
-  Item.LineChars := 56;
+  Item.LineChars := 28;
   Item.Text := 'TaxText';
-  Item.Parameter := 1;
+  Item.Parameter := 0;
   // VAT 1 amount
   Item := Driver.Template.RecItem.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
-  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.TextStyle := STYLE_NORMAL;
   Item.Alignment := ALIGN_RIGHT;
-  Item.LineChars := 56;
+  Item.LineChars := 28;
   Item.Text := 'TaxAmount';
   Item.FormatText := '=%s';
-  Item.Parameter := 1;
+  Item.Parameter := 0;
   Driver.Template.RecItem.NewLine;
   // Total text
   Item := Driver.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_TEXT;
-  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.TextStyle := STYLE_NORMAL;
   Item.Alignment := ALIGN_LEFT;
-  Item.LineChars := 56;
+  Item.LineChars := 28;
   Item.Text := '»“Œ√';
   // Total amount
   Item := Driver.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
-  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.TextStyle := STYLE_NORMAL;
   Item.Text := 'Total';
   Item.FormatText := '=%s';
   Item.Alignment := ALIGN_RIGHT;
   Item.Enabled := TEMPLATE_ITEM_ENABLED;
-  Item.LineChars := 56;
+  Item.LineChars := 28;
   Driver.Template.Trailer.NewLine;
   // VAT 1 text
   Item := Driver.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
-  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.TextStyle := STYLE_NORMAL;
   Item.Alignment := ALIGN_LEFT;
-  Item.LineChars := 56;
+  Item.LineChars := 28;
   Item.Text := 'TaxText';
   Item.Parameter := 1;
   // VAT 1 amount
   Item := Driver.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
-  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.TextStyle := STYLE_NORMAL;
   Item.Alignment := ALIGN_RIGHT;
-  Item.LineChars := 56;
+  Item.LineChars := 28;
   Item.Text := 'TaxAmount';
   Item.FormatText := '=%s';
   Item.Parameter := 1;
@@ -1943,17 +1943,17 @@ begin
   // VAT 2 text
   Item := Driver.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
-  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.TextStyle := STYLE_NORMAL;
   Item.Alignment := ALIGN_LEFT;
-  Item.LineChars := 56;
+  Item.LineChars := 28;
   Item.Text := 'TaxText';
   Item.Parameter := 2;
   // VAT 2 amount
   Item := Driver.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
-  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.TextStyle := STYLE_NORMAL;
   Item.Alignment := ALIGN_RIGHT;
-  Item.LineChars := 56;
+  Item.LineChars := 28;
   Item.Text := 'TaxAmount';
   Item.FormatText := '=%s';
   Item.Parameter := 2;
@@ -1961,17 +1961,17 @@ begin
   // VAT 3 text
   Item := Driver.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
-  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.TextStyle := STYLE_NORMAL;
   Item.Alignment := ALIGN_LEFT;
-  Item.LineChars := 56;
+  Item.LineChars := 28;
   Item.Text := 'TaxText';
   Item.Parameter := 3;
   // VAT 3 amount
   Item := Driver.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
-  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.TextStyle := STYLE_NORMAL;
   Item.Alignment := ALIGN_RIGHT;
-  Item.LineChars := 56;
+  Item.LineChars := 28;
   Item.Text := 'TaxAmount';
   Item.FormatText := '=%s';
   Item.Parameter := 3;
@@ -1979,17 +1979,17 @@ begin
   // VAT 4 text
   Item := Driver.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
-  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.TextStyle := STYLE_NORMAL;
   Item.Alignment := ALIGN_LEFT;
-  Item.LineChars := 56;
+  Item.LineChars := 28;
   Item.Text := 'TaxText';
   Item.Parameter := 4;
   // VAT 4 amount
   Item := Driver.Template.Trailer.Add;
   Item.ItemType := TEMPLATE_TYPE_ITEM_FIELD;
-  Item.TextStyle := STYLE_DWIDTH_HEIGHT;
+  Item.TextStyle := STYLE_NORMAL;
   Item.Alignment := ALIGN_RIGHT;
-  Item.LineChars := 56;
+  Item.LineChars := 28;
   Item.Text := 'TaxAmount';
   Item.FormatText := '=%s';
   Item.Parameter := 4;

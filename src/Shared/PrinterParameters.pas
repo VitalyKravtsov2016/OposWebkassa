@@ -422,10 +422,29 @@ begin
   AmountDecimalPlaces := DefAmountDecimalPlaces;
   // VatRates
   VatRates.Clear;
+  // 5%
   VatRate.ID := 1;
+  VatRate.Rate := 5;
+  VatRate.Name := 'ÍÄÑ 5%';
+  VatRate.VatType := VAT_TYPE_NORMAL;
+  VatRates.Add(VatRate);
+  // 12%
+  VatRate.ID := 2;
   VatRate.Rate := 12;
   VatRate.Name := 'ÍÄÑ 12%';
   VatRate.VatType := VAT_TYPE_NORMAL;
+  VatRates.Add(VatRate);
+  // ZERO TAX
+  VatRate.ID := 3;
+  VatRate.Rate := 0;
+  VatRate.Name := 'ÍÄÑ 0%';
+  VatRate.VatType := VAT_TYPE_ZERO_TAX;
+  VatRates.Add(VatRate);
+  // NO TAX
+  VatRate.ID := 4;
+  VatRate.Rate := 0;
+  VatRate.Name := 'ÁÅÇ ÍÄÑ';
+  VatRate.VatType := VAT_TYPE_NO_TAX;
   VatRates.Add(VatRate);
 
   FRemoteHost := DefRemoteHost;
@@ -731,7 +750,7 @@ begin
     FlowControl := Src.FlowControl;
     SerialTimeout := Src.SerialTimeout;
     ReconnectPort := Src.ReconnectPort;
-    VatRates.Assign(VatRates);
+    VatRates.Assign(Src.VatRates);
     DevicePollTime := Src.DevicePollTime;
     TemplateEnabled := Src.TemplateEnabled;
     CurrencyName := Src.CurrencyName;

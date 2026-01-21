@@ -59,6 +59,7 @@ end;
 constructor UserException.CreateFmt(const Msg: WideString; const Args: array of const);
 begin
   FMessage := Tnt_WideFormat(Msg, Args);
+  inherited Create(FMessage);
 end;
 
 end.

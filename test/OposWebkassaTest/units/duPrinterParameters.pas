@@ -177,10 +177,28 @@ begin
   CheckEquals(DefCashboxNumber, FParams.CashboxNumber, 'CashboxNumber');
   CheckEquals(DefPrinterName, FParams.PrinterName, 'PrinterName');
   CheckEquals(DefPrinterType, FParams.PrinterType, 'PrinterType');
-  CheckEquals(1, FParams.VatRates.Count, 'VatRates.Count');
+  CheckEquals(4, FParams.VatRates.Count, 'VatRates.Count');
+
   CheckEquals(1, FParams.VatRates[0].ID, 'VatRates[0].ID');
-  CheckEquals(12, FParams.VatRates[0].Rate, 0.001, 'VatRates[0].Rate');
-  CheckEquals('ÍÄÑ 12%', FParams.VatRates[0].Name, 'VatRates[0].Name');
+  CheckEquals('ÍÄÑ 5%', FParams.VatRates[0].Name, 'VatRates[0].Name');
+  CheckEquals(5, FParams.VatRates[0].Rate, 0.001, 'VatRates[0].Rate');
+  CheckEquals(VAT_TYPE_NORMAL, FParams.VatRates[0].VatType, 'VatRates[0].VatType');
+
+  CheckEquals(2, FParams.VatRates[1].ID, 'VatRates[1].ID');
+  CheckEquals('ÍÄÑ 12%', FParams.VatRates[1].Name, 'VatRates[1].Name');
+  CheckEquals(12, FParams.VatRates[1].Rate, 0.001, 'VatRates[1].Rate');
+  CheckEquals(VAT_TYPE_NORMAL, FParams.VatRates[1].VatType, 'VatRates[1].VatType');
+
+  CheckEquals(3, FParams.VatRates[2].ID, 'VatRates[2].ID');
+  CheckEquals('ÍÄÑ 0%', FParams.VatRates[2].Name, 'VatRates[2].Name');
+  CheckEquals(0, FParams.VatRates[2].Rate, 0.001, 'VatRates[2].Rate');
+  CheckEquals(VAT_TYPE_ZERO_TAX, FParams.VatRates[2].VatType, 'VatRates[2].VatType');
+
+  CheckEquals(4, FParams.VatRates[3].ID, 'VatRates[3].ID');
+  CheckEquals('ÁÅÇ ÍÄÑ', FParams.VatRates[3].Name, 'VatRates[3].Name');
+  CheckEquals(0, FParams.VatRates[3].Rate, 0.001, 'VatRates[3].Rate');
+  CheckEquals(VAT_TYPE_NO_TAX, FParams.VatRates[3].VatType, 'VatRates[3].VatType');
+
   CheckEquals(True, FParams.VatRateEnabled, 'VatRateEnabled');
   CheckEquals(1, FParams.PaymentType2, 'PaymentType2');
   CheckEquals(2, FParams.PaymentType3, 'PaymentType3');
