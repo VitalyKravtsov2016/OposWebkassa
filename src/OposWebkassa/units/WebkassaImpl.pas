@@ -113,7 +113,6 @@ type
       var pString: WideString);
     procedure DioGetReceiptResponse(var pData: Integer;
       var pString: WideString);
-    procedure SaveUsrParams;
     function DioReadPrinterParams: WideString;
     function DioReadPrinterList: WideString;
     function DioReadFontList: WideString;
@@ -178,6 +177,7 @@ type
 
     procedure Initialize;
     procedure CheckEnabled;
+    procedure SaveUsrParams;
     function ReadGrossTotal: Currency;
     function ReadGrandTotal: Currency;
     function IllegalError: Integer;
@@ -2817,7 +2817,7 @@ begin
       LineText := ESC_DoubleWide + LineText;
 
     FParams.SetHeaderLine(LineNumber, LineText);
-    SaveUsrParams;
+    SaveHeaderReg(Params, FOposDevice.DeviceName, Logger);
 
     Result := ClearResult;
   except
@@ -2942,7 +2942,7 @@ begin
       LineText := ESC_DoubleWide + LineText;
 
     Params.SetTrailerLine(LineNumber, LineText);
-    SaveUsrParams;
+    SaveTrailerReg(Params, FOposDevice.DeviceName, Logger);
 
     Result := ClearResult;
   except

@@ -18,7 +18,7 @@ uses
   LogFile, WebkassaImpl, WebkassaClient, MockPosPrinter, FileUtils,
   CustomReceipt, uLkJSON, ReceiptTemplate, SalesReceipt, DirectIOAPI,
   DebugUtils, StringUtils, PrinterTypes, PrinterParameters, VatRate,
-  JsonUtils, MemoryUtils, TextDocument, ReceiptItem;
+  JsonUtils, MemoryUtils, TextDocument, ReceiptItem, PrinterParametersReg;
 
 type
   { TWebkassaImplTest }
@@ -114,6 +114,9 @@ type
     procedure TestReceiptTemplate5;
     procedure TestReceiptTemplate6;
     procedure TestReceiptTemplate7;
+
+    procedure CheckSaveHeader;
+    procedure CheckSaveHeader2;
   end;
 
 implementation
@@ -2142,6 +2145,77 @@ begin
 
   FLines.Text := ReceiptText;
   CheckLines;
+end;
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Header saved only when setHeaderLine called
+
+procedure TWebkassaImplTest.CheckSaveHeader;
+var
+  Logger: ILogFile;
+  Params: TPrinterParameters;
+begin
+  Logger := TLogFile.Create;
+  Params := TPrinterParameters.Create(Logger);
+  try
+    Params.NumHeaderLines := 1;
+    Params.NumTrailerLines := 1;
+    Params.SetHeaderLine(1, 'Header1');
+    Params.SetTrailerLine(1, 'Trailer1');
+    CheckEquals('Header1', Params.Header[0]);
+    CheckEquals('Trailer1', Params.Trailer[0]);
+    SaveHeaderReg(Params, 'DeviceName', Logger);
+    SaveTrailerReg(Params, 'DeviceName', Logger);
+
+    OpenClaimEnable;
+
+    Params.SetHeaderLine(1, 'Header2');
+    Params.SetTrailerLine(1, 'Trailer2');
+    SaveHeaderReg(Params, 'DeviceName', Logger);
+    SaveTrailerReg(Params, 'DeviceName', Logger);
+
+    Driver.SaveUsrParams;
+    Driver.Close;
+
+    LoadParametersReg(Params, 'DeviceName', Logger);
+    CheckEquals('Header2', Params.Header[0]);
+    CheckEquals('Trailer2', Params.Trailer[0]);
+  finally
+    Params.Free;
+  end;
+
+end;
+
+procedure TWebkassaImplTest.CheckSaveHeader2;
+var
+  Logger: ILogFile;
+  Params: TPrinterParameters;
+begin
+  Logger := TLogFile.Create;
+  Params := TPrinterParameters.Create(Logger);
+  try
+    Params.NumHeaderLines := 1;
+    Params.NumTrailerLines := 1;
+    Params.SetHeaderLine(1, 'Header1');
+    Params.SetTrailerLine(1, 'Trailer1');
+    CheckEquals('Header1', Params.Header[0]);
+    CheckEquals('Trailer1', Params.Trailer[0]);
+    SaveHeaderReg(Params, 'DeviceName', Logger);
+    SaveTrailerReg(Params, 'DeviceName', Logger);
+
+    OpenClaimEnable;
+    Driver.SetHeaderLine(1, 'Header2', False);
+    Driver.SetTrailerLine(1, 'Trailer2', False);
+    Driver.Close;
+
+    LoadParametersReg(Params, 'DeviceName', Logger);
+    CheckEquals('Header2', Params.Header[0]);
+    CheckEquals('Trailer2', Params.Trailer[0]);
+  finally
+    Params.Free;
+  end;
+
 end;
 
 initialization

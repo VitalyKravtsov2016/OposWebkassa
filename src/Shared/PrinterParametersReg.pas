@@ -24,7 +24,8 @@ type
     procedure LoadIBTParameters(const DeviceName: WideString);
     procedure SaveSysParameters(const DeviceName: WideString);
     procedure SaveUsrParameters(const DeviceName: WideString);
-    procedure SaveIBTParameters(const DeviceName: WideString);
+    procedure SaveHeader(const DeviceName: WideString);
+    procedure SaveTrailer(const DeviceName: WideString);
 
     property Parameters: TPrinterParameters read FParameters;
     procedure LoadVatRates(const DeviceName: WideString);
@@ -50,6 +51,13 @@ procedure SaveParametersReg(Parameters: TPrinterParameters; const DeviceName: Wi
 
 procedure SaveUsrParametersReg(Parameters: TPrinterParameters;
   const DeviceName: WideString; Logger: ILogFile);
+
+procedure SaveHeaderReg(Parameters: TPrinterParameters;
+  const DeviceName: WideString; Logger: ILogFile);
+
+procedure SaveTrailerReg(Parameters: TPrinterParameters;
+  const DeviceName: WideString; Logger: ILogFile);
+
 
 implementation
 
@@ -112,7 +120,32 @@ begin
   Writer := TPrinterParametersReg.Create(Parameters, Logger);
   try
     Writer.SaveUsrParameters(DeviceName);
-    Writer.SaveIBTParameters(DeviceName);
+  finally
+    Writer.Free;
+  end;
+end;
+
+procedure SaveHeaderReg(Parameters: TPrinterParameters;
+  const DeviceName: WideString; Logger: ILogFile);
+var
+  Writer: TPrinterParametersReg;
+begin
+  Writer := TPrinterParametersReg.Create(Parameters, Logger);
+  try
+    Writer.SaveHeader(DeviceName);
+  finally
+    Writer.Free;
+  end;
+end;
+
+procedure SaveTrailerReg(Parameters: TPrinterParameters;
+  const DeviceName: WideString; Logger: ILogFile);
+var
+  Writer: TPrinterParametersReg;
+begin
+  Writer := TPrinterParametersReg.Create(Parameters, Logger);
+  try
+    Writer.SaveTrailer(DeviceName);
   finally
     Writer.Free;
   end;
@@ -143,8 +176,9 @@ end;
 procedure TPrinterParametersReg.Save(const DeviceName: WideString);
 begin
   SaveUsrParameters(DeviceName);
-  SaveIBTParameters(DeviceName);
   SaveSysParameters(DeviceName);
+  SaveHeader(DeviceName);
+  SaveTrailer(DeviceName);
 end;
 
 procedure TPrinterParametersReg.LoadSysParameters(const DeviceName: WideString);
@@ -632,11 +666,11 @@ begin
   KeyNames.Free;
 end;
 
-procedure TPrinterParametersReg.SaveIBTParameters(const DeviceName: WideString);
+procedure TPrinterParametersReg.SaveHeader(const DeviceName: WideString);
 var
   Reg: TTntRegistry;
 begin
-  Logger.Debug('TPrinterParametersReg.SaveIBTParameters', [DeviceName]);
+  Logger.Debug('TPrinterParametersReg.SaveHeader', [DeviceName]);
 
   Reg := TTntRegistry.Create;
   try
@@ -645,6 +679,26 @@ begin
     if Reg.OpenKey(REGSTR_KEY_IBT, True) then
     begin
       Reg.WriteString('IBTHeader', Parameters.HeaderText);
+    end;
+  except
+    on E: Exception do
+      Logger.Error('TPrinterParametersReg.SaveIBTParameters', E);
+  end;
+  Reg.Free;
+end;
+
+procedure TPrinterParametersReg.SaveTrailer(const DeviceName: WideString);
+var
+  Reg: TTntRegistry;
+begin
+  Logger.Debug('TPrinterParametersReg.SaveTrailer', [DeviceName]);
+
+  Reg := TTntRegistry.Create;
+  try
+    Reg.Access := KEY_ALL_ACCESS;
+    Reg.RootKey := HKEY_LOCAL_MACHINE;
+    if Reg.OpenKey(REGSTR_KEY_IBT, True) then
+    begin
       Reg.WriteString('IBTTrailer', Parameters.TrailerText);
     end;
   except

@@ -1,19 +1,23 @@
 [Closed Files]
-File_0=SourceModule,'D:\projects\IBTS\WebKassa\test\OposWebkassaTest\units\duReceiptTemplate.pas',0,1,167,36,184,0,0
-File_1=SourceModule,'D:\projects\IBTS\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas',0,1,4209,29,4218,0,0
-File_2=SourceModule,'D:\projects\IBTS\WebKassa\src\OposWebkassa\units\SalesReceipt.pas',0,1,714,25,723,0,0
-File_3=SourceModule,'D:\projects\IBTS\WebKassa\src\Shared\ReceiptTemplate.pas',0,1,792,7,814,0,0
-File_4=SourceModule,'D:\projects\IBTS\WebKassa\src\OposWebkassa\units\ReceiptItem.pas',0,1,370,49,383,0,0
-File_5=SourceModule,'D:\projects\IBTS\WebKassa\src\Shared\VatRate.pas',0,1,34,1,47,0,0
-File_6=SourceModule,'D:\projects\IBTS\WebKassa\src\OposWebkassa\Units\WebkassaClient.pas',0,1,1,95,14,0,0
-File_7=SourceModule,'D:\projects\IBTS\WebKassa\src\OposConfig\Fmu\fmuFptrVatRate.pas',0,1,49,25,63,0,0
-File_8=SourceModule,'D:\projects\IBTS\WebKassa\test\OposWebkassaTest\units\duPrinterParameters.pas',0,1,76,36,90,0,0
-File_9=SourceModule,'D:\projects\IBTS\WebKassa\test\OposWebkassaTest\units\duOposDevice.pas',0,1,22,1,39,0,0
+File_0=SourceModule,'D:\projects\IBTS\WebKassa\test\OposWebkassaTest\units\duReceiptTemplate.pas',0,1,16,2,30,0,0
+File_1=SourceModule,'D:\projects\IBTS\WebKassa\src\OposWebkassa\units\WebkassaImpl.pas',0,1,4262,1,4278,0,0
+File_2=SourceModule,'D:\projects\IBTS\WebKassa\src\OposWebkassa\units\ReceiptItem.pas',0,1,94,73,96,0,0
+File_3=SourceModule,'D:\projects\IBTS\WebKassa\src\Shared\ReceiptTemplate.pas',0,1,1,1,6,0,0
+File_4=SourceModule,'D:\projects\IBTS\WebKassa\test\OposWebkassaTest\units\duWebkassaImpl.pas',0,1,1852,43,1971,0,0
+File_5=SourceModule,'D:\projects\IBTS\WebKassa\src\Shared\PrinterTypes.pas',0,1,69,24,86,0,0
+File_6=SourceModule,'D:\projects\IBTS\WebKassa\src\OposConfig\Fmu\fmuMain.pas',0,1,1,1,1,1,1
+File_7=SourceModule,'D:\projects\IBTS\WebKassa\src\OposConfig\Fmu\fmuPages.pas',0,1,111,17,131,1,1
+File_8=SourceModule,'D:\projects\IBTS\WebKassa\src\OposConfig\Units\untPages.pas',0,1,70,1,88,0,0
+File_9=SourceModule,'D:\projects\IBTS\WebKassa\src\OposConfig\Fmu\fmuFptrVatRate.pas',0,1,47,107,53,1,1
 
 [Modules]
 Count=0
 EditWindowCount=0
 TypeLibWindowCount=1
+
+[D:\projects\IBTS\WebKassa\test\WebkassaAccTest\WebkassaAccTest.dpr]
+FormState=0
+FormOnTop=0
 
 [D:\projects\IBTS\WebKassa\src\Webkassa.bpg]
 FormState=0
@@ -44,10 +48,6 @@ FormState=0
 FormOnTop=0
 
 [D:\projects\IBTS\WebKassa\test\OposWebkassaTest\OposWebkassaTestLib.dpr]
-FormState=0
-FormOnTop=0
-
-[D:\projects\IBTS\WebKassa\test\WebkassaAccTest\WebkassaAccTest.dpr]
 FormState=0
 FormOnTop=0
 
@@ -113,12 +113,12 @@ Visible=1
 State=0
 Left=0
 Top=117
-Width=755
-Height=405
+Width=838
+Height=568
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=739
-ClientHeight=366
+ClientWidth=822
+ClientHeight=529
 TBDockHeight=681
 LRDockWidth=445
 Dockable=0
@@ -364,8 +364,8 @@ DockSiteType=0
 Create=1
 Visible=0
 State=0
-Left=715
-Top=518
+Left=850
+Top=300
 Width=872
 Height=535
 MaxLeft=-1
@@ -379,5 +379,5 @@ DockClients=CallStackWindow
 DockSiteData=0000040000000000F001000000000000015803000000000000010000000087000000000000000100000002F0010000000000000200000000580300000F00000043616C6C537461636B57696E646F770200000000F7010000000000000100000000080100000000000001000000008C010000000000000100000000100200000000000001000000009802000000000000FFFFFFFF
 
 [ActiveProject]
-ActiveProject=4
+ActiveProject=1
 
