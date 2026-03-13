@@ -958,7 +958,7 @@ begin
   try
     CheckEnabled;
     CheckState(FPTR_PS_MONITOR);
-    RaiseOposException(OPOS_E_ILLEGAL, _('Режим тренировки не поддерживается'));
+    RaiseOposException(OPOS_E_ILLEGAL, _('пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ'));
   except
     on E: Exception do
       Result := HandleException(E);
@@ -1349,8 +1349,8 @@ const
   '"DateTimeUTC":"03.11.2023 15:11:55 +06:00","OfflineMode":false,' +
   '"CashboxOfflineMode":false,"Cashbox":{"UniqueNumber":"SWK00033444",' +
   '"RegistrationNumber":"993877110665","IdentityNumber":"353186","Address":"",' +
-  '"Ofd":{"Name":"АО \"КазТранском\"","Host":"dev.kofd.kz/consumer","Code":3}},' +
-  '"Organization":{"TaxPayerName":"ТОО SOFT IT KAZAKHSTAN",' +
+  '"Ofd":{"Name":"пїЅпїЅ \"пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ\"","Host":"dev.kofd.kz/consumer","Code":3}},' +
+  '"Organization":{"TaxPayerName":"пїЅпїЅпїЅ SOFT IT KAZAKHSTAN",' +
   '"TaxPayerIN":"131240010479"},"CheckOrderNumber":2,"ShiftNumber":26,' +
   '"EmployeeName":"apykhtin@ibtsmail.ru",' +
   '"TicketUrl":"http://dev.kofd.kz/consumer?i=1746195026063&f=993877110665&s=15443.72&t=20231103T151155",' +
@@ -2618,14 +2618,14 @@ begin
         Document.AddLine(Document.AlignCenter(Params.OfflineText));
       end;
       Separator := StringOfChar('-', Document.LineChars);
-      Document.AddLines('ИНН/БИН', IntToStr(Command.Data.CashboxIN));
-      Document.AddLines('ЗНМ', Command.Data.CashboxSN);
-      Document.AddLines('Код ККМ КГД (РНМ)', Command.Data.CashboxRN);
+      Document.AddLines('пїЅпїЅпїЅ/пїЅпїЅпїЅ', IntToStr(Command.Data.CashboxIN));
+      Document.AddLines('пїЅпїЅпїЅ', Command.Data.CashboxSN);
+      Document.AddLines('пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ (пїЅпїЅпїЅ)', Command.Data.CashboxRN);
       if IsZReport then
-        Document.AddLine(Document.AlignCenter('Z-ОТЧЕТ'))
+        Document.AddLine(Document.AlignCenter('Z-пїЅпїЅпїЅпїЅпїЅ'))
       else
-        Document.AddLine(Document.AlignCenter('X-ОТЧЕТ'));
-      Document.AddLine(Document.AlignCenter(Tnt_WideFormat('СМЕНА №%d', [Command.Data.ShiftNumber])));
+        Document.AddLine(Document.AlignCenter('X-пїЅпїЅпїЅпїЅпїЅ'));
+      Document.AddLine(Document.AlignCenter(Tnt_WideFormat('пїЅпїЅпїЅпїЅпїЅ пїЅ%d', [Command.Data.ShiftNumber])));
       Document.AddLine(Document.AlignCenter(Tnt_WideFormat('%s-%s', [Command.Data.StartOn, Command.Data.ReportOn])));
       Node := Doc.GetField('Data');
       if Node <> nil then
@@ -2634,7 +2634,7 @@ begin
         if (Node <> nil)and(Node.Count > 0) then
         begin
           Document.AddLine(Separator);
-          Document.AddLine(Document.AlignCenter('ОТЧЕТ ПО СЕКЦИЯМ'));
+          Document.AddLine(Document.AlignCenter('пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ'));
           Document.AddLine(Separator);
           for i := 0 to Node.Count-1 do
           begin
@@ -2642,7 +2642,7 @@ begin
             if SectionNode <> nil then
             begin
               Count := SectionNode.Get('Code').Value;
-              Document.AddLines('СЕКЦИЯ', IntToStr(Count + 1));
+              Document.AddLines('пїЅпїЅпїЅпїЅпїЅпїЅ', IntToStr(Count + 1));
               OperationsNode := SectionNode.Field['Operations'];
               if OperationsNode <> nil then
               begin
@@ -2651,7 +2651,7 @@ begin
                 begin
                   Count := SellNode.Get('Count').Value;
                   Amount := SellNode.Get('Amount').Value;
-                  Document.AddLines(Tnt_WideFormat('%.4d ПРОДАЖ', [Count]), AmountToStr(Amount));
+                  Document.AddLines(Tnt_WideFormat('%.4d пїЅпїЅпїЅпїЅпїЅпїЅ', [Count]), AmountToStr(Amount));
                 end;
               end;
             end;
@@ -2660,53 +2660,53 @@ begin
       end;
       Document.AddLine(Separator);
       if IsZReport then
-        Document.AddLine(Document.AlignCenter('ОТЧЕТ С ГАШЕНИЕМ'))
+        Document.AddLine(Document.AlignCenter('пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ'))
       else
-        Document.AddLine(Document.AlignCenter('ОТЧЕТ БЕЗ ГАШЕНИЯ'));
+        Document.AddLine(Document.AlignCenter('пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ'));
       Document.AddLine(Separator);
-      Document.AddLine('НЕОБНУЛ. СУММЫ НА НАЧАЛО СМЕНЫ');
-      Document.AddLines('ПРОДАЖ', AmountToStr(Command.Data.StartNonNullable.Sell));
-      Document.AddLines('ПОКУПОК', AmountToStr(Command.Data.StartNonNullable.Buy));
-      Document.AddLines('ВОЗВРАТОВ ПРОДАЖ', AmountToStr(Command.Data.StartNonNullable.ReturnSell));
-      Document.AddLines('ВОЗВРАТОВ ПОКУПОК', AmountToStr(Command.Data.StartNonNullable.ReturnBuy));
+      Document.AddLine('пїЅпїЅпїЅпїЅпїЅпїЅпїЅ. пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ');
+      Document.AddLines('пїЅпїЅпїЅпїЅпїЅпїЅ', AmountToStr(Command.Data.StartNonNullable.Sell));
+      Document.AddLines('пїЅпїЅпїЅпїЅпїЅпїЅпїЅ', AmountToStr(Command.Data.StartNonNullable.Buy));
+      Document.AddLines('пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ', AmountToStr(Command.Data.StartNonNullable.ReturnSell));
+      Document.AddLines('пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ', AmountToStr(Command.Data.StartNonNullable.ReturnBuy));
 
-      Document.AddLine('ЧЕКОВ ПРОДАЖ');
+      Document.AddLine('пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ');
       Line1 := Tnt_WideFormat('%.4d', [Command.Data.Sell.Count]);
-      Line2 := AmountToStr(Total);
+      Line2 := AmountToStr(Command.Data.Sell.Taken - Command.Data.Sell.Change);
       Text := Line1 + StringOfChar(' ', (Document.LineChars div 2)-Length(Line1)-Length(Line2)) + Line2;
       Document.AddLine(Text, STYLE_DWIDTH_HEIGHT);
       AddPayments(Document, Command.Data.Sell.PaymentsByTypesApiModel);
 
-      Document.AddLine('ЧЕКОВ ПОКУПОК');
+      Document.AddLine('пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ');
       Line1 := Tnt_WideFormat('%.4d', [Command.Data.Buy.Count]);
       Line2 := AmountToStr(Command.Data.Buy.Taken);
       Text := Line1 + StringOfChar(' ', (Document.LineChars div 2)-Length(Line1)-Length(Line2)) + Line2;
       Document.AddLine(Text, STYLE_DWIDTH_HEIGHT);
       AddPayments(Document, Command.Data.Buy.PaymentsByTypesApiModel);
 
-      Document.AddLine('ЧЕКОВ ВОЗВРАТОВ ПРОДАЖ');
+      Document.AddLine('пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ');
       Line1 := Tnt_WideFormat('%.4d', [Command.Data.ReturnSell.Count]);
       Line2 := AmountToStr(Command.Data.ReturnSell.Taken);
       Text := Line1 + StringOfChar(' ', (Document.LineChars div 2)-Length(Line1)-Length(Line2)) + Line2;
       Document.AddLine(Text, STYLE_DWIDTH_HEIGHT);
       AddPayments(Document, Command.Data.ReturnSell.PaymentsByTypesApiModel);
 
-      Document.AddLine('ЧЕКОВ ВОЗВРАТОВ ПОКУПОК');
+      Document.AddLine('пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ');
       Line1 := Tnt_WideFormat('%.4d', [Command.Data.ReturnBuy.Count]);
       Line2 := AmountToStr(Command.Data.ReturnBuy.Taken);
       Text := Line1 + StringOfChar(' ', (Document.LineChars div 2)-Length(Line1)-Length(Line2)) + Line2;
       Document.AddLine(Text, STYLE_DWIDTH_HEIGHT);
       AddPayments(Document, Command.Data.ReturnBuy.PaymentsByTypesApiModel);
-      Document.AddLines('СУММА ВНЕСЕНИЙ', AmountToStr(Command.Data.PutMoneySum));
-      Document.AddLines('СУММА ИЗЪЯТИЙ', AmountToStr(Command.Data.TakeMoneySum));
-      Document.AddLines('НАЛИЧНЫХ В КАССЕ', AmountToStr(Command.Data.SumInCashbox));
-      Document.AddLines('ВЫРУЧКА', AmountToStr(Total));
-      Document.AddLine('НЕОБНУЛ. СУММЫ НА КОНЕЦ СМЕНЫ');
-      Document.AddLines('ПРОДАЖ', AmountToStr(Command.Data.EndNonNullable.Sell));
-      Document.AddLines('ПОКУПОК', AmountToStr(Command.Data.EndNonNullable.Buy));
-      Document.AddLines('ВОЗВРАТОВ ПРОДАЖ', AmountToStr(Command.Data.EndNonNullable.ReturnSell));
-      Document.AddLines('ВОЗВРАТОВ ПОКУПОК', AmountToStr(Command.Data.EndNonNullable.ReturnBuy));
-      Document.AddLines('СФормировано ОФД: ', Command.Data.Ofd.Name);
+      Document.AddLines('пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ', AmountToStr(Command.Data.PutMoneySum));
+      Document.AddLines('пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ', AmountToStr(Command.Data.TakeMoneySum));
+      Document.AddLines('пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ', AmountToStr(Command.Data.SumInCashbox));
+      Document.AddLines('пїЅпїЅпїЅпїЅпїЅпїЅпїЅ', AmountToStr(Total));
+      Document.AddLine('пїЅпїЅпїЅпїЅпїЅпїЅпїЅ. пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ');
+      Document.AddLines('пїЅпїЅпїЅпїЅпїЅпїЅ', AmountToStr(Command.Data.EndNonNullable.Sell));
+      Document.AddLines('пїЅпїЅпїЅпїЅпїЅпїЅпїЅ', AmountToStr(Command.Data.EndNonNullable.Buy));
+      Document.AddLines('пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ', AmountToStr(Command.Data.EndNonNullable.ReturnSell));
+      Document.AddLines('пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ', AmountToStr(Command.Data.EndNonNullable.ReturnBuy));
+      Document.AddLines('пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ: ', Command.Data.Ofd.Name);
       PrintDocumentSafe(Document);
     finally
       Doc.Free;
@@ -3456,13 +3456,13 @@ begin
     begin
       Document.AddLine(Document.AlignCenter(Params.OfflineText));
     end;
-    Document.AddLine('БИН ' + Command.Data.Cashbox.RegistrationNumber);
-    Document.AddLine(Tnt_WideFormat('ЗНМ %s ИНК ОФД %s', [Command.Data.Cashbox.UniqueNumber,
+    Document.AddLine('пїЅпїЅпїЅ ' + Command.Data.Cashbox.RegistrationNumber);
+    Document.AddLine(Tnt_WideFormat('пїЅпїЅпїЅ %s пїЅпїЅпїЅ пїЅпїЅпїЅ %s', [Command.Data.Cashbox.UniqueNumber,
       Command.Data.Cashbox.IdentityNumber]));
-    Document.AddLine('Дата: ' + Command.Data.DateTime);
+    Document.AddLine('пїЅпїЅпїЅпїЅ: ' + Command.Data.DateTime);
     Document.AddText(Receipt.Lines.Text);
-    Document.AddLines('ВНЕСЕНИЕ ДЕНЕГ В КАССУ', AmountToStrEq(Receipt.GetTotal), STYLE_BOLD);
-    Document.AddLines('НАЛИЧНЫХ В КАССЕ', AmountToStrEq(Command.Data.Sum), STYLE_BOLD);
+    Document.AddLines('пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ', AmountToStrEq(Receipt.GetTotal), STYLE_BOLD);
+    Document.AddLines('пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ', AmountToStrEq(Command.Data.Sum), STYLE_BOLD);
     Document.AddText(Receipt.Trailer.Text);
     // Print
     PrintDocumentSafe(Document);
@@ -3488,13 +3488,13 @@ begin
     begin
       Document.AddLine(Document.AlignCenter(Params.OfflineText));
     end;
-    Document.AddLine('БИН ' + Command.Data.Cashbox.RegistrationNumber);
-    Document.AddLine(Tnt_WideFormat('ЗНМ %s ИНК ОФД %s', [Command.Data.Cashbox.UniqueNumber,
+    Document.AddLine('пїЅпїЅпїЅ ' + Command.Data.Cashbox.RegistrationNumber);
+    Document.AddLine(Tnt_WideFormat('пїЅпїЅпїЅ %s пїЅпїЅпїЅ пїЅпїЅпїЅ %s', [Command.Data.Cashbox.UniqueNumber,
       Command.Data.Cashbox.IdentityNumber]));
-    Document.AddLine('Дата: ' + Command.Data.DateTime);
+    Document.AddLine('пїЅпїЅпїЅпїЅ: ' + Command.Data.DateTime);
     Document.AddText(Receipt.Lines.Text);
-    Document.AddLines('ИЗЪЯТИЕ ДЕНЕГ ИЗ КАССЫ', AmountToStrEq(Receipt.GetTotal), STYLE_BOLD);
-    Document.AddLines('НАЛИЧНЫХ В КАССЕ', AmountToStrEq(Command.Data.Sum), STYLE_BOLD);
+    Document.AddLines('пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ', AmountToStrEq(Receipt.GetTotal), STYLE_BOLD);
+    Document.AddLines('пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ', AmountToStrEq(Command.Data.Sum), STYLE_BOLD);
     Document.AddText(Receipt.Trailer.Text);
     // print
     PrintDocumentSafe(Document);
@@ -3779,52 +3779,52 @@ begin
 end;
 
 (*
-"             ТОО SOFT IT KAZAKHSTAN             ",
-"                БИН 131240010479                ",
-"НДС Серия 00000                        № 0000000",
+"             пїЅпїЅпїЅ SOFT IT KAZAKHSTAN             ",
+"                пїЅпїЅпїЅ 131240010479                ",
+"пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ 00000                        пїЅ 0000000",
 "------------------------------------------------",
-"                     КОФД 2                     ",
-"                    Смена 178                   ",
-"            Порядковый номер чека №2            ",
-"Чек №925871425876",
-"Кассир webkassa4@softit.kz",
+"                     пїЅпїЅпїЅпїЅ 2                     ",
+"                    пїЅпїЅпїЅпїЅпїЅ 178                   ",
+"            пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ2            ",
+"пїЅпїЅпїЅ пїЅ925871425876",
+"пїЅпїЅпїЅпїЅпїЅпїЅ webkassa4@softit.kz",
 "
-ПРОДАЖА",
+пїЅпїЅпїЅпїЅпїЅпїЅпїЅ",
 "------------------------------------------------",
-"  1. Позиция чека 1",
-"   123,456 шт x 123,45",
-"   Скидка                                 -12,00",
-"   Наценка                                +13,00",
-"   Стоимость                           15 241,64",
-"  2. Позиция чека 2",
-"   12,456 шт x 12,45",
-"   Скидка                                 -12,00",
-"   Наценка                                +13,00",
-"   Стоимость                              156,08",
-"  3. Позиция чека 1",
-"   2 шт x 23,00",
-"   Стоимость                               46,00",
+"  1. пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ 1",
+"   123,456 пїЅпїЅ x 123,45",
+"   пїЅпїЅпїЅпїЅпїЅпїЅ                                 -12,00",
+"   пїЅпїЅпїЅпїЅпїЅпїЅпїЅ                                +13,00",
+"   пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ                           15пїЅ241,64",
+"  2. пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ 2",
+"   12,456 пїЅпїЅ x 12,45",
+"   пїЅпїЅпїЅпїЅпїЅпїЅ                                 -12,00",
+"   пїЅпїЅпїЅпїЅпїЅпїЅпїЅ                                +13,00",
+"   пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ                              156,08",
+"  3. пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ 1",
+"   2 пїЅпїЅ x 23,00",
+"   пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ                               46,00",
 "------------------------------------------------",
-"Наличные:                                 800,00",
-"Банковская карта:                      14 597,72",
-"Наличные:                                  46,00",
-"Скидка:                                    24,00",
-"Наценка:                                   26,00",
-"ИТОГО:                                  15443,72",
-"в т.ч. НДС 12%:                          1649,75",
+"пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ:                                 800,00",
+"пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ:                      14пїЅ597,72",
+"пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ:                                  46,00",
+"пїЅпїЅпїЅпїЅпїЅпїЅ:                                    24,00",
+"пїЅпїЅпїЅпїЅпїЅпїЅпїЅ:                                   26,00",
+"пїЅпїЅпїЅпїЅпїЅ:                                  15443,72",
+"пїЅ пїЅ.пїЅ. пїЅпїЅпїЅ 12%:                          1649,75",
 "------------------------------------------------",
-"Фискальный признак: 925871425876",
-"Время: 26.08.2022 21:00:14",
-"тест",
-"Оператор фискальных данных: АО \"КазТранском\"",
-"Для проверки чека зайдите на сайт: ",
+"пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ: 925871425876",
+"пїЅпїЅпїЅпїЅпїЅ: 26.08.2022 21:00:14",
+"пїЅпїЅпїЅпїЅ",
+"пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅ \"пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ\"",
+"пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ: ",
 "dev.kofd.kz/consumer",
 "------------------------------------------------",
-"                 ФИСКАЛЬНЫЙ ЧЕK                 ",
+"                 пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅK                 ",
 "http://dev.kofd.kz/consumer?i=925871425876&f=211030200207&s=15443.72&t=20220826T210014",
-"                  ИНК ОФД: 270                  ",
-"         Код ККМ КГД (РНМ): 211030200207        ",
-"                ЗНМ: SWK00032685                ",
+"                  пїЅпїЅпїЅ пїЅпїЅпїЅ: 270                  ",
+"         пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ (пїЅпїЅпїЅ): 211030200207        ",
+"                пїЅпїЅпїЅ: SWK00032685                ",
 "                   WEBKASSA.KZ                  ",
 
 
@@ -3835,10 +3835,10 @@ function OperationTypeToText(OperationType: Integer): WideString;
 begin
   Result := '';
   case OperationType of
-    OperationTypeBuy: Result := 'ПОКУПКА';
-    OperationTypeRetBuy: Result := 'ВОЗВРАТ ПОКУПКИ';
-    OperationTypeSell: Result := 'ПРОДАЖА';
-    OperationTypeRetSell: Result := 'ВОЗВРАТ ПРОДАЖИ';
+    OperationTypeBuy: Result := 'пїЅпїЅпїЅпїЅпїЅпїЅпїЅ';
+    OperationTypeRetBuy: Result := 'пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ';
+    OperationTypeSell: Result := 'пїЅпїЅпїЅпїЅпїЅпїЅпїЅ';
+    OperationTypeRetSell: Result := 'пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ';
   end;
 end;
 
@@ -3915,17 +3915,17 @@ var
   BarcodeItem: TBarcodeItem;
   CapQRCodeInPageMode: Boolean;
 begin
-  Document.AddLine('БСН/БИН: ' + ReadINN);
-  Document.Addlines(Tnt_WideFormat('НДС Серия %s', [Params.VATSeries]),
-    Tnt_WideFormat('№ %s', [Params.VATNumber]));
+  Document.AddLine('пїЅпїЅпїЅ/пїЅпїЅпїЅ: ' + ReadINN);
+  Document.Addlines(Tnt_WideFormat('пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ %s', [Params.VATSeries]),
+    Tnt_WideFormat('пїЅ %s', [Params.VATNumber]));
   Document.AddSeparator;
   Document.AddLine(Document.AlignCenter(Params.CashboxNumber));
-  Document.AddLine(Document.AlignCenter(Tnt_WideFormat('СМЕНА №%d', [Data.ShiftNumber])));
+  Document.AddLine(Document.AlignCenter(Tnt_WideFormat('пїЅпїЅпїЅпїЅпїЅ пїЅ%d', [Data.ShiftNumber])));
   Document.AddLine(OperationTypeToText(Request.OperationType));
 
-  //Document.AddLine(AlignCenter(WideFormat('Порядковый номер чека №%d', [Command.Data.DocumentNumber])));
-  //Document.AddLine(WideFormat('Чек №%s', [Command.Data.CheckNumber]));
-  //Document.AddLine(WideFormat('Кассир %s', [Command.Data.EmployeeName]));
+  //Document.AddLine(AlignCenter(WideFormat('пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ%d', [Command.Data.DocumentNumber])));
+  //Document.AddLine(WideFormat('пїЅпїЅпїЅ пїЅ%s', [Command.Data.CheckNumber]));
+  //Document.AddLine(WideFormat('пїЅпїЅпїЅпїЅпїЅпїЅ %s', [Command.Data.EmployeeName]));
   //Document.AddLine(UpperCase(Command.Data.OperationTypeText));
   Document.AddSeparator;
 
@@ -3949,25 +3949,25 @@ begin
       end;
       Document.AddLine(Tnt_WideFormat('   %.3f %s x %s %s', [ItemQuantity,
         RecItem.UnitName, AmountToStr(UnitPrice), Params.CurrencyName]));
-      // Скидка
+      // пїЅпїЅпїЅпїЅпїЅпїЅ
       Adjustment := RecItem.GetDiscount;
       if Adjustment.Amount <> 0 then
       begin
         if Adjustment.Name = '' then
-          Adjustment.Name := 'Скидка';
+          Adjustment.Name := 'пїЅпїЅпїЅпїЅпїЅпїЅ';
         Document.AddLines('   ' + Adjustment.Name,
           '-' + AmountToStr(Abs(Adjustment.Amount)));
       end;
-      // Наценка
+      // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
       Adjustment := RecItem.GetCharge;
       if Adjustment.Amount <> 0 then
       begin
         if Adjustment.Name = '' then
-          Adjustment.Name := 'Наценка';
+          Adjustment.Name := 'пїЅпїЅпїЅпїЅпїЅпїЅпїЅ';
         Document.AddLines('   ' + Adjustment.Name,
           '+' + AmountToStr(Abs(Adjustment.Amount)));
       end;
-      Document.AddLines('   Стоимость', AmountToStr(RecItem.GetTotalAmount(Receipt.RoundType)));
+      Document.AddLines('   пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ', AmountToStr(RecItem.GetTotalAmount(Receipt.RoundType)));
 
       if RecItem.GTIN <> '' then
         Document.AddLine(RecItem.GTIN);
@@ -3989,20 +3989,20 @@ begin
     end;
   end;
   Document.AddSeparator;
-  // Скидка на чек
+  // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ
   Amount := Receipt.GetDiscount;
   if Amount <> 0 then
   begin
-    Document.AddLines('Скидка:', AmountToStr(Amount));
+    Document.AddLines('пїЅпїЅпїЅпїЅпїЅпїЅ:', AmountToStr(Amount));
   end;
-  // Наценка на чек
+  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ
   Amount := Receipt.GetCharge;
   if Amount <> 0 then
   begin
-    Document.AddLines('Наценка:', AmountToStr(Amount));
+    Document.AddLines('пїЅпїЅпїЅпїЅпїЅпїЅпїЅ:', AmountToStr(Amount));
   end;
-  // ИТОГ
-  Text := Document.ConcatLines('ИТОГ', AmountToStrEq(Receipt.GetTotal), Document.LineChars div 2);
+  // пїЅпїЅпїЅпїЅ
+  Text := Document.ConcatLines('пїЅпїЅпїЅпїЅ', AmountToStrEq(Receipt.GetTotal), Document.LineChars div 2);
   Document.AddLine(Text, STYLE_DWIDTH_HEIGHT);
   // Payments
   for i := 0 to Receipt.Payments.Count-1 do
@@ -4016,7 +4016,7 @@ begin
   end;
   if Receipt.Change <> 0 then
   begin
-    Document.AddLines('  СДАЧА', AmountToStrEq(Receipt.Change));
+    Document.AddLines('  пїЅпїЅпїЅпїЅпїЅ', AmountToStrEq(Receipt.Change));
   end;
   // VAT amounts
   for i := 0 to Params.VatRates.Count-1 do
@@ -4025,7 +4025,7 @@ begin
     Amount := Receipt.GetVatAmount(VatRate);
     if Amount <> 0 then
     begin
-      Document.AddLines(Tnt_WideFormat('в т.ч. %s', [VatRate.Name]),
+      Document.AddLines(Tnt_WideFormat('пїЅ пїЅ.пїЅ. %s', [VatRate.Name]),
         AmountToStrEq(Amount));
     end;
   end;
@@ -4039,19 +4039,19 @@ begin
   begin
     Document.AddItem(Data.TicketUrl, STYLE_QR_CODE_PM);
   end;
-  Document.AddLine('ФП: ' + Receipt.FiscalSign);
-  Document.AddLine('Время: ' + Data.DateTime);
-  Document.AddLine('ОФД: ' + Data.Cashbox.Ofd.Name);
-  Document.AddLine('Для проверки чека:');
+  Document.AddLine('пїЅпїЅ: ' + Receipt.FiscalSign);
+  Document.AddLine('пїЅпїЅпїЅпїЅпїЅ: ' + Data.DateTime);
+  Document.AddLine('пїЅпїЅпїЅ: ' + Data.Cashbox.Ofd.Name);
+  Document.AddLine('пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ:');
   Document.AddLine(Data.Cashbox.Ofd.Host);
   Document.AddItem('', STYLE_END_PAGE_MODE);
   if not CapQRCodeInPageMode then
   begin
     Document.AddItem(Data.TicketUrl, STYLE_QR_CODE);
   end;
-  Document.AddLine('ИНК ОФД: ' + Data.Cashbox.IdentityNumber);
-  Document.AddLine('Код ККМ КГД (РНМ): ' + Data.Cashbox.RegistrationNumber);
-  Document.AddLine('ЗНМ: ' + Data.Cashbox.UniqueNumber);
+  Document.AddLine('пїЅпїЅпїЅ пїЅпїЅпїЅ: ' + Data.Cashbox.IdentityNumber);
+  Document.AddLine('пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ (пїЅпїЅпїЅ): ' + Data.Cashbox.RegistrationNumber);
+  Document.AddLine('пїЅпїЅпїЅ: ' + Data.Cashbox.UniqueNumber);
   Document.AddSeparator;
   Document.AddText(Receipt.Trailer.Text);
 end;
@@ -4131,10 +4131,10 @@ function TWebkassaImpl.ReceiptFieldByText(Receipt: TSalesReceipt;
   function GetRecTypeText(RecType: TRecType): string;
   begin
     case RecType of
-      rtBuy    : Result := 'ПОКУПКА';
-      rtRetBuy : Result := 'ВОЗВРАТ ПОКУПКИ';
-      rtSell   : Result := 'ПРОДАЖА';
-      rtRetSell: Result := 'ВОЗВРАТ ПРОДАЖИ';
+      rtBuy    : Result := 'пїЅпїЅпїЅпїЅпїЅпїЅпїЅ';
+      rtRetBuy : Result := 'пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ';
+      rtSell   : Result := 'пїЅпїЅпїЅпїЅпїЅпїЅпїЅ';
+      rtRetSell: Result := 'пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ';
     else
       raise UserException.CreateFmt('Invalid receipt type, %d', [Ord(RecType)]);
     end;
@@ -4986,13 +4986,13 @@ begin
   if (Station and FPTR_S_RECEIPT) <> 0 then
   begin
     if not Printer.CapRecPresent then
-      RaiseOposException(OPOS_E_ILLEGAL, _('Нет чекового принтера'));
+      RaiseOposException(OPOS_E_ILLEGAL, _('пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ'));
   end;
 
   if (Station and FPTR_S_JOURNAL) <> 0 then
   begin
     if not Printer.CapJrnPresent then
-      RaiseOposException(OPOS_E_ILLEGAL, _('Нет принтера контрольной ленты'));
+      RaiseOposException(OPOS_E_ILLEGAL, _('пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ'));
   end;
 
   if (Station and FPTR_S_SLIP) <> 0 then
@@ -5234,11 +5234,11 @@ begin
     Command.Request.ShiftNumber := ShiftNumber;
     FClient.ReadReceipt(Command);
 
-    Document.Addlines(Tnt_WideFormat('НДС Серия %s', [Params.VATSeries]),
-      Tnt_WideFormat('№ %s', [Params.VATNumber]));
+    Document.Addlines(Tnt_WideFormat('пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ %s', [Params.VATSeries]),
+      Tnt_WideFormat('пїЅ %s', [Params.VATNumber]));
     Document.AddSeparator;
     Document.AddLine(Document.AlignCenter(Params.CashboxNumber));
-    Document.AddLine(Document.AlignCenter(Tnt_WideFormat('СМЕНА №%d', [ShiftNumber])));
+    Document.AddLine(Document.AlignCenter(Tnt_WideFormat('пїЅпїЅпїЅпїЅпїЅ пїЅ%d', [ShiftNumber])));
     Document.AddLine(Command.Data.OperationTypeText);
     Document.AddSeparator;
     for i := 0 to Command.Data.Positions.Count-1 do
@@ -5260,33 +5260,33 @@ begin
       Document.AddLine(WideFormat('   %.3f %s x %s %s', [ItemQuantity,
         UnitName, AmountToStr(Item.Price), Params.CurrencyName]));
 
-      // Скидка
+      // пїЅпїЅпїЅпїЅпїЅпїЅ
       if (not Item.DiscountDeleted)and(Item.DiscountTenge <> 0) then
       begin
-        Document.AddLines('   Скидка', '-' + AmountToStr(Abs(Item.DiscountTenge)));
+        Document.AddLines('   пїЅпїЅпїЅпїЅпїЅпїЅ', '-' + AmountToStr(Abs(Item.DiscountTenge)));
       end;
 
-      // Наценка
+      // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
       if (not Item.MarkupDeleted)and(Item.Markup <> 0) then
       begin
-        Document.AddLines('   Наценка', '+' + AmountToStr(Abs(Item.Markup)));
+        Document.AddLines('   пїЅпїЅпїЅпїЅпїЅпїЅпїЅ', '+' + AmountToStr(Abs(Item.Markup)));
       end;
 
-      Document.AddLines('   Стоимость', AmountToStr(Item.Sum));
+      Document.AddLines('   пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ', AmountToStr(Item.Sum));
     end;
     Document.AddSeparator;
-    // Скидка на чек
+    // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ
     if Command.Data.Discount <> 0 then
     begin
-      Document.AddLines('Скидка:', AmountToStr(Command.Data.Discount));
+      Document.AddLines('пїЅпїЅпїЅпїЅпїЅпїЅ:', AmountToStr(Command.Data.Discount));
     end;
-    // Наценка на чек
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ
     if Command.Data.Markup <> 0 then
     begin
-      Document.AddLines('Наценка:', AmountToStr(Command.Data.Markup));
+      Document.AddLines('пїЅпїЅпїЅпїЅпїЅпїЅпїЅ:', AmountToStr(Command.Data.Markup));
     end;
-    // ИТОГ
-    Text := Document.ConcatLines('ИТОГ', AmountToStrEq(Command.Data.Total), Document.LineChars div 2);
+    // пїЅпїЅпїЅпїЅ
+    Text := Document.ConcatLines('пїЅпїЅпїЅпїЅ', AmountToStrEq(Command.Data.Total), Document.LineChars div 2);
     Document.AddLine(Text, STYLE_DWIDTH_HEIGHT);
     // Payments
     for i := 0 to Command.Data.Payments.Count-1 do
@@ -5299,27 +5299,27 @@ begin
     end;
     if Command.Data.Change <> 0 then
     begin
-      Document.AddLines('  СДАЧА', AmountToStrEq(Command.Data.Change));
+      Document.AddLines('  пїЅпїЅпїЅпїЅпїЅ', AmountToStrEq(Command.Data.Change));
     end;
     // VAT amounts
     if Command.Data.Tax <> 0 then
     begin
-      Document.AddLines(Tnt_WideFormat('в т.ч. %s', [Command.Data.TaxPercent]),
+      Document.AddLines(Tnt_WideFormat('пїЅ пїЅ.пїЅ. %s', [Command.Data.TaxPercent]),
           AmountToStrEq(Command.Data.Tax));
     end;
     Document.AddSeparator;
-    Document.AddLine('ФП: ' + CheckNumber);
-    Document.AddLine('Время: ' + Command.Data.RegistratedOn);
-    Document.AddLine('ОФД: ' + Command.Data.Ofd.Name);
-    Document.AddLine('Для проверки чека:');
+    Document.AddLine('пїЅпїЅ: ' + CheckNumber);
+    Document.AddLine('пїЅпїЅпїЅпїЅпїЅ: ' + Command.Data.RegistratedOn);
+    Document.AddLine('пїЅпїЅпїЅ: ' + Command.Data.Ofd.Name);
+    Document.AddLine('пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ:');
     Document.AddLine(Command.Data.Ofd.Host);
     Document.AddSeparator;
-    Document.AddLine(Document.AlignCenter('ФИСКАЛЬНЫЙ ЧЕK'));
+    Document.AddLine(Document.AlignCenter('пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅK'));
     Document.AddItem(Command.Data.TicketUrl, STYLE_QR_CODE);
     Document.AddLine('');
-    Document.AddLine(Document.AlignCenter('ИНК ОФД: ' + Command.Data.CashboxIdentityNumber));
-    Document.AddLine(Document.AlignCenter('Код ККМ КГД (РНМ): ' + Command.Data.CashboxRegistrationNumber));
-    Document.AddLine(Document.AlignCenter('ЗНМ: ' + Command.Data.CashboxUniqueNumber));
+    Document.AddLine(Document.AlignCenter('пїЅпїЅпїЅ пїЅпїЅпїЅ: ' + Command.Data.CashboxIdentityNumber));
+    Document.AddLine(Document.AlignCenter('пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ (пїЅпїЅпїЅ): ' + Command.Data.CashboxRegistrationNumber));
+    Document.AddLine(Document.AlignCenter('пїЅпїЅпїЅ: ' + Command.Data.CashboxUniqueNumber));
     Document.AddText(Receipt.Trailer.Text);
     // Print
     PrintDocumentSafe(Document);
