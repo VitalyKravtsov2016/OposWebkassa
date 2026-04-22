@@ -1482,7 +1482,8 @@ type
     function CheckLastError: Boolean;
 
     property Transport: TIdHTTP read GetTransport;
-    function PostJson(const AURL, Request: WideString): WideString;
+    function PostJson(const AURL, Request: WideString;
+      LogEnabled: Boolean): WideString;
   protected
     procedure HTTPHeadersAvailable(Sender: TObject;
       AHeaders: TIdHeaderList; var VContinue: Boolean);
@@ -1924,7 +1925,7 @@ begin
   for RepCount := 1 to MaxConnectCount do
   begin
     Request := ChangeTokenInJson(Request, Token);
-    Result := PostJson(URL, Request);
+    Result := PostJson(URL, Request, True);
     IsTokenExpired := FErrorResult.IsTokenExpired;
     if not IsTokenExpired then Break;
     if IsTokenExpired and (RepCount = MaxConnectCount) then
@@ -1935,7 +1936,8 @@ begin
   end;
 end;
 
-function TWebkassaClient.PostJson(const AURL, Request: WideString): WideString;
+function TWebkassaClient.PostJson(const AURL, Request: WideString;
+  LogEnabled: Boolean): WideString;
 var
   S: AnsiString;
   URL: WideString;
@@ -1944,8 +1946,11 @@ var
   Answer: AnsiString;
 begin
   URL := AURL;
-  FLogger.Debug('Post: ' + URL);
-  FLogger.Debug('=> ' + UTF8Decode(Request));
+  if LogEnabled then
+  begin
+    FLogger.Debug('Post: ' + URL);
+    FLogger.Debug('=> ' + UTF8Decode(Request));
+  end;
 
   FCommandJson := Request;
 
@@ -1979,7 +1984,10 @@ begin
     end;
     Result := Answer;
     FAnswerJson := Result;
-    FLogger.Debug('<= ' + UTF8Decode(Answer));
+    if LogEnabled then
+    begin
+      FLogger.Debug('<= ' + UTF8Decode(Answer));
+    end;
 
     if FTestErrorResult <> nil then
     begin
@@ -2047,7 +2055,7 @@ var
   JsonText: WideString;
 begin
   JsonText := ObjectToJson(Command.Request);
-  JsonText := PostJson(GetAddress + 'api/Authorize', JsonText);
+  JsonText := PostJson(GetAddress + 'api/Authorize', JsonText, False);
   Result := CheckLastError;
   if Result then
   begin

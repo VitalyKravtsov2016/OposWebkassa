@@ -513,8 +513,6 @@ var
 begin
   Logger.Debug('TPrinterParameters.WriteLogParameters');
   Logger.Debug(Logger.Separator);
-  Logger.Debug('Login: ' + Login);
-  Logger.Debug('Password: ' + Password);
   Logger.Debug('ConnectTimeout: ' + IntToStr(ConnectTimeout));
   Logger.Debug('WebkassaAddress: ' + WebkassaAddress);
   Logger.Debug('LogMaxCount: ' + IntToStr(LogMaxCount));

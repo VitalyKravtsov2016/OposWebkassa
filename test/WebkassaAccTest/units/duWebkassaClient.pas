@@ -380,8 +380,8 @@ end;
 
 procedure TWebkassaClientTest.TestReadReceipt;
 var
-  SrcItem: TTicketItem;
-  DstItem: TPositionItem;
+  //SrcItem: TTicketItem;
+  //DstItem: TPositionItem;
   Command: TReceiptCommand;
 begin
   Command := TReceiptCommand.Create;
