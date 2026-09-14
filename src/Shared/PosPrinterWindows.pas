@@ -4,9 +4,11 @@ interface
 
 uses
   // VCL
-  Windows, Classes, SysUtils, Graphics, Printers, Jpeg, GifImage,
+  Windows, Classes, SysUtils, Graphics, Printers, Jpeg,
   // Tnt
   TntClasses, TntSysUtils,
+  // JCL
+  GifImage,
   // JVCL
   JvUnicodeCanvas,
   // Opos

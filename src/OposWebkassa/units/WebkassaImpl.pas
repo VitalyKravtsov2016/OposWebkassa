@@ -7,7 +7,7 @@ uses
   Classes, SysUtils, Windows, DateUtils, ActiveX, ComObj, Math, Graphics,
   Printers,
   // EurekaLog
-  ExceptionLog, ECore, ETypes,
+  //ExceptionLog, ECore, ETypes,
   // Tnt
   TntSysUtils, TntClasses,
   // Opos
@@ -1425,6 +1425,11 @@ begin
       if Receipt is TSalesREceipt then
       (Receipt as TSalesREceipt).NTIN := pString;
     end;
+    DriverParameterParam4:
+    begin
+      if Receipt is TSalesREceipt then
+      (Receipt as TSalesREceipt).PositionType := StrToIntDef(pString, 0);
+    end;
   end;
 end;
 
@@ -1462,6 +1467,11 @@ begin
       pString := '';
       if Receipt is TSalesREceipt then
         pString := (Receipt as TSalesREceipt).NTIN;
+    end;
+    DriverParameterParam4:
+    begin
+      if Receipt is TSalesREceipt then
+        pString := IntToStr((Receipt as TSalesREceipt).PositionType);
     end;
   end;
 end;
@@ -3624,6 +3634,24 @@ procedure TWebkassaImpl.SetReceiptRequestParams(
     end;
   end;
 
+
+  (*
+  значение "4" DirectIO(30, 73, '4') это услуга
+  значение 1, 2, 30, 31, 32, 33 это товар
+  и DirectIO(30, 73, '3') это "работа"(на текущий момент не используется и не планируется)
+  *)
+
+  function GetPositionType(Value: Integer): Integer;
+  begin
+    case Value of
+      3: Result := PositionTypeWork;
+      4: Result := PositionTypeService;
+    else
+      Result := PositionTypeGoods;
+    end;
+  end;
+
+
 var
   i: Integer;
   Payment: TPayment;
@@ -3663,6 +3691,7 @@ begin
         Position.Count := 1;
         Position.Price := Item.Price;
       end;
+      Position.PositionType := GetPositionType(Item.PositionType);
       Position.PositionName := Item.Description;
       Position.DisplayName := Item.Description;
       Position.PositionCode := IntToStr(i+1);

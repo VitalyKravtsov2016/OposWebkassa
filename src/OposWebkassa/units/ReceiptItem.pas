@@ -80,6 +80,7 @@ type
     FNumber: Integer;
     FGTIN: WideString;
     FNTIN: WideString;
+    FPositionType: Integer;
   public
     constructor Create(AOwner: TReceiptItems); override;
     destructor Destroy; override;
@@ -108,6 +109,7 @@ type
     property MarkCode: string read FMarkCode write FMarkCode;
     property GTIN: WideString read FGTIN write FGTIN;
     property NTIN: WideString read FNTIN write FNTIN;
+    property PositionType: Integer read FPositionType write FPositionType;
   end;
 
   { TAdjustments }

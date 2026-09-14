@@ -21,6 +21,14 @@ uses
 *)
 
 const
+  /////////////////////////////////////////////////////////////////////////////
+  // PositionType constants
+
+  PositionTypeGoods   = 0;
+  PositionTypeWork    = 1;
+  PositionTypeService = 2;
+
+  /////////////////////////////////////////////////////////////////////////////
   // OperationType
   OperationTypeBuy            = 0;
   OperationTypeRetBuy         = 1;
@@ -559,6 +567,7 @@ type
     FTaxPercent: TDouble;
     FTax: Currency;
     FTaxType: Integer;
+    FPositionType: Integer;
     FPositionName: WideString;
     FPositionCode: WideString;
     FDiscount: Currency;
@@ -585,6 +594,7 @@ type
     property TaxPercent: TDouble read FTaxPercent write SetTaxPercent;
     property Tax: Currency read FTax write FTax;
     property TaxType: Integer read FTaxType write FTaxType;
+    property PositionType: Integer read FPositionType write FPositionType;
     property PositionName: WideString read FPositionName write FPositionName;
     property PositionCode: WideString read FPositionCode write FPositionCode;
     property Discount: Currency read FDiscount write FDiscount;
@@ -2055,7 +2065,7 @@ var
   JsonText: WideString;
 begin
   JsonText := ObjectToJson(Command.Request);
-  JsonText := PostJson(GetAddress + 'api/Authorize', JsonText, False);
+  JsonText := PostJson(GetAddress + 'Authorize', JsonText, False);
   Result := CheckLastError;
   if Result then
   begin
@@ -2068,7 +2078,7 @@ var
   JsonText: WideString;
 begin
   JsonText := ObjectToJson(Command.Request);
-  JsonText := Post(GetAddress + 'api/Cashbox/ChangeToken', JsonText);
+  JsonText := Post(GetAddress + 'Cashbox/ChangeToken', JsonText);
   Result := CheckLastError;
   if Result then
   begin
@@ -2079,7 +2089,7 @@ end;
 function TWebkassaClient.SendReceipt(Command: TSendReceiptCommand): Boolean;
 begin
   Command.RequestJson := ObjectToJson(Command.Request);
-  Command.ResponseJson := Post(GetAddress + 'api/check', Command.RequestJson);
+  Command.ResponseJson := Post(GetAddress + 'check', Command.RequestJson);
   Result := CheckLastError;
   if Result then
   begin
@@ -2094,7 +2104,7 @@ end;
 function TWebkassaClient.SendRefundReceipt(Command: TSendRefundReceiptCommand): Boolean;
 begin
   Command.RequestJson := ObjectToJson(Command.Request);
-  Command.ResponseJson := Post(GetAddress + 'api/check', Command.RequestJson);
+  Command.ResponseJson := Post(GetAddress + 'check', Command.RequestJson);
   Result := CheckLastError;
   if Result then
   begin
@@ -2145,7 +2155,7 @@ var
   JsonText: WideString;
 begin
   JsonText := ObjectToJson(Command.Request);
-  JsonText := Post(GetAddress + 'api/MoneyOperation', JsonText);
+  JsonText := Post(GetAddress + 'MoneyOperation', JsonText);
   Result := CheckLastError;
   if Result then
   begin
@@ -2230,7 +2240,7 @@ var
   JsonText: WideString;
 begin
   JsonText := ObjectToJson(Command.Request);
-  JsonText := Post(GetAddress + 'api/zreport', JsonText);
+  JsonText := Post(GetAddress + 'zreport', JsonText);
   Result := CheckLastError;
   if Result then
   begin
@@ -2274,7 +2284,7 @@ var
   JsonText: WideString;
 begin
   JsonText := ObjectToJson(Command.Request);
-  JsonText := Post(GetAddress + 'api/xreport', JsonText);
+  JsonText := Post(GetAddress + 'xreport', JsonText);
   Result := CheckLastError;
   if Result then
   begin
@@ -2326,7 +2336,7 @@ var
   JsonText: WideString;
 begin
   JsonText := ObjectToJson(Command.Request);
-  JsonText := Post(GetAddress + 'api/Reports/ControlTape', JsonText);
+  JsonText := Post(GetAddress + 'Reports/ControlTape', JsonText);
   Result := CheckLastError;
   if Result then
   begin
@@ -2365,7 +2375,7 @@ var
   JsonText: WideString;
 begin
   JsonText := ObjectToJson(Command.Request);
-  JsonText := Post(GetAddress + 'api/Cashboxes', JsonText);
+  JsonText := Post(GetAddress + 'Cashboxes', JsonText);
   Result := CheckLastError;
   if Result then
   begin
@@ -2378,7 +2388,7 @@ var
   JsonText: WideString;
 begin
   JsonText := ObjectToJson(Request);
-  JsonText := Post(GetAddress + 'api/cashbox/state', JsonText);
+  JsonText := Post(GetAddress + 'cashbox/state', JsonText);
   Result := CheckLastError;
 end;
 
@@ -2477,7 +2487,7 @@ var
   JsonText: WideString;
 begin
   JsonText := ObjectToJson(Command.Request);
-  JsonText := Post(GetAddress + 'api/ShiftHistory', JsonText);
+  JsonText := Post(GetAddress + 'ShiftHistory', JsonText);
   Result := CheckLastError;
   if Result then
   begin
@@ -2528,7 +2538,7 @@ var
   JsonText: WideString;
 begin
   JsonText := ObjectToJson(Command.Request);
-  JsonText := Post(GetAddress + 'api/Employee/List', JsonText);
+  JsonText := Post(GetAddress + 'Employee/List', JsonText);
   Result := CheckLastError;
   if Result then
   begin
@@ -2610,7 +2620,7 @@ var
   JsonText: WideString;
 begin
   JsonText := ObjectToJson(Command.Request);
-  JsonText := Post(GetAddress + 'api/Check/HistoryByNumber', JsonText);
+  JsonText := Post(GetAddress + 'Check/HistoryByNumber', JsonText);
   Result := CheckLastError;
   if Result then
   begin
@@ -2623,7 +2633,7 @@ var
   JsonText: WideString;
 begin
   JsonText := ObjectToJson(Command.Request);
-  JsonText := Post(GetAddress + 'api/Ticket/PrintFormat', JsonText);
+  JsonText := Post(GetAddress + 'Ticket/PrintFormat', JsonText);
   Result := CheckLastError;
   if Result then
   begin
@@ -2636,7 +2646,7 @@ var
   JsonText: WideString;
 begin
   JsonText := ObjectToJson(Command.Request);
-  JsonText := Post(GetAddress + 'api/references/RefUnits', JsonText);
+  JsonText := Post(GetAddress + 'references/RefUnits', JsonText);
   Result := CheckLastError;
   if Result then
   begin
@@ -2650,7 +2660,7 @@ var
   JsonText: WideString;
 begin
   JsonText := ObjectToJson(Command.Request);
-  JsonText := Post(GetAddress + 'api/Courier/UploadExtemalOrder', JsonText);
+  JsonText := Post(GetAddress + 'Courier/UploadExtemalOrder', JsonText);
   Result := CheckLastError;
   if Result then
   begin
@@ -2669,6 +2679,7 @@ begin
     if not(Char(Result[Length(Result)]) in ['\', '/']) then
       Result := Result + '/';
   end;
+  Result := Result + 'api/v4/'
 end;
 
 { TMoneyOperationResponse }
@@ -2763,7 +2774,7 @@ end;
 
 function TMoneyOperationCommand.GetAddress: WideString;
 begin
-  Result := 'api/MoneyOperation';
+  Result := 'MoneyOperation';
 end;
 
 procedure TMoneyOperationCommand.setData(const Value: TMoneyOperationResponse);
@@ -3188,7 +3199,7 @@ end;
 
 function TAuthCommand.GetAddress: WideString;
 begin
-  Result := 'api/Authorize';
+  Result := 'Authorize';
 end;
 
 procedure TAuthCommand.SetData(const Value: TAuthResponse);
@@ -3742,6 +3753,7 @@ begin
 
     Tax := Src.Tax;
     TaxType := Src.TaxType;
+    PositionType := Src.PositionType;
     PositionName := Src.PositionName;
     PositionCode := Src.PositionCode;
     Discount := Src.Discount;

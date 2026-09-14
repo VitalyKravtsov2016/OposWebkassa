@@ -11,7 +11,7 @@ uses
   TntClasses, TntSysUtils,
   // This
   CustomReceipt, ReceiptItem, gnugettext, UserError, MathUtils,
-  TextDocument, PrinterTypes, VatRate, DirectIOAPI;
+  TextDocument, PrinterTypes, VatRate, DirectIOAPI, WebkassaClient;
 
 const
   MaxPayments = 4;
@@ -60,6 +60,7 @@ type
     FGTIN: WideString;
     FNTIN: WideString;
     FBarcode: string;
+    FPositionType: Integer;
 
     function AddItem: TSalesReceiptItem;
     procedure SubtotalCharge(Amount: Currency;
@@ -177,6 +178,7 @@ type
     property Barcode: string read FBarcode write FBarcode;
     property GTIN: WideString read FGTIN write FGTIN;
     property NTIN: WideString read FNTIN write FNTIN;
+    property PositionType: Integer read FPositionType write FPositionType;
   end;
 
 implementation
@@ -341,8 +343,10 @@ begin
   Result.Number := FRecItems.Count;
   Result.NTIN := FNTIN;
   Result.GTIN := FGTIN;
+  Result.PositionType := PositionType;
   FNTIN := '';
   FGTIN := '';
+  FPositionType := PositionTypeGoods;
 end;
 
 procedure TSalesReceipt.PrintRecItem(const Description: WideString;

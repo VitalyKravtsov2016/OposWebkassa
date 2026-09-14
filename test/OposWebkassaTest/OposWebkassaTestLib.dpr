@@ -2,7 +2,7 @@ Library OposWebkassaTestLib;
 
 uses
   FastMM4,
-  ExceptionLog,
+  //ExceptionLog,
   SysUtils,
   TestFramework,
   GUITestRunner,

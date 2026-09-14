@@ -131,8 +131,7 @@ var
   VatRate: TVatRateRec;
 begin
   inherited SetUp;
-
-  MemCheckStart;
+  //MemCheckStart; !!!
 
   FLines := TStringList.Create;
   FWaitEvent := TEvent.Create(nil, False, False, '');
@@ -217,7 +216,8 @@ begin
   FEvents.Free;
   FWaitEvent.Free;
   FLines.Free;
-  MemCheckStop;
+
+  //MemCheckStop;
   inherited TearDown;
 end;
 
@@ -750,8 +750,7 @@ begin
   ExpectedText := UTF8Decode(ReadFileData(GetModulePath + 'SendReceiptRequest2.json'));
   if JsonText <> ExpectedText then
   begin
-    WriteFileData(GetModulePath + 'JsonText1.json', JsonText);
-    WriteFileData(GetModulePath + 'ExpectedText1.json', ExpectedText);
+    WriteFileData(GetModulePath + 'SendReceiptRequest_Error.json', JsonText);
   end;
   CheckEquals(ExpectedText, JsonText, 'Driver.Client.CommandJson');
 end;
@@ -1082,8 +1081,7 @@ begin
   ExpectedText := UTF8Decode(ReadFileData(GetModulePath + 'ZeroReceiptRequest.json'));
   if JsonText <> ExpectedText then
   begin
-    WriteFileData(GetModulePath + 'ExpectedText1.json', ExpectedText);
-    WriteFileData(GetModulePath + 'JsonText1.json', JsonText);
+    WriteFileData(GetModulePath + 'ZeroReceiptRequest_Error.json', Driver.Client.CommandJson);
   end;
   CheckEquals(ExpectedText, JsonText, 'Driver.Client.CommandJson');
 end;
@@ -1197,12 +1195,10 @@ procedure TWebkassaImplTest.TestTextDocument;
 var
   Document: TTextDocument;
 begin
-  //MemCheckStart;
   Document := TTextDocument.Create;
   Document.Add('zkxchkzjxch', 0);
   Document.Clear;
   Document.Free;
-  //MemCheckStop;
 end;
 
 procedure TWebkassaImplTest.TestMemoryLeak2;

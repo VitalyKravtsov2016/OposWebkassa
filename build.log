@@ -1,0 +1,11 @@
+
+d:\Projects\IBTS\OposWebkassa>set delphi_version=7 
+
+d:\Projects\IBTS\OposWebkassa>want
+buildfile: /d:/Projects/IBTS/OposWebkassa/want.xml 
+ 
+clean:  
+      [delete]   120 files from ./dcu 
+ 
+prepare:  
+       Terminate batch job (Y/N)? Terminate batch job (Y/N)? 

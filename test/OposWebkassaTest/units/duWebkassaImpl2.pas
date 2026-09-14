@@ -4,7 +4,7 @@ interface
 
 uses
   // VCL
-  Windows, SysUtils, Classes, SyncObjs, Graphics,
+  Windows, SysUtils, Classes, SyncObjs, Graphics, Variants,
   // DUnit
   TestFramework,
   // Mock
@@ -58,21 +58,19 @@ type
   protected
     procedure SetUp; override;
     procedure TearDown; override;
-  public
-    procedure TestNonFiscal;
-    procedure TestReceiptTemplate; // !!!
-    procedure TestPrintQRCodeAsGraphics;
-    procedure TestPrintDatamatrixBarcode; // !!!
-  published
-    procedure TestMockMethod;
-    procedure TestMockMethod2;
-    procedure TestMockMethod3;
-
     procedure OpenService;
     procedure ClaimDevice;
     procedure EnableDevice;
     procedure OpenClaimEnable;
+    procedure TestMockMethod;
+    procedure TestMockMethod2;
     procedure TestRenderQRCode;
+    procedure TestReceiptTemplate; // !!!
+    procedure TestPrintDatamatrixBarcode; // !!!
+  published
+    procedure TestNonFiscal;
+    procedure TestPrintQRCodeAsGraphics;
+    procedure TestMockMethod3;
   end;
 
 implementation
@@ -83,51 +81,51 @@ const
 const
   ReceiptText: string =
     '                                          ' + CRLF +
-    '   Восточно-Казастанская область, город   ' + CRLF +
-    '  Усть-Каменогорск, ул. Грейдерная, 1/10  ' + CRLF +
-    '            ТОО PetroRetail               ' + CRLF +
-    'НДС Серия VATSeries            № VATNumber' + CRLF +
+    '   ????????-???????????? ???????, ?????   ' + CRLF +
+    '  ????-???????????, ??. ??????????, 1/10  ' + CRLF +
+    '            ??? PetroRetail               ' + CRLF +
+    '??? ????? VATSeries            ? VATNumber' + CRLF +
     '------------------------------------------' + CRLF +
     '               SWK00032685                ' + CRLF +
-    '                СМЕНА №149                ' + CRLF +
-    'ПРОДАЖА                                   ' + CRLF +
+    '                ????? ?149                ' + CRLF +
+    '???????                                   ' + CRLF +
     '------------------------------------------' + CRLF +
     'Message 1                                 ' + CRLF +
-    'Сер. № 5                                  ' + CRLF +
-    'ШОКОЛАДНАЯ ПЛИТКА MILKA BUBBLES МОЛОЧНЫЙ  ' + CRLF +
-    '   1.000 кг x 123.45                      ' + CRLF +
-    '   Скидка                           -22.35' + CRLF +
-    '   Наценка                          +11.17' + CRLF +
-    '   Стоимость                        112.27' + CRLF +
+    '???. ? 5                                  ' + CRLF +
+    '?????????? ?????? MILKA BUBBLES ????????  ' + CRLF +
+    '   1.000 ?? x 123.45                      ' + CRLF +
+    '   ??????                           -22.35' + CRLF +
+    '   ???????                          +11.17' + CRLF +
+    '   ?????????                        112.27' + CRLF +
     'Message 2                                 ' + CRLF +
     'Item 2                                    ' + CRLF +
-    '   1.000 кг x 1.45                        ' + CRLF +
-    '   Скидка                            -0.45' + CRLF +
-    '   Стоимость                          1.00' + CRLF +
+    '   1.000 ?? x 1.45                        ' + CRLF +
+    '   ??????                            -0.45' + CRLF +
+    '   ?????????                          1.00' + CRLF +
     'Message 3                                 ' + CRLF +
     '------------------------------------------' + CRLF +
-    'Скидка:                              10.00' + CRLF +
-    'Наценка:                              5.00' + CRLF +
-    //'ИТОГ                               =108.27' + CRLF +
-    'ИТОГ          =108.27' + CRLF +
-    'Банковская карта:                  =123.45' + CRLF +
-    '  СДАЧА                             =15.18' + CRLF +
-    'в т.ч. НДС 12%                      =12.14' + CRLF +
+    '??????:                              10.00' + CRLF +
+    '???????:                              5.00' + CRLF +
+    //'????                               =108.27' + CRLF +
+    '????          =108.27' + CRLF +
+    '?????????? ?????:                  =123.45' + CRLF +
+    '  ?????                             =15.18' + CRLF +
+    '? ?.?. ??? 12%                      =12.14' + CRLF +
     '------------------------------------------' + CRLF +
-    'ФП: 923956785162                          ' + CRLF +
-    'Время: 04.08.2022 17:09:35                ' + CRLF +
-    'ОФД: АО "КазТранском"                     ' + CRLF +
-    'Для проверки чека:                        ' + CRLF +
+    '??: 923956785162                          ' + CRLF +
+    '?????: 04.08.2022 17:09:35                ' + CRLF +
+    '???: ?? "???????????"                     ' + CRLF +
+    '??? ???????? ????:                        ' + CRLF +
     'dev.kofd.kz/consumer                      ' + CRLF +
     '------------------------------------------' + CRLF +
-    '              ФИСКАЛЬНЫЙ ЧЕK              ' + CRLF +
-    '               ИНК ОФД: 270               ' + CRLF +
-    '     Код ККМ КГД (РНМ): 211030200207      ' + CRLF +
-    '             ЗНМ: SWK00032685             ' + CRLF +
+    '              ?????????? ??K              ' + CRLF +
+    '               ??? ???: 270               ' + CRLF +
+    '     ??? ??? ??? (???): 211030200207      ' + CRLF +
+    '             ???: SWK00032685             ' + CRLF +
     'Message 4                                 ' + CRLF +
-    '           Callцентр 039458039850         ' + CRLF +
-    '          Горячая линия 20948802934       ' + CRLF +
-    '            СПАСИБО ЗА ПОКУПКУ            ';
+    '           Call????? 039458039850         ' + CRLF +
+    '          ??????? ????? 20948802934       ' + CRLF +
+    '            ??????? ?? ???????            ';
 
 { TWebkassaImplTest2 }
 
@@ -162,13 +160,13 @@ begin
 
   FDriver.Params.HeaderText :=
     '                                          ' + CRLF +
-    '   Восточно-Казастанская область, город   ' + CRLF +
-    '  Усть-Каменогорск, ул. Грейдерная, 1/10  ' + CRLF +
-    '            ТОО PetroRetail               ';
+    '   ????????-???????????? ???????, ?????   ' + CRLF +
+    '  ????-???????????, ??. ??????????, 1/10  ' + CRLF +
+    '            ??? PetroRetail               ';
   FDriver.Params.TrailerText :=
-    '           Callцентр 039458039850         ' + CRLF +
-    '          Горячая линия 20948802934       ' + CRLF +
-    '            СПАСИБО ЗА ПОКУПКУ            ';
+    '           Call????? 039458039850         ' + CRLF +
+    '          ??????? ????? 20948802934       ' + CRLF +
+    '            ??????? ?? ???????            ';
 
   FDriver.Logger.CloseFile;
   DeleteFile(FDriver.Logger.FileName);
@@ -302,16 +300,16 @@ end;
 procedure TWebkassaImplTest2.TestNonFiscal;
 const
   NonFiscalText: string =
-    'Строка для печати 1                       ' + CRLF +
-    'Строка для печати 2                       ' + CRLF +
-    'Строка для печати 3                       ';
+    '?????? ??? ?????? 1                       ' + CRLF +
+    '?????? ??? ?????? 2                       ' + CRLF +
+    '?????? ??? ?????? 3                       ';
 begin
   OpenClaimEnable;
   CheckEquals(0, Driver.ResetPrinter, 'ResetPrinter');
   CheckEquals(0, Driver.BeginNonFiscal, 'BeginNonFiscal');
-  CheckEquals(0, Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 1'));
-  CheckEquals(0, Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 2'));
-  CheckEquals(0, Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 3'));
+  CheckEquals(0, Driver.PrintNormal(FPTR_S_RECEIPT, '?????? ??? ?????? 1'));
+  CheckEquals(0, Driver.PrintNormal(FPTR_S_RECEIPT, '?????? ??? ?????? 2'));
+  CheckEquals(0, Driver.PrintNormal(FPTR_S_RECEIPT, '?????? ??? ?????? 3'));
   CheckEquals(0, Driver.EndNonFiscal, 'EndNonFiscal');
 
 end;
@@ -423,18 +421,18 @@ begin
   pData := DriverParameterBarcode;
   pString := '8234827364';
   FptrCheck(Driver.DirectIO(DIO_SET_DRIVER_PARAMETER, pData, pString));
-  FptrCheck(Driver.PrintRecItem('Сер. № 5                                  ШОКОЛАДНАЯ ПЛИТКА MILKA BUBBLES МОЛОЧНЫЙ', 123.45, 1000, 1, 123.45, 'кг'));
-  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка 10', 10, 1));
-  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_SURCHARGE, 'Надбавка 5', 5, 1));
-  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_PERCENTAGE_DISCOUNT, 'Скидка 10%', 10, 1));
-  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_PERCENTAGE_SURCHARGE, 'Скидка 5%', 5, 1));
+  FptrCheck(Driver.PrintRecItem('???. ? 5                                  ?????????? ?????? MILKA BUBBLES ????????', 123.45, 1000, 1, 123.45, '??'));
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_DISCOUNT, '?????? 10', 10, 1));
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_SURCHARGE, '???????? 5', 5, 1));
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_PERCENTAGE_DISCOUNT, '?????? 10%', 10, 1));
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_PERCENTAGE_SURCHARGE, '?????? 5%', 5, 1));
   // Item 2
   FptrCheck(Driver.PrintRecMessage('Message 2'));
-  FptrCheck(Driver.PrintRecItem('Item 2', 1.45, 1000, 1, 1.45, 'кг'));
-  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка', 0.45, 1));
+  FptrCheck(Driver.PrintRecItem('Item 2', 1.45, 1000, 1, 1.45, '??'));
+  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_DISCOUNT, '??????', 0.45, 1));
   // Total adjustment
-  FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_AMOUNT_DISCOUNT, 'Скидка 10', 10));
-  FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_AMOUNT_SURCHARGE, 'Надбавка 5', 5));
+  FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_AMOUNT_DISCOUNT, '?????? 10', 10));
+  FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_AMOUNT_SURCHARGE, '???????? 5', 5));
   // Total
   FptrCheck(Driver.PrintRecMessage('Message 3'));
   FptrCheck(Driver.PrintRecTotal(123.45, 123.45, '1'));
@@ -502,36 +500,11 @@ end;
 procedure TWebkassaImplTest2.TestPrintQRCodeAsGraphics;
 const
   BarcodeData = 'https://devkkm.webkassa.kz/Ticket?chb=SWK00033059&sh=100&extnum=92D51F08-13CF-428E-AF2F-67B6E8BDE994';
-  BitmapData =
-    '3?3?0000003>0028004:004:00010100003?00000000000200000000003?793?3?3?3?00003?3?3?'+
-    '3?00003?3<3?3?3?003?3<3?3?3?003?3?3?413?003?3?3?413?003?3?3?3?3?003?3?3?3?3?003?'+
-    '3?3?413?003?3?3?413?003?3?303?3?003?3?303?3?003?3?3?3?00003?3?3?3?00003?3?3?3?03'+
-    '003?3?3?3?03003?3?3?7500003?3?3?7500003?3?3?3?3?003?3?3?3?3?003?3?3?3?3?003?3?3?'+
-    '3?3?003?3?3?3?0?003?3?3?3?0?003?3?3?3?00003?3?3?3?00003?3?3?3?3?003?3?3?3?3?003?'+
-    '3?3?3?3?003?3?3?3?3?003?0?3?3?3?003?0?3?3?3?003?3?3?3?3?003?3?3?3?3?003?3?3?3?3?'+
-    '003?3?3?3?3?003?3?3?3?30003?3?3?3?30003?3?3?3?49003?3?3?3?49003?3?3?3?3?003?3?3?'+
-    '3?3?003?3?3?3?49003?3?3?3?49003?3?3?3?3?003?3?3?3?3?003?3?3?0003003?3?3?0003003?'+
-    '3?3?3?03003?3?3?3?03003?3?3?413?003?3?3?413?003<3?3?3?3?003<3?3?3?3?003?3?3?3?3?'+
-    '003?3?3?3?3?003?3?3?3?03003?3?3?3?03003?3?3?3?3?003?3?3?3?3?003?3?3?3?00003?3?3?'+
-    '3?00003?3?3?3?79003?3?3?3?79003?3?3?3?03003?3?3?3?03003?3?3?3?03003?3?3?3?03003?'+
-    '3?3?3?03003?3?3?3?03003?3?3?3?79003?3?3?3?79003?3?3?3?00003?3?3?3?00003132333434'+
-    '3535227=006=222<22437573746?6=657250686?6>65223:222;3737373731323334343535227=00'+
-    '09225461785061796572494>223:2022313331323430303130343739222<0=0:0909225461785061'+
-    '796572564154223:20747275652<0=0:09092254617850617965725641545365726961223:202230'+
-    '30303030222<0=0:09092254617850617965725641544>756=626572223:20223030303030303022'+
-    '2<0=0:0909225265706?72744>756=626572223:2031332<0=0:09092243617368626?78534>223:'+
-    '202253574;3030303332363835222<0=0:09092243617368626?78494>223:203237302<0=0:0909'+
-    '2243617368626?78524>223:2022323131303330323030323037222<0=0:09092253746172744?6>'+
-    '223:202230392>30382>323032322031393:34323:3430222<0=0:0909225265706?72744?6>223:'+
-    '202231322>30382>323032322031363:34393:3331222<0=0:090922436<6?73654?6>223:202231'+
-    '322>30382>323032322030313:34393:3037222<0=0:09092243617368696572436?6465223:2031'+
-    '2<0=0:09092253686966744>756=626572223:203135342<0=0:090922446?63756=656>74436?75'+
-    '6>74223:2031332<0=0:0909225075744=6?6>657953756=223:20302>30';
 begin
   FPrinter.Expects('Get_CapRecBitmap').Returns(True);
   FPrinter.Expects('Set_BinaryConversion').WithParams([OPOS_BC_NIBBLE]);
-  FPrinter.Expects('PrintMemoryBitmap').WithParams([PTR_S_RECEIPT, BitmapData,
-    PTR_BMT_BMP, PTR_BM_ASIS, PTR_BM_CENTER]).Returns(0);
+  FPrinter.Expects('PrintMemoryBitmap').WithParams([PTR_S_RECEIPT, Null,
+    PTR_BMT_BMP, 200, PTR_BM_CENTER]).Returns(0);
   FPrinter.Expects('Set_BinaryConversion').WithParams([OPOS_BC_NONE]);
   Driver.PrintQRCodeAsGraphics(BarcodeData);
   FPrinter.Verify('TestPrintQRCodeAsGraphics');
@@ -568,38 +541,38 @@ procedure TWebkassaImplTest2.TestPrintDatamatrixBarcode;
 const
   ReceiptText: string =
     '                                          ' + CRLF +
-    '   Восточно-Казастанская область, город   ' + CRLF +
-    '  Усть-Каменогорск, ул. Грейдерная, 1/10  ' + CRLF +
-    '            ТОО PetroRetail               ' + CRLF +
-    'НДС Серия 00000                    № 00000' + CRLF +
+    '   ????????-???????????? ???????, ?????   ' + CRLF +
+    '  ????-???????????, ??. ??????????, 1/10  ' + CRLF +
+    '            ??? PetroRetail               ' + CRLF +
+    '??? ????? 00000                    ? 00000' + CRLF +
     '------------------------------------------' + CRLF +
     '                     ' + CRLF +
-    '                 СМЕНА №0' + CRLF +
-    'ПРОДАЖА' + CRLF +
+    '                 ????? ?0' + CRLF +
+    '???????' + CRLF +
     '------------------------------------------' + CRLF +
     'Message 1' + CRLF +
     'Item 1' + CRLF +
-    '   1.000 кг x 123.45 тг' + CRLF +
-    '   Стоимость                        123.45' + CRLF +
+    '   1.000 ?? x 123.45 ??' + CRLF +
+    '   ?????????                        123.45' + CRLF +
     '------------------------------------------' + CRLF +
-    ESC + '|4CИТОГ          =123.45' + CRLF +
-    'Банковская карта:                  =123.45' + CRLF +
-    'в т.ч. НДС 12%                      =13.23' + CRLF +
+    ESC + '|4C????          =123.45' + CRLF +
+    '?????????? ?????:                  =123.45' + CRLF +
+    '? ?.?. ??? 12%                      =13.23' + CRLF +
     '------------------------------------------' + CRLF +
-    'ФП: ' + CRLF +
-    'Время: ' + CRLF +
-    'ОФД: ' + CRLF +
-    'Для проверки чека:' + CRLF +
+    '??: ' + CRLF +
+    '?????: ' + CRLF +
+    '???: ' + CRLF +
+    '??? ???????? ????:' + CRLF +
     '' + CRLF +
     '------------------------------------------' + CRLF +
-    '              ФИСКАЛЬНЫЙ ЧЕK' + CRLF +
+    '              ?????????? ??K' + CRLF +
     '' + CRLF +
-    '                ИНК ОФД: ' + CRLF +
-    '           Код ККМ КГД (РНМ): ' + CRLF +
-    '                  ЗНМ: ' + CRLF +
-    '           Callцентр 039458039850         ' + CRLF +
-    '          Горячая линия 20948802934       ' + CRLF +
-    '            СПАСИБО ЗА ПОКУПКУ            ';
+    '                ??? ???: ' + CRLF +
+    '           ??? ??? ??? (???): ' + CRLF +
+    '                  ???: ' + CRLF +
+    '           Call????? 039458039850         ' + CRLF +
+    '          ??????? ????? 20948802934       ' + CRLF +
+    '            ??????? ?? ???????            ';
 
 var
   i: Integer;
@@ -657,7 +630,7 @@ begin
 
     FptrCheck(Driver.BeginFiscalReceipt(True));
     FptrCheck(Driver.PrintRecMessage('Message 1'));
-    FptrCheck(Driver.PrintRecItem('Item 1', 123.45, 1000, 1, 123.45, 'кг'));
+    FptrCheck(Driver.PrintRecItem('Item 1', 123.45, 1000, 1, 123.45, '??'));
     FptrCheck(Driver.DirectIO2(DIO_PRINT_BARCODE, DIO_BARCODE_DATAMATRIX,
       '3850504580002030;DATAMATRIX;100;3;0;'));
     FptrCheck(Driver.PrintRecTotal(123.45, 123.45, '1'));

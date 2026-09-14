@@ -6,6 +6,22 @@
 
 *******************************************************************
 
+  OposWebKassa_0.140.exe
+  14 сентября 2026 12:50
+
+  [+] Добавлено поле PositionType для позиции чека по протоколу 2.0.4
+      Установка через DirectIO(30, 73, PositionType) или 
+      DirectIO(DIO_SET_DRIVER_PARAMETER, DriverParameterParam4, PositionType).
+      DIO_SET_DRIVER_PARAMETER      = 30; // write internal driver parameter
+	  DriverParameterParam4 = 73;
+
+      Допустимые значения:	  
+	  1, 2, 30, 31, 32, 33 - товар
+	  3 - работа
+	  4 - услуга
+	  
+*******************************************************************
+
   OposWebKassa_0.139.exe
   22 апреля 2026 09:10
 

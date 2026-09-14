@@ -1,7 +1,7 @@
 library OposWebkassa;
 
 uses
-  ExceptionLog,
+  //ExceptionLog,
   Opos in '..\Opos\Opos.pas',
   Oposhi in '..\Opos\Oposhi.pas',
   OposFptr in '..\Opos\OposFptr.pas',
