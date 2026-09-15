@@ -70,7 +70,6 @@ object fmFptrReceipt: TfmFptrReceipt
         Gutter.Font.Style = []
         Highlighter = SynXMLSyn
         OnChange = ReceiptChange
-        FontSmoothing = fsmNone
       end
     end
   end
@@ -94,9 +93,6 @@ object fmFptrReceipt: TfmFptrReceipt
     OnClick = btnUpdateClick
   end
   object SynXMLSyn: TSynXMLSyn
-    Options.AutoDetectEnabled = False
-    Options.AutoDetectLineLimit = 0
-    Options.Visible = False
     WantBracesParsed = False
     Left = 48
     Top = 32

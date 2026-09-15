@@ -2679,7 +2679,7 @@ begin
     if not(Char(Result[Length(Result)]) in ['\', '/']) then
       Result := Result + '/';
   end;
-  Result := Result + 'api/v4/'
+  Result := Result + 'api/'
 end;
 
 { TMoneyOperationResponse }
