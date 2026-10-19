@@ -22,10 +22,8 @@ type
   protected
     procedure SetUp; override;
     procedure TearDown; override;
-
-    procedure TestOutOfMemory;
-    procedure TestOutOfMemory2;
   published
+    procedure TestOutOfMemory;
     procedure WriteUnicode;
     procedure WriteUnicode2;
   end;
@@ -144,11 +142,6 @@ begin
 *)
 end;
 
-
-procedure TLogFileTest.TestOutOfMemory2;
-begin
-  DoOutOfMemory;
-end;
 
 initialization
   RegisterTest('', TLogFileTest.Suite);

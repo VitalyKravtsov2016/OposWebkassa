@@ -4,7 +4,7 @@ interface
 
 uses
   // VCL
-  Windows, SysUtils, Classes, SyncObjs, Math, ShareMem,
+  Windows, SysUtils, Classes, SyncObjs, Math,
   // DUnit
   TestFramework,
   // Opos

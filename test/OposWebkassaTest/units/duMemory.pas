@@ -5,7 +5,7 @@ interface
 
 uses
   // VCL
-  SysUtils, ShareMem,
+  SysUtils,
   // DUnit
   TestFramework,
   // This
@@ -17,8 +17,8 @@ type
   TMemoryTest = class(TTestCase)
   published
     procedure TestDriver;
-    procedure TestDriver2;
     procedure TestMemCheck;
+    procedure TestMemCheckNoLeak;
   end;
 
 implementation
@@ -26,27 +26,6 @@ implementation
 { TMemoryTest }
 
 procedure TMemoryTest.TestDriver;
-var
-  MemSize: Integer;
-  MemCount: Integer;
-  Driver: TWebkassaImpl;
-begin
-  Driver := TWebkassaImpl.Create;
-  Driver.Free;
-
-  MemCount := GetAllocMemCount;
-  MemSize := GetAllocMemSize;
-  if MemCount = 0 then Exit;
-  if MemSize = 0 then Exit;
-
-  Driver := TWebkassaImpl.Create;
-  Driver.Free;
-
-  CheckEquals(0, GetAllocMemCount - MemCount, 'MemCount.1');
-  CheckEquals(0, GetAllocMemSize - MemSize, 'MemSize.1');
-end;
-
-procedure TMemoryTest.TestDriver2;
 var
   Driver: TWebkassaImpl;
 begin
@@ -62,26 +41,37 @@ end;
 procedure TMemoryTest.TestMemCheck;
 var
   P: Pointer;
+  Raised: Boolean;
 begin
   P := nil;
+  Raised := False;
   MemCheckStart;
   GetMem(P, 123);
   try
     try
       MemCheckStop;
-      Fail('No exception raised');
     except
-      on E: Exception do;
+      on E: Exception do
+        Raised := True;
     end;
   finally
     FreeMem(P);
   end;
+  Check(Raised, 'MemCheckStop did not detect the leak');
 end;
 
-(*
+procedure TMemoryTest.TestMemCheckNoLeak;
+var
+  P: Pointer;
+begin
+  MemCheckStart;
+  GetMem(P, 123);
+  ReallocMem(P, 456);
+  FreeMem(P);
+  MemCheckStop;
+end;
+
 initialization
   RegisterTest('', TMemoryTest.Suite);
-*)  
-
 
 end.

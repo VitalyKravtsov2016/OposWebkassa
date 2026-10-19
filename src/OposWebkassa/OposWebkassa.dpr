@@ -82,6 +82,7 @@ uses
   PageBuffer in 'units\PageBuffer.pas',
   EscPrinterRongta in '..\Shared\EscPrinterRongta.pas',
   PosPrinterRongta in '..\Shared\PosPrinterRongta.pas',
+  CustomPosPrinter in '..\Shared\CustomPosPrinter.pas',
   CustomPrinter in '..\Shared\CustomPrinter.pas',
   RawPrinterPort in '..\Shared\RawPrinterPort.pas',
   CharCode in '..\Shared\CharCode.pas',

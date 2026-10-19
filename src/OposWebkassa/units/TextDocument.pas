@@ -327,6 +327,9 @@ var
 begin
   Data.Style := STYLE_BARCODE;
   Data.Text := Barcode;
+  Data.LineChars := 0;
+  Data.LineHeight := 0;
+  Data.LineSpacing := -1;
   Items.AddItem(Data);
 end;
 

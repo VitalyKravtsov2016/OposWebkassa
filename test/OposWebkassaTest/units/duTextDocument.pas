@@ -24,9 +24,10 @@ type
   protected
     procedure SetUp; override;
     procedure TearDown; override;
-  //published
+  published
     procedure TestAdd;
     procedure TestAddItem;
+    procedure TestAddBarcode;
   end;
 
 implementation
@@ -81,6 +82,22 @@ begin
   CheckEquals(STYLE_DHEIGHT, Item.Style, 'Item.Style');
   CheckEquals(FDocument.LineChars, Item.LineChars, 'Item.LineChars');
   CheckEquals(FDocument.LineHeight, Item.LineHeight, 'Item.LineHeight');
+end;
+
+procedure TTextDocumentTest.TestAddBarcode;
+var
+  Item: TDocItem;
+begin
+  FDocument.LineChars := 42;
+  FDocument.LineHeight := 24;
+  FDocument.AddBarcode('3850504580002030');
+  CheckEquals(1, FDocument.Items.Count, 'FDocument.Items.Count');
+  Item := FDocument.Items[0];
+  CheckEquals(STYLE_BARCODE, Item.Style, 'Item.Style');
+  CheckEquals('3850504580002030', Item.Text, 'Item.Text');
+  CheckEquals(0, Item.LineChars, 'Item.LineChars');
+  CheckEquals(0, Item.LineHeight, 'Item.LineHeight');
+  CheckEquals(-1, Item.LineSpacing, 'Item.LineSpacing');
 end;
 
 

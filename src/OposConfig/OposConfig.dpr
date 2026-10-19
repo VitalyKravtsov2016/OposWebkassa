@@ -103,6 +103,7 @@ uses
   PtrDirectIO in '..\OposWebkassa\units\PtrDirectIO.pas',
   PageBuffer in '..\OposWebkassa\units\PageBuffer.pas',
   PosPrinterRongta in '..\Shared\PosPrinterRongta.pas',
+  CustomPosPrinter in '..\Shared\CustomPosPrinter.pas',
   EscPrinterRongta in '..\Shared\EscPrinterRongta.pas',
   CustomPrinter in '..\Shared\CustomPrinter.pas',
   RawPrinterPort in '..\Shared\RawPrinterPort.pas',

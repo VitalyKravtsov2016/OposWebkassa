@@ -1,0 +1,40 @@
+Open: 0
+ClaimDevice: 0
+DeviceEnabled: 0
+  1B 40 1C 2E 1B 74 1C 1B 33 0A
+RecLineChars=42 RecLineHeight=24 RecLineSpacing=29
+CapRecBarCode=-1 CapRecBitmap=-1 CapRecPageMode=-1 CapTransaction=-1
+PrintNormal: 0
+  4C 69 6E 65 20 31 0D 0A
+PrintNormal Bold: 0
+  1B 21 08 42 6F 6C 64 0D 0A
+PrintNormal Center: 0
+  1B 21 00 43 65 6E 74 65 72 0D 0A
+PrintNormal DoubleWide: 0
+  1B 21 20 57 69 64 65 0D 0A
+PrintNormal Cyrillic: 0
+  1B 21 00 CF F0 E8 E2 E5 F2 0D 0A
+CharacterSetList=437,737,850,852,855,857,858,860,862,863,864,865,866,1251,1253,1254,1255,1256,1257
+MapCharacterSet: 0
+CharacterSet Unicode: 0
+PrintNormal Cyrillic Unicode: 0
+  CF F0 E8 E2 E5 F2 0D 0A
+CharacterSet Windows: 0
+PrintNormal Cyrillic Windows: 0
+  CF F0 E8 E2 E5 F2 0D 0A
+RecLineChars: 0
+PrintNormal 42: 0
+  4C 69 6E 65 20 34 32 0D 0A
+PrintBarCode EAN13: 0
+  1D 68 64 1D 77 02 1D 48 02 1D 6B 43 0D 34 36 30 30 30 30 30 30 30 30 30 30 38
+PrintBarCode QR: 0
+  1D 68 C8 1D 77 04 1D 48 00 1B 4A 0A 1B 61 01 1D 28 6B 04 00 31 41 31 00 1D 28 6B 04 00 31 45 30 1D 28 6B 04 00 31 43 04 00 1D 28 6B 1A 00 31 50 30 68 74 74 70 73 3A 2F 2F 65 78 61 6D 70 6C 65 2E 6B 7A 2F 3F 69 3D 31 1D 28 6B 03 00 31 51 30 1B 4A 0A 1B 61 00
+TransactionPrint Begin: 0
+PrintNormal InTransaction: 0
+  54 72 61 6E 73 61 63 74 69 6F 6E 0D 0A
+TransactionPrint End: 0
+CutPaper: 0
+  1B 69
+DeviceDisabled: 0
+ReleaseDevice: 0
+Close: 0

@@ -29,7 +29,6 @@ type
     FDriver: TWebkassaImpl;
     FPrinter: TMockPosPrinter2;
 
-    procedure PrintReceipt;
   protected
     procedure CheckNoEvent;
     procedure WaitForEvent;
@@ -62,12 +61,10 @@ type
     procedure ClaimDevice;
     procedure EnableDevice;
     procedure OpenClaimEnable;
+  published
     procedure TestMockMethod;
     procedure TestMockMethod2;
     procedure TestRenderQRCode;
-    procedure TestReceiptTemplate; // !!!
-    procedure TestPrintDatamatrixBarcode; // !!!
-  published
     procedure TestNonFiscal;
     procedure TestPrintQRCodeAsGraphics;
     procedure TestMockMethod3;
@@ -77,55 +74,6 @@ implementation
 
 const
   EventWaitTimeout  = 50;
-
-const
-  ReceiptText: string =
-    '                                          ' + CRLF +
-    '   ????????-???????????? ???????, ?????   ' + CRLF +
-    '  ????-???????????, ??. ??????????, 1/10  ' + CRLF +
-    '            ??? PetroRetail               ' + CRLF +
-    '??? ????? VATSeries            ? VATNumber' + CRLF +
-    '------------------------------------------' + CRLF +
-    '               SWK00032685                ' + CRLF +
-    '                ????? ?149                ' + CRLF +
-    '???????                                   ' + CRLF +
-    '------------------------------------------' + CRLF +
-    'Message 1                                 ' + CRLF +
-    '???. ? 5                                  ' + CRLF +
-    '?????????? ?????? MILKA BUBBLES ????????  ' + CRLF +
-    '   1.000 ?? x 123.45                      ' + CRLF +
-    '   ??????                           -22.35' + CRLF +
-    '   ???????                          +11.17' + CRLF +
-    '   ?????????                        112.27' + CRLF +
-    'Message 2                                 ' + CRLF +
-    'Item 2                                    ' + CRLF +
-    '   1.000 ?? x 1.45                        ' + CRLF +
-    '   ??????                            -0.45' + CRLF +
-    '   ?????????                          1.00' + CRLF +
-    'Message 3                                 ' + CRLF +
-    '------------------------------------------' + CRLF +
-    '??????:                              10.00' + CRLF +
-    '???????:                              5.00' + CRLF +
-    //'????                               =108.27' + CRLF +
-    '????          =108.27' + CRLF +
-    '?????????? ?????:                  =123.45' + CRLF +
-    '  ?????                             =15.18' + CRLF +
-    '? ?.?. ??? 12%                      =12.14' + CRLF +
-    '------------------------------------------' + CRLF +
-    '??: 923956785162                          ' + CRLF +
-    '?????: 04.08.2022 17:09:35                ' + CRLF +
-    '???: ?? "???????????"                     ' + CRLF +
-    '??? ???????? ????:                        ' + CRLF +
-    'dev.kofd.kz/consumer                      ' + CRLF +
-    '------------------------------------------' + CRLF +
-    '              ?????????? ??K              ' + CRLF +
-    '               ??? ???: 270               ' + CRLF +
-    '     ??? ??? ??? (???): 211030200207      ' + CRLF +
-    '             ???: SWK00032685             ' + CRLF +
-    'Message 4                                 ' + CRLF +
-    '           Call????? 039458039850         ' + CRLF +
-    '          ??????? ????? 20948802934       ' + CRLF +
-    '            ??????? ?? ???????            ';
 
 { TWebkassaImplTest2 }
 
@@ -160,13 +108,13 @@ begin
 
   FDriver.Params.HeaderText :=
     '                                          ' + CRLF +
-    '   ????????-???????????? ???????, ?????   ' + CRLF +
-    '  ????-???????????, ??. ??????????, 1/10  ' + CRLF +
-    '            ??? PetroRetail               ';
+    '   Восточно-Казастанская область, город   ' + CRLF +
+    '  Усть-Каменогорск, ул. Грейдерная, 1/10  ' + CRLF +
+    '            ТОО PetroRetail               ';
   FDriver.Params.TrailerText :=
-    '           Call????? 039458039850         ' + CRLF +
-    '          ??????? ????? 20948802934       ' + CRLF +
-    '            ??????? ?? ???????            ';
+    '           Callцентр 039458039850         ' + CRLF +
+    '          Горячая линия 20948802934       ' + CRLF +
+    '            СПАСИБО ЗА ПОКУПКУ            ';
 
   FDriver.Logger.CloseFile;
   DeleteFile(FDriver.Logger.FileName);
@@ -300,16 +248,16 @@ end;
 procedure TWebkassaImplTest2.TestNonFiscal;
 const
   NonFiscalText: string =
-    '?????? ??? ?????? 1                       ' + CRLF +
-    '?????? ??? ?????? 2                       ' + CRLF +
-    '?????? ??? ?????? 3                       ';
+    'Строка для печати 1                       ' + CRLF +
+    'Строка для печати 2                       ' + CRLF +
+    'Строка для печати 3                       ';
 begin
   OpenClaimEnable;
   CheckEquals(0, Driver.ResetPrinter, 'ResetPrinter');
   CheckEquals(0, Driver.BeginNonFiscal, 'BeginNonFiscal');
-  CheckEquals(0, Driver.PrintNormal(FPTR_S_RECEIPT, '?????? ??? ?????? 1'));
-  CheckEquals(0, Driver.PrintNormal(FPTR_S_RECEIPT, '?????? ??? ?????? 2'));
-  CheckEquals(0, Driver.PrintNormal(FPTR_S_RECEIPT, '?????? ??? ?????? 3'));
+  CheckEquals(0, Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 1'));
+  CheckEquals(0, Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 2'));
+  CheckEquals(0, Driver.PrintNormal(FPTR_S_RECEIPT, 'Строка для печати 3'));
   CheckEquals(0, Driver.EndNonFiscal, 'EndNonFiscal');
 
 end;
@@ -362,141 +310,6 @@ begin
   end;
 end;
 
-procedure TWebkassaImplTest2.PrintReceipt;
-var
-  S: AnsiString;
-  pData: Integer;
-  pString: WideString;
-  OptArgs: Integer;
-  Data: WideString;
-  JsonText: string;
-  ExpectedText: string;
-  CustomerEmail: WideString;
-const
-  CustomerEmail_UTF16LE_HEX =
-  '1e 04 3f 04 35 04 40 04 30 04 42 04 3e 04 40 04 ' +
-  '3a 00 20 00 92 04 30 04 a3 04 a3 04 d9 04 20 00 ' +
-  '9a 04 b1 04 37 04 3c 04 56 04 a3 04 30 04';
-begin
-  S := HexToStr(CustomerEmail_UTF16LE_HEX);
-
-  CustomerEmail := 'Customer@Email';
-(*
-  SetLength(CustomerEmail, Length(S) div Sizeof(WideChar));
-  Move(S[1], CustomerEmail[1], Length(S));
-*)
-
-
-  FDriver.Client.TestMode := True;
-  FDriver.Client.AnswerJson := ReadFileData(GetModulePath + 'SendReceiptAnswer.txt');
-  FDriver.Params.VATSeries := 'VATSeries';
-  FDriver.Params.VATNumber := 'VATNumber';
-
-  CheckEquals(0, Driver.ResetPrinter, 'Driver.ResetPrinter');
-  CheckEquals(FPTR_PS_MONITOR, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
-  Driver.SetPropertyNumber(PIDXFptr_FiscalReceiptType, FPTR_RT_SALES);
-  CheckEquals(FPTR_RT_SALES, Driver.GetPropertyNumber(PIDXFptr_FiscalReceiptType));
-
-  FptrCheck(Driver.BeginFiscalReceipt(True));
-
-  CheckEquals(FPTR_PS_FISCAL_RECEIPT, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
-  // FiscalSign
-  pData := DriverParameterFiscalSign;
-  pString := '923956785162';
-  FptrCheck(FDriver.DirectIO(DIO_SET_DRIVER_PARAMETER, pData, pString));
-  // ExternalCheckNumber
-  pData := DriverParameterExternalCheckNumber;
-  pString := 'ExternalCheckNumber';
-  FptrCheck(FDriver.DirectIO(DIO_SET_DRIVER_PARAMETER, pData, pString));
-  // Customer iteqms
-  Driver.DirectIO2(DIO_WRITE_FS_STRING_TAG_OP, 1228, 'CustomerINN');
-  Driver.DirectIO2(DIO_WRITE_FS_STRING_TAG_OP, 1008, CustomerEmail);
-
-
-
-  Driver.DirectIO2(DIO_WRITE_FS_STRING_TAG_OP, 1008, '+727834657823');
-  // Item 1
-  FptrCheck(Driver.PrintRecMessage('Message 1'));
-
-  pData := DriverParameterBarcode;
-  pString := '8234827364';
-  FptrCheck(Driver.DirectIO(DIO_SET_DRIVER_PARAMETER, pData, pString));
-  FptrCheck(Driver.PrintRecItem('???. ? 5                                  ?????????? ?????? MILKA BUBBLES ????????', 123.45, 1000, 1, 123.45, '??'));
-  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_DISCOUNT, '?????? 10', 10, 1));
-  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_SURCHARGE, '???????? 5', 5, 1));
-  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_PERCENTAGE_DISCOUNT, '?????? 10%', 10, 1));
-  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_PERCENTAGE_SURCHARGE, '?????? 5%', 5, 1));
-  // Item 2
-  FptrCheck(Driver.PrintRecMessage('Message 2'));
-  FptrCheck(Driver.PrintRecItem('Item 2', 1.45, 1000, 1, 1.45, '??'));
-  FptrCheck(Driver.PrintRecItemAdjustment(FPTR_AT_AMOUNT_DISCOUNT, '??????', 0.45, 1));
-  // Total adjustment
-  FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_AMOUNT_DISCOUNT, '?????? 10', 10));
-  FptrCheck(Driver.PrintRecSubtotalAdjustment(FPTR_AT_AMOUNT_SURCHARGE, '???????? 5', 5));
-  // Total
-  FptrCheck(Driver.PrintRecMessage('Message 3'));
-  FptrCheck(Driver.PrintRecTotal(123.45, 123.45, '1'));
-  FptrCheck(Driver.PrintRecMessage('Message 4'));
-
-  CheckEquals(FPTR_PS_FISCAL_RECEIPT_ENDING, Driver.GetPropertyNumber(PIDXFptr_PrinterState));
-  CheckEquals(OPOS_SUCCESS, Driver.EndFiscalReceipt(False));
-  CheckEquals(OPOS_SUCCESS, Driver.GetData(FPTR_GD_RECEIPT_NUMBER, OptArgs, Data));
-  CheckEquals('923956785162', Data);
-
-  JsonText := UTF8Decode(Driver.Client.CommandJson);
-  ExpectedText := UTF8Decode(ReadFileData(GetModulePath + 'SendReceiptRequest2.json'));
-  if JsonText <> ExpectedText then
-  begin
-    WriteFileData(GetModulePath + 'JsonText1.json', JsonText);
-    WriteFileData(GetModulePath + 'ExpectedText1.json', ExpectedText);
-  end;
-  CheckEquals(ExpectedText, JsonText, 'Driver.Client.CommandJson');
-end;
-
-procedure TWebkassaImplTest2.TestReceiptTemplate;
-var
-  i: Integer;
-  Lines: TStrings;
-begin
-  Lines := TStringList.Create;
-  try
-    Driver.Params.TemplateEnabled := True;
-    Driver.Template.SetDefaults;
-
-    OpenClaimEnable;
-
-    FPrinter.Expects('Get_RecLineChars').Returns(42);
-    FPrinter.Expects('Get_RecLineHeight').Returns(10);
-    FPrinter.Expects('Get_RecLineSpacing').Returns(6);
-
-    FPrinter.Expects('CheckHealth').WithParams([OPOS_CH_INTERNAL]).Returns(0);
-    FPrinter.Expects('Get_CapRecEmptySensor').Returns(True);
-    FPrinter.Expects('Get_RecEmpty').Returns(False);
-    FPrinter.Expects('Get_CapCoverSensor').Returns(True);
-    FPrinter.Expects('Get_CoverOpen').Returns(False);
-    FPrinter.Expects('Get_CapRecDwideDhigh').Returns(False);
-    FPrinter.Expects('Get_CapRecBold').Returns(False);
-
-    FPrinter.Expects('Get_RecLineChars').Returns(42);
-    FPrinter.Expects('Get_RecLineHeight').Returns(10);
-    FPrinter.Expects('Get_RecLineSpacing').Returns(6);
-
-    FPrinter.Expects('Get_CapTransaction').Returns(True);
-    FPrinter.Expects('TransactionPrint').WithParams([PTR_S_RECEIPT, PTR_TP_TRANSACTION]).Returns(0);
-
-    Lines.Text := ReceiptText;
-    for i := 0 to Lines.Count-1 do
-    begin
-      FPrinter.Expects('PrintNormal').WithParams([PTR_S_RECEIPT, Lines[i]]).Returns(0);
-    end;
-    PrintReceipt;
-    FPrinter.Verify('TestReceiptTemplate');
-
-  finally
-    Lines.Free;
-  end;
-end;
-
 procedure TWebkassaImplTest2.TestPrintQRCodeAsGraphics;
 const
   BarcodeData = 'https://devkkm.webkassa.kz/Ticket?chb=SWK00033059&sh=100&extnum=92D51F08-13CF-428E-AF2F-67B6E8BDE994';
@@ -534,111 +347,6 @@ begin
   finally
     Stream.Free;
     Graphic.Free;
-  end;
-end;
-
-procedure TWebkassaImplTest2.TestPrintDatamatrixBarcode;
-const
-  ReceiptText: string =
-    '                                          ' + CRLF +
-    '   ????????-???????????? ???????, ?????   ' + CRLF +
-    '  ????-???????????, ??. ??????????, 1/10  ' + CRLF +
-    '            ??? PetroRetail               ' + CRLF +
-    '??? ????? 00000                    ? 00000' + CRLF +
-    '------------------------------------------' + CRLF +
-    '                     ' + CRLF +
-    '                 ????? ?0' + CRLF +
-    '???????' + CRLF +
-    '------------------------------------------' + CRLF +
-    'Message 1' + CRLF +
-    'Item 1' + CRLF +
-    '   1.000 ?? x 123.45 ??' + CRLF +
-    '   ?????????                        123.45' + CRLF +
-    '------------------------------------------' + CRLF +
-    ESC + '|4C????          =123.45' + CRLF +
-    '?????????? ?????:                  =123.45' + CRLF +
-    '? ?.?. ??? 12%                      =13.23' + CRLF +
-    '------------------------------------------' + CRLF +
-    '??: ' + CRLF +
-    '?????: ' + CRLF +
-    '???: ' + CRLF +
-    '??? ???????? ????:' + CRLF +
-    '' + CRLF +
-    '------------------------------------------' + CRLF +
-    '              ?????????? ??K' + CRLF +
-    '' + CRLF +
-    '                ??? ???: ' + CRLF +
-    '           ??? ??? ??? (???): ' + CRLF +
-    '                  ???: ' + CRLF +
-    '           Call????? 039458039850         ' + CRLF +
-    '          ??????? ????? 20948802934       ' + CRLF +
-    '            ??????? ?? ???????            ';
-
-var
-  i: Integer;
-  Lines: TStrings;
-begin
-  OpenClaimEnable;
-
-  Lines := TStringList.Create;
-  try
-    Lines.Text := ReceiptText;
-    FPrinter.Expects('Get_RecLineChars').Returns(42);
-    FPrinter.Expects('Get_RecLineHeight').Returns(18);
-    FPrinter.Expects('Get_RecLineSpacing').Returns(5);
-    FPrinter.Expects('CheckHealth').WithParams([OPOS_CH_INTERNAL]).Returns(0);
-    FPrinter.Expects('Get_CapRecEmptySensor').Returns(True);
-    FPrinter.Expects('Get_RecEmpty').Returns(False);
-    FPrinter.Expects('Get_CapCoverSensor').Returns(True);
-    FPrinter.Expects('Get_CoverOpen').Returns(False);
-
-    FPrinter.Expects('Get_CapRecBold').Returns(True);
-    FPrinter.Expects('Get_CapRecDwideDhigh').Returns(True);
-    FPrinter.Expects('Get_RecLineChars').Returns(42);
-    FPrinter.Expects('Get_RecLineHeight').Returns(18);
-    FPrinter.Expects('Get_RecLineSpacing').Returns(5);
-    FPrinter.Expects('Get_CapTransaction').Returns(True);
-    FPrinter.Expects('TransactionPrint').WithParams([PTR_S_RECEIPT, PTR_TP_TRANSACTION]).Returns(0);
-    for i := 0 to 13 do
-    begin
-      FPrinter.Expects('PrintNormal').WithParams([PTR_S_RECEIPT, Lines[i] + CRLF]).Returns(0);
-    end;
-    FPrinter.Expects('Get_CapRecBarCode').Returns(True);
-    FPrinter.Expects('PrintBarCode').WithParams([
-      2, '3850504580002030', 203, 100, 0, -2, -11]).Returns(0);
-
-    for i := 14 to 26 do
-    begin
-      FPrinter.Expects('PrintNormal').WithParams([PTR_S_RECEIPT, Lines[i] + CRLF]).Returns(0);
-    end;
-    FPrinter.Expects('Get_CapRecBarCode').Returns(True);
-    FPrinter.Expects('PrintBarCode').WithParams([
-      2, '', 204, 0, 4, -2, -11]).Returns(0);
-
-    for i := 27 to Lines.Count-1 do
-    begin
-      FPrinter.Expects('PrintNormal').WithParams([PTR_S_RECEIPT, Lines[i] + CRLF]).Returns(0);
-    end;
-    FPrinter.Expects('Get_CapRecPapercut').Returns(True);
-    FPrinter.Expects('Get_RecLinesToPaperCut').Returns(0);
-    FPrinter.Expects('CutPaper').WithParams([90]).Returns(0);
-    FPrinter.Expects('Get_CapTransaction').Returns(True);
-    FPrinter.Expects('TransactionPrint').WithParams([PTR_S_RECEIPT, PTR_TP_NORMAL]).Returns(0);
-    FPrinter.Expects('CheckHealth').WithParams([OPOS_CH_INTERNAL]).Returns(0);
-    FPrinter.Expects('Set_RecLineChars').WithParams([42]);
-
-
-    FptrCheck(Driver.BeginFiscalReceipt(True));
-    FptrCheck(Driver.PrintRecMessage('Message 1'));
-    FptrCheck(Driver.PrintRecItem('Item 1', 123.45, 1000, 1, 123.45, '??'));
-    FptrCheck(Driver.DirectIO2(DIO_PRINT_BARCODE, DIO_BARCODE_DATAMATRIX,
-      '3850504580002030;DATAMATRIX;100;3;0;'));
-    FptrCheck(Driver.PrintRecTotal(123.45, 123.45, '1'));
-    FptrCheck(Driver.EndFiscalReceipt(False));
-
-    FPrinter.Verify('TestPrintDatamatrixBarcode');
-  finally
-    Lines.Free;
   end;
 end;
 

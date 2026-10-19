@@ -14,11 +14,10 @@ type
   { TJSONTest }
 
   TJSONTest = class(TTestCase)
-  public
+  published
     procedure TestJsonWriter;
     procedure TestEncodeMoneyOperationCommand;
     procedure TestDecodeMoneyOperationCommand;
-  published
     procedure Level1Test;
     procedure Level2Test;
     procedure ArrayTest;
@@ -28,7 +27,7 @@ type
 
 { TMoneyOperation }
 
-  TMoneyOperation = class(TPersistent)
+  TMoneyOperation = class(TJsonPersist)
   private
     FToken: WideString;
     FCashboxUniqueNumber: WideString;
@@ -131,6 +130,7 @@ const
   '{"Data":{"OfflineMode":true,"CashboxOfflineMode":true,'+
   '"DateTime":"15.02.2018 17:18:29","Sum":56350,"Cashbox":{"UniqueNumber":"SWK0 0013404","RegistrationNumber":"000134040000","IdentityNumber":"561","Address":"ул. Пушкина 17, оф.521","Ofd":{"Name":"АО Казахтелеком","Host":"consumer.oofd.kz","Code":1}}}}';
 begin
+  Doc := nil;
   Json := TlkJSON.Create;
   try
     Doc := Json.ParseText(Utf8Encode(JsonText));
@@ -149,6 +149,7 @@ begin
     CheckEquals('consumer.oofd.kz', Node.Field['Host'].Value);
     CheckEquals(1, Node.Field['Code'].Value);
   finally
+    Doc.Free;
     Json.Free;
   end;
 end;
@@ -199,7 +200,7 @@ const
   '"DateTime":"15.02.2018 17:18:29","Sum":56350,' +
   '"Cashbox":{"UniqueNumber":"SWK0 0013404",' +
   '"RegistrationNumber":"000134040000","IdentityNumber":"561",'+
-  '"Address":"ул. Пушкина 17, оф.521","Ofd":{"Name":"АО "Казахтелеком"",'+
+  '"Address":"ул. Пушкина 17, оф.521","Ofd":{"Name":"АО \"Казахтелеком\"",'+
   '"Host":"consumer.oofd.kz","Code":1}}}}';
 
 procedure TJSONTest.TestEncodeMoneyOperationCommand;
@@ -233,7 +234,7 @@ var
 begin
   Item := TMoneyOperationCommand.Create;
   try
-    JsonToObject(JsonTextExpected, Item);
+    JsonToObject(UTF8Encode(JsonTextExpected), Item);
     CheckEquals(True, Item.Data.OfflineMode, 'Item.Data.OfflineMode');
     CheckEquals(True, Item.Data.CashboxOfflineMode, 'Item.Data.CashboxOfflineMode');
     CheckEquals('15.02.2018 17:18:29', Item.Data.DateTime, 'Item.Data.DateTime');
@@ -259,6 +260,7 @@ var
   Text: WideString;
   JsonText: WideString;
 begin
+  Doc := nil;
   Json := TlkJSON.Create;
   try
     JsonText := ReadFileData(GetModulePath + 'ErrorCode.txt');
@@ -277,6 +279,7 @@ begin
     Text := Node.Field['Text'].Value;
     CheckEquals('Неверный логин и/или пароль', Text);
   finally
+    Doc.Free;
     Json.Free;
   end;
 end;

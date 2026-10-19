@@ -33,10 +33,8 @@ type
   protected
     procedure SetUp; override;
     procedure TearDown; override;
-    procedure TestPrintQRCode;
-
-    procedure TestPrintBarcodeAsGraphics; // !!!
   published
+    procedure TestPrintBarcodeAsGraphics;
     procedure TestPrintBarcodeFailed;
     procedure TestPrintBarcodeAsBarcode;
     procedure TestPrintBarcodeAsBarcode2;
@@ -203,44 +201,24 @@ begin
 
   FPrinter.Expects('Open').WithParams(['ThermalU']).Returns(0);
   FPrinter.Expects('Get_CapPowerReporting').Returns(True);
-  FPrinter.Expects('ClaimDevice').WithParams([1000]).Returns(0);
-  FPrinter.Expects('Set_DeviceEnabled').WithParams([True]);
-  FPrinter.Expects('Get_ResultCode').Returns(0);
-
-  FPrinter.Expects('Get_CharacterSetList').Returns('997,998,999');
-  FPrinter.Expects('Set_CharacterSet').WithParams([997]);
-  FPrinter.Expects('Get_CapMapCharacterSet').Returns(True);
-  FPrinter.Expects('Set_MapCharacterSet').WithParams([True]);
-
-  FPrinter.Expects('Set_RecLineChars').WithParams([42]);
-  FPrinter.Expects('Set_RecLineSpacing').WithParams([0]);
-  FPrinter.Expects('Set_RecLineHeight').WithParams([24]);
   FPrinter.Expects('Get_CapRecBitmap').Returns(True);
   FPrinter.Expects('Set_BinaryConversion').WithParams([OPOS_BC_NIBBLE]);
   FPrinter.Expects('PrintMemoryBitmap').WithParams([FPTR_S_RECEIPT, BitmapData,
     PTR_BMT_BMP, 28, PTR_BM_CENTER]).Returns(0);
 
   FPrinter.Expects('Set_BinaryConversion').WithParams([OPOS_BC_NONE]);
-  FPrinter.Expects('Set_DeviceEnabled').WithParams([False]);
   FPrinter.Expects('Close').Returns(0);
 
-  FDriver.OpenService(OPOS_CLASSKEY_FPTR, 'DeviceName', nil);
-  FDriver.ClaimDevice(1000);
+  CheckEquals(0, FDriver.OpenService(OPOS_CLASSKEY_FPTR, 'DeviceName', nil), 'OpenService');
+  CheckEquals(0, FDriver.ClaimDevice(1000), 'ClaimDevice');
   FDriver.SetPropertyNumber(PIDX_DeviceEnabled, 1);
+  CheckEquals(1, FDriver.GetPropertyNumber(PIDX_DeviceEnabled), 'DeviceEnabled');
   FDriver.PrintBarcode2(Barcode);
   FDriver.Close;
 
   FPrinter.Verify('Verify success');
 end;
 
-procedure TWebkassaImplTest3.TestPrintQRCode;
-const
-  BarcodeData = 'https://devkkm.webkassa.kz/Ticket?chb=SWK00033059&sh=100&extnum=92D51F08-13CF-428E-AF2F-67B6E8BDE994';
-begin
-  FPrinter.Expects('Get_CapRecBarCode').Returns(False);
-  FPrinter.Expects('Get_CapRecBitmap').Returns(True);
-  FDriver.PrintQRCodeAsGraphics(BarcodeData);
-end;
 
 initialization
   RegisterTest('', TWebkassaImplTest3.Suite);

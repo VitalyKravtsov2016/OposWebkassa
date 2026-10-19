@@ -4,7 +4,6 @@ program OposWebkassaTest;
 
 uses
   FastMM4,
-  Classes in '..\..\src\vcl\Classes.pas',
   SysUtils,
   TestFramework,
   GUITestRunner,
@@ -23,6 +22,7 @@ uses
   duComUtils in 'units\duComUtils.pas',
   duLogFile in 'units\duLogFile.pas',
   duPosPrinterRongta in 'units\duPosPrinterRongta.pas',
+  duPosPrinters in 'units\duPosPrinters.pas',
   duReceiptTemplate in 'units\duReceiptTemplate.pas',
   duEscPrinter in 'units\duEscPrinter.pas',
   duOposUtils in 'units\duOposUtils.pas',
@@ -30,6 +30,8 @@ uses
   duMemory in 'units\duMemory.pas',
   duMemoryStream in 'units\duMemoryStream.pas',
   duRegExpr in 'units\duRegExpr.pas',
+  duJsonTest in 'units\duJsonTest.pas',
+  IndyLeaks in 'units\IndyLeaks.pas',
   LogFile in '..\..\src\Shared\LogFile.pas',
   Opos in '..\..\src\Opos\Opos.pas',
   OposUtils in '..\..\src\Opos\OposUtils.pas',
@@ -109,6 +111,7 @@ uses
   PtrDirectIO in '..\..\src\OposWebkassa\units\PtrDirectIO.pas',
   PageBuffer in '..\..\src\OposWebkassa\units\PageBuffer.pas',
   PosPrinterRongta in '..\..\src\Shared\PosPrinterRongta.pas',
+  CustomPosPrinter in '..\..\src\Shared\CustomPosPrinter.pas',
   EscPrinterRongta in '..\..\src\Shared\EscPrinterRongta.pas',
   CustomPrinter in '..\..\src\Shared\CustomPrinter.pas',
   RawPrinterPort in '..\..\src\Shared\RawPrinterPort.pas',

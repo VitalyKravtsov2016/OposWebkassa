@@ -32,12 +32,13 @@ type
   protected
     procedure SetUp; override;
     procedure TearDown; override;
-    // !!!
+    // Exploratory, no assertions: posts to https://127.0.0.1/ and needs
+    // an SSL-enabled local server
     procedure TestAlternativeDomainNames;
-    procedure TestIdHeaderList;
-    
+
     property Client: TWebkassaClient read FClient;
   published
+    procedure TestIdHeaderList;
     procedure TestAuthenticate;
     procedure TestChangeToken;
 

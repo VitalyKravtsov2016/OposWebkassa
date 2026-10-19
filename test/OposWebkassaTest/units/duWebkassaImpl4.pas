@@ -44,8 +44,8 @@ type
   protected
     procedure SetUp; override;
     procedure TearDown; override;
-    procedure TestPrintDuplicate;
   published
+    procedure TestPrintDuplicate;
   end;
 
 implementation
@@ -117,7 +117,9 @@ end;
 
 procedure TWebkassaImplTest4.TearDown;
 begin
+  FDriver.Free;
   FDriver := nil;
+  FPort := nil;
   inherited TearDown;
 end;
 
@@ -195,10 +197,8 @@ begin
   end;
 end;
 
-(*
 initialization
   RegisterTest('', TWebkassaImplTest4.Suite);
-*)
 
 
 end.

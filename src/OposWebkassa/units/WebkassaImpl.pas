@@ -1891,8 +1891,6 @@ begin
     on E: Exception do
       Result := HandleException(E);
   end;
-  Printer.CapStatisticsReporting
-
 end;
 
 function TWebkassaImpl.GetDate(out Date: WideString): Integer;

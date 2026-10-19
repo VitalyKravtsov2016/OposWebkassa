@@ -93,6 +93,7 @@ uses
   PtrDirectIO in '..\..\src\OposWebkassa\units\PtrDirectIO.pas',
   PageBuffer in '..\..\src\OposWebkassa\units\PageBuffer.pas',
   PosPrinterRongta in '..\..\src\Shared\PosPrinterRongta.pas',
+  CustomPosPrinter in '..\..\src\Shared\CustomPosPrinter.pas',
   EscPrinterRongta in '..\..\src\Shared\EscPrinterRongta.pas',
   CustomPrinter in '..\..\src\Shared\CustomPrinter.pas',
   duEscPrinterSewoo in 'units\duEscPrinterSewoo.pas',
