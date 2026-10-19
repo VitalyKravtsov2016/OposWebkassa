@@ -115,16 +115,19 @@ procedure TSocketPort.Close;
 begin
   Lock;
   try
-    FConnection.Disconnect;
-    if (FConnection.IOHandler <> nil)and(FConnection.IOHandler.InputBuffer <> nil) then
-    begin
-      FConnection.IOHandler.InputBuffer.Clear;
+    try
+      FConnection.Disconnect;
+      if (FConnection.IOHandler <> nil)and(FConnection.IOHandler.InputBuffer <> nil) then
+      begin
+        FConnection.IOHandler.InputBuffer.Clear;
+      end;
+    except
+      on E: Exception do
+        Logger.Error(GetExceptionMessage(E));
     end;
-  except
-    on E: Exception do
-      Logger.Error(GetExceptionMessage(E));
+  finally
+    Unlock;
   end;
-  Unlock;
 end;
 
 procedure TSocketPort.Write(const Data: AnsiString);

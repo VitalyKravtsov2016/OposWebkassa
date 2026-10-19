@@ -388,6 +388,7 @@ mtSend_InvalidSelectionMsg0="Invalid selection request."
 mtSend_SuccessMsg0="The message was sent successfully."
 mtSend_UnknownErrorMsg0="Unknown error."
 Output Path=""
+ProjectID="{2960773A-A741-4005-814F-B3E87BB2C10F}"
 ProxyPassword=""
 ProxyPort=8080
 ProxyURL=""
@@ -449,5 +450,6 @@ WebPort=0
 WebSendMode=0
 WebURL=""
 WebUserID=""
+_CustomProfile=""
 
 

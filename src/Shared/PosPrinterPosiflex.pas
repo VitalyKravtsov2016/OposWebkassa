@@ -686,8 +686,8 @@ end;
 destructor TPosPrinterPosiflex.Destroy;
 begin
   Close;
-  FDevice.Free;
   FThread.Free;
+  FDevice.Free;
   FPrinter.Free;
   FEvents := nil;
   FPort := nil;

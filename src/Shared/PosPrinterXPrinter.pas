@@ -658,8 +658,8 @@ begin
   if FDevice.Opened then
     Close;
 
-  FDevice.Free;
   FThread.Free;
+  FDevice.Free;
   FPrinter.Free;
   FEvents := nil;
   FPort := nil;
