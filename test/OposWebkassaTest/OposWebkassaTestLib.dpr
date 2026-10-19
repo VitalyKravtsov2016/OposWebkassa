@@ -3,6 +3,7 @@ Library OposWebkassaTestLib;
 uses
   FastMM4,
   //ExceptionLog,
+  Classes in '..\..\src\vcl\Classes.pas',
   SysUtils,
   TestFramework,
   GUITestRunner,
@@ -26,6 +27,7 @@ uses
   duOposUtils in 'units\duOposUtils.pas',
   duWebkassaImpl in 'units\duWebkassaImpl.pas',
   duMemory in 'units\duMemory.pas',
+  duMemoryStream in 'units\duMemoryStream.pas',
   duRegExpr in 'units\duRegExpr.pas',
   LogFile in '..\..\src\Shared\LogFile.pas',
   Opos in '..\..\src\Opos\Opos.pas',
