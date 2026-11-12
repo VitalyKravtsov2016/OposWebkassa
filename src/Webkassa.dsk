@@ -1,21 +1,22 @@
 [Closed Files]
-File_0=SourceModule,'D:\Projects\IBTS\OposWebkassa\src\vcl\Classes.pas',0,1,5229,31,5238,0,0
-File_1=SourceModule,'D:\Projects\IBTS\OposWebkassa\src\Shared\PosPrinterXPrinter.pas',0,1,2156,5,2167,0,0
-File_2=SourceModule,'D:\Projects\IBTS\OposWebkassa\src\Shared\PosPrinterPosiflex.pas',0,1,2273,5,2282,0,0
-File_3=SourceModule,'D:\Projects\IBTS\OposWebkassa\src\Shared\PosPrinterRongta.pas',0,1,2316,5,2325,0,0
-File_4=SourceModule,'D:\Projects\IBTS\OposWebkassa\src\Shared\PosPrinterOA48.pas',0,1,653,86,662,0,0
-File_5=SourceModule,'D:\Projects\IBTS\OposWebkassa\src\Shared\SocketPort.pas',0,1,40,35,53,0,0
-File_6=SourceModule,'D:\Projects\IBTS\OposWebkassa\src\Opos\OposServiceDevice19.pas',0,1,143,42,152,0,0
-File_7=SourceModule,'D:\Projects\IBTS\OposWebkassa\src\OposWebkassa\Units\WebkassaImpl.pas',0,1,1417,21,1428,0,0
-File_8=SourceModule,'D:\Projects\IBTS\OposWebkassa\src\OposWebkassa\units\DirectIOAPI.pas',0,1,48,1,63,0,0
-File_9=SourceModule,'D:\Projects\IBTS\OposWebkassa\test\OposWebkassaTest\units\duTranslation.pas',0,1,28,27,39,0,0
+File_0=SourceModule,'D:\Projects\IBTS\OposWebkassa\test\WebkassaAccTest\units\duWebkassaClient.pas',0,1,62,38,73,0,0
+File_1=SourceModule,'D:\Projects\IBTS\OposWebkassa\test\OposWebkassaTest\units\duWebkassaImpl.pas',0,1,1126,30,1139,0,0
+File_2=SourceModule,'D:\Projects\IBTS\OposWebkassa\src\OposWebkassa\units\WebkassaImpl.pas',0,1,1698,30,1708,0,0
+File_3=SourceModule,'D:\Projects\IBTS\OposWebkassa\src\Shared\PrinterTypes.pas',0,1,49,1,73,0,0
+File_4=SourceModule,'D:\Projects\IBTS\OposWebkassa\src\Shared\ReceiptTemplate.pas',0,1,302,17,318,0,0
+File_5=SourceModule,'D:\Projects\IBTS\OposWebkassa\src\vcl\Classes.pas',0,1,5229,31,5238,0,0
+File_6=SourceModule,'D:\Projects\IBTS\OposWebkassa\src\Shared\PosPrinterXPrinter.pas',0,1,2156,5,2167,0,0
+File_7=SourceModule,'D:\Projects\IBTS\OposWebkassa\src\Shared\PosPrinterPosiflex.pas',0,1,2273,5,2282,0,0
+File_8=SourceModule,'D:\Projects\IBTS\OposWebkassa\src\Shared\PosPrinterRongta.pas',0,1,2316,5,2325,0,0
 
 [Modules]
-Count=0
-EditWindowCount=0
+Module0=D:\Projects\IBTS\OposWebkassa\src\OposWebkassa\Units\WebkassaClient.pas
+Count=1
+EditWindowCount=1
 TypeLibWindowCount=1
 
-[D:\Projects\IBTS\OposWebkassa\test\WebkassaAccTest\WebkassaAccTest.dpr]
+[D:\Projects\IBTS\OposWebkassa\src\OposWebkassa\Units\WebkassaClient.pas]
+ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
@@ -50,6 +51,44 @@ FormOnTop=0
 [D:\Projects\IBTS\OposWebkassa\test\OposWebkassaTest\OposWebkassaTestLib.dpr]
 FormState=0
 FormOnTop=0
+
+[D:\Projects\IBTS\OposWebkassa\test\WebkassaAccTest\WebkassaAccTest.dpr]
+FormState=0
+FormOnTop=0
+
+[EditWindow0]
+ViewCount=1
+CurrentView=0
+View0=0
+CodeExplorer=CodeExplorer@EditWindow0
+MessageView=MessageView@EditWindow0
+Create=1
+Visible=1
+State=2
+Left=493
+Top=140
+Width=1302
+Height=682
+MaxLeft=-8
+MaxTop=107
+MaxWidth=1936
+MaxHeight=933
+ClientWidth=1920
+ClientHeight=894
+LeftPanelSize=140
+LeftPanelClients=CodeExplorer@EditWindow0
+LeftPanelData=000004000000000000000000000000000000000000000000000100000000000000000C000000436F64654578706C6F726572FFFFFFFF
+RightPanelSize=0
+BottomPanelSize=0
+BottomPanelClients=MessageView@EditWindow0
+BottomPanelData=00000400010000000B0000004D657373616765566965770000000000000000000000000000000000FFFFFFFF
+
+[View0]
+Module=D:\Projects\IBTS\OposWebkassa\src\OposWebkassa\Units\WebkassaClient.pas
+CursorX=26
+CursorY=2388
+TopLine=2373
+LeftCol=1
 
 [TypeLibEditWindow0]
 Create=1
@@ -356,6 +395,38 @@ TBDockHeight=151
 LRDockWidth=383
 Dockable=1
 
+[CodeExplorer@EditWindow0]
+Create=1
+Visible=1
+State=0
+Left=0
+Top=12
+Width=140
+Height=882
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=140
+ClientHeight=882
+TBDockHeight=305
+LRDockWidth=140
+Dockable=1
+
+[MessageView@EditWindow0]
+Create=1
+Visible=0
+State=0
+Left=-303
+Top=-707
+Width=443
+Height=85
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=443
+ClientHeight=85
+TBDockHeight=85
+LRDockWidth=443
+Dockable=1
+
 [DockHosts]
 DockHostCount=1
 
@@ -379,5 +450,5 @@ DockClients=CallStackWindow
 DockSiteData=0000040000000000F001000000000000015803000000000000010000000087000000000000000100000002F0010000000000000200000000580300000F00000043616C6C537461636B57696E646F770200000000F7010000000000000100000000080100000000000001000000008C010000000000000100000000100200000000000001000000009802000000000000FFFFFFFF
 
 [ActiveProject]
-ActiveProject=1
+ActiveProject=3
 

@@ -2679,7 +2679,6 @@ begin
     if not(Char(Result[Length(Result)]) in ['\', '/']) then
       Result := Result + '/';
   end;
-  Result := FAddress;
 end;
 
 { TMoneyOperationResponse }
