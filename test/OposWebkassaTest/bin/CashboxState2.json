@@ -1,0 +1,158 @@
+{
+    "Data": {
+        "UniqueNumber": "SWK00034105",
+        "IdentityNumber": 1941,
+        "RegistrationNumber": "872489667330",
+        "OfdProtocolVersion": 203,
+        "AllLicenseExpiring": "2026-11-18T00:00:00",
+        "OrganizationXin": "131240010479",
+        "OrganizationName": "ТОО SOFT IT KAZAKHSTAN",
+        "CurrentState": {
+            "ShiftNumber": 160,
+            "ShiftClosed": false,
+            "ShiftOpenedAt": "2026-11-11T13:39:14.329",
+            "LastOperationDate": "2026-11-12T13:09:36.678",
+            "DocumentsCount": 4,
+            "ReportState": {
+                "Sections": [
+                    {
+                        "Code": 1,
+                        "Name": "",
+                        "Operations": {
+                            "Sell": {
+                                "Amount": 2320.0,
+                                "Count": 4
+                            }
+                        }
+                    }
+                ],
+                "Taxes": [
+                    {
+                        "Type": 100,
+                        "OperationType": 2,
+                        "Turnover": 2320.0,
+                        "Amount": 320.0,
+                        "Percent": 16
+                    }
+                ],
+                "MoneyPlacementOperations": {
+                    "Deposit": {
+                        "TotalCount": 19,
+                        "Count": 0,
+                        "Amount": 0.0
+                    },
+                    "WithDrawal": {
+                        "TotalCount": 17,
+                        "Count": 0,
+                        "Amount": 0.0
+                    }
+                },
+                "Revenue": 2320.0,
+                "Type": 1,
+                "Modificators": [
+                    {
+                        "Type": 1,
+                        "Operations": {
+                        }
+                    },
+                    {
+                        "Type": 2,
+                        "Operations": {
+                        }
+                    }
+                ],
+                "TaxPayerName": "ТОО SOFT IT KAZAKHSTAN",
+                "TaxPayerIN": "131240010479",
+                "TaxPayerVAT": true,
+                "TaxPayerVATSeria": "00000",
+                "TaxPayerVATNumber": "0000000",
+                "CheckMarkingRequired": false,
+                "ReportNumber": 4,
+                "CashboxSN": "SWK00034105",
+                "CashboxIN": 1941,
+                "CashboxRN": "872489667330",
+                "CashboxAddress": "WK.Portal.Domain.Entities.Address",
+                "StartOn": "2026-11-11T13:39:14.329",
+                "ReportOn": "2026-11-12T13:09:36.678",
+                "CashierCode": 0,
+                "CashierName": "vnesterenko@ibtsmail.ru",
+                "ShiftNumber": 160,
+                "DocumentCount": 4,
+                "PutMoneySum": 0.0,
+                "TakeMoneySum": 0.0,
+                "ControlSum": 1616167746,
+                "OfflineMode": false,
+                "CashboxOfflineMode": false,
+                "SumInCashbox": 4250.0,
+                "Sell": {
+                    "PaymentsByTypesApiModel": [
+                        {
+                            "Sum": 2320.0,
+                            "Type": 0
+                        }
+                    ],
+                    "Discount": 0.0,
+                    "Markup": 0.0,
+                    "Taken": 2320.0,
+                    "Change": 0.0,
+                    "Count": 4,
+                    "TotalCount": 676,
+                    "VAT": 320.0
+                },
+                "Buy": {
+                    "PaymentsByTypesApiModel": [
+                    ],
+                    "Discount": 0.0,
+                    "Markup": 0.0,
+                    "Taken": 0.0,
+                    "Change": 0.0,
+                    "Count": 0,
+                    "TotalCount": 6,
+                    "VAT": 0.0
+                },
+                "ReturnSell": {
+                    "PaymentsByTypesApiModel": [
+                    ],
+                    "Discount": 0.0,
+                    "Markup": 0.0,
+                    "Taken": 0.0,
+                    "Change": 0.0,
+                    "Count": 0,
+                    "TotalCount": 134,
+                    "VAT": 0.0
+                },
+                "ReturnBuy": {
+                    "PaymentsByTypesApiModel": [
+                    ],
+                    "Discount": 0.0,
+                    "Markup": 0.0,
+                    "Taken": 0.0,
+                    "Change": 0.0,
+                    "Count": 0,
+                    "TotalCount": 0,
+                    "VAT": 0.0
+                },
+                "EndNonNullable": {
+                    "Sell": 3068640.0,
+                    "Buy": 12441.0,
+                    "ReturnSell": 151508.0,
+                    "ReturnBuy": 0.0
+                },
+                "StartNonNullable": {
+                    "Sell": 3066320.0,
+                    "Buy": 12441.0,
+                    "ReturnSell": 151508.0,
+                    "ReturnBuy": 0.0
+                },
+                "Ofd": {
+                    "Name": "ТОО \"Smartcontract\" (WOFD)",
+                    "NameKz": "ЖШС \"Smartcontract\" (WOFD)",
+                    "NameEn": "ТОО \"Smartcontract\" (WOFD)",
+                    "Host": "ctest2.wofd.kz/consumer",
+                    "Code": 4
+                }
+            },
+            "TicketOrderNumber": 4
+        }
+    }
+}

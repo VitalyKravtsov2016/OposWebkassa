@@ -99,6 +99,7 @@ type
     procedure TestRecLineChars;
     procedure TestParseJson;
     procedure TestParseJson2;
+    procedure TestParseJson3;
     procedure TestReadCashboxStatus;
     procedure TestReadCasboxStatusAnswerJson;
 
@@ -1133,6 +1134,22 @@ begin
 end;
 
 procedure TWebkassaImplTest.TestParseJson2;
+var
+  Doc: TlkJSONbase;
+  JsonText: WideString;
+  OrganizationXin: string;
+begin
+  JsonText := ReadFileData(GetModulePath + 'CashboxState2.json');
+  Doc := TlkJSON.ParseText(JsonText);
+  try
+    OrganizationXin := Doc.Get('Data').Get('OrganizationXin').Value;
+    CheckEquals(OrganizationXin, '131240010479', 'OrganizationXin');
+  finally
+    Doc.Free;
+  end;
+end;
+
+procedure TWebkassaImplTest.TestParseJson3;
 var
   Doc: TlkJSONbase;
   JsonText: WideString;
